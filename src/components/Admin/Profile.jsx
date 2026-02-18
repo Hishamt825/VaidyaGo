@@ -2,15 +2,30 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* ✅ ADD THIS (Missing Component) */
-const MenuItem = ({ text, img }) => (
-  <div className="group flex items-center gap-3 px-4 py-2 rounded-md cursor-pointer text-sm font-medium text-gray-600 hover:bg-[#1b6d8a] hover:text-white transition-all duration-200">
-    <img
-      src={img}
-      className="w-4 h-4 transition-all duration-200 group-hover:brightness-0 group-hover:invert"
-      alt=""
-    />
-    <span>{text}</span>
-  </div>
+const MenuItem = ({ text, img, active }) => (
+ <div
+  className={`group flex items-center gap-3 px-4 py-2 rounded-md cursor-pointer text-sm font-medium transition-all duration-200
+    ${
+      text === "Your Profile"
+        ? "bg-[#1b6d8a] text-white"
+        : "text-gray-600 hover:bg-[#1b6d8a] hover:text-white"
+    }
+  `}
+>
+  <img
+    src={img}
+    className={`w-4 h-4 transition-all duration-200 
+      ${
+        text === "Your Profile"
+          ? "brightness-0 invert"
+          : "group-hover:brightness-0 group-hover:invert"
+      }
+    `}
+    alt=""
+  />
+  <span>{text}</span>
+</div>
+
 );
 
 const Profile = () => {
@@ -22,51 +37,126 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: "Tuba Javed",
     email: "javedtuba@gmail.com",
-    phone: "1234567890",
+    phone_number: "1234567890",
+    post: "Admin",
+    language: "English",
+    address: {
+      country: "India",
+      city: "Delhi",
+      pincode: "110001",
+    },
   });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  // Handle normal fields
+// ✏️ EDIT PROFILE
+ const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+const handleEditProfile = async () => {
+  setLoading(true);
 
-  /* ✅ UPDATED HANDLE UPDATE FUNCTION */
-  const handleUpdate = async () => {
-    try {
-      setLoading(true);
-
-      const response = await fetch(
-        "https://yourapi.com/api/profile", // 👈 Yaha apna real PUT endpoint lagao
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setFormData(data); // updated data set
-        setIsEditing(false);
-        alert("Profile Updated Successfully ✅");
-
-        // Agar redirect karna ho to:
-        // navigate("/profile");
-      } else {
-        alert(data.message || "Update Failed ");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong ");
-    } finally {
+  try {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      alert("Session expired. Please login again.");
       setLoading(false);
+      return;
     }
-  };
+
+    const response = await fetch(
+      "https://tubajavedd.pythonanywhere.com/api/admin/profile/edit/",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          phone_number: formData.phone_number,
+          post: formData.post,
+          language: formData.language,
+          address: {
+            country: formData.address.country,
+            city: formData.address.city,
+            pincode: formData.address.pincode,
+          },
+        }),
+      }
+    );
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      data = { detail: "Invalid server response" };
+    }
+
+    if (response.ok) {
+      alert("Profile edited successfully ");
+    } else {
+      alert(data.detail || "Edit failed");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Network error occurred.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// ✅ UPDATE PROFILE (curl endpoint)
+const handleUpdateProfile = async () => {
+  setLoading(true);
+
+  try {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      alert("Session expired. Please login again.");
+      setLoading(false);
+      return;
+    }
+
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/admin/profile/",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          phone_number: formData.phone_number,
+          post: formData.post,
+          language: formData.language,
+          address: {
+            country: formData.address.country,
+            city: formData.address.city,
+            pincode: formData.address.pincode,
+          },
+        }),
+      }
+    );
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      data = { detail: "Invalid server response" };
+    }
+
+    if (response.ok) {
+      alert("Profile updated successfully ✅");
+    } else {
+      alert(data.detail || "Update failed");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Network error occurred.");
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
     <div className="flex min-h-screen bg-[#f5f8fb]">
       
@@ -117,7 +207,7 @@ const Profile = () => {
     {/* Update (Tick) Button - only visible when editing */}
     {isEditing && (
       <button
-        onClick={handleUpdate} 
+        onClick={handleEditProfile} 
         className="bg-white border rounded-xl p-2 shadow hover:scale-105 transition"
       >
         <img src="/update.png" className="w-6 h-5" alt="Update" />
@@ -195,41 +285,77 @@ const Profile = () => {
   {isEditing ? (
     <input
       type="text"
-      name="phone"
-      value={formData.phone}
-      onChange={handleChange}
+      name="phone_number"
+      value={formData.phone_number}
+       onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
       className="mt-1 px-3 py-1.5 border rounded-md text-sm w-full"
+      
     />
   ) : (
     <p className="text-sm text-[#19718A] mt-1">
-      {formData.phone}
+      {formData.phone_number}
     </p>
   )}
 </div>
 
 {/* Address */}
+{/* Address */}
 <div className="py-3 border-b border-dashed border-gray-500">
   <p className="text-sm font-semibold mb-1">Address</p>
-  <div className="flex gap-2">
-    <select className="px-3 py-1.5 text-sm border rounded-md w-36">
-      <option>Country</option>
-      <option>India</option>
-      <option>USA</option>
-    </select>
+  {isEditing ? (
+    <div className="flex gap-2">
+      <select
+        name="country"
+        value={formData.address.country}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            address: { ...formData.address, country: e.target.value },
+          })
+        }
+        className="px-3 py-1.5 text-sm border rounded-md w-36"
+      >
+        <option value="">Country</option>
+        <option value="India">India</option>
+        <option value="USA">USA</option>
+      </select>
 
-    <select className="px-3 py-1.5 text-sm border rounded-md w-36">
-      <option>City</option>
-      <option>Mumbai</option>
-      <option>Delhi</option>
-    </select>
+      <select
+        name="city"
+        value={formData.address.city}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            address: { ...formData.address, city: e.target.value },
+          })
+        }
+        className="px-3 py-1.5 text-sm border rounded-md w-36"
+      >
+        <option value="">City</option>
+        <option value="Mumbai">Mumbai</option>
+        <option value="Delhi">Delhi</option>
+      </select>
 
-    <input
-      type="text"
-      placeholder="Pincode"
-      className="px-3 py-1.5 text-sm border rounded-md w-28"
-    />
-  </div>
+      <input
+        type="text"
+        name="pincode"
+        value={formData.address.pincode}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            address: { ...formData.address, pincode: e.target.value },
+          })
+        }
+        className="px-3 py-1.5 text-sm border rounded-md w-28"
+      />
+    </div>
+  ) : (
+    <p className="text-sm text-[#19718A] mt-1">
+      {formData.address.country}, {formData.address.city} - {formData.address.pincode}
+    </p>
+  )}
 </div>
+
 
 {/* Post */}
 <div className="py-3 border-b border-dashed border-gray-500">

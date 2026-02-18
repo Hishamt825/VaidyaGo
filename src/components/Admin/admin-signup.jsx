@@ -28,19 +28,19 @@ export default function Admin_signup() {
   // ================================
   //        HANDLE SIGNUP API
   // ================================
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
+    // ✅ Send POST request to backend
     const response = await fetch(
-      "https://tubajavedd.pythonanywhere.com/accounts/signup/",
+      "https://tubajavedd.pythonanywhere.com/accounts/api/admin/signup/",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          role,
           email,
           phone,
           password,
@@ -49,39 +49,45 @@ export default function Admin_signup() {
       }
     );
 
-    const data = await (async () => {
-      try {
-        return await response.json();
-      } catch {
-        return null;
-      }
-    })();
+    // ✅ Try to parse JSON response
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (err) {
+      console.error("Failed to parse JSON:", err);
+    }
 
     console.log("Backend response:", data);
-    console.log("Status Code:", response.status);
+    console.log("Status code:", response.status); // This comes directly from backend
 
-    // ✅ SUCCESS
+    // ✅ Handle success
     if (response.status === 201) {
+      alert(data?.message || "Signup successful!");
 
-      // 🔐 Save token
+      // 🔐 Save token if backend sends it
       if (data?.token) {
         localStorage.setItem("token", data.token);
       }
 
-      if (data?.message) {
-        alert(data.message);
-      }
-
-      // ✅ Redirect based on role
-      if (role === "Admin") {
-        navigate("/admin-dashboard");
-      } else if (role === "Doctor") {
-        navigate("/doctor-dashboard"); 
-      }
+      // ✅ Redirect admin to dashboard
+      navigate("/Admin_dashboard1");
+    }
+    // ✅ Handle validation errors (like email already exists or password mismatch)
+    else if (response.status === 400) {
+      // Show backend error message if available
+      alert(data?.message || JSON.stringify(data));
+    }
+    // ✅ Handle unauthorized or other errors
+    else if (response.status === 401) {
+      alert("Unauthorized access. Please check your credentials.");
+    }
+    else {
+      alert(`Signup failed. Status code: ${response.status}`);
     }
 
   } catch (error) {
     console.error("Server error:", error);
+    alert("Server error occurred. Check console for details.");
   }
 };
 
@@ -274,7 +280,7 @@ export default function Admin_signup() {
           <p className="text-sm mt-2 text-gray-600">
             Have an account?{" "}
             <Link
-              to="/Finallogin"
+              to="/AdminLoginPage"
               className="text-black font-semibold hover:underline"
             >
               LOGIN

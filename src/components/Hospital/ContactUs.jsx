@@ -3,149 +3,161 @@ import { MdPhonelinkLock } from "react-icons/md";
 
 const ContactUs = () => {
   return (
-    <div className="font-[Poppins] bg-white min-h-screen">
-        
+    <div className="font-sans text-gray-800">
+
 
       {/* ================= HEADER SECTION ================= */}
-      <section className="bg-gradient-to-b from-white to-white pt-20 pb-32 relative">
-
-        <header className="flex justify-between items-center  bg-[#19718A] px-3 py-2 shadow-none rounded-none mx-1 -mt-[95px] ">
-
-    {/* Navigation */}
-    <nav className="flex flex-wrap justify-end items-center space-x-10 md:space-x-28 pr-6 md:pl-[550px]  ">
-      {["About", "Our Service", "Doctor", "FAQ"].map((item) => (
-        <a
-          key={item}
-          href="#"
-          className="relative text-white font-medium transition-all duration-300 hover:text-white
-          after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-[#0C6173]
-          hover:after:w-full after:transition-all after:duration-300"
-        >
-          {item}
-        </a>
-      ))}
-    </nav>
-
-    {/* Right Icons */}
-    <div className="flex items-center space-x-3 mt-[10px]">
-      <div className="w-[2px] h-8 bg-white"></div>
-
-      <button className="p-2 md:pr-0 rounded-full hover:bg-[#E0F7FA] transition-all duration-300">
-        <img src="/search.svg" alt="Search" className="w-5 h-5" />
-      </button>
-
-      <div className="w-px h-8 bg-white"></div>
-
-      <button className="p-2 rounded-full hover:bg-[#E0F7FA] transition-all duration-300">
-        <img src="/Bell.png" alt="Bell" className="w-5 h-5" />
-      </button>
-
-      <button className="
-        relative border-2 border-white text-white px-5 py-2 rounded-full 
-        overflow-hidden transition-all duration-500 hover:text-[#19718A] hover:border-[#19718A] 
-        hover:shadow-lg">
-        Contact Us
-      </button>
-    </div>
-
-    <button className="md:hidden p-2 rounded-md hover:bg-[#E0F7FA] transition-all duration-300">
-      <img src="/menu.svg" alt="Menu" className="w-6 h-6" />
-    </button>
-  </header>
-  <section className="relative w-full">
-
-  {/* TOP BANNER */}
-  <div
-    className="h-[320px] bg-cover bg-center flex flex-col items-center justify-center text-center px-4"
-    style={{ backgroundImage: "url('/contact-bg.png')" }}
-  >
-    <h1 className="text-4xl md:text-6xl font-extrabold text-[#08334A]">
-      Contact us
-    </h1>
-
-    <p className="max-w-3xl text-sm text-gray-700 mt-3">
-      Our service can refer to a company’s specific category of offerings,
-      a physical pipe for utilities like water, or a line on a sports court.
-    </p>
-  </div>
-
-  {/* INFO CARD */}
-  <div className="relative py-5 ">
-  {/* faint background heading */}
-  <h2 className="absolute top-6 left-1/2 -translate-x-1/2 
-                 text-6xl font-bold text-[#cfdfe3] opacity-60 select-none">
-    contact us
-  </h2>
-
-  <div className="relative max-w-5xl mx-auto px-4">
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-
-      {/* HEADER */}
-      <div className="flex items-center gap-3 bg-[#0E6F83] px-6 py-4">
-      <img src="/name.png" className="w-20" />
-      </div>
-
-      {/* CONTENT */}
-      <div className="p-6 grid md:grid-cols-3 gap-8 text-sm text-gray-700">
-
-        {/* COLUMN 1 */}
-        <div className="space-y-4">
-          <div className="flex gap-2">
-            <span className="font-semibold">
-              For Appointment Related Queries :
-            </span>
-            <span>+91 XXXXXXXXXX</span>
-          </div>
-
-          <div>
-            <p className="font-semibold">Working Hours</p>
-            <p>
-              Monday to Saturday{" "}
-              <span className="text-[#0E6F83]">
-                (10:00 AM – 6:00 PM)
-              </span>
-            </p>
-            <p>Sunday: Closed</p>
-          </div>
-        </div>
-
-        {/* COLUMN 2 */}
-        <div className="space-y-3">
-          <p className="font-semibold">Email Address</p>
-
-          <p>For feedback/complaints please write to:</p>
-          <p className="text-[#0E6F83] font-medium">
-            feedbackVaidyaGo@gmail.com
-          </p>
-
-          <p>For general/business related queries contact:</p>
-          <p className="text-[#0E6F83] font-medium">
-            reachusVaidyaGo@gmail.com
-          </p>
-        </div>
-
-        {/* COLUMN 3 */}
-        <div className="space-y-3">
-          <p>For investors related queries contact:</p>
-          <p className="text-[#0E6F83] font-medium">
-            investor.relations@gmail.com
-          </p>
-
-          <p>For international patient queries contact:</p>
-          <p className="text-[#0E6F83] font-medium">
-            QueriesVaidyaGo@gmail.com
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-</section>
-
-      {/* ================= FORM SECTION ================= */}
       
+
+        <section className="relative overflow-hidden ">
+          {/* Background Image */}
+
+
+          {/* Navbar */}
+          <header className="relative flex items-center justify-between px-8 py-1 bg-[#19718A] border-b border-white/30">
+
+            {/* Empty Left Space (Balance Maintain Karne Ke Liye) */}
+            <div className="w-[280px]"></div>
+
+            {/* CENTER NAVIGATION */}
+            <nav className="absolute left-[500px] -translate-x-1/2 hidden md:flex items-center gap-[130px]">
+              {["About", "Our Service", "Doctor", "FAQ"].map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  {item}
+                </a>
+              ))}
+            </nav>
+
+            {/* RIGHT SECTION (Icons + Contact) */}
+            <div className="flex items-center gap-8">
+
+              <div className="w-px h-6 bg-white/40"></div>
+
+              <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                <img src="/search.svg" alt="Search" className="w-5 h-5 invert" />
+              </button>
+
+              <div className="w-px h-6 bg-white/40"></div>
+
+              <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                <img src="/Bell.png" alt="Bell" className="w-5 h-5 invert" />
+              </button>
+
+              <button
+                className=" border border-[#19718A]
+               text-white
+               px-7 py-1.5
+              rounded-full
+               transition-colors duration-300
+                hover:bg-white
+              hover:text-[#19718A]"
+
+              >
+                Contact Us
+              </button>
+            </div>
+          </header>
+        </section>
+
+
+        <section className="relative w-full">
+
+          {/* TOP BANNER */}
+          <div
+            className="h-[320px] bg-cover bg-center flex flex-col items-center justify-center text-center px-4"
+            style={{ backgroundImage: "url('/contact-bg.png')" }}
+          >
+            <h1 className="text-4xl md:text-6xl font-extrabold text-[#08334A]">
+              Contact us
+            </h1>
+
+            <p className="max-w-3xl text-sm text-gray-700 mt-3">
+              Our service can refer to a company’s specific category of offerings,
+              a physical pipe for utilities like water, or a line on a sports court.
+            </p>
+          </div>
+
+          {/* INFO CARD */}
+          <div className="relative py-5 ">
+            {/* faint background heading */}
+            <h2 className="absolute top-6 left-1/2 -translate-x-1/2 
+                 text-6xl font-bold text-[#cfdfe3] opacity-60 select-none">
+              contact us
+            </h2>
+
+            <div className="relative max-w-5xl mx-auto px-4">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+
+                {/* HEADER */}
+                <div className="flex items-center gap-3 bg-[#0E6F83] px-6 py-4">
+                  <img src="/name.png" className="w-20" />
+                </div>
+
+                {/* CONTENT */}
+                <div className="p-6 grid md:grid-cols-3 gap-8 text-sm text-gray-700">
+
+                  {/* COLUMN 1 */}
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <span className="font-semibold">
+                        For Appointment Related Queries :
+                      </span>
+                      <span>+91 XXXXXXXXXX</span>
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">Working Hours</p>
+                      <p>
+                        Monday to Saturday{" "}
+                        <span className="text-[#0E6F83]">
+                          (10:00 AM – 6:00 PM)
+                        </span>
+                      </p>
+                      <p>Sunday: Closed</p>
+                    </div>
+                  </div>
+
+                  {/* COLUMN 2 */}
+                  <div className="space-y-3">
+                    <p className="font-semibold">Email Address</p>
+
+                    <p>For feedback/complaints please write to:</p>
+                    <p className="text-[#0E6F83] font-medium">
+                      feedbackVaidyaGo@gmail.com
+                    </p>
+
+                    <p>For general/business related queries contact:</p>
+                    <p className="text-[#0E6F83] font-medium">
+                      reachusVaidyaGo@gmail.com
+                    </p>
+                  </div>
+
+                  {/* COLUMN 3 */}
+                  <div className="space-y-3">
+                    <p>For investors related queries contact:</p>
+                    <p className="text-[#0E6F83] font-medium">
+                      investor.relations@gmail.com
+                    </p>
+
+                    <p>For international patient queries contact:</p>
+                    <p className="text-[#0E6F83] font-medium">
+                      QueriesVaidyaGo@gmail.com
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </section>
+
+        {/* ================= FORM SECTION ================= */}
+
         <div className="max-w-4xl mx-auto border-2  rounded-2xl shadow-xl p-8 md:p-12 mt-[70px]">
 
           <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -218,141 +230,143 @@ const ContactUs = () => {
           </form>
         </div>
         {/* Our Location Section */}
-<div className="max-w-7xl  mx-auto mt-24">
-  
-  {/* Heading */}
-  <h2 className="text-3xl font-bold text-black mb-4">
-    Our Location
-  </h2>
+        <div className="max-w-7xl  mx-auto mt-24">
 
-  {/* Map Container */}
-  <div className="relative border rounded-2xl overflow-hidden shadow-lg">
-    
-    {/* Google Map Iframe */}
-    <iframe
-      src="https://www.google.com/maps?q=Rheinstraße&output=embed"
-      width="100%"
-      height="400"
-      style={{ border: 0 }}
-      allowFullScreen=""
-      loading="lazy"
-      referrerPolicy="no-referrer-when-downgrade"
-    ></iframe>
+          {/* Heading */}
+          <h2 className="text-3xl font-bold text-black mb-4">
+            Our Location
+          </h2>
 
-    {/* View on Google Map Button */}
-    <a
-      href="https://www.google.com/maps?q=Rheinstraße"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="absolute bottom-4 right-4 bg-[#19718A] text-white text-sm px-4 py-2 rounded-full shadow-md hover:bg-[#08334A] transition-all"
-    >
-      View on Google Map
-    </a>
-  </div>
-</div>
+          {/* Map Container */}
+          <div className="relative border rounded-2xl overflow-hidden shadow-lg">
 
-      </section>
+            {/* Google Map Iframe */}
+            <iframe
+              src="https://www.google.com/maps?q=Rheinstraße&output=embed"
+              width="100%"
+              height="400"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
 
-{/* ===== Footer Section ===== */}
-<footer className="bg-[#19718A] text-white py-16">
-  <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+            {/* View on Google Map Button */}
+            <a
+              href="https://www.google.com/maps?q=Rheinstraße"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute bottom-4 right-4 bg-[#19718A] text-white text-sm px-4 py-2 rounded-full shadow-md hover:bg-[#08334A] transition-all"
+            >
+              View on Google Map
+            </a>
+          </div>
+        </div>
 
-    {/* === Logo + Description === */}
-    <div className="flex flex-col items-start -mt-6">
-      <img 
-        src="/logo.png" 
-        alt="VaidyaGo Logo" 
-        className="w-56 mb-4 -ml-5"
-      />
+      
 
-      <p className="text-[13px] leading-relaxed max-w-xs font-serif">
-        Committed to compassionate care, advanced 
-technology, and healthier lives serving 
-Eastern U.P. with trust, excellence, 
-and integrity since 1989.
-      </p>
+      {/* ===== Footer Section ===== */}
+      <footer className="bg-[#19718A] text-white py-16">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+
+          {/* === Logo + Description === */}
+          <div className="flex flex-col items-start -mt-6">
+            <img
+              src="/logo.png"
+              alt="VaidyaGo Logo"
+              className="w-56 mb-4 -ml-5"
+            />
+
+            <p className="text-[13px] leading-relaxed max-w-xs font-serif">
+              Committed to compassionate care, advanced
+              technology, and healthier lives serving
+              Eastern U.P. with trust, excellence,
+              and integrity since 1989.
+            </p>
+          </div>
+
+          {/* === Quick Links === */}
+          <div>
+            <h4 className="text-[15px] font-semibold mb-4 font-serif">Quick Links</h4>
+            <ul className="space-y-2 text-[14px] font-[400] font-serif">
+              <li className="flex items-center gap-2 mb-4">
+                <span className="text-white text-sm">▶</span>
+                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Home</a>
+              </li>
+
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <a href="#" className="hover:text-[#AEE8F5] transition-colors">About Us</a>
+              </li>
+
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Services</a>
+              </li>
+
+              <li className="flex items-center gap-2 font-serif">
+                <span className="text-white text-sm">▶</span>
+                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Gallery</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* === Our Services === */}
+          <div>
+            <h4 className="text-[15px] font-semibold mb-4 font-serif">Our Services</h4>
+            <ul className="space-y-2 text-[14px] font-[400] font-serif mb-4">
+              <li>Ayurvedic Treatment</li>
+              <li>Herbal Consultation</li>
+              <li>Health Care Programs</li>
+            </ul>
+          </div>
+
+          {/* === Contact Us === */}
+          <div>
+            <h4 className="text-[15px] font-semibold mb-4 font-serif">Contact Us</h4>
+            <ul className="space-y-3 text-[14px] font-[400]">
+
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <img src="/cl.png" alt="icon" className="w-4 h-4"></img>
+                <span>+91 9879877801</span>
+              </li>
+
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <img src="/pack.png" alt="icon" className="w-4 h-4"></img>
+                <span>vaidyaGo24@gmail.com</span>
+
+              </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <img src="/pack.png" alt="icon" className="w-4 h-4"></img>
+                <span>vaidyaGo247@gmail.com</span>
+
+              </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <i className="fa fa-map-marker text-sm"></i>
+               <img src="/map.png" alt="icon" className="w-5 h-5"></img>
+                <span>
+                  xyz, xyz, Gorakhpur,<br />
+                  Uttar Pradesh, 273015
+                </span>
+              </li>
+
+              {/* ==== Social Icons ===== */}
+              <li className="flex items-center gap-3 pt-2">
+                 <img src="/you.png" className="w-5 cursor-pointer" />
+                <img src="/insta.png" className="w-5 cursor-pointer" />
+                <img src="/map1.png" className="w-5 cursor-pointer" />
+                <img src="/what.png" className="w-5 cursor-pointer" />
+              </li>
+
+            </ul>
+          </div>
+        </div>
+
+        {/* === Bottom Line === */}
+
+      </footer>
     </div>
 
-    {/* === Quick Links === */}
-    <div>
-      <h4 className="text-[15px] font-semibold mb-4 font-serif">Quick Links</h4>
-      <ul className="space-y-2 text-[14px] font-[400] font-serif">
-        <li className="flex items-center gap-2 mb-4">
-          <span className="text-white text-sm">▶</span>
-          <a href="#" className="hover:text-[#AEE8F5] transition-colors">Home</a>
-        </li>
-
-        <li className="flex items-center gap-2 font-serif mb-4">
-          <span className="text-white text-sm">▶</span>
-          <a href="#" className="hover:text-[#AEE8F5] transition-colors">About Us</a>
-        </li>
-
-        <li className="flex items-center gap-2 font-serif mb-4">
-          <span className="text-white text-sm">▶</span>
-          <a href="#" className="hover:text-[#AEE8F5] transition-colors">Services</a>
-        </li>
-
-        <li className="flex items-center gap-2 font-serif">
-          <span className="text-white text-sm">▶</span>
-          <a href="#" className="hover:text-[#AEE8F5] transition-colors">Gallery</a>
-        </li>
-      </ul>
-    </div>
-
-    {/* === Our Services === */}
-    <div>
-      <h4 className="text-[15px] font-semibold mb-4 font-serif">Our Services</h4>
-      <ul className="space-y-2 text-[14px] font-[400] font-serif mb-4">
-        <li>Ayurvedic Treatment</li>
-        <li>Herbal Consultation</li>
-        <li>Health Care Programs</li>
-      </ul>
-    </div>
-
-    {/* === Contact Us === */}
-    <div>
-      <h4 className="text-[15px] font-semibold mb-4 font-serif">Contact Us</h4>
-      <ul className="space-y-3 text-[14px] font-[400]">
-        
-        <li className="flex items-center gap-2 font-serif mb-4">
-          <img src="/cl.png" alt="icon" className="w-4 h-4"></img>
-          <span>+91 9879877801</span>
-        </li>
-
-        <li className="flex items-center gap-2 font-serif mb-4">
-          <img src="/pack.png" alt="icon" className="w-4 h-4"></img>
-          <span>vaidyaGo24@gmail.com</span>
-          
-        </li>
-        <li className="flex items-center gap-2 font-serif mb-4">
-          <img src="/pack.png" alt="icon" className="w-4 h-4"></img>
-          <span>vaidyaGo247@gmail.com</span>
-          
-        </li>
-        <li className="flex items-center gap-2 font-serif mb-4">
-          <i className="fa fa-map-marker text-sm"></i>
-          <span>
-            xyz, xyz, Gorakhpur,<br />
-            Uttar Pradesh, 273015
-          </span>
-        </li>
-
-        {/* ==== Social Icons ===== */}
-        <li className="flex items-center gap-3 pt-2">
-          <img src="/instagram.png" className="w-4 cursor-pointer" />
-          <img src="/facebook.png" className="w-4 cursor-pointer" />
-          <img src="/whatsapp.png" className="w-4 cursor-pointer" />
-        </li>
-
-      </ul>
-    </div>
-  </div>
-
-  {/* === Bottom Line === */}
-  
-</footer>
-    </div>
-    
   );
 };
 
