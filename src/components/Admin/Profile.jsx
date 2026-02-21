@@ -49,21 +49,30 @@ const Profile = () => {
 
   // Handle normal fields
 // ✏️ EDIT PROFILE
+ // ✅ Combined save function
  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-const handleEditProfile = async () => {
+  const { name, value } = e.target;
+
+  if (["country", "city", "pincode"].includes(name)) return; // handled separately
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+const handleSaveProfile = async () => {
   setLoading(true);
+  const token = localStorage.getItem("access");
+
+  if (!token) {
+    alert("Session expired. Please login again.");
+    setLoading(false);
+    return;
+  }
 
   try {
-    const token = localStorage.getItem("access");
-    if (!token) {
-      alert("Session expired. Please login again.");
-      setLoading(false);
-      return;
-    }
-
-    const response = await fetch(
+    // 1️⃣ Call /profile/edit/ to update profile
+    const editResponse = await fetch(
       "https://tubajavedd.pythonanywhere.com/api/admin/profile/edit/",
       {
         method: "PUT",
@@ -84,71 +93,36 @@ const handleEditProfile = async () => {
       }
     );
 
-    let data;
-    try {
-      data = await response.json();
-    } catch {
-      data = { detail: "Invalid server response" };
-    }
-
-    if (response.ok) {
-      alert("Profile edited successfully ");
-    } else {
-      alert(data.detail || "Edit failed");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Network error occurred.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-// ✅ UPDATE PROFILE (curl endpoint)
-const handleUpdateProfile = async () => {
-  setLoading(true);
-
-  try {
-    const token = localStorage.getItem("access");
-    if (!token) {
-      alert("Session expired. Please login again.");
-      setLoading(false);
+    const editData = await editResponse.json();
+    if (!editResponse.ok) {
+      alert(editData.detail || "Edit profile failed");
       return;
     }
 
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/admin/profile/",
+    // 2️⃣ Call /profile/ to fetch updated profile
+    const profileResponse = await fetch(
+      "https://tubajavedd.pythonanywhere.com/api/admin/profile/",
       {
-        method: "PUT",
+        method: "GET", // ✅ This should be GET
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          phone_number: formData.phone_number,
-          post: formData.post,
-          language: formData.language,
-          address: {
-            country: formData.address.country,
-            city: formData.address.city,
-            pincode: formData.address.pincode,
-          },
-        }),
       }
     );
 
-    let data;
-    try {
-      data = await response.json();
-    } catch {
-      data = { detail: "Invalid server response" };
+    const profileData = await profileResponse.json();
+    if (!profileResponse.ok) {
+      alert(profileData.detail || "Fetching updated profile failed");
+      return;
     }
 
-    if (response.ok) {
-      alert("Profile updated successfully ✅");
-    } else {
-      alert(data.detail || "Update failed");
-    }
+    // ✅ Both APIs successful
+    console.log("Updated profile:", profileData);
+    // setFormData(profileData);
+    alert("Profile fully updated ");
+    setIsEditing(false);
+
   } catch (error) {
     console.error(error);
     alert("Network error occurred.");
@@ -205,15 +179,15 @@ const handleUpdateProfile = async () => {
     </button>
 
     {/* Update (Tick) Button - only visible when editing */}
-    {isEditing && (
-      <button
-        onClick={handleEditProfile} 
-        className="bg-white border rounded-xl p-2 shadow hover:scale-105 transition"
-      >
-        <img src="/update.png" className="w-6 h-5" alt="Update" />
-      </button>
-    )}
-
+   {isEditing && (
+  <button
+    onClick={handleSaveProfile} // Calls both APIs now
+    disabled={loading}
+    className="bg-white border rounded-xl p-2 shadow hover:scale-105 transition"
+  >
+    <img src="/update.png" className="w-6 h-5" alt="Update" />
+  </button>
+)}
   </div>
 
   <h2 className="text-3xl font-semibold">Your Profile</h2>
@@ -229,7 +203,7 @@ const handleUpdateProfile = async () => {
             <img
               src="/ph.png"
               alt="profile"
-              className="w-20 h-20 rounded-full object-cover"
+              className="w-30 h-30 rounded-full object-cover"
             />
           </div>
 
@@ -357,12 +331,27 @@ const handleUpdateProfile = async () => {
 </div>
 
 
+
 {/* Post */}
 <div className="py-3 border-b border-dashed border-gray-500">
   <p className="text-sm font-semibold mb-1">Post</p>
-  <select className="border rounded-md px-3 py-1.5 text-sm text-[#19718A]">
-    <option>Admin</option>
-  </select>
+
+  {isEditing ? (
+    <select
+      name="post"
+      value={formData.post}
+      onChange={handleChange}
+      className="border rounded-md px-3 py-1.5 text-sm text-[#19718A]"
+    >
+      <option value="Admin">Admin</option>
+      <option value="Manager">Manager</option>
+      <option value="Staff">Staff</option>
+    </select>
+  ) : (
+    <p className="text-sm text-[#19718A] mt-1">
+      {formData.post}
+    </p>
+  )}
 </div>
 
 {/* Language */}

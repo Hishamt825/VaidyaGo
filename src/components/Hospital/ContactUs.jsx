@@ -20,7 +20,7 @@ const ContactUs = () => {
             <div className="w-[280px]"></div>
 
             {/* CENTER NAVIGATION */}
-            <nav className="absolute left-[500px] -translate-x-1/2 hidden md:flex items-center gap-[130px]">
+            <nav className="absolute text-[20px] left-[500px] -translate-x-1/2 hidden md:flex items-center gap-[130px]">
               {["About", "Our Service", "Doctor", "FAQ"].map((item) => (
                 <a
                   key={item}
@@ -63,99 +63,115 @@ const ContactUs = () => {
           </header>
         </section>
 
+<section className="relative w-full ">
 
-        <section className="relative w-full">
+  {/* TOP BANNER */}
+  <div
+    className=" h-[420px] bg-cover bg-center flex flex-col  items-center justify-center text-center px-4"
+    style={{ backgroundImage: "url('/contact.png')",
+      backgroundPosition: "center -60px"
 
-          {/* TOP BANNER */}
-          <div
-            className="h-[320px] bg-cover bg-center flex flex-col items-center justify-center text-center px-4"
-            style={{ backgroundImage: "url('/contact-bg.png')" }}
-          >
-            <h1 className="text-4xl md:text-6xl font-extrabold text-[#08334A]">
-              Contact us
-            </h1>
+     }}
+  >
+    <img
+    src="/banner.png"
+    alt="Overlay"
+    className="absolute -top-1 w-full h-full object-cover opacity-90"
+  />
+    <h1 className=" z-10 -translate-y-10 md:-translate-y-16 text-4xl md:text-6xl font-extrabold text-[#08334A]">
+      Contact us
+    </h1>
 
-            <p className="max-w-3xl text-sm text-gray-700 mt-3">
-              Our service can refer to a company’s specific category of offerings,
-              a physical pipe for utilities like water, or a line on a sports court.
-            </p>
-          </div>
+    <p className=" z-10 -translate-y-10 md:-translate-y-16 max-w-3xl text-sm text-gray-700 mt-3">
+      Our service can refer to a company’s specific category of offerings,
+      a physical pipe for utilities like water, or a line on a sports court.
+    </p>
+  </div>
 
-          {/* INFO CARD */}
-          <div className="relative py-5 ">
-            {/* faint background heading */}
-            <h2 className="absolute top-6 left-1/2 -translate-x-1/2 
-                 text-6xl font-bold text-[#cfdfe3] opacity-60 select-none">
-              contact us
-            </h2>
+  {/* INFO CARD (OVERLAPPING BANNER) */}
+  <div className="relative -mt-32 z-20">
+    
+    {/* faint background heading */}
+    <h2
+      className="absolute top-[70px] left-1/2 -translate-x-1/2 
+                 text-6xl font-bold text-[#cfdfe3] opacity-60 select-none pointer-events-none"
+    >
+      contact us
+    </h2>
 
-            <div className="relative max-w-5xl mx-auto px-4">
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div className="relative max-w-7xl mx-auto px-4">
+     <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200 min-h-[320px] flex flex-col justify-center">
 
-                {/* HEADER */}
-                <div className="flex items-center gap-3 bg-[#0E6F83] px-6 py-4">
-                  <img src="/name.png" className="w-20" />
-                </div>
+        {/* HEADER */}
+        <div className="flex items-center gap-3 bg-[#0E6F83] px-6 py-4">
+          <img src="/name.png" alt="Logo" className="w-20" />
+        </div>
 
-                {/* CONTENT */}
-                <div className="p-6 grid md:grid-cols-3 gap-8 text-sm text-gray-700">
+        {/* CONTENT */}
+       <div className="p-6 space-y-6">
 
-                  {/* COLUMN 1 */}
-                  <div className="space-y-4">
-                    <div className="flex gap-2">
-                      <span className="font-semibold">
-                        For Appointment Related Queries :
-                      </span>
-                      <span>+91 XXXXXXXXXX</span>
-                    </div>
+    {/* Phone */}
+    <div className="flex items-start gap-3">
+      <span className="text-xl">📱</span>
+      <p>
+        <strong>For Appointment Related Queries :</strong>{" "}
+        <span className="text-[#2c7a8b]">+91 XXXXXXXXXX</span>
+      </p>
+    </div>
 
-                    <div>
-                      <p className="font-semibold">Working Hours</p>
-                      <p>
-                        Monday to Saturday{" "}
-                        <span className="text-[#0E6F83]">
-                          (10:00 AM – 6:00 PM)
-                        </span>
-                      </p>
-                      <p>Sunday: Closed</p>
-                    </div>
-                  </div>
+    {/* Working Hours */}
+    <div className="flex items-start gap-3">
+      <span className="text-xl">⏰</span>
+      <p>
+        <strong>Working Hours</strong> &nbsp;
+        Monday to Saturday
+        <span className="text-[#2c7a8b]">(10:00 AM – 6:00 PM)</span>,
+        Sunday: <span className="text-[#2c7a8b]">Closed</span>
+      </p>
+    </div>
 
-                  {/* COLUMN 2 */}
-                  <div className="space-y-3">
-                    <p className="font-semibold">Email Address</p>
+    {/* Email Section */}
+    <div className="flex items-start gap-3">
+      <span className="text-xl">✉️</span>
 
-                    <p>For feedback/complaints please write to:</p>
-                    <p className="text-[#0E6F83] font-medium">
-                      feedbackVaidyaGo@gmail.com
-                    </p>
+      {/* Two Column Layout */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <ul className="list-disc pl-5 space-y-3">
+          <li>
+            For feedback/complaints please write to:
+            <br />
+            <span className="text-[#2c7a8b]">feedbackVaidyaGo@gmail.com</span>
+          </li>
 
-                    <p>For general/business related queries contact:</p>
-                    <p className="text-[#0E6F83] font-medium">
-                      reachusVaidyaGo@gmail.com
-                    </p>
-                  </div>
+          <li>
+            For general/business related queries contact:
+            <br />
+            <span className="text-[#2c7a8b]">reachusVaidyaGo@gmail.com</span>
+          </li>
+        </ul>
 
-                  {/* COLUMN 3 */}
-                  <div className="space-y-3">
-                    <p>For investors related queries contact:</p>
-                    <p className="text-[#0E6F83] font-medium">
-                      investor.relations@gmail.com
-                    </p>
+        <ul className="list-disc pl-5 space-y-3">
+          <li>
+            For investors related queries contact:
+            <br />
+            <span className="text-[#2c7a8b]">investor.relations@gmail.com</span>
+          </li>
 
-                    <p>For international patient queries contact:</p>
-                    <p className="text-[#0E6F83] font-medium">
-                      QueriesVaidyaGo@gmail.com
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <li>
+            For international patient queries contact:
+            <br />
+            <span className="text-[#2c7a8b]">QueriesVaidyaGo@gmail.com</span>
+          </li>
+        </ul>
+      </div>
+    </div>
 
+  </div>
+      </div>
+    </div>
+  </div>
 
-        </section>
-
+</section>
         {/* ================= FORM SECTION ================= */}
 
         <div className="max-w-4xl mx-auto border-2  rounded-2xl shadow-xl p-8 md:p-12 mt-[70px]">
