@@ -24,78 +24,78 @@ export default function Admin_signup() {
   const [phoneError, setPhoneError] = useState("");
   const [role, setRole] = useState("");
 
-  
+
   // ================================
   //        HANDLE SIGNUP API
   // ================================
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    // ✅ Send POST request to backend
-    const response = await fetch(
-      "https://tubajavedd.pythonanywhere.com/accounts/api/admin/signup/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          phone,
-          password,
-          confirm_password,
-        }),
-      }
-    );
-
-    // ✅ Try to parse JSON response
-    let data = null;
     try {
-      data = await response.json();
-    } catch (err) {
-      console.error("Failed to parse JSON:", err);
-    }
+      // ✅ Send POST request to backend
+      const response = await fetch(
+        "https://tubajavedd.pythonanywhere.com/accounts/api/admin/signup/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            phone,
+            password,
+            confirm_password,
+          }),
+        }
+      );
 
-    console.log("Backend response:", data);
-    console.log("Status code:", response.status); // This comes directly from backend
-
-    // ✅ Handle success
-    if (response.status === 201) {
-      alert(data?.message || "Signup successful!");
-
-      // 🔐 Save token if backend sends it
-      if (data?.token) {
-        localStorage.setItem("token", data.token);
+      // ✅ Try to parse JSON response
+      let data = null;
+      try {
+        data = await response.json();
+      } catch (err) {
+        console.error("Failed to parse JSON:", err);
       }
 
-      // ✅ Redirect admin to dashboard
-      navigate("/Admin_dashboard1");
-    }
-    // ✅ Handle validation errors (like email already exists or password mismatch)
-    else if (response.status === 400) {
-      // Show backend error message if available
-      alert(data?.message || JSON.stringify(data));
-    }
-    // ✅ Handle unauthorized or other errors
-    else if (response.status === 401) {
-      alert("Unauthorized access. Please check your credentials.");
-    }
-    else {
-      alert(`Signup failed. Status code: ${response.status}`);
-    }
+      console.log("Backend response:", data);
+      console.log("Status code:", response.status); // This comes directly from backend
 
-  } catch (error) {
-    console.error("Server error:", error);
-    alert("Server error occurred. Check console for details.");
-  }
-};
+      // ✅ Handle success
+      if (response.status === 201) {
+        alert(data?.message || "Signup successful!");
+
+        // 🔐 Save token if backend sends it
+        if (data?.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        // ✅ Redirect admin to dashboard
+        navigate("/Admin_dashboard1");
+      }
+      // ✅ Handle validation errors (like email already exists or password mismatch)
+      else if (response.status === 400) {
+        // Show backend error message if available
+        alert(data?.message || JSON.stringify(data));
+      }
+      // ✅ Handle unauthorized or other errors
+      else if (response.status === 401) {
+        alert("Unauthorized access. Please check your credentials.");
+      }
+      else {
+        alert(`Signup failed. Status code: ${response.status}`);
+      }
+
+    } catch (error) {
+      console.error("Server error:", error);
+      alert("Server error occurred. Check console for details.");
+    }
+  };
 
 
   return (
- 
-    <div className="min-h-screen flex items-center justify-center bg-[#A9CCDF] relative overflow-hidden px-4"> 
-   
+
+    <div className="min-h-screen flex items-center justify-center bg-[#A9CCDF] relative overflow-hidden px-4">
+
       <motion.div
         initial={{ opacity: 0, x: 60 }}
         animate={{ opacity: 1, x: 0 }}
@@ -110,47 +110,46 @@ const handleSubmit = async (e) => {
         {/* FORM UI */}
         <div className="flex-1 flex flex-col items-center">
           <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-[#19718A] p-4 rounded-full text-white h-[110px] w-[110px] flex items-center justify-center">
-            <img src="/sig.svg" alt="Add User Icon" className="w-14 h-14" />
+            <img src="/assets/sig.svg" alt="Add User Icon" className="w-14 h-14" />
           </div>
 
           {/* FORM START */}
           <form onSubmit={handleSubmit} className="w-full space-y-2">
 
             {/* Username */}
-           <div>
-  <label className="flex items-center text-sm font-medium">
-    {/* <FaUsersGear className="mr-2 text-xl" /> */}
-    User Type
-  </label>
+            <div>
+              <label className="flex items-center text-[14px] font-medium">
+                {/* <FaUsersGear className="mr-2 text-xl" /> */}
+                User Type
+              </label>
 
-  <div
-    className="flex items-center rounded-md px-3 py-2"
-    style={{
-      border: "2px solid #19718A",
-      boxShadow: "2px 2px 4px rgba(80,78,78,0.6)",
-    }}
-  >
-   <select
-  value={role}
-  onChange={(e) => setRole(e.target.value)}
-  className={`w-full bg-transparent text-sm outline-none ${
-    role === "" ? "text-gray-400" : "text-black"
-  }`}
->
-  <option value="" disabled>
-    Select User Type
-  </option>
-  <option value="Admin">Admin</option>
-  <option value="Doctor">Doctor</option>
-  
-</select>
+              <div
+                className="flex items-center rounded-md px-3 py-2"
+                style={{
+                  border: "2px solid #19718A",
+                  boxShadow: "2px 2px 4px rgba(80,78,78,0.6)",
+                }}
+              >
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className={`w-full bg-transparent text-[16px] outline-none ${role === "" ? "text-gray-400" : "text-black"
+                    }`}
+                >
+                  <option value="" disabled>
+                    Select User Type
+                  </option>
+                  <option value="Admin">Admin</option>
+                  <option value="Doctor">Doctor</option>
 
-  </div>
-</div>
+                </select>
+
+              </div>
+            </div>
 
             {/* Email */}
             <div>
-              <label className="text-sm font-medium">Email</label>
+              <label className="text-[14px] font-medium">Email</label>
               <div
                 className="flex items-center rounded-md px-3 py-2"
                 style={{
@@ -164,41 +163,41 @@ const handleSubmit = async (e) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onFocus={() => setActiveStep(2)}
-                  className="w-full bg-transparent text-sm outline-none"
+                  className="w-full bg-transparent text-[16px] outline-none"
                 />
               </div>
             </div>
- {/* call */}
+            {/* call */}
             <div>
-  <label className="text-sm font-medium">Phone Number</label>
+              <label className="text-sm font-medium">Phone Number</label>
 
-  <div
-    className="flex items-center rounded-md px-3 py-2"
-    style={{
-      border: phoneError ? "2px solid red" : "2px solid #19718A",
-      boxShadow: "2px 2px 4px rgba(80,78,78,0.6)",
-    }}
-  >
-    <input
-  type="tel"
-  placeholder="Enter Phone Number"
-  value={phone}
-  maxLength={10}
-  onChange={(e) => {
-    const value = e.target.value.replace(/[^0-9]/g, "");
-    setPhone(value);
-  }}
-  onFocus={() => setActiveStep(3)}   
-  onClick={() => setActiveStep(3)}   
-  className="w-full bg-transparent text-sm outline-none"
-/>
+              <div
+                className="flex items-center rounded-md px-3 py-2"
+                style={{
+                  border: phoneError ? "2px solid red" : "2px solid #19718A",
+                  boxShadow: "2px 2px 4px rgba(80,78,78,0.6)",
+                }}
+              >
+                <input
+                  type="tel"
+                  placeholder="Enter Phone Number"
+                  value={phone}
+                  maxLength={10}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, "");
+                    setPhone(value);
+                  }}
+                  onFocus={() => setActiveStep(3)}
+                  onClick={() => setActiveStep(3)}
+                  className="w-full bg-transparent text-[16px] outline-none"
+                />
 
-  </div>
+              </div>
 
-  {phoneError && (
-    <p className="text-xs text-red-500 mt-1">{phoneError}</p>
-  )}
-</div>
+              {phoneError && (
+                <p className="text-[12px] text-red-500 mt-1">{phoneError}</p>
+              )}
+            </div>
 
 
             {/* Password */}
@@ -217,7 +216,7 @@ const handleSubmit = async (e) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setActiveStep(4)}
-                  className="w-full text-sm bg-transparent outline-none"
+                  className="w-full text-[16px] bg-transparent outline-none"
                 />
                 <button
                   type="button"
@@ -245,7 +244,7 @@ const handleSubmit = async (e) => {
                   value={confirm_password}
                   onChange={(e) => setconfirm_password(e.target.value)}
                   onFocus={() => setActiveStep(5)}
-                  className="w-full text-sm bg-transparent outline-none"
+                  className="w-full text-[16px] bg-transparent outline-none"
                 />
                 <button
                   type="button"
@@ -265,7 +264,7 @@ const handleSubmit = async (e) => {
                 <div className="rounded-full border p-1 border-[#89C8D9]">
                   <button
                     type="submit"
-                    className="flex items-center pl-1 w-[186px] h-[37px] rounded-full bg-[#89C8D9] text-[#164863] font-semibold hover:bg-[#08374e] hover:text-white transition"
+                    className="flex items-center pl-1 w-[186px] h-[37px] rounded-full bg-[#89C8D9] text-[#164863] font-semibold text-[16px] hover:bg-[#08374e] hover:text-white transition"
                   >
                     <div className="w-[36px] h-[36px] flex items-center justify-center rounded-full bg-[#2C7A8C] text-white">
                       <FaArrowRight size={20} />
@@ -277,17 +276,17 @@ const handleSubmit = async (e) => {
             </motion.div>
           </form>
 
-          <p className="text-sm mt-2 text-gray-600">
-            Have an account?{" "}
-            <Link
-              to="/AdminLoginPage"
-              className="text-black font-semibold hover:underline"
-            >
-              LOGIN
-            </Link>
-          </p>
-        </div>
-      </motion.div>
+        <p className="text-[14px] mt-2 text-gray-600">
+          Have an account?{" "}
+          <Link
+            to="/AdminLoginPage"
+            className="text-black font-semibold hover:underline"
+          >
+            LOGIN
+          </Link>
+        </p>
     </div>
+      </motion.div >
+    </div >
   );
 }

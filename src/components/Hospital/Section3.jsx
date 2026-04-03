@@ -51,13 +51,13 @@ const Section3 = [
 const Specialities = () => {
   return (
     <div className="w-full px-6 py-12 bg-white flex flex-col items-center">
-      
+
       {/* Heading Box */}
       <div className="text-center mb-10">
-        <h2 className="text-3xl font-semibold">
+        <h2 className="text-[30px] font-semibold">
           We Serve In Different <span className="text-blue-600">Areas For</span>
         </h2>
-        <h2 className="text-3xl font-semibold">Our Patients</h2>
+        <h2 className="text-[30px] font-semibold">Our Patients</h2>
       </div>
 
       {/* Grid of Cards */}
@@ -71,8 +71,8 @@ const Specialities = () => {
             <img src={item.icon} alt="" className="w-12 h-12" />
 
             <div>
-              <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
-              <p className="text-sm text-gray-500">{item.subtitle}</p>
+              <h3 className="text-[18px] font-bold text-gray-800">{item.title}</h3>
+              <p className="text-[14px] text-gray-500">{item.subtitle}</p>
             </div>
           </div>
         ))}
@@ -80,7 +80,7 @@ const Specialities = () => {
       </div>
 
       {/* Button */}
-      <button className="mt-10 bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition">
+      <button className="mt-10 bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition text-[16px]">
         View All Specialities
       </button>
 
@@ -88,4 +88,4 @@ const Specialities = () => {
   );
 };
 
-export default Section3;
+export default Specialities;

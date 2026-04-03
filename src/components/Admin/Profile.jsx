@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 /* ✅ ADD THIS (Missing Component) */
 const MenuItem = ({ text, img, active }) => (
  <div
-  className={`group flex items-center gap-3 px-4 py-2 rounded-md cursor-pointer text-sm font-medium transition-all duration-200
+  className={`group flex items-center gap-3 px-4 py-2 rounded-md cursor-pointer text-[14px] font-medium transition-all duration-200
     ${
       text === "Your Profile"
         ? "bg-[#1b6d8a] text-white"
@@ -131,33 +131,75 @@ const handleSaveProfile = async () => {
   }
 };
 
+// 🔥🔥🔥 PASTE BELOW THIS LINE
+const handleDisconnectGoogle = async () => {
+    console.log("Disconnect clicked");  
+
+  const token = localStorage.getItem("access");
+  console.log("Token:", token);    
+
+  if (!token) {
+    alert("Session expired. Please login again.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://tubajavedd.pythonanywhere.com/api/admin/profile/disconnect-google/",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("Response received"); 
+
+    const data = await response.json();
+    console.log("Response data:", data);
+
+    if (!response.ok) {
+      alert(data.detail || "Failed to disconnect Google");
+      return;
+    }
+
+    alert(data.message || "Google account disconnected successfully");
+  } catch (error) {
+    console.error(error);
+    // alert("Network error occurred.");
+  }
+};
+
   return (
     <div className="flex min-h-screen bg-[#f5f8fb]">
       
       {/* LEFT ICON BAR */}
       <div className="w-14 bg-white flex flex-col items-center shadow-lg border-r border-[#19718A] py-4 rounded-full">
-        <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-100">
-          <img src="/me.png" className="w-5 h-5" alt="" />
+        <div 
+          onClick={() => navigate("/Admin_dashboard1")} 
+          className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-100 cursor-pointer hover:bg-blue-200 transition-colors"
+        >
+          <img src="/assets/me.png" className="w-5 h-5" alt="" />
         </div>
 
         <div className="mt-10 flex flex-col gap-6">
-          <img src="/d.png" className="w-6 h-6 cursor-pointer" alt="" />
-          <img src="/i.png" className="w-6 h-6 cursor-pointer" alt="" />
-          <img src="/app.png" className="w-6 h-6 cursor-pointer" alt="" />
+          <img src="/assets/d.png" className="w-6 h-6 cursor-pointer" alt="" />
+          <img src="/assets/i.png" className="w-6 h-6 cursor-pointer" alt="" />
+          <img src="/assets/app.png" className="w-6 h-6 cursor-pointer" alt="" />
         </div>
       </div>
 
       {/* MAIN SIDEBAR */}
       <div className="w-64 bg-[#eef5f9] border-r p-6">
-        <img src="/v.png" className="h-12 mb-6" alt="" />
+        <img src="/assets/v.png" className="h-12 mb-6" alt="" />
 
-        <p className="text-sm text-gray-500 mb-3">Personal Account</p>
+        <p className="text-[14px] text-gray-500 mb-3">Personal Account</p>
 
         <nav className="flex flex-col gap-2">
           <MenuItem text="Your Profile" img="/images/profile.png" />
-          <MenuItem text="Login" img="/right.png" />
-          <MenuItem text="Accessibility" img="/ad.png" />
-          <MenuItem text="Privacy Policy" img="/lo.png" />
+          <MenuItem text="Login" img="/assets/right.png" />
+          <MenuItem text="Accessibility" img="/assets/ad.png" />
+          <MenuItem text="Privacy Policy" img="/assets/lo.png" />
         </nav>
       </div>
 
@@ -175,7 +217,7 @@ const handleSaveProfile = async () => {
       onClick={() => setIsEditing(true)}
       className="bg-white border rounded-xl p-2 shadow hover:scale-105 transition"
     >
-      <img src="/pen.png" className="w-6 h-5" alt="Edit" />
+      <img src="/assets/pen.png" className="w-6 h-5" alt="Edit" />
     </button>
 
     {/* Update (Tick) Button - only visible when editing */}
@@ -185,12 +227,12 @@ const handleSaveProfile = async () => {
     disabled={loading}
     className="bg-white border rounded-xl p-2 shadow hover:scale-105 transition"
   >
-    <img src="/update.png" className="w-6 h-5" alt="Update" />
+    <img src="/assets/update.png" className="w-6 h-5" alt="Update" />
   </button>
 )}
   </div>
 
-  <h2 className="text-3xl font-semibold">Your Profile</h2>
+  <h2 className="text-[30px] font-semibold">Your Profile</h2>
 </div>
 
 
@@ -199,16 +241,16 @@ const handleSaveProfile = async () => {
         {/* Profile Photo */}
         <div className="flex justify-between items-start pb-6 border-b border-dashed border-gray-500">
           <div>
-            <p className="text-sm font-semibold mb-3">Profile Photo</p>
+            <p className="text-[14px] font-semibold mb-3">Profile Photo</p>
             <img
-              src="/ph.png"
+              src="/assets/ph.png"
               alt="profile"
               className="w-30 h-30 rounded-full object-cover"
             />
           </div>
 
           <div className="flex gap-4 mt-6">
-            <button className="text-sm font-medium">
+            <button className="text-[14px] font-medium">
               Remove Photo
             </button>
             <button className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 transition">
@@ -219,17 +261,17 @@ const handleSaveProfile = async () => {
 
         {/* Name */}
 <div className="py-3 border-b border-dashed border-gray-500">
-  <p className="text-sm font-semibold">Name</p>
+  <p className="text-[14px] font-semibold">Name</p>
   {isEditing ? (
     <input
       type="text"
       name="name"
       value={formData.name}
       onChange={handleChange}
-      className="mt-1 px-3 py-1.5 border rounded-md text-sm w-full"
+      className="mt-1 px-3 py-1.5 border rounded-md text-[16px] w-full"
     />
   ) : (
-    <p className="text-sm text-[#19718A] mt-1">
+    <p className="text-[16px] text-[#19718A] mt-1">
       {formData.name}
     </p>
   )}
@@ -237,17 +279,17 @@ const handleSaveProfile = async () => {
 
 {/* Email */}
 <div className="py-3 border-b border-dashed border-gray-500">
-  <p className="text-sm font-semibold">Email address</p>
+  <p className="text-[14px] font-semibold">Email address</p>
   {isEditing ? (
     <input
       type="email"
       name="email"
       value={formData.email}
       onChange={handleChange}
-      className="mt-1 px-3 py-1.5 border rounded-md text-sm w-full"
+      className="mt-1 px-3 py-1.5 border rounded-md text-[16px] w-full"
     />
   ) : (
-    <p className="text-sm text-[#19718A] mt-1">
+    <p className="text-[16px] text-[#19718A] mt-1">
       {formData.email}
     </p>
   )}
@@ -255,18 +297,18 @@ const handleSaveProfile = async () => {
 
 {/* Phone */}
 <div className="py-3 border-b border-dashed border-gray-500">
-  <p className="text-sm font-semibold">Phone Number</p>
+  <p className="text-[14px] font-semibold">Phone Number</p>
   {isEditing ? (
     <input
       type="text"
       name="phone_number"
       value={formData.phone_number}
        onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
-      className="mt-1 px-3 py-1.5 border rounded-md text-sm w-full"
+      className="mt-1 px-3 py-1.5 border rounded-md text-[16px] w-full"
       
     />
   ) : (
-    <p className="text-sm text-[#19718A] mt-1">
+    <p className="text-[16px] text-[#19718A] mt-1">
       {formData.phone_number}
     </p>
   )}
@@ -275,7 +317,7 @@ const handleSaveProfile = async () => {
 {/* Address */}
 {/* Address */}
 <div className="py-3 border-b border-dashed border-gray-500">
-  <p className="text-sm font-semibold mb-1">Address</p>
+  <p className="text-[14px] font-semibold mb-1">Address</p>
   {isEditing ? (
     <div className="flex gap-2">
       <select
@@ -287,7 +329,7 @@ const handleSaveProfile = async () => {
             address: { ...formData.address, country: e.target.value },
           })
         }
-        className="px-3 py-1.5 text-sm border rounded-md w-36"
+        className="border rounded-md px-3 py-1.5 text-[16px] text-[#19718A]"
       >
         <option value="">Country</option>
         <option value="India">India</option>
@@ -303,7 +345,7 @@ const handleSaveProfile = async () => {
             address: { ...formData.address, city: e.target.value },
           })
         }
-        className="px-3 py-1.5 text-sm border rounded-md w-36"
+        className="border rounded-md px-3 py-1.5 text-[16px] text-[#19718A]"
       >
         <option value="">City</option>
         <option value="Mumbai">Mumbai</option>
@@ -324,7 +366,7 @@ const handleSaveProfile = async () => {
       />
     </div>
   ) : (
-    <p className="text-sm text-[#19718A] mt-1">
+    <p className="text-[16px] text-[#19718A] mt-1">
       {formData.address.country}, {formData.address.city} - {formData.address.pincode}
     </p>
   )}
@@ -334,7 +376,7 @@ const handleSaveProfile = async () => {
 
 {/* Post */}
 <div className="py-3 border-b border-dashed border-gray-500">
-  <p className="text-sm font-semibold mb-1">Post</p>
+  <p className="text-[14px] font-semibold mb-1">Post</p>
 
   {isEditing ? (
     <select
@@ -348,7 +390,7 @@ const handleSaveProfile = async () => {
       <option value="Staff">Staff</option>
     </select>
   ) : (
-    <p className="text-sm text-[#19718A] mt-1">
+    <p className="text-[16px] text-[#19718A] mt-1">
       {formData.post}
     </p>
   )}
@@ -356,35 +398,39 @@ const handleSaveProfile = async () => {
 
 {/* Language */}
 <div className="py-3 border-b border-dashed border-gray-500">
-  <p className="text-sm font-semibold mb-1">Language</p>
-  <select className="border rounded-md px-3 py-1.5 text-sm">
+  <p className="text-[14px] font-semibold mb-1">Language</p>
+  <select className="border rounded-md px-3 py-1.5 text-[16px]">
     <option>English (US)</option>
   </select>
 </div>
 
 {/* Connected Social Media */}
 <div className="pt-3">
-  <p className="text-sm font-semibold">
+  <p className="text-[14px] font-semibold">
     Connected Social Media
   </p>
-  <p className="text-xs text-gray-500 mb-2">
+  <p className="text-[12px] text-gray-500 mb-2">
     Services that you use to log in to your Account
   </p>
 
   <div className="flex justify-between items-center border border-gray-500 rounded-lg px-3 py-2">
     <div className="flex items-center gap-2">
-      <img src="/google.png" className="w-7 h-7" alt="" />
+      <img src="/assets/google.png" className="w-7 h-7" alt="" />
       <div>
-        <p className="text-sm font-medium">Google</p>
-        <p className="text-xs text-[#19718A]">
+        <p className="text-[14px] font-medium">Google</p>
+        <p className="text-[12px] text-[#19718A]">
           {formData.name}
         </p>
       </div>
     </div>
 
-    <button className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 transition">
-      Disconnect
-    </button>
+  <button
+  type="button"  // add this
+  onClick={handleDisconnectGoogle}
+  className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 transition"
+>
+  Disconnect
+</button>
   </div>
 </div>
 

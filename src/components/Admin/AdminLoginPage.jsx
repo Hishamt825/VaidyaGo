@@ -87,7 +87,7 @@ const handleLogin = async (e) => {
       >
         {/* Icon */}
         <div className="absolute -top-14 bg-[#19718A] p-4 rounded-full text-white h-[110px] w-[110px] flex items-center justify-center">
-          <img src="/Vector.svg" alt="user" className="w-14 h-14" />
+          <img src="/assets/Vector.svg" alt="user" className="w-14 h-14" />
         </div>
 
         {/* FORM */}
@@ -95,8 +95,8 @@ const handleLogin = async (e) => {
           {/* Username */}
          {/* Email */}
 <div className="mb-4">
-  <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-    <img src="/user.svg" alt="Email" className="w-6 h-6 mr-2" />
+  <label className="flex items-center text-[14px] font-medium text-gray-700 mb-1">
+    <img src="/assets/user.svg" alt="Email" className="w-6 h-6 mr-2" />
     Email
   </label>
 
@@ -112,15 +112,15 @@ const handleLogin = async (e) => {
       placeholder="Enter Email"
       value={email}
       onChange={(e) => setEmail(e.target.value)}
-      className="w-full text-sm bg-transparent outline-none"
+      className="w-full text-[16px] bg-transparent outline-none"
     />
   </div>
 </div>
 
 {/* Phone */}
 <div className="mb-4">
-  <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-    <img src="/phone.svg" alt="Phone" className="w-6 h-6 mr-2" />
+  <label className="flex items-center text-[14px] font-medium text-gray-700 mb-1">
+    <img src="/assets/phone.svg" alt="Phone" className="w-6 h-6 mr-2" />
     Phone
   </label>
 
@@ -136,14 +136,14 @@ const handleLogin = async (e) => {
       placeholder="Enter Phone Number"
       value={phone}
       onChange={(e) => setPhone(e.target.value)}
-      className="w-full text-sm bg-transparent outline-none"
+      className="w-full text-[16px] bg-transparent outline-none"
     />
   </div>
 </div>
 
 {/* Password */}
 <div className="mb-4">
-  <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
+  <label className="flex items-center text-[14px] font-medium text-gray-700 mb-1">
     <FaLock className="mr-2" />
     Password
   </label>
@@ -160,7 +160,7 @@ const handleLogin = async (e) => {
       placeholder="Enter Password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
-      className="w-full text-sm bg-transparent outline-none"
+      className="w-full text-[16px] bg-transparent outline-none"
     />
     <button
       type="button"
@@ -174,13 +174,13 @@ const handleLogin = async (e) => {
 
 
           {/* Remember + Forgot */}
-          <div className="flex justify-between items-center text-xs">
+          <div className="flex justify-between items-center text-[14px]">
             <div className="flex items-center space-x-1">
               <input type="checkbox" />
-              <span className="text-gray-600">Remember Me</span>
+              <span className="text-gray-600 text-[14px]">Remember Me</span>
             </div>
 
-            <Link to="/signup1" className="font-medium">
+            <Link to="/signup1" className="font-medium text-[14px]">
               <span>Forgot your </span>
               <span className="text-[#0E4A68]">Password?</span>
             </Link>
@@ -192,7 +192,7 @@ const handleLogin = async (e) => {
               <div className="rounded-full border p-1 border-[#89C8D9]">
                 <button
                   type="submit"
-                  className="w-[120px] h-[40px] rounded-full bg-[#89C8D9] text-[#164863] text-lg font-semibold hover:bg-[#08374e] hover:text-white transition"
+                  className="w-[120px] h-[40px] rounded-full bg-[#89C8D9] text-[#164863] text-[18px] font-semibold hover:bg-[#08374e] hover:text-white transition"
                 >
                   Login
                 </button>
@@ -204,7 +204,7 @@ const handleLogin = async (e) => {
         {/* Divider */}
         <div className="flex items-center w-full my-2">
           <div className="flex-1 h-px bg-gray-300" />
-          <span className="px-2 text-gray-500 text-sm">or continue with</span>
+          <span className="px-2 text-gray-500 text-[14px]">or continue with</span>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
@@ -216,7 +216,7 @@ const handleLogin = async (e) => {
               alt="Google"
               className="w-6 h-6"
             />
-            <span className="text-gray-700 font-medium">
+            <span className="text-gray-700 font-medium text-[16px]">
               Continue with Google
             </span>
           </div>

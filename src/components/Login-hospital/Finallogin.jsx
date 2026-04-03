@@ -116,7 +116,7 @@ const Finallogin = () => {
       >
         {/* Icon */}
         <div className="absolute -top-14 bg-[#19718A] p-4 rounded-full text-white h-[110px] w-[110px] flex items-center justify-center">
-          <img src="/Vector.svg" alt="user" className="w-14 h-14" />
+          <img src="/assets/Vector.svg" alt="user" className="w-14 h-14" />
         </div>
 
         {/* FORM */}
@@ -124,7 +124,7 @@ const Finallogin = () => {
           {/* Username */}
           <div className="mb-2">
             <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <img src="/user.svg" alt="User" className="w-6 h-6 mr-2" />
+              <img src="/assets/user.svg" alt="User" className="w-6 h-6 mr-2" />
               Username
             </label>
 

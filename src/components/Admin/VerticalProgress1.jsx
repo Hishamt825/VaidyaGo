@@ -11,36 +11,36 @@ const steps = [
 
 export default function VerticalProgress1({ activeStep }) {
   return (
-    <div className="flex flex-col items-center mt-[10px]"> {/* Reduced top margin */}
+    <div className="relative flex flex-col items-center mt-[10px]"> {/* Added relative for line positioning */}
+      {/* Continuous Connecting Line - Exactly spans from center of 1st circle to center of last */}
+      <div className="absolute top-[24px] bottom-[24px] left-1/2 -translate-x-1/2 w-[9px] bg-[#89C8D9] z-0 overflow-hidden">
+        {/* Active colored line Fill */}
+        <div
+          className="w-full bg-[#19718A] transition-all duration-500 ease-in-out"
+          style={{ height: `${(Math.max(0, activeStep - 1) / (steps.length - 1)) * 100}%` }}
+        ></div>
+      </div>
+
       {steps.map((step, index) => {
         const isActive = step.id <= activeStep;
-        const isNextActive =
-          steps[index + 1] && steps[index + 1].id <= activeStep;
 
         return (
           <div
             key={step.id}
-            className="flex flex-col items-center transition-all duration-500"
+            className={`relative z-10 flex flex-col items-center transition-all duration-500 ${
+              index !== steps.length - 1 ? "mb-7" : ""
+            }`}
           >
             {/* Circle */}
             <div
-              className={`w-12 h-12 flex items-center justify-center rounded-full border-2 mb- transition-all duration-500 ${
+              className={`w-12 h-12 flex items-center justify-center rounded-full border-2 transition-all duration-500 ${
                 isActive
                   ? "bg-[#19718A] border-[#19718A] text-white scale-105"
                   : "bg-[#89C8D9] border-[#19718A] text-white"
               }`}
             >
-              <span className="text-base">{step.icon}</span> {/* smaller icon */}
+              <span className="text-[16px]">{step.icon}</span> {/* smaller icon */}
             </div>
-
-            {/* Line */}
-            {index !== steps.length - 1 && (
-              <div
-                className={`w-[9px] h-7 transition-all duration-500 ${
-                  isNextActive ? "bg-[#19718A]" : "bg-[#89C8D9]"
-                }`}
-              ></div>
-            )}
           </div>
         );
       })}
