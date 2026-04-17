@@ -60,8 +60,16 @@ const Admin_dashboard1 = () => {
     const [selectedWeekDay, setSelectedWeekDay] = useState("Friday");
     const [activeDayIndex, setActiveDayIndex] = useState(2);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-
-    const doctors_list = [
+    const [showRejectConfirm, setShowRejectConfirm] = useState(false);
+    const [showReasonModal, setShowReasonModal] = useState(false);
+    const [selectedDoctorForReject, setSelectedDoctorForReject] = useState(null);
+    const [rejectionReason, setRejectionReason] = useState("Document Not Correct");
+    const [rejectionFeedback, setRejectionFeedback] = useState("The documents uploaded for verification are incorrect.Please ensure all documents are complete and accurate.");
+    const [attachedFile, setAttachedFile] = useState(null);
+    const [showRejectedStatusModal, setShowRejectedStatusModal] = useState(false);
+    const fileInputRef = useRef(null);
+    
+    const [doctors, setDoctors] = useState([
         {
             id: 1,
             name: "Dr. Sumaiya Javed",
@@ -127,7 +135,27 @@ const Admin_dashboard1 = () => {
             speciality: "Cardiologist",
             documents: ["Adhaar Card", "Experience letter", "Doctor license"]
         },
-    ];
+    ]);
+
+    // Logic to restore doctor status
+    const handleRestoreDoctor = (doctorId) => {
+        setDoctors(prev => prev.map(doc => 
+            doc.id === doctorId ? { ...doc, status: "pending" } : doc
+        ));
+        setShowRejectedStatusModal(false);
+        setSelectedDoctorForReject(null);
+    };
+
+    // Logic to confirm rejection and update status
+    const handleRejectSubmit = () => {
+        if (selectedDoctorForReject) {
+            setDoctors(prev => prev.map(doc => 
+                doc.id === selectedDoctorForReject.id ? { ...doc, status: "rejected" } : doc
+            ));
+        }
+        setShowReasonModal(false);
+        setShowRejectedStatusModal(true);
+    };
 
     const upcomingDays = [
         { name: "Wed", date: "2nd" },
@@ -739,52 +767,59 @@ const Admin_dashboard1 = () => {
                                     </div>
 
                                     <div className="space-y-2">
-                                        {[1, 2, 3, 4].map((i) => (
+                                <div className="space-y-3">
+                                    <AnimatePresence>
+                                        {doctors.map((doctor) => (
                                             <motion.div
-                                                key={i}
+                                                key={doctor.id}
+                                                layout
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: i * 0.1 }}
+                                                exit={{ opacity: 0, scale: 0.95 }}
                                                 className="grid grid-cols-[2.2fr_1.3fr_1fr_1fr_0.9fr] items-center px-4 py-3 border border-gray-200 rounded-[14px] hover:bg-gray-50 transition-all"
                                             >
                                                 {/* DOCTOR */}
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-11 h-11 rounded-full overflow-hidden border">
                                                         <img
-                                                            src="/assets/admin.png"
+                                                            src={doctor.image}
                                                             className="w-full h-full object-cover"
                                                             alt=""
                                                         />
                                                     </div>
                                                     <div>
                                                         <p className="font-bold text-[16px] text-gray-800 leading-tight">
-                                                            Dr. Sumaiya Javed
+                                                            {doctor.name}
                                                         </p>
                                                         <p className="text-[12px] text-gray-500">
-                                                            Cardiologist
+                                                            {doctor.speciality}
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 {/* PHONE */}
                                                 <div className="text-[14px] font-semibold text-gray-700">
-                                                    1234567890
+                                                    {doctor.phone}
                                                 </div>
 
                                                 {/* EXPERIENCE */}
                                                 <div className="text-[14px] font-semibold text-gray-700 text-center">
-                                                    5 years
+                                                    {doctor.experience}
                                                 </div>
 
                                                 {/* ACTION */}
                                                 <div className="flex justify-center">
-                                                    {i === 2 ? (
-                                                        <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#EF4444] text-white">
-                                                            InActive
-                                                        </span>
-                                                    ) : (
+                                                    {doctor.status === "active" ? (
                                                         <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#22C55E] text-white">
                                                             Active
+                                                        </span>
+                                                    ) : doctor.status === "rejected" ? (
+                                                        <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#EF4444] text-white">
+                                                            Rejected
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#3B82F6] text-white">
+                                                            Pending
                                                         </span>
                                                     )}
                                                 </div>
@@ -796,7 +831,12 @@ const Admin_dashboard1 = () => {
                                                             <polyline points="20 6 9 17 4 12" />
                                                         </svg>
                                                     </button>
-                                                    <button className="w-[38px] h-[38px] bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedDoctorForReject(doctor);
+                                                            setShowRejectConfirm(true);
+                                                        }}
+                                                        className="w-[38px] h-[38px] bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
                                                         <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                             <polyline points="3 6 5 6 21 6" />
                                                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -808,6 +848,8 @@ const Admin_dashboard1 = () => {
                                                 </div>
                                             </motion.div>
                                         ))}
+                                    </AnimatePresence>
+                                </div>
                                     </div>
                                     {/* VIEW MORE */}
                                     <div className="text-right mt-4">
@@ -877,7 +919,13 @@ const Admin_dashboard1 = () => {
                                                                 <polyline points="20 6 9 17 4 12" />
                                                             </svg>
                                                         </button>
-                                                        <button className="w-[38px] h-[38px] bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSelectedDoctorForReject(doctor);
+                                                                setShowRejectConfirm(true);
+                                                            }}
+                                                            className="w-[38px] h-[38px] bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
                                                             <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                                 <polyline points="3 6 5 6 21 6" />
                                                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -1170,6 +1218,376 @@ const Admin_dashboard1 = () => {
 
 
                 </div>
+
+                {/* Confirm Reject Modal */}
+                <AnimatePresence>
+                    {showRejectConfirm && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="bg-white rounded-[20px] p-8 max-w-[600px] w-full mx-4 shadow-2xl relative"
+                            >
+                                <div className="flex items-start gap-4 mb-4">
+                                    <div className="w-16 h-16 bg-[#FEF3C7] rounded-xl flex items-center justify-center shrink-0">
+                                        <svg className="w-10 h-10 text-[#D97706]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h2 className="text-[24px] font-bold text-gray-900 leading-tight">
+                                            Are you sure you want to reject {selectedDoctorForReject?.name} ?
+                                        </h2>
+                                        <p className="text-[16px] text-gray-500 font-medium mt-1">
+                                            This action connect be undone.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="h-[1px] bg-gray-100 w-full my-8"></div>
+
+                                <div className="flex justify-end gap-4">
+                                    <button
+                                        onClick={() => setShowRejectConfirm(false)}
+                                        className="px-10 py-3 rounded-xl bg-[#E5E7EB] text-gray-700 font-bold text-[18px] hover:bg-gray-300 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowRejectConfirm(false);
+                                            setShowReasonModal(true);
+                                        }}
+                                        className="px-8 py-3 rounded-xl bg-[#EF4444] text-white font-bold text-[18px] hover:bg-red-600 transition-colors shadow-lg shadow-red-200"
+                                    >
+                                        Confirm Reject
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Reason for Removal Modal */}
+                <AnimatePresence>
+                    {showReasonModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 20 }}
+                                className="bg-white rounded-[20px] max-w-[650px] w-full mx-4 shadow-2xl overflow-hidden"
+                            >
+                                {/* Header */}
+                                <div className="flex justify-between items-center px-8 py-4 border-b border-gray-100">
+                                    <h2 className="text-[22px] font-bold text-gray-800">Reason for Removal</h2>
+                                    <button onClick={() => setShowReasonModal(false)} className="text-gray-400 hover:text-gray-600">
+                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div className="p-8 space-y-6">
+                                    <p className="text-[17px] text-gray-700 font-bold">
+                                        Please select the reason for rejection <span className="font-bold">{selectedDoctorForReject?.name}</span> and provide any additional feedback:
+                                    </p>
+
+                                    {/* Reason Select */}
+                                    <div className="space-y-2">
+                                        <label className="text-[18px] font-bold text-gray-700 block">Reason<span className="text-red-500">*</span></label>
+                                        <div className="relative">
+                                            <select
+                                                value={rejectionReason}
+                                                onChange={(e) => setRejectionReason(e.target.value)}
+                                                className="w-full appearance-none bg-white border border-gray-300 rounded-[12px] px-5 py-4 text-[17px] focus:ring-2 focus:ring-[#19718A]/20 focus:border-[#19718A] outline-none text-gray-600 font-medium"
+                                            >
+                                                <option>Document Not Correct</option>
+                                                <option>Document Not Complete</option>
+                                                <option>Fake / Invalid Certificate</option>
+                                                <option>Misconduct</option>
+                                                <option>Expired License</option>
+                                                <option>Blurry / Unclear Documents</option>
+                                                <option>Invalid Experience Details</option>
+                                                <option>Contact Details Not Verified</option>
+                                                <option>Other (Please specify)</option>
+                                            </select>
+                                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Feedback */}
+                                    <div className="space-y-2">
+                                        <label className="text-[18px] font-bold text-gray-700 block">Additional Feedback</label>
+                                        <textarea
+                                            value={rejectionFeedback}
+                                            onChange={(e) => setRejectionFeedback(e.target.value)}
+                                            placeholder="Write your feedback..."
+                                            className="w-full border border-gray-300 rounded-[12px] px-5 py-4 text-[17px] h-32 focus:ring-2 focus:ring-[#19718A]/20 focus:border-[#19718A] outline-none resize-none text-gray-600 font-medium"
+                                        />
+                                    </div>
+
+                                    {/* Attach File */}
+                                    <div className="flex flex-col gap-3">
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    setAttachedFile({
+                                                        name: file.name,
+                                                        url: URL.createObjectURL(file)
+                                                    });
+                                                }
+                                            }}
+                                        />
+                                        <div
+                                            onClick={() => fileInputRef.current.click()}
+                                            className="flex items-center gap-2 text-[#19718A] font-bold cursor-pointer hover:bg-gray-50/50 p-2 rounded-lg transition-colors border border-dashed border-gray-300 w-full group"
+                                        >
+                                            <div className="w-[20px] h-[20px] flex items-center justify-center">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" transform="rotate(-45)">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[16px]">Attach file</span>
+                                        </div>
+
+                                        {attachedFile && (
+                                            <div className="flex items-center justify-between bg-gray-100 rounded-lg px-4 py-2 w-fit gap-4 border border-gray-200 shadow-sm animate-in fade-in slide-in-from-top-1">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-8 rounded bg-white overflow-hidden shadow-sm border border-gray-100">
+                                                        {attachedFile.url.startsWith('blob:') ? (
+                                                            <img src={attachedFile.url} className="w-full h-full object-cover" alt="" />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-gradient-to-br from-[#19718A]/20 to-[#19718A]/40 flex items-center justify-center text-[10px] font-bold text-[#19718A]">DOC</div>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-[14px] font-bold text-gray-600 truncate max-w-[200px]">{attachedFile.name}</span>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        setAttachedFile(null);
+                                                        fileInputRef.current.value = "";
+                                                    }}
+                                                    className="text-gray-400 hover:text-red-500 transition-colors"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Footer Buttons */}
+                                    <div className="flex justify-end gap-4 pt-4">
+                                        <button
+                                            onClick={() => setShowReasonModal(false)}
+                                            className="px-10 py-3 rounded-xl bg-[#E5E7EB] text-gray-700 font-bold text-[18px] hover:bg-gray-300 transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleRejectSubmit}
+                                            className="px-10 py-3 rounded-xl bg-[#EF4444] text-white font-bold text-[18px] hover:bg-red-600 transition-colors shadow-lg shadow-red-200"
+                                        >
+                                            Rejected
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+                {/* Rejection Status Modal (Img 2) */}
+                <AnimatePresence>
+                    {showRejectedStatusModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] overflow-y-auto pt-10 pb-10">
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 30 }}
+                                className="bg-white rounded-[24px] max-w-[850px] w-full mx-4 shadow-2xl relative"
+                            >
+                                {/* Modal Close Button */}
+                                <button
+                                    onClick={() => setShowRejectedStatusModal(false)}
+                                    className="absolute right-6 top-6 text-gray-400 hover:text-gray-600 z-10"
+                                >
+                                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+
+                                {/* HEADER AREA */}
+                                <div className="px-8 py-5 border-b border-gray-100 flex items-center gap-5">
+                                    <div className="w-14 h-14 bg-[#EF4444] rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-red-100">
+                                        <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-[24px] font-bold text-gray-900 leading-tight">
+                                            {selectedDoctorForReject?.name} has been Rejected
+                                        </h2>
+                                        <p className="text-[13px] text-gray-500 font-medium">
+                                            Rejected by Admin on {new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })} at {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* CONTENT GRID */}
+                                <div className="px-8 py-6 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
+
+                                    {/* Left Content */}
+                                    <div className="space-y-6">
+
+                                        {/* Reason for Rejection Section */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-[18px] font-bold text-gray-800">Reason for Rejection</h3>
+
+                                            <div className="bg-gray-100/80 rounded-[12px] overflow-hidden border border-gray-200">
+                                                <div className="px-6 py-3 border-b border-gray-200 text-[18px] font-bold text-gray-700">
+                                                    {rejectionReason}
+                                                </div>
+                                                <div className="p-6 text-[16px] text-gray-600 font-medium leading-relaxed">
+                                                    {rejectionFeedback}
+                                                </div>
+                                            </div>
+
+                                            {attachedFile && (
+                                                <div className="flex items-center justify-between bg-gray-100 rounded-lg p-3 border border-gray-200">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-12 h-10 bg-white rounded border border-gray-200 overflow-hidden flex items-center justify-center">
+                                                            {attachedFile.url.startsWith('blob:') ? (
+                                                                <img src={attachedFile.url} className="w-full h-full object-cover" alt="" />
+                                                            ) : (
+                                                                <span className="text-[10px] font-bold text-[#19718A]">IMG</span>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-[14px] font-bold text-gray-600 truncate max-w-[150px]">{attachedFile.name}</span>
+                                                        <button className="text-gray-400">
+                                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <div className="flex gap-4 text-[#19718A] font-bold text-[14px]">
+                                                        <button className="hover:underline">View</button>
+                                                        <span className="text-gray-300">|</span>
+                                                        <button className="hover:underline">Download</button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Other Options Section */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-[18px] font-bold text-gray-800 border-b border-gray-300 pb-2">Other Options</h3>
+                                            <div className="space-y-3 pt-2">
+                                                {[
+                                                    "Document Not Complete",
+                                                    "Fake / Invalid Certificate",
+                                                    "Expired License",
+                                                    "Misconduct",
+                                                    "Other (Please specify)"
+                                                ].map((option, idx) => (
+                                                    <div key={idx} className="flex items-center gap-3 group cursor-pointer">
+                                                        <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-white shrink-0 group-hover:bg-[#19718A] transition-colors">
+                                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                        <span className="text-[16px] font-medium text-gray-600">{option}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Right Sidebar - Doctor Card */}
+                                    <div className="space-y-4">
+                                        <div className="bg-white border border-gray-200 rounded-[20px] overflow-hidden shadow-sm">
+                                            {/* Doctor Card Top */}
+                                            <div className="relative p-5 bg-gray-50/50 flex flex-col items-center">
+                                                <div className="w-20 h-20 rounded-[16px] overflow-hidden shadow-md border-2 border-white">
+                                                    <img
+                                                        src={selectedDoctorForReject?.image || "/assets/admin.png"}
+                                                        className="w-full h-full object-cover"
+                                                        alt=""
+                                                    />
+                                                </div>
+                                                <h4 className="mt-3 text-[17px] font-bold text-gray-800 text-center leading-tight">
+                                                    {selectedDoctorForReject?.name}
+                                                </h4>
+                                                <div className="mt-2 px-6 py-0.5 bg-red-600 text-white rounded-md text-[12px] font-bold">
+                                                    Rejected
+                                                </div>
+                                            </div>
+
+                                            {/* Doctor Contact Info */}
+                                            <div className="p-5 space-y-3 text-[13px]">
+                                                {[
+                                                    { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: "sumaiya701@gmail.com" },
+                                                    { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", label: "Contact", value: "+91 2134567883" },
+                                                    { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: "Experience", value: "8 Years" },
+                                                    { icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", label: "Registration No", value: "DMC/1234" }
+                                                ].map((item, idx) => (
+                                                    <div key={idx} className="flex items-start gap-3">
+                                                        <svg className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                                                        </svg>
+                                                        <div>
+                                                            <span className="text-gray-400 font-medium block leading-none mb-0.5 text-[11px]">{item.label}:</span>
+                                                            <span className="text-gray-700 font-bold">{item.value}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Restore Button */}
+                                            <div className="p-5 pt-0 space-y-3">
+                                                <button
+                                                    onClick={() => handleRestoreDoctor(selectedDoctorForReject?.id)}
+                                                    className="w-full py-3 bg-[#FFD39F] text-gray-800 font-bold rounded-[14px] shadow-sm hover:bg-[#ffc885] transition-all text-[15px]"
+                                                >
+                                                    Restore Doctor
+                                                </button>
+                                                <div
+                                                    onClick={() => setShowRejectedStatusModal(false)}
+                                                    className="flex items-center justify-center gap-2 text-gray-400 font-bold cursor-pointer hover:text-gray-600 text-[14px]"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                                                    </svg>
+                                                    Return to Doctor List
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* MODAL FOOTER */}
+                                <div className="px-8 pb-6 pt-0 mt-[-10px]">
+                                    <div className="bg-[#F8F9FA] rounded-[16px] p-4 flex items-center justify-between">
+                                        <p className="text-[15px] font-bold text-gray-700">
+                                            Do you have any feedback? We are always ready to help.
+                                        </p>
+                                        <button className="text-[#19718A] font-bold text-[16px] hover:underline">
+                                            Contact Support
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
             </main>
         </div>
     );

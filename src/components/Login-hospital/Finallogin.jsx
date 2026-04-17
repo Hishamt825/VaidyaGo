@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import BASE_URL from "../../baseUrl";
 
 const Finallogin = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const Finallogin = () => {
 
     try {
       const response = await fetch(
-        "https://tubajavedd.pythonanywhere.com/accounts/login/",
+        `${BASE_URL}/accounts/login/`,
         {
           method: "POST",
           headers: {

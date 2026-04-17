@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash, FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import VerticalProgressBar from "./VerticalProgressBar";
+import BASE_URL from "../../baseUrl";
 // import { FaUsersGear } from "react-icons/fa6";
 
 export default function SignupForm() {
@@ -29,7 +30,7 @@ export default function SignupForm() {
 
   try {
     const response = await fetch(
-      "https://tubajavedd.pythonanywhere.com/accounts/signup/",
+      `${BASE_URL}/accounts/signup/`,
       {
         method: "POST",
         headers: {

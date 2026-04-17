@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Vertical from "./Vertical";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "../../baseUrl";
 
 const Form1 = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ useEffect(() => {
 
     try {
       const response = await fetch(
-        `https://tubajavedd.pythonanywhere.com/api/doctor-personal-info/${doctorId}/`,
+        `${BASE_URL}/api/doctor-personal-info/${doctorId}/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -121,7 +122,7 @@ const handleSubmit = async (e) => {
     // ================== CREATE (POST) ==================
     if (!doctorId) {
       const postResponse = await fetch(
-        "https://tubajavedd.pythonanywhere.com/api/doctor-personal-info/",
+        `${BASE_URL}/api/doctor-personal-info/`,
         {
           method: "POST",
           headers: {
@@ -142,7 +143,7 @@ const handleSubmit = async (e) => {
 
         // ✅ Immediately GET after POST
         const getResponse = await fetch(
-          `https://tubajavedd.pythonanywhere.com/api/doctor-personal-info/${newId}/`,
+          `${BASE_URL}/api/doctor-personal-info/${newId}/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -169,7 +170,7 @@ const handleSubmit = async (e) => {
       const changedFields = getChangedFields();
 
       const patchResponse = await fetch(
-        `https://tubajavedd.pythonanywhere.com/api/doctor-personal-info/${doctorId}/`,
+        `${BASE_URL}/api/doctor-personal-info/${doctorId}/`,
         {
           method: "PATCH",
           headers: {
@@ -189,7 +190,7 @@ const handleSubmit = async (e) => {
 
       // ✅ After PATCH, refresh data
       const getResponse = await fetch(
-        `https://tubajavedd.pythonanywhere.com/api/doctor-personal-info/${doctorId}/`,
+        `${BASE_URL}/api/doctor-personal-info/${doctorId}/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

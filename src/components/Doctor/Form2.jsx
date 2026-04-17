@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Vertical from "./Vertical"; // your stepper component
+import BASE_URL from "../../baseUrl";
 const Form2 = () => {
   const navigate = useNavigate();
 
@@ -37,7 +38,7 @@ const Form2 = () => {
 
       try {
         const res = await fetch(
-          `https://tubajavedd.pythonanywhere.com/api/doctor/${doctor_id}/professional-info/${professional_info_id}/`,
+          `${BASE_URL}/api/doctor/${doctor_id}/professional-info/${professional_info_id}/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -93,7 +94,7 @@ const Form2 = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/professional-info/${professionalInfoId}/`,
+        `${BASE_URL}/api/doctor/${doctorId}/professional-info/${professionalInfoId}/`,
         {
           method: "DELETE",
           headers: {
@@ -155,7 +156,7 @@ const Form2 = () => {
       if (!id) {
         // ✅ POST new record
         response = await fetch(
-          `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/professional-info/`,
+          `${BASE_URL}/api/doctor/${doctorId}/professional-info/`,
           {
             method: "POST",
             headers: {
@@ -180,7 +181,7 @@ const Form2 = () => {
       } else if (id && isChanged) {
         // ✅ PATCH existing record
         response = await fetch(
-          `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/professional-info/${id}/`,
+          `${BASE_URL}/api/doctor/${doctorId}/professional-info/${id}/`,
           {
             method: "PATCH",
             headers: {
@@ -200,7 +201,7 @@ const Form2 = () => {
         } else {
           // ✅ Fallback to PUT if PATCH fails
           response = await fetch(
-            `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/professional-info/${id}/`,
+            `${BASE_URL}/api/doctor/${doctorId}/professional-info/${id}/`,
             {
               method: "PUT",
               headers: {
@@ -230,7 +231,7 @@ const Form2 = () => {
       // ✅ Always GET latest data
       const stored_professional_info_id = localStorage.getItem("professional_info_id");
       const getRes = await fetch(
-        `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/professional-info/${stored_professional_info_id}/`,
+        `${BASE_URL}/api/doctor/${doctorId}/professional-info/${stored_professional_info_id}/`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (!getRes.ok) throw new Error("Failed to fetch latest data");

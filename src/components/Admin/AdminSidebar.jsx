@@ -12,7 +12,7 @@ const AdminSidebar = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobi
   const menu = [
     { name: "Dashboard", icon: "/assets/a.png", path: "/Admin_dashboard1" },
     { name: "Doctors", icon: "/assets/doc.png", path: "/admin-doctor", hasSubmenu: true },
-    { name: "Appointments", icon: "/assets/app.png", path: "/Appointment" },
+    { name: "Appointments", icon: "/assets/app.png", path: "/App_Dashboard?adminMode=true" },
   ];
   const logo = "/assets/name.png";
 
@@ -128,8 +128,10 @@ const AdminSidebar = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobi
                                 setActiveSub(sub.name);
                                 if (sub.name === "Active Doctors") {
                                   navigate("/admin-doctor?view=active");
-                                } else if (sub.name === "Pending Doctors" || sub.name === "Rejected Doctors") {
-                                  navigate("/admin-doctor?view=" + sub.name.split(" ")[0].toLowerCase());
+                                } else if (sub.name === "Pending Doctors") {
+                                  navigate("/admin-doctor?view=pending");
+                                } else if (sub.name === "Rejected Doctors") {
+                                  navigate("/reject_doctor");
                                 }
                               }}
                               className={`border-[1.5px] border-[#166E83] rounded-full pl-[3px] pr-[16px] py-[3px] flex items-center gap-[8px] bg-white cursor-pointer hover:bg-teal-50 ml-0 transition-all duration-300 ${isSubActive ? "shadow-[0_4px_12px_rgba(22,110,131,0.35)]" : "shadow-none"}`}

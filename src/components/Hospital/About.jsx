@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const Hero1 = () => {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
-    <div className="font-sans text-gray-800">
+    <div className="font-sans text-gray-800 overflow-x-hidden w-full">
 
       {/* ================= HERO SECTION ================= */}
       <section className="relative pb-0.4">
@@ -23,13 +24,13 @@ const Hero1 = () => {
 
 
           {/* Navbar */}
-          <header className="relative flex items-center justify-between px-8 py-1 bg-[#19718A] border-b border-white/30">
+          <header className="relative flex items-center justify-between px-4 lg:px-8 py-1 bg-[#19718A] border-b border-white/30">
 
             {/* Empty Left Space (Balance Maintain Karne Ke Liye) */}
-            <div className="w-[280px]"></div>
+            <div className="hidden lg:block w-[280px]"></div>
 
             {/* CENTER NAVIGATION */}
-            <nav className="absolute left-[500px] text-[18px] -translate-x-1/2 hidden md:flex items-center gap-[130px]">
+            <nav className="absolute left-[500px] text-[18px] -translate-x-1/2 hidden lg:flex items-center gap-[130px]">
               {["Home", "About", "Our Service", "Doctor", "FAQ"].map((item) => (
                 <button
                   key={item}
@@ -46,31 +47,73 @@ const Hero1 = () => {
             </nav>
 
             {/* RIGHT SECTION (Icons + Contact) */}
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 lg:gap-8 justify-end w-full lg:w-auto">
 
-              <div className="w-px h-6 bg-white/40"></div>
+              <div className="hidden lg:flex items-center gap-8">
+                <div className="w-px h-6 bg-white/40"></div>
 
-              <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
-                <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
+                <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                  <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
+                </button>
+
+                <div className="w-px h-6 bg-white/40"></div>
+
+                <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                  <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
+                </button>
+
+                <button
+                  onClick={() => navigate("/ContactUs")}
+                  className="border-[1.2px] border-white text-white px-7 py-1.5 rounded-full font-bold transform transition-all duration-300 hover:scale-105 active:scale-95"
+                >
+                  Contact Us
+                </button>
+              </div>
+
+              {/* Hamburger for mobile */}
+              <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden p-1.5 text-white hover:bg-white/10 rounded-md border border-white/30 transition-colors z-50 relative"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 6h18M3 18h18" />
+                  )}
+                </svg>
               </button>
-
-              <div className="w-px h-6 bg-white/40"></div>
-
-              <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
-                <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
-              </button>
-
-            <button
-              onClick={() => navigate("/ContactUs")}
-              className="border-[1.2px] border-white text-white px-7 py-1.5 rounded-full font-bold transform transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              Contact Us
-            </button>
-
 
             </div>
 
           </header>
+
+          {/* MOBILE MENU DROPDOWN */}
+          {isMobileMenuOpen && (
+            <div className="lg:hidden w-full bg-[#19718A] flex flex-col items-center py-6 space-y-4 border-t border-white/20">
+              <button onClick={() => { navigate("/MainPage"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">Home</button>
+              <button onClick={() => { navigate("/About"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">About</button>
+              <button onClick={() => { navigate("/Service"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">Our Service</button>
+              <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">Doctor</button>
+              <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">FAQ</button>
+              
+              <div className="flex gap-6 mt-2 pt-2 border-t border-white/10 w-1/2 justify-center">
+                <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                  <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
+                </button>
+                <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                  <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
+                </button>
+              </div>
+              
+              <button 
+                onClick={() => { navigate("/ContactUs"); setIsMobileMenuOpen(false); }} 
+                className="border-[1.2px] border-white text-white px-8 py-2 rounded-full font-bold transform transition-all duration-300 hover:scale-105 mt-2 text-[14px]"
+              >
+                Contact Us
+              </button>
+            </div>
+          )}
 
 
 
@@ -81,15 +124,15 @@ const Hero1 = () => {
         <div className="relative flex flex-col md:flex-row items-center justify-center px-6 md:px-12 pt-6 md:pt-10">
 
           {/* Background Decorative Bubble Circles */}
-          <div className="absolute inset-0 pointer-events-none z-0">
-            <div className="absolute left-[-100px] top-1/3 w-72 h-72 bg-white/15 rounded-full blur-2xl border border-white/20"></div>
-            <div className="absolute right-[-120px] top-10 w-96 h-96 bg-white/10 rounded-full blur-2xl border border-white/10"></div>
-            <div className="absolute right-[-80px] bottom-0 w-80 h-80 bg-white/15 rounded-full blur-2xl border border-white/20"></div>
+          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+            <div className="absolute left-[-50px] md:left-[-100px] top-1/3 w-40 md:w-72 h-40 md:h-72 bg-white/15 rounded-full blur-2xl border border-white/20"></div>
+            <div className="absolute right-[-60px] md:right-[-120px] top-10 w-48 md:w-96 h-48 md:h-96 bg-white/10 rounded-full blur-2xl border border-white/10"></div>
+            <div className="absolute right-[-40px] md:right-[-80px] bottom-0 w-40 md:w-80 h-40 md:h-80 bg-white/15 rounded-full blur-2xl border border-white/20"></div>
           </div>
 
           {/* Big Logo */}
-          <h1 className="absolute text-[7rem] md:text-[11rem] font-[Playfair Display] font-extrabold text-[#08334A] opacity-90 z-0 select-none top-[14%] md:top-[12%] left-1/2 -translate-x-1/2">
-            <img src="/assets/VADYAGO.png" alt="VADYAGO" className="w-[990px] h-auto" />
+          <h1 className="absolute text-[4rem] sm:text-[7rem] md:text-[11rem] font-[Playfair Display] font-extrabold text-[#08334A] opacity-90 z-0 select-none top-[18%] md:top-[12%] left-1/2 -translate-x-1/2 w-[90%] md:w-auto text-center">
+            <img src="/assets/VADYAGO.png" alt="VADYAGO" className="w-full max-w-[990px] h-auto mx-auto" />
           </h1>
 
           {/* Doctor Image */}
@@ -99,7 +142,7 @@ const Hero1 = () => {
             transition={{ duration: 1 }}
             src="/assets/bbg1.svg"
             alt="Doctor"
-            className="relative z-10 w-[310px] md:w-[320px] drop-shadow-2xl -mr-[95px] -mt-10"
+            className="relative z-10 w-[260px] sm:w-[310px] md:w-[320px] drop-shadow-2xl md:-mr-[95px] -mt-2 md:-mt-10 mx-auto md:mx-0"
           />
 
           {/* Left Text */}
@@ -107,13 +150,13 @@ const Hero1 = () => {
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 1 }}
-            className="absolute left-10 md:left-24 top-[50%] -translate-y-1/2 max-w-lg z-20"
+            className="absolute left-4 sm:left-10 md:left-24 top-[20%] md:top-[50%] -translate-y-1/2 max-w-lg z-20 text-center md:text-left w-[90%] md:w-auto"
           >
-            <h2 className="text-[24px] -mt-16 font-extrabold text-[#08334A] leading-snug">
-              Premium Treatments <br /> for a Healthy Lifestyle
+            <h2 className="text-[20px] md:text-[24px] mt-0 md:-mt-16 font-extrabold text-[#08334A] leading-snug">
+              Premium Treatments <br className="hidden md:block" /> for a Healthy Lifestyle
             </h2>
-            <p className="text-[1rem] text-[#0E4056] font-semibold mt-2">
-              Leading Integrated Healthcare <br /> Services Provider in India.
+            <p className="text-[14px] md:text-[1rem] text-[#0E4056] font-semibold mt-2">
+              Leading Integrated Healthcare <br className="hidden md:block" /> Services Provider in India.
             </p>
           </motion.div>
 
@@ -127,46 +170,46 @@ const Hero1 = () => {
       {/*               WHITE BOX + FLOATING CARDS              */}
       {/* ===================================================== */}
 
-      <div className="w-full absolute flex justify-center mb-[100px] px-4">
+      <div className="w-full relative md:absolute flex justify-center mt-10 md:mt-0 md:mb-[100px] px-4 z-20">
 
         {/* Big White Box */}
-        <div className=" absolute  top-[-200px]  bg-white flex flex-col md:flex-row  rounded-3xl shadow-xl border border-red-200 h-[270px] z-10 relative w-[920px]"></div>
+        <div className="hidden md:flex absolute top-[-200px] bg-white rounded-3xl shadow-xl border border-red-200 h-[270px] w-full max-w-[920px] z-10"></div>
 
         {/* Floating Cards */}
-        <div className="absolute top-[-182px] flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 w-full z-10">
+        <div className="md:absolute md:top-[-182px] flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 w-full z-20">
 
           {/* --- Appointment --- */}
-          <div className="w-[260px] h-[230px] bg-[#FEF4AB] shadow-lg rounded-2xl p-6 text-center border border-[#F3EFA4]">
+          <div className="w-full max-w-[260px] h-auto min-h-[230px] bg-[#FEF4AB] shadow-lg rounded-2xl p-6 text-center border border-[#F3EFA4]">
             <img src="/assets/app.png" className="w-12 mx-auto mb-1" />
             <h3 className="text-[20px] font-bold text-black">Appointment</h3>
             <p className="text-[14px] text-black mt-1">
               Book online appointment and get <br /> consultation to doctors
             </p>
-            <button className="mt-4 w-full bg-white border border-[#FEF4AB] py-2 rounded-full font-semibold text-black text-[16px]">
+            <button className="mt-4 w-full bg-white border border-[#FEF4AB] py-2 rounded-full font-semibold text-black text-[16px] hover:bg-gray-50 transition-colors">
               Make Appointment
             </button>
           </div>
 
           {/* --- Emergency --- */}
-          <div className="w-[260px] h-[230px] bg-[#399CAA] shadow-lg rounded-2xl p-6 text-center border border-[#A5DDE0]">
+          <div className="w-full max-w-[260px] h-auto min-h-[230px] bg-[#399CAA] shadow-lg rounded-2xl p-6 text-center border border-[#A5DDE0]">
             <img src="/assets/light.png" className="w-12 mx-auto mb-1" />
             <h3 className="text-[20px] font-bold text-black">Emergency</h3>
             <p className="text-[14px] text-black mt-1">
               Call for Emergency <br /> +91 XXXXXXXXXX
             </p>
-            <button className="mt-4 w-full bg-[#A9D3D9] border border-[#A9D3D9] py-2 rounded-full font-semibold text-black text-[16px]">
+            <button className="mt-4 w-full bg-[#A9D3D9] border border-[#A9D3D9] py-2 rounded-full font-semibold text-black text-[16px] hover:bg-[#98C2C8] transition-colors">
               Call Now
             </button>
           </div>
 
           {/* --- Doctors --- */}
-          <div className="w-[260px] h-[230px] bg-[#FEC0AB] shadow-lg rounded-2xl p-6 text-center border border-[#F5C8B5]">
+          <div className="w-full max-w-[260px] h-auto min-h-[230px] bg-[#FEC0AB] shadow-lg rounded-2xl p-6 text-center border border-[#F5C8B5]">
             <img src="/assets/pe.png" className="w-12 mx-auto mb-1" />
             <h3 className="text-[20px] font-bold text-black">Emergency</h3>
             <p className="text-[14px] text-black mt-1">
               Best doctor of every department
             </p>
-            <button className="mt-10 w-full bg-[#FFDACE] border border-[#EBC2B0] py-2 rounded-full font-semibold text-black text-[16px] ">
+            <button className="mt-10 w-full bg-[#FFDACE] border border-[#EBC2B0] py-2 rounded-full font-semibold text-black text-[16px] hover:bg-[#EEC9BF] transition-colors">
               Doctors
             </button>
           </div>
@@ -188,7 +231,7 @@ const Hero1 = () => {
         </div>
 
         {/* Icon Boxes */}
-        <div className="flex flex-wrap justify-center items-center gap-[100px]">
+        <div className="flex flex-wrap justify-center items-center gap-6 md:gap-[100px]">
           {/* Box 1 */}
           <div className="w-28 h-28 flex justify-center items-center bg-white border-2 rounded-md shadow-md hover:shadow-lg transition-all border border-gray-200">
             <img src="/assets/img.png" alt="lungs" className="w-30 h-30 p-2 object-contain" />
@@ -222,18 +265,18 @@ const Hero1 = () => {
       </section>
 
 
-      <section className="w-full bg-[#75AAB9] relative  mt-40 ">
-        <div className="w-full h-full flex flex-col lg:flex-row justify-between items-center px-[0%]">
+      <section className="w-full bg-[#75AAB9] relative mt-20 md:mt-40 py-10 md:py-0 overflow-hidden">
+        <div className="w-full h-full flex flex-col lg:flex-row justify-between items-center px-4 lg:px-[0%]">
 
           {/* LEFT SIDE TEXT */}
-          <div className="lg:w-1/2  md:mb-[370px] text-black space-y-6 ">
-            <h1 className="text-[20px] font-bold leading-snug ml-10">
-              World-Class Healthcare<br />
-              Services for you and your<br />
+          <div className="lg:w-1/2 lg:mb-[370px] text-black space-y-6 w-full text-center lg:text-left z-20">
+            <h1 className="text-[24px] md:text-[30px] lg:text-[20px] font-bold leading-snug ml-0 lg:ml-10">
+              World-Class Healthcare<br className="hidden md:block" />
+              Services for you and your<br className="hidden md:block" />
               loved ones
             </h1>
 
-            <button className="bg-white text-black px-10  rounded-full shadow-md hover:bg-gray-200 flex items-center gap-2 ml-10">
+            <button className="bg-white text-black px-10 py-2 rounded-full shadow-md hover:bg-gray-200 flex items-center justify-center gap-2 mx-auto lg:ml-10">
               More Service
               <img src="/assets/fr.png" alt="fr" className="h-10 w-10" />
             </button>
@@ -241,23 +284,23 @@ const Hero1 = () => {
           </div>
 
           {/* RIGHT IMAGE + FLOATING CARDS */}
-          <div className="relative ml-[500px] lg:w-1/2 flex justify-center">
+          <div className="relative w-full mt-10 lg:mt-0 lg:ml-[500px] lg:w-1/2 flex flex-col lg:block justify-center items-center">
 
             {/* IMAGE WRAPPER (Independent) */}
-            <div className="relative  ml-28">
+            <div className="relative lg:ml-28 z-10">
               <img
                 src="/assets/doc.png"
                 alt="doctor"
-                className="w-[400px] h-[600px]"
+                className="w-full max-w-[300px] md:max-w-[400px] h-auto lg:h-[600px] mx-auto object-cover"
               />
             </div>
 
             {/* CARDS WRAPPER (Independent from image) */}
-            <div className="absolute top-0 right-0 w-full h-full pointer-events-none">
+            <div className="lg:absolute lg:top-0 lg:right-0 w-full lg:h-full lg:pointer-events-none mt-10 lg:mt-0 flex flex-col items-center gap-6 z-20">
 
 
               {/* Top Right Card */}
-              <div className="absolute   -top-[90px] -left-[190px] bg-white p-6 shadow-xl w-[300px] h-[230px] rounded-md shadow-lg hover:shadow-lg transition-all border-2 border-black-900">
+              <div className="relative lg:absolute lg:-top-[90px] lg:-left-[190px] bg-white p-6 shadow-xl w-full max-w-[300px] h-auto lg:h-[230px] rounded-md lg:hover:shadow-lg transition-all border-2 border-black/10 pointer-events-auto">
                 <div className="w-10 h-10 bg-[#75AAB9] flex items-center justify-center rounded-md ">
                   <img
                     src="/assets/red.png"
@@ -265,8 +308,8 @@ const Hero1 = () => {
                     className="w-7 h-7 object-contain "
                   />
                 </div>
-                <h3 className="font-bold text-[20px] font-bold text-[#0e4056]">Radiology & imaging</h3>
-                <p className="text-gray-700 text-[16px] mt-2">
+                <h3 className="font-bold text-[20px] text-[#0e4056] mt-2">Radiology & imaging</h3>
+                <p className="text-gray-700 text-[14px] lg:text-[16px] mt-2">
                   Radiology is a branch of medicine that uses medical
                   imaging techniques, like X-rays, MRI, and
                   ultrasound, to diagnose and treat diseases.
@@ -274,7 +317,7 @@ const Hero1 = () => {
               </div>
 
               {/* Middle Right Card */}
-              <div className="absolute top-[290px] right-[390px] bg-white p-6 rounded-md shadow-lg hover:shadow-lg transition-all border-2 border-black-900 w-[300px] h-[230px]">
+              <div className="relative lg:absolute lg:top-[290px] lg:right-[390px] bg-white p-6 rounded-md shadow-xl lg:shadow-lg lg:hover:shadow-xl transition-all border-2 border-black/10 w-full max-w-[300px] h-auto lg:h-[230px] pointer-events-auto">
                 <div className="w-10 h-10 bg-[#75AAB9] flex items-center justify-center rounded-md ">
                   <img
                     src="/assets/lab.png"
@@ -282,8 +325,8 @@ const Hero1 = () => {
                     className="w-7 h-7 object-contain "
                   />
                 </div>
-                <h3 className="font-bold text-[20px] font-bold text-[#0e4056]">Laboratory Services</h3>
-                <p className="text-gray-700 text-[16px] mt-2">
+                <h3 className="font-bold text-[20px] text-[#0e4056] mt-2">Laboratory Services</h3>
+                <p className="text-gray-700 text-[14px] lg:text-[16px] mt-2">
                   A "Laboratory Services 2 line" is not a standard,
                   universally recognized term in the healthcare or
                   scientific fields. It most likely refers to the services
@@ -293,8 +336,7 @@ const Hero1 = () => {
               </div>
 
               {/* Left Upper Card */}
-
-              <div className="absolute top-[100px] -left-[650px] bg-white p-6 rounded-lg shadow-lg hover:shadow-lg transition-all border-2 border-black-900 w-[300px] h-[230px]">
+              <div className="relative lg:absolute lg:top-[100px] lg:-left-[650px] bg-white p-6 rounded-md shadow-xl lg:shadow-lg lg:hover:shadow-xl transition-all border-2 border-black/10 w-full max-w-[300px] h-auto lg:h-[230px] pointer-events-auto">
                 <div className="w-10 h-10 bg-[#75AAB9] flex items-center justify-center rounded-md ">
                   <img
                     src="/assets/lok.png"
@@ -303,8 +345,8 @@ const Hero1 = () => {
                   />
                 </div>
 
-                <h3 className="font-bold text-[20px] font-bold text-[#0e4056]">Emergency services</h3>
-                <p className="text-gray-700 text-[16px] mt-2">
+                <h3 className="font-bold text-[20px] text-[#0e4056] mt-2">Emergency services</h3>
+                <p className="text-gray-700 text-[14px] lg:text-[16px] mt-2">
                   24/7 hospital emergency departments often highlight
                   the constant care, heroism of staff, and the emotional
                   nature of critical situations. These sayings can be
@@ -313,7 +355,7 @@ const Hero1 = () => {
               </div>
 
               {/* Left Bottom Card */}
-              <div className="absolute -bottom-[90px] -left-[700px] bg-white p-6 rounded-md shadow-lg hover:shadow-lg transition-all border-2 border-black-900 w-[300px] h-[230px]">
+              <div className="relative lg:absolute lg:-bottom-[90px] lg:-left-[700px] bg-white p-6 rounded-md shadow-xl lg:shadow-lg lg:hover:shadow-xl transition-all border-2 border-black/10 w-full max-w-[300px] h-auto lg:h-[230px] pointer-events-auto">
                 <div className="w-10 h-10 bg-[#75AAB9] flex items-center justify-center rounded-md ">
                   <img
                     src="/assets/phar.png"
@@ -321,7 +363,7 @@ const Hero1 = () => {
                     className="w-7 h-7 object-contain "
                   />
                 </div>
-                <h3 className="font-bold text-[20px] font-bold text-[#0e4056]">Pharmacy</h3>
+                <h3 className="font-bold text-[20px] text-[#0e4056] mt-2">Pharmacy</h3>
                 <p className="text-gray-700 text-sm mt-2">
                   Staffed by pharmacists and technicians, it oversees
                   drug procurement, inventory, and preparation,
@@ -354,7 +396,7 @@ const Hero1 = () => {
 
 
       {/* ABOUT US SECTION */}
-      <section className="p-20">
+      <section className="p-6 md:p-20">
 
 
 
@@ -375,22 +417,21 @@ const Hero1 = () => {
         </p>
 
         {/* VISION & MISSION CARDS WRAPPER */}
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-10 mt-[80px] ">
+        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-10 mt-20 lg:mt-[80px]">
 
           {/* VISION CARD */}
-          <div className="relative bg-white border border-gray-300 rounded-xl p-8 w-[100px] h-[300px] lg:w-[45%] shadow-sm hover:shadow-md transition">
+          <div className="relative bg-white border border-gray-300 rounded-xl p-8 w-full max-w-[400px] lg:w-[45%] h-auto md:h-[300px] shadow-sm hover:shadow-md transition">
 
             {/* TOP CIRCLE ICON */}
             <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-white rounded-full p-3 shadow-md border-2 border-[#19718A]">
               <img
                 src="/assets/eye.png"
                 alt="Vision Icon"
-                className="w-[100px] object-contain"
+                className="w-16 md:w-[100px] object-contain"
               />
             </div>
-            <div
-            >
-              <h3 className="text-[20px] font-bold text-[#0e4056] text-center mt-20">Vision</h3>
+            <div>
+              <h3 className="text-[20px] font-bold text-[#0e4056] text-center mt-12 md:mt-20">Vision</h3>
 
               <p className="text-black text-center mt-4 leading-[1.9]">
                 To create a world-class integrated healthcare delivery
@@ -402,18 +443,18 @@ const Hero1 = () => {
 
 
           {/* MISSION CARD */}
-          <div className="relative bg-white border border-gray-300 rounded-xl p-8 w-[300px] h-[300px] lg:w-[45%] shadow-sm hover:shadow-md transition">
+          <div className="relative bg-white border border-gray-300 rounded-xl p-8 w-full max-w-[400px] lg:w-[45%] h-auto md:h-[300px] shadow-sm hover:shadow-md transition mt-8 lg:mt-0">
 
             {/* TOP CIRCLE ICON */}
             <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-white rounded-full p-3 shadow-md border-2 border-[#19718A]">
               <img
                 src="/assets/goal.png"
                 alt="Mission Icon"
-                className="w-[100px] object-contain"
+                className="w-16 md:w-[100px] object-contain"
               />
             </div>
 
-            <h3 className="text-[20px] font-bold text-[#0e4056] text-center mt-20">Mission</h3>
+            <h3 className="text-[20px] font-bold text-[#0e4056] text-center mt-12 md:mt-20">Mission</h3>
 
             <p className="text-black text-center mt-4 leading-[1.7] text-[16px]">
               To be a globally respected healthcare organisation known for Clinical

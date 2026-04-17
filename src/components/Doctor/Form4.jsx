@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Vertical from "./Vertical";
+import BASE_URL from "../../baseUrl";
 
 const Form4 = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const Form4 = () => {
       }
 
       const response = await fetch(
-        `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/documents/list/`,
+        `${BASE_URL}/api/doctor/${doctorId}/documents/list/`,
         {
           method: "GET",
           headers: {
@@ -136,7 +137,7 @@ const Form4 = () => {
           formPayload.append("document_file", formData[key]);
 
           const response = await fetch(
-            `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/documents/`,
+            `${BASE_URL}/api/doctor/${doctorId}/documents/`,
             {
               method: "POST",
               headers: {
@@ -168,8 +169,8 @@ const Form4 = () => {
 
             const method = initialData?.[key] ? "PATCH" : "POST";
             const url = initialData?.[key]
-              ? `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/documents/${initialData[key].id}/`
-              : `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/documents/`;
+              ? `${BASE_URL}/api/doctor/${doctorId}/documents/${initialData[key].id}/`
+              : `${BASE_URL}/api/doctor/${doctorId}/documents/`;
 
             const response = await fetch(url, {
               method: method,

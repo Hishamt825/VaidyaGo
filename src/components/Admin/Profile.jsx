@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "../../baseUrl";
 
 /* ✅ ADD THIS (Missing Component) */
 const MenuItem = ({ text, img, active }) => (
@@ -73,7 +74,7 @@ const handleSaveProfile = async () => {
   try {
     // 1️⃣ Call /profile/edit/ to update profile
     const editResponse = await fetch(
-      "https://tubajavedd.pythonanywhere.com/api/admin/profile/edit/",
+      `${BASE_URL}/api/admin/profile/edit/`,
       {
         method: "PUT",
         headers: {
@@ -101,7 +102,7 @@ const handleSaveProfile = async () => {
 
     // 2️⃣ Call /profile/ to fetch updated profile
     const profileResponse = await fetch(
-      "https://tubajavedd.pythonanywhere.com/api/admin/profile/",
+      `${BASE_URL}/api/admin/profile/`,
       {
         method: "GET", // ✅ This should be GET
         headers: {
@@ -145,7 +146,7 @@ const handleDisconnectGoogle = async () => {
 
   try {
     const response = await fetch(
-      "https://tubajavedd.pythonanywhere.com/api/admin/profile/disconnect-google/",
+      `${BASE_URL}/api/admin/profile/disconnect-google/`,
       {
         method: "POST",
         headers: {

@@ -1,4 +1,5 @@
 import heart from "../../assets/heart.png";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import dentist from "../../assets/dentist.png";
 import gastro from "../../assets/gastro.png";
@@ -10,8 +11,9 @@ import gyno from "../../assets/gyno.png";
 import child from "../../assets/child.png";
 const MainPage = () => {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
-    <div className="font-sans text-gray-800">
+    <div className="font-sans text-gray-800 overflow-x-hidden w-full">
       {/* Navbar */}
       <section className="relative overflow-hidden ">
         {/* Background Image */}
@@ -24,65 +26,110 @@ const MainPage = () => {
           <div className="w-[280px]"></div>
 
           {/* CENTER NAVIGATION */}
-          <nav className="absolute text-[18px] left-[500px] -translate-x-1/2 hidden md:flex items-center gap-[130px]">
-            <button
-              onClick={() => navigate("/MainPage")}
-              className="relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:bg-white after:transition-all after:duration-300"
-            >
-              Home
-            </button>
-            <button
-              onClick={() => navigate("/About")}
-              className="relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
-            >
-              About
-            </button>
-            <button
-              onClick={() => navigate("/Service")}
-              className="relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
-            >
-              Our Service
-            </button>
-            <button
-              className="relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
-            >
-              Doctor
-            </button>
-            <button
-              className="relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
-            >
-              FAQ
-            </button>
+          <nav className="absolute left-[500px] text-[18px] -translate-x-1/2 hidden lg:flex items-center gap-[130px]">
+            {["Home", "About", "Our Service", "Doctor", "FAQ"].map((item) => (
+              <button
+                key={item}
+                onClick={() => {
+                  if (item === "Home") navigate("/MainPage");
+                  else if (item === "Our Service") navigate("/Service");
+                  else navigate(`/${item.replace(/\s+/g, "")}`);
+                }}
+                className={`relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300 ${item === "Home" ? "after:w-full" : "after:w-0 hover:after:w-full"}`}
+              >
+                {item}
+              </button>
+            ))}
           </nav>
 
           {/* RIGHT SECTION (Icons + Contact) */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 lg:gap-8 justify-end w-full lg:w-auto">
+            
+            <div className="hidden lg:flex items-center gap-8">
+              <div className="w-px h-6 bg-white/40"></div>
 
-            <div className="w-px h-6 bg-white/40"></div>
+              <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
+              </button>
 
-            <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
-              <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
-            </button>
+              <div className="w-px h-6 bg-white/40"></div>
 
-            <div className="w-px h-6 bg-white/40"></div>
+              <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
+              </button>
 
-            <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
-              <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
-            </button>
-            <button
-              onClick={() => navigate("/ContactUs")}
-              className="border-[1.2px] border-white text-white px-7 py-1.5 rounded-full font-bold transform transition-all duration-300 hover:scale-105 active:scale-95"
+              <button
+                onClick={() => navigate("/ContactUs")}
+                className="border-[1.2px] border-white text-white px-7 py-1.5 rounded-full font-bold transform transition-all duration-300 hover:scale-105 active:scale-95"
+              >
+                Contact Us
+              </button>
+            </div>
+
+            {/* Hamburger for mobile */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-1.5 ml-1 text-white hover:bg-white/10 rounded-md border border-white/30 transition-colors"
             >
-              Contact Us
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 6h18M3 18h18" />
+              </svg>
             </button>
-
-
           </div>
 
         </header>
 
+        {/* MOBILE MENU SIDEBAR (OVERLAP) */}
+        {/* Backdrop */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-[60] lg:hidden transition-opacity"
+            onClick={() => setIsMobileMenuOpen(false)}
+          ></div>
+        )}
+        
+        {/* Sidebar Drawer */}
+        <div 
+          className={`fixed top-0 right-0 h-full w-[280px] bg-[#19718A] z-[70] transform transition-transform duration-300 ease-in-out lg:hidden flex flex-col py-6 px-6 shadow-2xl ${
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          {/* Close Button Inside Drawer */}
+          <div className="flex justify-end mb-8 pb-4">
+            <button 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-1.5 text-white hover:bg-white/10 rounded-md transition-colors border border-white/30"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-
+          <div className="flex flex-col space-y-6 flex-1">
+            <button onClick={() => { navigate("/MainPage"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Home</button>
+            <button onClick={() => { navigate("/About"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">About</button>
+            <button onClick={() => { navigate("/Service"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Our Service</button>
+            <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Doctor</button>
+            <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">FAQ</button>
+          </div>
+          
+          <div className="flex gap-6 mt-auto pt-6 border-t border-white/20 justify-center">
+            <button className="p-3 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+              <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
+            </button>
+            <button className="p-3 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+              <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
+            </button>
+          </div>
+          
+          <button 
+            onClick={() => { navigate("/ContactUs"); setIsMobileMenuOpen(false); }} 
+            className="border-[1.2px] border-white text-white px-8 py-3 rounded-full font-bold transform transition-all duration-300 hover:scale-105 mt-6 text-[16px] w-full"
+          >
+            Contact Us
+          </button>
+        </div>
 
       </section>
 
@@ -127,90 +174,74 @@ const MainPage = () => {
           </div>
 
           {/* RIGHT IMAGE */}
-          <div className="relative flex justify-center">
+          <div className="relative flex justify-center mt-10 md:mt-0">
             <img
               src="/assets/hero2.png"
               alt="Doctor"
-              className=" relative -top-12 h-[600px] w-auto mr-60"
+              className="relative md:-top-12 h-[350px] md:h-[600px] w-auto lg:mr-40"
             />
 
             {/* Floating Cards */}
-            <div className="absolute top-[20px] right-[160px] bg-[#ACD0D6] pr-[60px] pl-[10px]  py-[11px] rounded-xl shadow-lg shadow-md flex items-center">
-
+            <div className="absolute top-[10px] md:top-[20px] right-[5%] sm:right-[10%] md:right-[20%] lg:right-[160px] bg-[#ACD0D6] pr-[20px] sm:pr-[40px] md:pr-[60px] pl-[10px] py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
               {/* Icon */}
               <img
                 src="/assets/but.png"
                 alt="icon"
-                className="w-6 h-6 object-contain ml-1"
+                className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1"
               />
-
               {/* 20k */}
-              <span className="text-3xl font-bold text-black leading-none ">
+              <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
                 20k
               </span>
-
               {/* reviews */}
-              <span className="text-base text-gray-700 lowercase ml-6">
+              <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
                 reviews
               </span>
-
             </div>
 
-
-            <div className="absolute top-[86px] right-[80px] bg-[#ACD0D6] pr-[50px] pl-[10px]  py-[11px] rounded-xl shadow-lg shadow-md flex items-center">
-
+            <div className="absolute top-[60px] md:top-[86px] right-0 sm:right-[5%] md:right-[10%] lg:right-[80px] bg-[#ACD0D6] pr-[20px] sm:pr-[30px] md:pr-[50px] pl-[10px] py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
               {/* Icon */}
               <img
                 src="/assets/but.png"
                 alt="icon"
-                className="w-6 h-6 object-contain ml-1"
+                className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1"
               />
-
               {/* 20k */}
-              <span className="text-3xl font-bold text-black leading-none ">
+              <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
                 20k
               </span>
-
               {/* reviews */}
-              <span className="text-base text-gray-700 lowercase ml-6">
+              <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
                 reviews
               </span>
-
             </div>
 
-            <div className="absolute top-[166px] right-[30px] bg-[#ACD0D6] pr-[50px] pl-[0px]  py-[11px] rounded-xl shadow-lg shadow-md flex items-center">
-
+            <div className="absolute top-[110px] md:top-[166px] right-0 md:right-0 lg:right-[30px] bg-[#ACD0D6] pr-[10px] sm:pr-[30px] md:pr-[50px] pl-[5px] md:pl-0 py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
               {/* Icon */}
               <img
                 src="/assets/but.png"
                 alt="icon"
-                className="w-6 h-6 object-contain ml-1"
+                className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1 md:ml-2"
               />
-
-              {/* 20k */}
-              <span className="text-3xl font-bold text-black leading-none ">
+              {/* 100+ */}
+              <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
                 100+
               </span>
-
               {/* reviews */}
-              <span className="text-base text-gray-700 lowercase ml-6">
+              <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
                 Happy Client
               </span>
-
             </div>
-
-
           </div>
-
         </div>
 
         {/* BOOKING BAR */}
-        <div className="relative -mt-48 z-10 bg-[#19718A] py-8 px-6 md:px-10 max-w-7xl mx-auto rounded-xl shadow-xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <input type="text" placeholder="Enter Your Name" className="px-5 py-3 rounded-lg outline-none w-full text-[16px]" />
-            <input type="text" placeholder="Select Your Location" className="px-5 py-3 rounded-lg outline-none w-full text-[16px]" />
-            <input type="text" placeholder="Select Services" className="px-5 py-3 rounded-lg outline-none w-full text-[16px]" />
-            <button className="bg-green-500 text-white font-semibold rounded-lg py-3 hover:bg-green-600 transition-all text-[16px]">
+        <div className="relative -mt-10 lg:-mt-48 z-10 bg-[#19718A] py-6 md:py-8 px-4 md:px-10 max-w-7xl mx-4 xl:mx-auto rounded-xl shadow-xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <input type="text" placeholder="Enter Your Name" className="px-4 md:px-5 py-3 rounded-lg outline-none w-full text-[14px] md:text-[16px]" />
+            <input type="text" placeholder="Select Your Location" className="px-4 md:px-5 py-3 rounded-lg outline-none w-full text-[14px] md:text-[16px]" />
+            <input type="text" placeholder="Select Services" className="px-4 md:px-5 py-3 rounded-lg outline-none w-full text-[14px] md:text-[16px]" />
+            <button className="bg-green-500 text-white font-semibold rounded-lg py-3 hover:bg-green-600 transition-all text-[14px] md:text-[16px]">
               BOOK NOW
             </button>
           </div>
@@ -289,16 +320,16 @@ const MainPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
 
           {/* LEFT SIDE IMAGE */}
-          <div className="w-full h-full flex justify-center">
+          <div className="w-full h-full flex justify-center order-2 md:order-1">
             <img
               src="/assets/side.png"
               alt="Doctor Image"
-              className="rounded-3xl w-[500px] h-[700px] object-cover shadow-md md:mb-20"
+              className="rounded-3xl w-full max-w-[500px] h-auto md:h-[600px] lg:h-[700px] object-cover shadow-md md:mb-20"
             />
           </div>
 
           {/* RIGHT SIDE SEARCH AREA */}
-          <div className="flex flex-col items-center mr-20">
+          <div className="flex flex-col items-center md:mr-10 lg:mr-20 order-1 md:order-2 px-4 md:px-0">
 
             <h2 className="text-2xl md:text-3xl font-normal text-center">
               Search <span className="font-bold text-[#19718A]">Diseases & Conditions</span>
@@ -306,12 +337,12 @@ const MainPage = () => {
             </h2>
 
             {/* A–Z Buttons */}
-            <div className="grid grid-cols-6 gap-4 mt-6">
+            <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-4 mt-6 w-full max-w-lg">
               {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
                 <button
                   key={letter}
-                  className="w-16 h-16 border-2 border-[#19718A] rounded-full text-[#19718A] 
-      font-bold text-3xl flex items-center justify-center
+                  className="w-12 h-12 md:w-16 md:h-16 border-2 border-[#19718A] rounded-full text-[#19718A] 
+      font-bold text-xl md:text-3xl flex items-center justify-center mx-auto
       hover:bg-[#19718A] hover:text-white transition"
                 >
                   {letter}
@@ -385,9 +416,9 @@ const MainPage = () => {
           {/* RIGHT IMAGE */}
           <div className="md:w-1/2 flex justify-center">
             <img
-              src="/assets/doc.svg"   // yahan apna actual image path lagao
+              src="/assets/doc.svg"
               alt="Doctor checking patient"
-              className="w-[500px] h-[520px] object-cover"
+              className="w-full max-w-[500px] h-auto object-cover"
             />
           </div>
 
@@ -518,15 +549,15 @@ const MainPage = () => {
       </section>
 
       {/* ===== Footer Section ===== */}
-      <footer className="bg-[#19718A] text-white py-16">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+      <footer className="bg-[#19718A] text-white py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
 
           {/* === Logo + Description === */}
-          <div className="flex flex-col items-start -mt-6">
+          <div className="flex flex-col items-start md:-mt-6">
             <img
               src="/assets/logo.png"
               alt="VaidyaGo Logo"
-              className="w-56 mb-4 -ml-5"
+              className="w-48 md:w-56 mb-4 ml-[-12px] md:-ml-5"
             />
 
             <p className="text-[14px] leading-relaxed max-w-xs font-serif">

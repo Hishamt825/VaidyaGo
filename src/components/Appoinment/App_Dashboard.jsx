@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 
 import logoUrl from '../../assets/v.png';
 import img1 from '../../assets/Ellipse.svg';
 import Side_app from './Side_app';
+import AdminSidebar from '../Admin/AdminSidebar';
 
 
 
@@ -12,8 +13,9 @@ import Side_app from './Side_app';
 
 
 const App_Dashboard = () => {
-
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const adminMode = searchParams.get('adminMode') === 'true';
     const [activeNav, setActiveNav] = useState('Appointment');
 
 
@@ -21,6 +23,9 @@ const App_Dashboard = () => {
 
     const [selectAll, setSelectAll] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
+
+    // Mobile Sidebar State
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const [selectedPatientForDetails, setSelectedPatientForDetails] = useState(null);
 
@@ -152,18 +157,25 @@ const App_Dashboard = () => {
         <div className="flex h-screen w-full bg-white font-sans text-sm overflow-hidden text-gray-700">
 
             {/* Sidebar */}
-            <Side_app active={activeNav} setActive={setActiveNav} />
+            {adminMode ? (
+                <AdminSidebar active="Appointments" isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+            ) : (
+                <Side_app active={activeNav} setActive={setActiveNav} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+            )}
 
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col bg-white overflow-hidden">
 
                 {/* Top Header */}
-                <header className="h-[74px] flex flex-row items-center justify-between px-8 shrink-0 bg-white">
+                <header className="h-[74px] flex flex-row items-center justify-between px-4 md:px-8 shrink-0 bg-white">
 
-                    <div className="flex items-center flex-1 max-w-[700px] gap-[12px]">
+                    <div className="flex items-center flex-1 max-w-[700px] gap-[10px] md:gap-[12px]">
                         {/* Hamburger */}
-                        <button className="w-[38px] h-[38px] border-[1.5px] border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col items-start justify-center pl-[9px] gap-[3px] bg-white hover:bg-gray-50 transition-colors shrink-0">
+                        <button 
+                            onClick={() => setIsMobileOpen(true)}
+                            className="w-[38px] h-[38px] border-[1.5px] border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col items-start justify-center pl-[9px] gap-[3px] bg-white hover:bg-gray-50 transition-colors shrink-0 lg:hidden"
+                        >
                             <span className="w-[17px] h-[2px] bg-[#4880b9] rounded-full"></span>
                             <span className="w-[13px] h-[2px] bg-[#89b3d0] rounded-full"></span>
                             <span className="w-[17px] h-[2px] bg-[#4880b9] rounded-full"></span>
@@ -180,14 +192,14 @@ const App_Dashboard = () => {
                             <input
                                 type="text"
                                 placeholder="Search"
-                                className="w-full pl-[40px] pr-4 py-[9px] bg-white border border-gray-600 rounded-full text-[13.5px] text-gray-700 outline-none focus:border-[#468e9f]"
+                                className="w-full pl-[40px] pr-4 py-[9px] bg-white border border-gray-600 rounded-full text-[16px] text-gray-700 outline-none focus:border-[#468e9f]"
                             />
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-[10px]">
+                    <div className="flex items-center gap-[8px] md:gap-[10px]">
                         {/* Settings Icon */}
-                        <button className="w-[38px] h-[38px] bg-white border border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-center justify-center text-black hover:bg-gray-50 transition-colors">
+                        <button className="hidden sm:flex w-[38px] h-[38px] bg-white border border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] items-center justify-center text-black hover:bg-gray-50 transition-colors">
                             <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -205,37 +217,38 @@ const App_Dashboard = () => {
                         </button>
 
                         {/* Make Appointment Button */}
-                        <button className="bg-[#94b8c0] hover:bg-[#85abb2] text-[#1c3947] font-semibold text-[13.5px] py-0 h-[38px] px-[12px] rounded-[6px] flex items-center gap-[6px] transition-colors shadow-sm ml-1">
-                            <div className="w-[18px] h-[18px] bg-white rounded-full flex items-center justify-center shrink-0">
-                                <svg className="w-[12px] h-[12px] text-[#94b8c0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button className="bg-[#94b8c0] hover:bg-[#85abb2] text-[#1c3947] font-semibold text-[14px] md:text-[16px] py-0 h-[38px] px-[10px] md:px-[12px] rounded-[6px] flex items-center gap-[6px] transition-colors shadow-sm ml-1">
+                            <div className="w-[16px] md:w-[18px] h-[16px] md:h-[18px] bg-white rounded-full flex items-center justify-center shrink-0">
+                                <svg className="w-[10px] md:w-[12px] h-[10px] md:h-[12px] text-[#94b8c0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m-8-8h16" />
                                 </svg>
                             </div>
-                            Make Appointment
+                            <span className="hidden sm:inline">Make Appointment</span>
+                            <span className="sm:hidden">Appt</span>
                         </button>
                     </div>
                 </header>
 
                 {/* Toolbar (Date & View tabs) */}
-                <div className="px-8 py-3 shrink-0 w-full flex flex-col mt-2">
+                <div className="px-4 md:px-8 py-3 shrink-0 w-full flex flex-col mt-2">
 
                     {/* Top Date Nav */}
-                    <div className="flex items-center gap-[10px] mb-5 pl-1">
+                    <div className="flex items-center gap-[10px] mb-4 md:mb-5 pl-1">
                         <button onClick={handlePrevDay} className="w-[28px] h-[28px] rounded-full bg-[#e2e8f0] flex items-center justify-center text-gray-500 hover:bg-gray-300 transition-colors">
                             <svg className="w-4 h-4 ml-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
                         </button>
-                        <span className="font-[600] text-[15px] text-[#555] tracking-wide relative top-[1px] min-w-[95px] text-center">{formattedDate}</span>
+                        <span className="font-[600] text-[15px] md:text-[16px] text-[#555] tracking-wide relative top-[1px] min-w-[90px] md:min-w-[95px] text-center">{formattedDate}</span>
                         <button onClick={handleNextDay} className="w-[28px] h-[28px] rounded-full bg-[#e2e8f0] flex items-center justify-center text-gray-500 hover:bg-gray-300 transition-colors">
                             <svg className="w-4 h-4 mr-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
                         </button>
                     </div>
 
                     {/* Tabs Row */}
-                    <div className="bg-white border border-gray-600 rounded-full h-[46px] flex items-center px-[5px] justify-between shadow-[0_2px_10px_rgba(0,0,0,0.03)] w-full">
-                        <div className="relative flex items-center h-full gap-[24px] px-[8px]">
+                    <div className="bg-white border border-gray-600 rounded-full h-[40px] md:h-[46px] flex items-center px-[5px] justify-between shadow-[0_2px_10px_rgba(0,0,0,0.03)] w-full max-w-full overflow-hidden">
+                        <div className="relative flex items-center h-full gap-[12px] md:gap-[24px] px-[8px] overflow-x-auto no-scrollbar">
                             {/* Animated Background */}
                             <div
-                                className="absolute h-[34px] bg-[#339eb3] rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0"
+                                className="absolute h-[28px] md:h-[34px] bg-[#339eb3] rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0"
                                 style={{ left: tabStyle.left, width: tabStyle.width }}
                             ></div>
 
@@ -246,17 +259,17 @@ const App_Dashboard = () => {
                                         key={tab}
                                         ref={el => tabsRef.current[idx] = el}
                                         onClick={() => setActiveTab(tab)}
-                                        className={`relative z-10 font-[600] text-[13px] px-[20px] py-[6px] tracking-wider transition-colors uppercase whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-600 hover:text-gray-800'}`}
+                                        className={`relative z-10 font-[600] text-[13px] md:text-[16px] px-[12px] md:px-[20px] py-[4px] md:py-[6px] tracking-wider transition-colors uppercase whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-600 hover:text-gray-800'}`}
                                     >
                                         {tab}
                                     </button>
                                 )
                             })}
                         </div>
-                        <div className="flex items-center gap-[16px] pr-[16px]">
+                        <div className="hidden sm:flex items-center gap-[16px] pr-[16px]">
                             {/* Grid Icon (Inactive) */}
                             <button className="text-gray-500 hover:text-gray-700 transition-colors">
-                                <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <svg className="w-[20px] md:w-[22px] h-[20px] md:h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                     <rect x="3" y="3" width="18" height="18" rx="2.5" />
                                     <line x1="3" y1="9" x2="21" y2="9" />
                                     <line x1="3" y1="15" x2="21" y2="15" />
@@ -265,7 +278,7 @@ const App_Dashboard = () => {
                             </button>
                             {/* List Icon (Active, Teal) */}
                             <button className="text-[#1a899f] transition-colors">
-                                <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <svg className="w-[20px] md:w-[22px] h-[20px] md:h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                     <rect x="3" y="3" width="18" height="18" rx="2.5" />
                                     <line x1="3" y1="9" x2="21" y2="9" />
                                     <line x1="3" y1="15" x2="21" y2="15" />
@@ -279,73 +292,73 @@ const App_Dashboard = () => {
                 </div>
 
                 {/* Table Area */}
-                <div className="flex-1 overflow-auto p-4 pl-6 pr-6">
-                    <div className="w-full border border-gray-600 rounded-[10px] overflow-hidden flex flex-col pt-1">
+                <div className="flex-1 overflow-auto p-4 md:px-6">
+                    <div className="w-full border border-gray-600 rounded-[10px] overflow-x-auto flex flex-col pt-1">
+                        <div className="min-w-[900px]">
+                            {/* Table Header */}
+                            <div className="grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-4 py-3 border-b border-gray-600 text-[14px] font-extrabold text-black tracking-wide uppercase">
+                                <div className="w-4" /> {/* Checkbox placeholder space */}
+                                <div>Patient Name</div>
+                                <div>Gender</div>
+                                <div className="text-center">Age</div>
+                                <div className="text-center">Date</div>
+                                <div className="text-center">Time</div>
+                                <div className="text-center">Status</div>
+                                <div className="text-right pr-2">Action</div>
+                            </div>
 
-                        {/* Table Header */}
-                        <div className="grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-4 py-3 border-b border-gray-600 text-[9px] font-extrabold text-black tracking-wide uppercase">
-                            <div className="w-4" /> {/* Checkbox placeholder space */}
-                            <div>Patient Name</div>
-                            <div>Gender</div>
-                            <div className="text-center">Age</div>
-                            <div className="text-center">Date</div>
-                            <div className="text-center">Time</div>
-                            <div className="text-center">Status</div>
-                            <div className="text-right pr-2">Action</div>
+                            {/* Table Body */}
+                            <div className="flex flex-col p-2 gap-[3px] bg-white">
+                                {appointments.map((appt, idx) => {
+                                    const isSelected = selectedRows.includes(appt.id);
+                                    // First row looks like it is selected with black box, others are white boxes
+                                    const isFirstRow = idx === 0 && selectedRows.length === 0; // mimic initial screenshot look if nothing touched
+                                    const checkActive = isSelected || isFirstRow;
+
+                                    return (
+                                        <div key={idx} className={`grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-2 py-[7px] min-h-[46px] text-[16px] font-semibold text-gray-800 rounded shadow-sm border border-transparent hover:border-[#bae6fd] bg-[#f2f8f9]`}>
+
+                                            {/* Checkbox */}
+                                            <div className="flex items-center justify-center pl-1">
+                                                <button
+                                                    onClick={() => handleSelectRow(appt.id)}
+                                                    className={`w-3.5 h-3.5 rounded-[2px] border ${checkActive ? 'bg-black border-black text-white' : 'bg-white border-gray-600'} flex items-center justify-center focus:outline-none`}
+                                                >
+                                                    {(checkActive) && (
+                                                        <svg className="w-[9px] h-[9px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" /></svg>
+                                                    )}
+                                                </button>
+                                            </div>
+
+                                            {/* Content */}
+                                            <div>{appt.name}</div>
+                                            <div>{appt.gender}</div>
+                                            <div className="text-center">{appt.age}</div>
+                                            <div className="text-center">{appt.date}</div>
+                                            <div className="text-center">{appt.time}</div>
+
+                                            <div className="text-center font-bold text-[#16a34a]">
+                                                {appt.status}
+                                            </div>
+
+                                            {/* Action */}
+                                            <div className="text-right pr-1">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setSelectedPatientForDetails(appt);
+                                                    }}
+                                                    className="px-3 py-0.5 bg-white border border-gray-600 rounded text-[14px] text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none font-bold relative z-50 cursor-pointer"
+                                                >
+                                                    view
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
-
-                        {/* Table Body */}
-                        <div className="flex flex-col p-2 gap-[3px] bg-white">
-                            {appointments.map((appt, idx) => {
-                                const isSelected = selectedRows.includes(appt.id);
-                                // First row looks like it is selected with black box, others are white boxes
-                                const isFirstRow = idx === 0 && selectedRows.length === 0; // mimic initial screenshot look if nothing touched
-                                const checkActive = isSelected || isFirstRow;
-
-                                return (
-                                    <div key={idx} className={`grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-2 py-[7px] min-h-[46px] text-[11px] font-semibold text-gray-800 rounded shadow-sm border border-transparent hover:border-[#bae6fd] bg-[#f2f8f9]`}>
-
-                                        {/* Checkbox */}
-                                        <div className="flex items-center justify-center pl-1">
-                                            <button
-                                                onClick={() => handleSelectRow(appt.id)}
-                                                className={`w-3.5 h-3.5 rounded-[2px] border ${checkActive ? 'bg-black border-black text-white' : 'bg-white border-gray-600'} flex items-center justify-center focus:outline-none`}
-                                            >
-                                                {(checkActive) && (
-                                                    <svg className="w-[9px] h-[9px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" /></svg>
-                                                )}
-                                            </button>
-                                        </div>
-
-                                        {/* Content */}
-                                        <div>{appt.name}</div>
-                                        <div>{appt.gender}</div>
-                                        <div className="text-center">{appt.age}</div>
-                                        <div className="text-center">{appt.date}</div>
-                                        <div className="text-center">{appt.time}</div>
-
-                                        <div className="text-center font-bold text-[#16a34a]">
-                                            {appt.status}
-                                        </div>
-
-                                        {/* Action */}
-                                        <div className="text-right pr-1">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    setSelectedPatientForDetails(appt);
-                                                }}
-                                                className="px-3 py-0.5 bg-white border border-gray-600 rounded text-[9px] text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none font-bold relative z-50 cursor-pointer"
-                                            >
-                                                view
-                                            </button>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-
                     </div>
                 </div>
 
@@ -385,38 +398,38 @@ const App_Dashboard = () => {
                     style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(1px)' }}
                     onClick={(e) => { if (e.target === e.currentTarget) setSelectedPatientForDetails(null) }}
                 >
-                    <div className="bg-white rounded-[16px] w-full max-w-[950px] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] border-[1px] border-gray-100">
+                    <div className="bg-white rounded-[16px] w-[95%] md:w-full max-w-[950px] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] border-[1px] border-gray-100">
                         {/* Header */}
-                        <div className="px-[30px] pt-[28px] pb-[16px]">
-                            <h2 className="text-[22px] font-bold text-black tracking-wide">Details</h2>
+                        <div className="px-6 md:px-[30px] pt-6 md:pt-[28px] pb-4 md:pb-[16px]">
+                            <h2 className="text-[24px] md:text-[30px] font-bold text-black tracking-wide">Details</h2>
                         </div>
 
                         {/* Scrollable Body */}
-                        <div className="px-[30px] pb-[30px] overflow-y-auto flex flex-col gap-[28px]" style={{ scrollbarWidth: 'none' }}>
+                        <div className="px-6 md:px-[30px] pb-6 md:pb-[30px] overflow-y-auto flex flex-col gap-6 md:gap-[28px]" style={{ scrollbarWidth: 'none' }}>
 
                             {/* 3 Columns Section */}
-                            <div className="flex gap-[20px] items-stretch">
+                            <div className="flex flex-col lg:flex-row gap-5 items-stretch">
 
                                 {/* Col 1: Profile */}
-                                <div className="w-[245px] border-[1.5px] border-[#cce5ee] rounded-[10px] p-[24px] flex flex-col items-center justify-start py-[30px] shadow-sm shrink-0 bg-white">
-                                    <div className="w-[105px] h-[105px] rounded-full bg-yellow-400 p-[3px] shadow-lg overflow-hidden mb-[16px] border-[2px] border-white">
+                                <div className="w-full lg:w-[245px] border-[1.5px] border-[#cce5ee] rounded-[10px] p-6 md:p-[24px] flex flex-col items-center justify-start lg:py-[30px] shadow-sm shrink-0 bg-white">
+                                    <div className="w-[80px] md:w-[105px] h-[80px] md:h-[105px] rounded-full bg-yellow-400 p-[3px] shadow-lg overflow-hidden mb-4 md:mb-[16px] border-[2px] border-white">
                                         <img src={selectedPatientForDetails.img} className="w-full h-full object-cover rounded-full bg-white" alt="profile" />
                                     </div>
-                                    <h3 className="text-[17.5px] font-[700] text-[#333] mb-[6px] tracking-wide text-center leading-tight">
+                                    <h3 className="text-[18px] font-[700] text-[#333] mb-[6px] tracking-wide text-center leading-tight">
                                         {selectedPatientForDetails.name}
                                     </h3>
-                                    <div className="text-[12.5px] font-[600] text-[#2db3c6] mb-[2px]">Mob. +912133218765</div>
-                                    <div className="text-[11px] text-[#666] font-[400]">Email-saumya21@gmail.com</div>
+                                    <div className="text-[14px] md:text-[16px] font-[600] text-[#2db3c6] mb-[2px]">Mob. +912133218765</div>
+                                    <div className="text-[12px] md:text-[14px] text-[#666] font-[400]">Email-saumya21@gmail.com</div>
 
-                                    <div className="mt-auto pt-[40px]">
+                                    <div className="hidden lg:flex mt-auto pt-[40px]">
                                         <img src={logoUrl} alt="VaDyaGo" className="h-[42px] opacity-90 mix-blend-multiply" />
                                     </div>
                                 </div>
 
                                 {/* Col 2: General Information */}
-                                <div className="w-[290px] border-[1.5px] border-[#cce5ee] rounded-[10px] overflow-hidden flex flex-col shadow-sm shrink-0 bg-white">
-                                    <div className="px-[16px] py-[12px] font-bold text-[#111] text-[13.5px]">
-                                        Genral Information
+                                <div className="w-full lg:w-[290px] border-[1.5px] border-[#cce5ee] rounded-[10px] overflow-hidden flex flex-col shadow-sm shrink-0 bg-white">
+                                    <div className="px-[16px] py-[12px] font-bold text-[#111] text-[16px]">
+                                        General Information
                                     </div>
                                     <div className="px-[16px] pb-[16px] flex flex-col gap-[10px] flex-1 border-t-[1.5px] border-[#cce5ee] pt-[18px]">
                                         {[
@@ -431,8 +444,8 @@ const App_Dashboard = () => {
                                             { label: 'Register.Date:', value: '29-jan-2026' },
                                             { label: 'Address:', value: 'Gorakhpur,273015' }
                                         ].map((info, idx) => (
-                                            <div key={idx} className="flex items-center text-[11.5px] justify-between border-b-[1.5px] border-gray-200/60 pb-[5px] last:border-0 last:pb-0">
-                                                <span className="font-bold text-[#333] w-[100px] shrink-0">{info.label}</span>
+                                            <div key={idx} className="flex items-center text-[13px] md:text-[14px] justify-between border-b-[1.5px] border-gray-200/60 pb-[5px] last:border-0 last:pb-0">
+                                                <span className="font-bold text-[#333] w-[130px] md:w-[140px] shrink-0">{info.label}</span>
                                                 <span className="text-gray-500 font-[500] text-left flex-1 pl-[10px] truncate">{info.value}</span>
                                             </div>
                                         ))}
@@ -442,8 +455,8 @@ const App_Dashboard = () => {
                                 {/* Col 3: Reports */}
                                 <div className="flex-1 border-[1.5px] border-[#cce5ee] rounded-[10px] overflow-hidden flex flex-col shadow-sm bg-white">
                                     <div className="px-[16px] py-[12px] flex justify-between items-center bg-white border-b-[1.5px] border-[#cce5ee]">
-                                        <h4 className="font-bold text-[#111] text-[13.5px]">Reports</h4>
-                                        <button className="text-[#3a8bdf] text-[11px] font-bold hover:underline tracking-wide bg-transparent border-none cursor-pointer">
+                                        <h4 className="font-bold text-[#111] text-[16px]">Reports</h4>
+                                        <button className="text-[#3a8bdf] text-[14px] font-bold hover:underline tracking-wide bg-transparent border-none cursor-pointer">
                                             + Add Reports
                                         </button>
                                     </div>
@@ -459,8 +472,8 @@ const App_Dashboard = () => {
                                             { title: 'Skin Check', date: '14 - feb - 2026', checked: false }
                                         ].map((rep, idx) => (
                                             <div key={idx} className={`flex items-center justify-between px-[16px] py-[10.5px] border-b border-gray-200/50 last:border-0 ${idx % 2 === 0 ? 'bg-[#e4e5e7]/40' : 'bg-white'}`}>
-                                                <div className="w-[45%] text-[#555] text-[11.5px] font-[500] truncate">{rep.title}</div>
-                                                <div className="w-[35%] text-[#555] text-[11.5px] font-[500]">{rep.date}</div>
+                                                <div className="w-[45%] text-[#555] text-[14px] font-[500] truncate">{rep.title}</div>
+                                                <div className="w-[35%] text-[#555] text-[14px] font-[500]">{rep.date}</div>
                                                 <div className="flex items-center gap-[10px] w-[20%] justify-end">
                                                     <button className="w-[22px] h-[22px] flex items-center justify-center border-[1.5px] border-gray-300 rounded-[5px] hover:bg-gray-100 bg-white text-gray-500 shadow-sm">
                                                         <svg className="w-[13px] h-[13px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -485,48 +498,50 @@ const App_Dashboard = () => {
                             {/* Bottom Section: Appointments */}
                             <div>
                                 <div className="flex justify-between items-center mb-[14px]">
-                                    <h3 className="text-[19px] font-bold text-black tracking-wide">Appointment</h3>
-                                    <button className="text-[#3a8bdf] text-[12px] tracking-wide font-bold hover:underline bg-transparent border-none cursor-pointer">
+                                    <h3 className="text-[24px] font-bold text-black tracking-wide">Appointment</h3>
+                                    <button className="text-[#3a8bdf] text-[14px] tracking-wide font-bold hover:underline bg-transparent border-none cursor-pointer">
                                         +Add Appointment
                                     </button>
                                 </div>
 
-                                <div className="border-[1.5px] border-[#cce5ee] rounded-[10px] overflow-hidden shadow-sm bg-white relative">
-                                    {/* Header Tabs */}
-                                    <div className="flex border-b-[1.5px] border-[#cce5ee]">
-                                        <div className="px-[24px] py-[14px] text-[#3a8bdf] font-bold text-[14px] cursor-pointer">All Appointment</div>
-                                        <div className="px-[24px] py-[14px] text-gray-500 font-bold text-[14px] cursor-pointer hover:bg-gray-50">Completed</div>
-                                    </div>
+                                <div className="border-[1.5px] border-[#cce5ee] rounded-[10px] overflow-x-auto shadow-sm bg-white relative">
+                                    <div className="min-w-[500px]">
+                                        {/* Header Tabs */}
+                                        <div className="flex border-b-[1.5px] border-[#cce5ee]">
+                                            <div className="px-[24px] py-[14px] text-[#3a8bdf] font-bold text-[16px] md:text-[18px] cursor-pointer">All Appointment</div>
+                                            <div className="px-[24px] py-[14px] text-gray-500 font-bold text-[16px] md:text-[18px] cursor-pointer hover:bg-gray-50">Completed</div>
+                                        </div>
 
-                                    {/* Table Header */}
-                                    <div className="flex px-[30px] py-[16px] text-[#111] font-[700] text-[13.5px] bg-white border-b border-gray-200">
-                                        <div className="w-[25%] text-left">Date</div>
-                                        <div className="w-[30%] text-center">Treatment Type</div>
-                                        <div className="w-[25%] text-center">Booking Time</div>
-                                        <div className="w-[20%] text-right font-bold">Payment</div>
-                                    </div>
+                                        {/* Table Header */}
+                                        <div className="flex px-4 md:px-[30px] py-4 text-[#111] font-[700] text-[14px] md:text-[16px] bg-white border-b border-gray-200">
+                                            <div className="w-[25%] text-left">Date</div>
+                                            <div className="w-[30%] text-center">Treatment Type</div>
+                                            <div className="w-[25%] text-center">Booking Time</div>
+                                            <div className="w-[20%] text-right font-bold">Payment</div>
+                                        </div>
 
-                                    {/* Table Rows */}
-                                    <div className="flex flex-col max-h-[240px] overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-                                        {[
-                                            { date: '13 feb,2026', type: 'Regular checkUp', time: '4:00 pm', status: 'Pending' },
-                                            { date: '02 feb,2026', type: 'OPD', time: '10:00 am', status: 'Complete' },
-                                            { date: '20 Jan,2026', type: 'Regular checkUp', time: '12:30 pm', status: 'Complete' },
-                                            { date: '19 Dec,2025', type: 'OPD', time: '9:30 am', status: 'Complete' },
-                                            { date: '10 Nov,2025', type: 'Regular checkUp', time: '11:15 am', status: 'Complete' },
-                                            { date: '05 Oct,2025', type: 'OPD', time: '3:45 pm', status: 'Complete' },
-                                            { date: '22 Aug,2025', type: 'Regular checkUp', time: '2:00 pm', status: 'Complete' },
-                                            { date: '14 Jul,2025', type: 'Skin Check', time: '10:30 am', status: 'Complete' }
-                                        ].map((app, idx) => (
-                                            <div key={idx} className={`flex px-[30px] py-[20px] text-[13px] items-center border-b border-gray-200/50 last:border-0 shrink-0 ${idx % 2 === 0 ? 'bg-[#e4e5e7]/40' : 'bg-white'}`}>
-                                                <div className="w-[25%] text-left font-[500] text-[#666]">{app.date}</div>
-                                                <div className="w-[30%] text-center font-[500] text-[#666]">{app.type}</div>
-                                                <div className="w-[25%] text-center font-[500] text-[#666]">{app.time}</div>
-                                                <div className={`w-[20%] text-right font-[500] tracking-wide ${app.status === 'Pending' ? 'text-orange-500' : 'text-[#42e46d]'}`}>
-                                                    {app.status}
+                                        {/* Table Rows */}
+                                        <div className="flex flex-col max-h-[240px] overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+                                            {[
+                                                { date: '13 feb,2026', type: 'Regular checkUp', time: '4:00 pm', status: 'Pending' },
+                                                { date: '02 feb,2026', type: 'OPD', time: '10:00 am', status: 'Complete' },
+                                                { date: '20 Jan,2026', type: 'Regular checkUp', time: '12:30 pm', status: 'Complete' },
+                                                { date: '19 Dec,2025', type: 'OPD', time: '9:30 am', status: 'Complete' },
+                                                { date: '10 Nov,2025', type: 'Regular checkUp', time: '11:15 am', status: 'Complete' },
+                                                { date: '05 Oct,2025', type: 'OPD', time: '3:45 pm', status: 'Complete' },
+                                                { date: '22 Aug,2025', type: 'Regular checkUp', time: '2:00 pm', status: 'Complete' },
+                                                { date: '14 Jul,2025', type: 'Skin Check', time: '10:30 am', status: 'Complete' }
+                                            ].map((app, idx) => (
+                                                <div key={idx} className={`flex px-4 md:px-[30px] py-4 text-[14px] md:text-[16px] items-center border-b border-gray-200/50 last:border-0 shrink-0 ${idx % 2 === 0 ? 'bg-[#e4e5e7]/40' : 'bg-white'}`}>
+                                                    <div className="w-[25%] text-left font-[500] text-[#666]">{app.date}</div>
+                                                    <div className="w-[30%] text-center font-[500] text-[#666]">{app.type}</div>
+                                                    <div className="w-[25%] text-center font-[500] text-[#666]">{app.time}</div>
+                                                    <div className={`w-[20%] text-right font-[500] tracking-wide ${app.status === 'Pending' ? 'text-orange-500' : 'text-[#42e46d]'}`}>
+                                                        {app.status}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
 
                                     {/* Bottom Arrow Expander */}

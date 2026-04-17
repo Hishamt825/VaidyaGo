@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import VerticalProgress1 from "./VerticalProgress1";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "../../baseUrl";
 
 // import { FaUsersGear } from "react-icons/fa6";
 
@@ -32,22 +33,26 @@ export default function Admin_signup() {
     e.preventDefault();
 
     try {
+      // 🕵️ Debug: Request details check
+      const fullUrl = `${BASE_URL}/accounts/api/admin/signup/`;
+      console.log("Full Request URL:", fullUrl);
+      console.log("Sending Payload:", { email, phone, password, confirm_password, role });
+
       // ✅ Send POST request to backend
-      const response = await fetch(
-        "https://tubajavedd.pythonanywhere.com/accounts/api/admin/signup/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            phone,
-            password,
-            confirm_password,
-          }),
-        }
-      );
+      const response = await fetch(fullUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          phone,
+          password,
+          confirm_password,
+          role, // 🔑 Ab 'role' (Admin/Doctor) bhi backend ko jayega
+        }),
+      });
 
       // ✅ Try to parse JSON response
       let data = null;

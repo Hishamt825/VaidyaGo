@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaUsersGear } from "react-icons/fa6";
+import BASE_URL from "../../baseUrl";
 
 
 const AdminLoginPage = () => {
@@ -26,7 +27,7 @@ const handleLogin = async (e) => {
 
   try {
     const response = await fetch(
-      "https://tubajavedd.pythonanywhere.com/accounts/api/admin/login/",
+      `${BASE_URL}/accounts/api/admin/login/`,
       {
         method: "POST",
         headers: {

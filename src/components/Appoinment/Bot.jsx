@@ -31,13 +31,13 @@ const Bot = () => {
     // Create Bot Modal states
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [botName, setBotName] = useState('');
-    const [selectedAvatar, setSelectedAvatar] = useState(0); // 0-3 robots, 4 male doc, 5 female doc
+    const [selectedAvatar, setSelectedAvatar] = useState(5); // 0-3 robots, 4 male doc, 5 female doc
     const [selectedPersonality, setSelectedPersonality] = useState('Friendly');
     
     // Store the "Created" bot details
     const [createdBot, setCreatedBot] = useState({ 
         name: 'Bot', 
-        avatar: 0, 
+        avatar: 5, 
         personality: 'Friendly' 
     });
 
@@ -138,34 +138,34 @@ const Bot = () => {
         <div className="h-screen bg-[#f0f6f9] flex flex-col font-sans text-gray-700 overflow-hidden">
 
             {/* Top Header */}
-            <header className="flex justify-between items-center px-8 py-5 shrink-0 z-10 relative">
+            <header className="flex flex-row justify-between items-center px-4 md:px-8 py-4 md:py-5 shrink-0 z-10 relative bg-[#f0f6f9]">
                 <div className="flex items-center">
-                    <img src={logoUrl} alt="Logo" className="h-9" />
+                    <img src={logoUrl} alt="Logo" className="h-7 md:h-9" />
                 </div>
 
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-3 md:gap-5">
                     {/* Settings Button */}
-                    <button className="w-[50px] h-[50px] bg-white rounded-[14px] shadow-[0_4px_12px_rgba(0,0,0,0.06)] flex items-center justify-center border-0 text-black hover:bg-gray-50 transition-colors cursor-pointer">
-                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button className="hidden sm:flex w-[40px] md:w-[50px] h-[40px] md:h-[50px] bg-white rounded-[10px] md:rounded-[14px] shadow-sm flex items-center justify-center border-0 text-black hover:bg-gray-50 transition-colors cursor-pointer">
+                        <svg className="w-[18px] md:w-[22px] h-[18px] md:h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </button>
 
                     {/* Notification Button */}
-                    <button className="relative w-[50px] h-[50px] bg-white rounded-[14px] shadow-[0_4px_12px_rgba(0,0,0,0.06)] flex items-center justify-center border-0 text-[#091a26] hover:bg-gray-50 transition-colors cursor-pointer">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button className="relative w-[40px] md:w-[50px] h-[40px] md:h-[50px] bg-white rounded-[10px] md:rounded-[14px] shadow-sm flex items-center justify-center border-0 text-[#091a26] hover:bg-gray-50 transition-colors cursor-pointer">
+                        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
-                        <div className="absolute top-[4px] right-[4px] bg-[#3f216b] text-white text-[12px] font-bold w-[20px] h-[20px] flex items-center justify-center rounded-full shadow-sm z-10 leading-none pb-[1px] translate-x-1 -translate-y-1">
+                        <div className="absolute top-[2px] right-[2px] bg-[#3f216b] text-white text-[10px] md:text-[12px] font-bold w-[16px] md:w-[20px] h-[16px] md:h-[20px] flex items-center justify-center rounded-full shadow-sm z-10 leading-none translate-x-1 -translate-y-1">
                             1
                         </div>
                     </button>
 
                     {/* Profile Pill */}
-                    <button className="bg-white border-[2px] border-white shadow-[0_4px_15px_rgba(0,0,0,0.08)] rounded-full flex items-center pl-6 pr-0 py-0 hover:bg-gray-50 transition-colors h-[50px] ml-2 outline-none cursor-pointer">
-                        <span className="font-bold text-[18px] text-black tracking-wide mr-4">Mr. Ali</span>
-                        <div className="w-[46px] h-[46px] rounded-full overflow-hidden shrink-0 shadow-inner mr-[2px]">
+                    <button className="bg-white border-[2px] border-white shadow-sm rounded-full flex items-center pl-3 md:pl-6 pr-0 py-0 hover:bg-gray-50 transition-colors h-[40px] md:h-[50px] ml-1 md:ml-2 outline-none cursor-pointer">
+                        <span className="hidden sm:inline font-bold text-[16px] md:text-[18px] text-black tracking-wide mr-4">Mr. Ali</span>
+                        <div className="w-[36px] md:w-[46px] h-[36px] md:h-[46px] rounded-full overflow-hidden shrink-0 shadow-inner mr-[2px]">
                             <img src={img2} alt="Mr. Ali" className="w-full h-full object-cover scale-[1.03]" />
                         </div>
                     </button>
@@ -173,10 +173,10 @@ const Bot = () => {
             </header>
 
             {/* Main Content Layout */}
-            <main className="flex-1 flex px-8 pb-8 gap-5 overflow-hidden min-h-0">
+            <main className="flex-1 flex flex-col lg:flex-row px-4 md:px-8 pb-4 md:pb-8 gap-5 overflow-hidden min-h-0">
 
                 {/* Left Side Floating Icons */}
-                <div className="w-12 shrink-0 flex flex-col items-center gap-[22px] mt-[100px] z-20">
+                <div className="hidden lg:flex w-12 shrink-0 flex-col items-center gap-[22px] mt-[100px] z-20">
 
                     {/* Home Icon */}
                     <button
@@ -259,19 +259,30 @@ const Bot = () => {
                     </div>
 
                     {/* Header Title inside chat */}
-                    <div className="relative z-10 px-8 py-6 pb-2">
-                        <h1 className="text-[26px] font-bold text-[#b6d0d7] flex items-center gap-3">
-                            Chatbot
-                            {/* Small Bot Icon */}
-                            <div className="w-[30px] h-[30px] bg-[#eef7fb] rounded-full flex items-center justify-center shadow-sm relative">
-                                <svg className="w-4 h-4 text-[#47a6b4]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                                    <rect x="5" y="6" width="14" height="12" rx="2" />
-                                    <path d="M9 10h.01M15 10h.01M12 2v4M10 21h4M7 6V4a2 2 0 012-2h6a2 2 0 012 2v2" />
-                                </svg>
-                                {/* Online indicator */}
-                                <span className="absolute top-[2px] right-[-2px] w-2 h-2 bg-green-400 border border-white rounded-full"></span>
+                    <div className="relative z-10 px-4 md:px-8 py-4 md:py-6 pb-2">
+                        <div className="flex justify-between items-center mb-1">
+                            <h1 className="text-[24px] md:text-[30px] font-bold text-[#b6d0d7] flex items-center gap-3">
+                                Chatbot
+                                {/* Small Bot Icon */}
+                                <div className="w-[24px] md:w-[30px] h-[24px] md:h-[30px] bg-[#eef7fb] rounded-full flex items-center justify-center shadow-sm relative">
+                                    <svg className="w-3 md:w-4 h-3 md:h-4 text-[#47a6b4]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                        <rect x="5" y="6" width="14" height="12" rx="2" />
+                                        <path d="M9 10h.01M15 10h.01M12 2v4M10 21h4M7 6V4a2 2 0 012-2h6a2 2 0 012 2v2" />
+                                    </svg>
+                                    {/* Online indicator */}
+                                    <span className="absolute top-[1px] right-[-1px] w-1.5 h-1.5 bg-green-400 border border-white rounded-full"></span>
+                                </div>
+                            </h1>
+                            {/* Mobile Home/Clear Actions */}
+                            <div className="flex lg:hidden gap-2">
+                                <button onClick={() => navigate(-1)} className="p-2 bg-[#eef7fb] rounded-full text-[#309bc0]">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                </button>
+                                <button onClick={handleClearAll} className="p-2 bg-[#47a6b4] rounded-full text-white">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
                             </div>
-                        </h1>
+                        </div>
                     </div>
 
                     {/* Scrollable Chat History */}
@@ -296,10 +307,10 @@ const Bot = () => {
                                                 alt="Bot" 
                                             />
                                         </div>
-                                        <div className="max-w-[50%] min-w-[340px]">
-                                            <div className="bg-white border-[1px] border-[#9bc4cf]/60 rounded-[14px] rounded-tl-none px-6 py-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] flex flex-col text-[14px] font-[500] leading-relaxed text-black tracking-wide relative">
+                                <div className="max-w-[85%] md:max-w-[50%] min-w-0 md:min-w-[340px]">
+                                            <div className="bg-white border-[1px] border-[#9bc4cf]/60 rounded-[14px] rounded-tl-none px-4 md:px-6 py-3 md:py-5 shadow-[0_2px_15px_rgba(0,0,0,0.02)] flex flex-col text-[14px] md:text-[16px] font-[500] leading-relaxed text-black tracking-wide relative">
                                                 <span className="absolute -left-[7px] top-[-1px] w-[14px] h-[14px] bg-white border-l-[1px] border-t-[1px] border-[#9bc4cf]/60 rounded-tl-[4px]" style={{ transform: 'skewX(45deg) rotate(0deg)' }}></span>
-                                                <p className="relative z-10">{msg.text}</p>
+                                                <p className="relative z-10 break-words">{msg.text}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -308,10 +319,10 @@ const Bot = () => {
 
                                 return (
                                     <div key={msg.id} className="flex w-full items-start justify-end gap-4 mt-4 pb-[10px]">
-                                        <div className="max-w-[50%]">
-                                            <div className="bg-[#eefcfc] border-[1px] border-[#bfe7ec] rounded-[14px] rounded-tr-none px-6 py-4 shadow-sm flex flex-col text-[14px] font-[500] leading-relaxed text-[#111] relative">
+                                        <div className="max-w-[85%] md:max-w-[50%]">
+                                            <div className="bg-[#eefcfc] border-[1px] border-[#bfe7ec] rounded-[14px] rounded-tr-none px-4 md:px-6 py-3 md:py-4 shadow-sm flex flex-col text-[14px] md:text-[16px] font-[500] leading-relaxed text-[#111] relative">
                                                 <span className="absolute -right-[7px] top-[-1px] w-[14px] h-[14px] bg-[#eefcfc] border-r-[1px] border-t-[1px] border-[#bfe7ec] rounded-tr-[4px]" style={{ transform: 'skewX(-45deg) rotate(0deg)' }}></span>
-                                                <p className="relative z-10">{msg.text}</p>
+                                                <p className="relative z-10 break-words">{msg.text}</p>
                                             </div>
                                         </div>
                                         <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border-[1.5px] border-[#d7e5eb] mt-0 shadow-sm">
@@ -341,7 +352,7 @@ const Bot = () => {
                             onChange={(e) => setInputText(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                             placeholder="Ask or search anything"
-                            className="flex-1 bg-transparent px-4 py-2 text-[14px] outline-none text-gray-700 placeholder:text-[#999] font-[500]"
+                            className="flex-1 bg-transparent px-4 py-2 text-[16px] outline-none text-gray-700 placeholder:text-[#999] font-[500]"
                         />
 
                         {/* Mic Icon */}
@@ -373,10 +384,10 @@ const Bot = () => {
                 </div>
 
                 {/* Right Sidebar */}
-                <div className="w-[280px] shrink-0 flex flex-col gap-5 h-full overflow-hidden min-h-0">
+                <div className="w-full lg:w-[280px] shrink-0 flex flex-col sm:flex-row lg:flex-col gap-5 h-auto lg:h-full overflow-hidden min-h-0">
 
                     {/* Chat History Component */}
-                    <div className="flex-1 bg-[#edf5f8] rounded-[16px] flex flex-col border border-[#cfdfe5] overflow-hidden min-h-0">
+                    <div className="flex-1 bg-[#edf5f8] rounded-[16px] flex flex-col border border-[#cfdfe5] overflow-hidden min-h-[200px] lg:min-h-0 lg:h-full">
                         {/* Header */}
                         <div className="bg-[#6db4bf] text-white font-semibold flex items-center px-5 h-[48px] text-[15px] tracking-wide shrink-0">
                             Chat History
@@ -398,7 +409,7 @@ const Bot = () => {
                                 return (
                                     <div
                                         key={hist.id}
-                                        className="relative bg-[#f8b2b2] border border-[#f0a8a8] rounded-[6px] shadow-sm flex overflow-hidden shrink-0 min-h-[64px]"
+                                        className="relative bg-white border border-[#e2eef1] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex overflow-hidden shrink-0 min-h-[60px]"
                                     >
                                         {/* Delete Background / Button */}
                                         <div
@@ -413,7 +424,7 @@ const Bot = () => {
 
                                         {/* Swiping Foreground */}
                                         <div
-                                            className="absolute left-0 top-0 bottom-0 w-full bg-white border border-gray-200 rounded-[6px] p-3 cursor-grab active:cursor-grabbing flex items-center shadow-[0_2px_4px_rgba(0,0,0,0.02)]"
+                                            className="absolute left-0 top-0 bottom-0 w-full bg-white px-4 py-3 cursor-grab active:cursor-grabbing flex items-center"
                                             style={{
                                                 transform: `translateX(${translateX}px)`,
                                                 transition: isDragging ? 'none' : 'transform 0.2s ease-out'
@@ -426,7 +437,7 @@ const Bot = () => {
                                             onTouchMove={handleDragMove}
                                             onTouchEnd={handleDragEnd}
                                         >
-                                            <p className="text-[10px] text-gray-500 leading-[1.6] line-clamp-3 font-[500] pointer-events-none w-full">
+                                            <p className="text-[11px] text-[#4a5a65] leading-[1.5] line-clamp-3 font-[500] pointer-events-none w-full">
                                                 {hist.text}
                                             </p>
                                         </div>
@@ -437,43 +448,39 @@ const Bot = () => {
                     </div>
 
                     {/* Create Doc Bot Component */}
-                    <div className="h-[280px] bg-white rounded-[16px] border-[1.5px] border-gray-200 relative overflow-hidden flex flex-col shrink-0 shadow-sm mt-1">
+                    <div className="flex-1 lg:flex-none h-[250px] md:h-[300px] bg-[#f7fdfe] rounded-[22px] border border-[#e1eef1] relative overflow-hidden flex flex-col shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.03)] mt-1">
                         {/* Background Circles */}
-                        <div className="absolute top-[-25%] right-[-30%] w-[220px] h-[220px] bg-[#e4f4f7] rounded-full z-0"></div>
-                        <div className="absolute bottom-[-15%] left-[-25%] w-[260px] h-[260px] bg-[#6eb9c5] rounded-full z-0 opacity-90"></div>
+                        <div className="absolute top-[-20%] right-[-15%] w-[180px] h-[180px] bg-[#e3f4f7] rounded-full z-0 opacity-60"></div>
+                        <div className="absolute bottom-[-15%] left-[-15%] w-[240px] h-[240px] bg-[#6db4bf] rounded-full z-0 opacity-20"></div>
 
                         {/* Illustration Group */}
-                        <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-[200px] h-[130px] z-10 flex items-end justify-center">
+                        <div className="absolute top-[12%] left-1/2 -translate-x-1/2 w-[240px] h-[150px] z-10 flex items-end justify-center">
                             {/* Female Doctor (Left) */}
-                            <div className="absolute left-[0px] bottom-[5px] w-[130px] z-10 pointer-events-none">
-                                <img src={avatr6} alt="Female Doctor" className="w-full object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.08)]" />
+                            <div className="absolute left-[5px] bottom-[5px] w-[125px] z-10 pointer-events-none">
+                                <img src={avatr6} alt="Female Doctor" className="w-full object-contain drop-shadow-[0_8px_15px_rgba(0,0,0,0.08)]" />
                             </div>
                             {/* Male Doctor (Right) */}
-                            <div className="absolute right-[0px] bottom-[5px] w-[105px] z-0 pointer-events-none">
-                                <img src={avatr5} alt="Male Doctor" className="w-full object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.08)]" />
+                            <div className="absolute right-[5px] bottom-[5px] w-[120px] z-0 pointer-events-none translate-x-2">
+                                <img src={avatr5} alt="Male Doctor" className="w-full object-contain drop-shadow-[0_8px_15px_rgba(0,0,0,0.08)]" />
                             </div>
-                            {/* Robot Core (Center, Front) */}
-                            <div className="absolute left-1/2 -translate-x-1/2 bottom-[-15px] w-[95px] z-20 pointer-events-none">
-                                <img src={avatr1} alt="Robot Bot" className="w-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.15)]" />
+                            {/* Robot Bot (Center, Front) */}
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-[-10px] w-[90px] z-20 pointer-events-none">
+                                <img src={avatr3} alt="Robot Bot" className="w-full object-contain drop-shadow-[0_12px_25px_rgba(0,0,0,0.15)]" />
                             </div>
                         </div>
-
 
                         {/* Button */}
                         <button 
                             onClick={() => setShowCreateModal(true)}
-                            className="absolute bottom-[20px] left-1/2 -translate-x-1/2 bg-white rounded-full px-[18px] py-[10px] font-bold tracking-wide text-[#2b8696] text-[14px] shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[6px] hover:bg-gray-50 transition-colors z-20 whitespace-nowrap outline-none border border-gray-100 min-w-[170px]"
+                            className="absolute bottom-[22px] left-1/2 -translate-x-1/2 bg-white rounded-full px-6 py-2.5 font-bold tracking-wide text-[#3c90a0] text-[16px] shadow-[0_4px_15px_rgba(0,0,0,0.06)] border border-[#e1eef1] flex items-center justify-center gap-[8px] hover:bg-gray-50 hover:shadow-md transition-all z-20 whitespace-nowrap outline-none min-w-[200px]"
                         >
                             {/* Embedded Bot Icon & Bubble */}
-                            <div className="flex items-center relative mr-1">
-                                <svg className="w-[20px] h-[20px] text-[#245b85]" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="4" y="6" width="16" height="12" rx="3" />
-                                    <path d="M12 2v4M8 22h8M10 22v-4M14 22v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                    <circle cx="9" cy="11" r="1.5" fill="#58d4e7" />
-                                    <circle cx="15" cy="11" r="1.5" fill="#58d4e7" />
-                                </svg>
+                            <div className="flex items-center relative">
+                                <div className="w-[30px] h-[30px] flex items-center justify-center">
+                                    <img src={avatr3} alt="Bot Icon" className="w-full h-full object-contain drop-shadow-sm" />
+                                </div>
                                 {/* Green Speech Bubble */}
-                                <div className="absolute -top-[8px] -right-[5px] bg-[#62b962] rounded-[3px] w-[13px] h-[10px] flex items-center justify-center border-[0.5px] border-white">
+                                <div className="absolute -top-[6px] -right-[5px] bg-[#62b962] rounded-[3px] w-[14px] h-[10px] flex items-center justify-center border-[0.5px] border-white shadow-sm">
                                     <div className="flex gap-[1.5px]">
                                         <span className="w-[1.5px] h-[1.5px] bg-white rounded-full"></span>
                                         <span className="w-[1.5px] h-[1.5px] bg-white rounded-full"></span>
@@ -492,61 +499,60 @@ const Bot = () => {
 
             {/* Create Your DOC BOT Modal */}
             {showCreateModal && (
-                <div className="fixed inset-0 bg-black/30 backdrop-blur-[6px] z-[100] flex items-center justify-center animate-in fade-in duration-300">
-                    <div className="bg-[#eefcfc] w-[580px] rounded-[30px] shadow-[0_30px_70px_rgba(0,0,0,0.2)] overflow-hidden border border-white/60 flex flex-col transform transition-all animate-in zoom-in-95 duration-300">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-[4px] z-[100] flex items-center justify-center p-4">
+                    <div className="bg-[#eefcfc] w-full max-w-[620px] rounded-[32px] shadow-[0_30px_80px_rgba(0,0,0,0.15)] overflow-hidden border border-white flex flex-col pt-8 pb-10 px-6 md:px-12 gap-6 relative max-h-[95vh] overflow-y-auto">
                         
                         {/* Modal Header */}
-                        <div className="bg-white/80 py-5 px-6 flex justify-center items-center shadow-sm relative border-b border-[#aee2e9]/30">
-                            <div className="flex items-center gap-3 bg-[#aee2e9]/40 px-8 py-2.5 rounded-[16px] border border-[#7ed0db]">
-                                <img src={avatr1} alt="Robot Title" className="w-[32px] h-[32px] drop-shadow-sm" />
-                                <h2 className="text-[23px] font-bold text-[#092a35] tracking-tight">Create Your DOC BOT</h2>
+                        <div className="flex justify-center mb-2 md:mb-4">
+                            <div className="bg-[#aee2e9] px-6 md:px-10 py-2 md:py-3 rounded-full flex items-center gap-2 md:gap-4 border border-[#7ed0db] shadow-inner">
+                                <img src={avatr3} alt="Robot Title" className="w-[30px] md:w-[38px] h-[30px] md:h-[38px] drop-shadow-md" />
+                                <h2 className="text-[20px] md:text-[30px] font-bold text-[#092a35] tracking-tight">Create Your DOC BOT</h2>
                             </div>
                         </div>
 
+                        <div className="text-center font-bold text-[#4a5a65] text-[15px] mb-2">
+                            Customize Your Chatbot Character
+                        </div>
 
-                        {/* Modal Body */}
-                        <div className="px-12 py-8 flex flex-col gap-8">
-                            <div className="text-center font-bold text-[#4a5a65] text-[16px] tracking-wide">
-                                Customize Your Chatbot Character
-                            </div>
+                        {/* DocBot Name */}
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-6">
+                            <label className="text-[16px] md:text-[18px] font-bold text-[#2d3a43] shrink-0 md:min-w-[140px] md:text-right">DocBot Name:</label>
+                            <input 
+                                type="text" 
+                                placeholder="Enter Name....."
+                                value={botName}
+                                onChange={(e) => setBotName(e.target.value)}
+                                className="flex-1 bg-white border border-[#c3dcde] rounded-full px-6 py-2.5 text-[16px] outline-none shadow-sm focus:border-[#49a0b1] font-medium"
+                            />
+                        </div>
 
-                            {/* Bot Name Input */}
-                            <div className="flex items-center gap-6">
-                                <label className="text-[17px] font-bold text-[#2d3a43] shrink-0 min-w-[130px]">DocBot Name:</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="Enter Name....."
-                                    value={botName}
-                                    onChange={(e) => setBotName(e.target.value)}
-                                    className="flex-1 bg-white border border-[#c3dcde] rounded-[12px] px-5 py-3 text-[15px] outline-none shadow-[inset_0_2px_4px_rgba(0,0,0,0.03)] focus:border-[#49a0b1] focus:ring-2 focus:ring-[#49a0b1]/20 transition-all font-medium placeholder:text-gray-400"
-                                />
-                            </div>
+                        {/* Divider */}
+                        <div className="h-[1px] bg-gray-300/40 w-full"></div>
 
-                            {/* Divider Line */}
-                            <div className="h-[1px] bg-gradient-to-r from-transparent via-[#999]/20 to-transparent w-full"></div>
-
-                            {/* Select Avatar */}
-                            <div className="flex flex-col gap-5">
-                                <label className="text-[17px] font-bold text-[#2d3a43]">Select Avatar:</label>
-                                <div className="grid grid-cols-4 gap-y-6 justify-items-center px-1">
-                                    {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => {
-                                        const avatars = [avatr1, avatr2, avatr3, avatr4, avatr5, avatr6, avatr7, avatr8];
+                        {/* Select Avatar */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-6">
+                                <label className="text-[16px] md:text-[18px] font-bold text-[#2d3a43] shrink-0 md:min-w-[140px] md:text-right">Select Avatar:</label>
+                                <div className="flex-1 flex justify-between px-2 w-full overflow-x-auto pb-2 no-scrollbar">
+                                    {[0, 1, 2, 3, 4, 5].map((idx) => {
+                                        const avatars = [avatr1, avatr2, avatr3, avatr4, avatr5, avatr6];
                                         const imgSource = avatars[idx];
+                                        const isSelected = selectedAvatar === idx;
                                         const isDoctor = idx === 4 || idx === 5;
 
                                         return (
                                             <div 
                                                 key={idx}
-                                                className={`relative cursor-pointer transition-all ${selectedAvatar === idx ? 'scale-115 drop-shadow-xl z-10' : 'opacity-70 hover:opacity-100 hover:scale-110'}`}
+                                                className={`relative cursor-pointer transition-all ${isSelected ? 'scale-110' : 'opacity-80 hover:opacity-100 hover:scale-105'}`}
                                                 onClick={() => setSelectedAvatar(idx)}
                                             >
                                                 <img 
                                                     src={imgSource} 
                                                     alt={`Avatar ${idx + 1}`} 
-                                                    className={`w-[62px] h-[62px] object-contain ${isDoctor ? 'w-[78px] h-[78px] mb-[-4px]' : ''}`}
+                                                    className={`w-[52px] h-[52px] object-contain ${isDoctor ? 'w-[68px] h-[68px]' : ''}`}
                                                 />
-                                                {selectedAvatar === idx && (
-                                                    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-5 bg-[#fbd235] rounded-full border-[2px] border-white flex items-center justify-center shadow-md animate-in zoom-in-50">
+                                                {isSelected && (
+                                                    <div className="absolute -bottom-1 right-0 w-5 h-5 bg-[#fbd235] rounded-full border-[2px] border-white flex items-center justify-center shadow-md">
                                                         <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="4">
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                                         </svg>
@@ -557,46 +563,45 @@ const Bot = () => {
                                     })}
                                 </div>
                             </div>
+                        </div>
 
+                        {/* Divider */}
+                        <div className="h-[1px] bg-gray-300/40 w-full"></div>
 
-                            {/* Divider Line */}
-                            <div className="h-[1px] bg-gradient-to-r from-transparent via-[#999]/20 to-transparent w-full"></div>
-
-                            {/* Choose Personality */}
-                            <div className="flex flex-col gap-5">
-                                <label className="text-[17px] font-bold text-[#2d3a43]">Choose Personality:</label>
-                                <div className="flex gap-5">
-                                    {['Friendly', 'Helper', 'Professional'].map((type) => (
-                                        <button 
-                                            key={type}
-                                            onClick={() => setSelectedPersonality(type)}
-                                            className={`flex-1 py-3 px-2 rounded-[14px] font-bold text-[16px] border-[2.5px] transition-all
-                                                ${selectedPersonality === type 
-                                                    ? 'bg-[#409eb0] border-[#378c9d] text-white shadow-[0_8px_20px_rgba(64,158,176,0.35)] -translate-y-0.5' 
-                                                    : 'bg-white border-white text-[#5a6a75] hover:border-[#409eb0]/20 shadow-sm'
-                                                }`}
-                                        >
-                                            {type}
-                                        </button>
-                                    ))}
-                                </div>
+                        {/* Choose Personality */}
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-6">
+                            <label className="text-[16px] md:text-[18px] font-bold text-[#2d3a43] shrink-0 md:min-w-[140px] md:text-right">Choose Personality:</label>
+                            <div className="flex-1 flex flex-wrap gap-2 md:gap-4 w-full">
+                                {['Friendly', 'Helper', 'Professional'].map((type) => (
+                                    <button 
+                                        key={type}
+                                        onClick={() => setSelectedPersonality(type)}
+                                        className={`flex-1 py-2 md:py-3 px-2 rounded-[14px] md:rounded-[18px] font-bold text-[14px] md:text-[18px] border-[1.5px] transition-all shadow-sm min-w-[100px]
+                                            ${selectedPersonality === type 
+                                                ? 'bg-[#3c90a1] border-[#3c90a1] text-white' 
+                                                : 'bg-white border-gray-200 text-[#5a6a75] hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {type}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Modal Footer */}
-                        <div className="px-12 pb-10 pt-4 flex gap-8">
+                        {/* Footer Buttons */}
+                        <div className="mt-4 flex flex-col md:flex-row gap-4 md:gap-6">
                             <button 
                                 onClick={() => setShowCreateModal(false)}
-                                className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 py-4 rounded-[20px] text-[19px] font-bold text-[#2d3a43] shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 transition-all outline-none"
+                                className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 py-3 md:py-3.5 rounded-full text-[18px] md:text-[20px] font-bold text-[#2d3a43] shadow-sm transition-all order-2 md:order-1"
                             >
-                                Cancle
+                                Cancel
                             </button>
                             <button 
                                 onClick={handleCreateBot}
-                                className="flex-1 bg-[#47a6b4] hover:bg-[#3d8e9a] py-4 rounded-[20px] text-[18px] font-bold text-[#091a1e] shadow-[0_8px_25px_rgba(71,166,180,0.4)] hover:-translate-y-1 transition-all outline-none flex items-center justify-center gap-3"
+                                className="flex-1 bg-[#3c90a1] hover:bg-[#317a8a] py-3 md:py-3.5 rounded-full text-[18px] md:text-[20px] font-bold text-white shadow-[0_8px_20px_rgba(60,144,161,0.3)] transition-all flex items-center justify-center gap-3 order-1 md:order-2"
                             >
-                                <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                                    <img src={avatr1} alt="Robot Title" className="w-[16px] h-[16px] brightness-0 invert" />
+                                <div className="w-5 md:w-6 h-5 md:h-6 flex items-center justify-center">
+                                    <img src={avatr3} alt="Robot Title" className="w-full h-full brightness-0 invert" />
                                 </div>
                                 Create DocBot
                             </button>

@@ -26,11 +26,11 @@ export default function Vertical({ activeStep, setActiveStep }) {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 mb-10 mt-6 overflow-hidden">
+    <div className="w-full max-w-5xl mx-auto px-1 sm:px-4 md:px-8 mb-6 md:mb-10 mt-4 md:mt-6 overflow-hidden">
       <div className="relative flex justify-between w-full">
 
-        {/* Continuous Connecting Line - Exactly spans from center of 1st circle to center of 4th */}
-        <div className="absolute top-[19px] left-[12.5%] right-[12.5%] h-[6px] bg-[#CFD4DC] z-0 overflow-hidden">
+        {/* Continuous Connecting Line */}
+        <div className="absolute top-[14px] xs:top-[16px] md:top-[19px] left-[12.5%] right-[12.5%] h-[4px] md:h-[6px] bg-[#CFD4DC] z-0 overflow-hidden">
           {/* Active colored line Fill */}
           <div
             className="h-full bg-[#0A193B] transition-all duration-500 ease-in-out"
@@ -48,7 +48,7 @@ export default function Vertical({ activeStep, setActiveStep }) {
             contentToShow = step.id;
           } else if (isCompleted) {
             contentToShow = (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-4 h-4 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             );
@@ -74,10 +74,10 @@ export default function Vertical({ activeStep, setActiveStep }) {
             >
               {/* Circle */}
               <div
-                className={`w-[44px] h-[44px] flex items-center justify-center rounded-full text-[18px] font-medium tracking-wide transition-all duration-300
+                className={`w-[28px] h-[28px] xs:w-[32px] xs:h-[32px] md:w-[44px] md:h-[44px] flex items-center justify-center rounded-full text-[14px] md:text-[18px] font-medium tracking-wide transition-all duration-300 shrink-0
                   ${isCurrent || isCompleted
                     ? "bg-[#0A193B] text-white border-[2px] border-[#0A193B]"
-                    : "bg-white text-[#0A193B] border-[2px] border-[#0A193B]"
+                    : "bg-white text-[#0A193B] border-[1.5px] md:border-[2px] border-[#0A193B]"
                   }`}
               >
                 {contentToShow}
@@ -85,8 +85,8 @@ export default function Vertical({ activeStep, setActiveStep }) {
 
               {/* Label */}
               <p
-                className={`mt-4 text-[14px] md:text-[16px] text-center whitespace-nowrap transition-colors duration-300
-                ${isCurrent || isCompleted ? "text-[#101828] font-[600]" : "text-[#475467] font-medium"
+                className={`mt-2 md:mt-4 text-[10px] md:text-[16px] text-center whitespace-normal md:whitespace-nowrap transition-colors duration-300 px-1 leading-tight
+                ${isCurrent || isCompleted ? "text-[#101828] font-bold md:font-[600]" : "text-[#475467] font-medium"
                   }`}
               >
                 {step.label}

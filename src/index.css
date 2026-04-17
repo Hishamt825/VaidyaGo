@@ -6,3 +6,25 @@
   @apply w-full rounded-2xl bg-[#F9E6CF] px-5 py-3 outline-none 
          ring-2 ring-red-300 focus:ring-red-600 shadow-inner;
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+@keyframes pump {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.15); }
+  65% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.animate-pump {
+  animation: pump 0.8s infinite ease-in-out;
+}

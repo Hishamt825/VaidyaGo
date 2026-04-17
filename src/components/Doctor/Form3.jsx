@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Vertical from "./Vertical";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "../../baseUrl";
 const Form3 = () => {
   const navigate = useNavigate();
 
@@ -40,7 +41,7 @@ const [activeStep, setActiveStep] = useState(3);
 
       try {
         const response = await fetch(
-          `https://tubajavedd.pythonanywhere.com/api/doctor/${doctor_id}/hospital-info/${hospital_info_id}/`,
+          `${BASE_URL}/api/doctor/${doctor_id}/hospital-info/${hospital_info_id}/`,
           {
             headers: {
               Authorization: `Bearer ${currentToken}`
@@ -102,7 +103,7 @@ const [activeStep, setActiveStep] = useState(3);
         return;
       }
 
-      const baseUrl = `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/hospital-info/`;
+      const baseUrl = `${BASE_URL}/api/doctor/${doctorId}/hospital-info/`;
 
       const id = localStorage.getItem("hospital_info_id");
       const isChanged = JSON.stringify(initialData) !== JSON.stringify(formData);
@@ -164,7 +165,7 @@ const [activeStep, setActiveStep] = useState(3);
       // Always GET latest data
       const stored_hospital_info_id = localStorage.getItem("hospital_info_id");
       const getRes = await fetch(
-        `https://tubajavedd.pythonanywhere.com/api/doctor/${doctorId}/hospital-info/${stored_hospital_info_id}/`,
+        `${BASE_URL}/api/doctor/${doctorId}/hospital-info/${stored_hospital_info_id}/`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (getRes.ok) {
