@@ -55,8 +55,10 @@ import Vitals from './components/Patient/Vitals';
 import Reminder from './components/Patient/Reminder';
 import Medication1 from './components/Patient/Medication1';
 import Setting from './components/Patient/Setting';
-import Ptatient_rem from './components/Patient/Ptatient_rem';
+import Appointment from './components/Patient/Appointment';
 import Message from './components/Patient/Message';
+import Record from './components/Patient/Record';
+import Reminder1 from './components/Patient/Reminder1';
 
 
 // Debug logging to find the invalid component
@@ -123,8 +125,10 @@ const App = () => {
       <Route path="/Medication" element={<Medication1 />} />
       <Route path="/Reminder" element={<Reminder />} />
       <Route path="/Setting" element={<Setting />} />
-      <Route path="/Patient_rem" element={<Ptatient_rem />} />
+      <Route path="/Appointment" element={<Appointment />} />
       <Route path="/Message" element={<Message />} />
+      <Route path="/Record" element={<Record />} />
+      <Route path="/Reminder1" element={<Reminder1 />} />
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 
     </Routes>

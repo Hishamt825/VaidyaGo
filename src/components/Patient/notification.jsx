@@ -10,35 +10,35 @@ const NotificationItem = ({
     showBorder = true 
 }) => {
     return (
-        <div className={`flex px-[32px] py-[24px] hover:bg-[#fcfdfd] transition-colors ${showBorder ? 'border-b border-[#f4f7f8]' : ''}`}>
+        <div className={`flex px-6 py-4 hover:bg-[#fcfdfd] transition-colors ${showBorder ? 'border-b border-[#f4f7f8]' : ''}`}>
             {/* Icon */}
-            <div className={`w-[52px] h-[52px] rounded-full flex items-center justify-center shrink-0 mr-[24px] ${bgColor}`}>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 mr-4 ${bgColor}`}>
                 {icon}
             </div>
 
             {/* Content */}
             <div className="flex-1">
-                <div className="flex items-center justify-between mb-[6px]">
-                    <span className={`text-[12px] font-bold tracking-[0.1em] uppercase ${typeColor}`}>
+                <div className="flex items-center justify-between mb-0.5">
+                    <span className={`text-[12px] font-medium tracking-[0.1em] uppercase ${typeColor}`}>
                         {type}
                     </span>
                     <span className="text-[#9eaebc] text-[12px] italic">
                         {time}
                     </span>
                 </div>
-                <h3 className="text-[#0D1C2E] text-[17px] font-extrabold mb-[12px] tracking-wide">
+                <h3 className="text-[#0D1C2E] text-base font-medium mb-2 tracking-wide">
                     {title}
                 </h3>
                 
                 {/* Actions */}
-                <div className="flex items-center gap-[20px]">
-                    <button className="flex items-center gap-[6px] text-[#4a5d6a] text-[13.5px] font-bold hover:text-[#0D1C2E] transition-colors">
+                <div className="flex items-center gap-4">
+                    <button className="flex items-center gap-[6px] text-[#4a5d6a] text-[13.5px] font-medium hover:text-[#0D1C2E] transition-colors">
                         <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                         </svg>
                         Mark as read
                     </button>
-                    <button className="flex items-center gap-[6px] text-[#4a5d6a] text-[13.5px] font-bold hover:text-[#0D1C2E] transition-colors">
+                    <button className="flex items-center gap-[6px] text-[#4a5d6a] text-[13.5px] font-medium hover:text-[#0D1C2E] transition-colors">
                         <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -52,9 +52,9 @@ const NotificationItem = ({
 
 const Notification = ({ onClose }) => {
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-[16px] sm:p-[40px] font-serif antialiased">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4 font-serif antialiased">
             {/* Main Window */}
-            <div className="bg-white rounded-[28px] w-full max-w-[760px] max-h-full overflow-y-auto shadow-2xl flex flex-col relative no-scrollbar">
+            <div className="bg-white rounded-[24px] w-full max-w-[600px] max-h-full overflow-y-auto shadow-2xl flex flex-col relative no-scrollbar">
                 
                 {/* Close Button top right */}
                 <button 
@@ -65,16 +65,16 @@ const Notification = ({ onClose }) => {
                 </button>
 
                 {/* Header */}
-                <div className="px-[36px] pt-[36px] pb-[24px] flex items-start justify-between border-b border-[#f4f7f8]">
+                <div className="px-7 pt-7 pb-5 flex items-start justify-between border-b border-[#f4f7f8]">
                     <div>
-                        <h1 className="text-[28px] font-black text-[#0B1423] tracking-wide mb-[6px]">
+                        <h1 className="text-xl font-medium text-[#0B1423] tracking-wide mb-1">
                             Notifications
                         </h1>
-                        <p className="text-[#627382] text-[14.5px] italic">
+                        <p className="text-[13.5px] text-[#627382] italic">
                             Keep track of your clinical activity
                         </p>
                     </div>
-                    <button className="text-[#1A7785] font-bold text-[15px] pt-[8px] hover:text-[#125863] transition-colors">
+                    <button className="text-[#1A7785] font-medium text-[15px] pt-[8px] hover:text-[#125863] transition-colors">
                         Mark all as read
                     </button>
                 </div>
@@ -140,8 +140,8 @@ const Notification = ({ onClose }) => {
                 </div>
 
                 {/* Footer Section */}
-                <button className="w-full bg-[#EAEDEE] py-[22px] flex items-center justify-center hover:bg-[#dfe4e6] transition-colors mt-auto">
-                    <span className="text-[#3E4C56] text-[13px] font-black tracking-[0.15em] uppercase">
+                <button className="w-full bg-[#EAEDEE] py-4 flex items-center justify-center hover:bg-[#dfe4e6] transition-colors mt-auto">
+                    <span className="text-[#3E4C56] text-[12px] font-medium tracking-[0.15em] uppercase">
                         View All Activity History
                     </span>
                 </button>
@@ -151,3 +151,4 @@ const Notification = ({ onClose }) => {
 };
 
 export default Notification;
+
