@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Body.css';
 import frontalBody from '../../../assets/human-body-frontal-removebg-preview 1.svg';
 
@@ -41,6 +42,7 @@ const Icon = ({ name }) => {
 };
 
 const Body = () => {
+  const navigate = useNavigate();
   const [activeRegion, setActiveRegion] = React.useState(null);
 
   const regionData = {
@@ -357,7 +359,7 @@ const Body = () => {
             </div>
           </div>
 
-          <button className="start-diagnostic-btn">
+          <button className="start-diagnostic-btn" onClick={() => navigate('/Diagnostic')}>
             START DIAGNOSTIC <Icon name="chevronRight" />
           </button>
         </aside>

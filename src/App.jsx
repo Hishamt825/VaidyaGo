@@ -11,6 +11,12 @@ import Consultation1 from './component/Day1/Consultation/Consultation1';
 import Diagnostic from './component/Day1/Patient/Diagnostic';
 import Body from './component/Day1/Patient/Body';
 import Editprofile from './component/Day1/Doctor/Editprofile';
+import Diagnosticinput from './component/Day1/Patient/Diagnosticinput';
+import Savechange from './component/Day1/Patient/Savechange';
+import Tthdiagnostic from './component/Day1/Patient/Tthdiagnostic';
+import Myrecord from './component/Day1/Patient/Myrecord';
+import Askspecialist from './component/Day1/Patient/Askspecialist';
+
 
 function App() {
   return (
@@ -40,6 +46,17 @@ function App() {
       <Route path="/body" element={<Body />} />
       <Route path="/Editprofile" element={<Editprofile />} />
       <Route path="/editprofile" element={<Editprofile />} />
+      <Route path="/Diagnosticinput" element={<Diagnosticinput />} />
+      <Route path="/diagnosticinput" element={<Diagnosticinput />} />
+      <Route path="/Savechange" element={<Savechange />} />
+      <Route path="/savechange" element={<Savechange />} />
+      <Route path="/Tthdiagnostic" element={<Tthdiagnostic />} />
+      <Route path="/tthdiagnostic" element={<Tthdiagnostic />} />
+      <Route path="/Myrecord" element={<Myrecord />} />
+      <Route path="/myrecord" element={<Myrecord />} />
+      <Route path="/Askspecialist" element={<Askspecialist />} />
+      <Route path="/askspecialist" element={<Askspecialist />} />
+
     </Routes>
   )
 }

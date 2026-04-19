@@ -1,0 +1,325 @@
+/* Tthdiagnostic.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+.tth-diagnostic-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #102a43 0%, #1a3b4a 50%, #0d2833 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background Blur Elements */
+.tth-bg-blur {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.tth-bg-blur::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(circle, #1db1c2 0%, transparent 70%);
+}
+
+.tth-bg-blur::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  left: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, #2c5282 0%, transparent 70%);
+}
+
+/* Main Modal Card */
+.tth-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 900px;
+  border-radius: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  padding: 40px;
+  color: #1a365d;
+}
+
+.tth-close-btn {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #a0aec0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.tth-close-btn:hover {
+  color: #4a5568;
+}
+
+/* Header Section */
+.tth-header {
+  margin-bottom: 30px;
+}
+
+.tth-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.tth-insight-badge {
+  background: #c6f6f5;
+  color: #2c7a7b;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.tth-report-id {
+  font-size: 12px;
+  color: #718096;
+  font-weight: 500;
+}
+
+.tth-header h1 {
+  font-size: 38px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #112c4e;
+  letter-spacing: -0.5px;
+}
+
+.tth-confidence {
+  font-size: 15px;
+  color: #718096;
+  font-weight: 500;
+}
+
+.tth-confidence span {
+  color: #38b2ac;
+  font-weight: 700;
+}
+
+/* Section Common Styling */
+.tth-section {
+  margin-bottom: 40px;
+}
+
+.tth-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #112c4e;
+  margin-bottom: 20px;
+}
+
+.tth-section-title::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #38b2ac;
+  border-radius: 50%;
+}
+
+/* About Section */
+.tth-about-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 30px;
+  align-items: start;
+}
+
+.tth-about-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4a5568;
+}
+
+.tth-duration-box {
+  background: #ebf8ff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 25px;
+}
+
+.tth-duration-box label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #2b6cb0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.tth-duration-box p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c5282;
+}
+
+.tth-visual-col img {
+  width: 100%;
+  border-radius: 20px;
+  background: #f7fafc;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  object-fit: cover;
+}
+
+/* Symptoms Section */
+.tth-symptoms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.tth-symptom-card {
+  background: #f7fafc;
+  border-radius: 16px;
+  padding: 20px;
+  transition: transform 0.2s;
+}
+
+.tth-symptom-card:hover {
+  transform: translateY(-2px);
+  background: #edf2f7;
+}
+
+.tth-symptom-icon {
+  width: 38px;
+  height: 38px;
+  background: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  color: #38b2ac;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+.tth-symptom-card h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #112c4e;
+}
+
+.tth-symptom-card p {
+  margin: 0;
+  font-size: 12px;
+  color: #718096;
+  line-height: 1.6;
+}
+
+/* How It Works Section */
+.tth-works-wrap {
+  border-left: 3px solid #38b2ac;
+  padding-left: 25px;
+}
+
+.tth-works-content {
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 0 20px 20px 20px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #4a5568;
+}
+
+.tth-works-content b {
+  color: #112c4e;
+  font-weight: 700;
+}
+
+/* Footer Section */
+.tth-footer {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 30px;
+  border-top: 1px solid #edf2f7;
+}
+
+.tth-print-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #112c4e;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tth-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.tth-btn {
+  padding: 12px 28px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tth-btn-outline {
+  background: white;
+  border: 1.5px solid #3182ce;
+  color: #3182ce;
+}
+
+.tth-btn-outline:hover {
+  background: #ebf8ff;
+}
+
+.tth-btn-solid {
+  background: linear-gradient(135deg, #1db1c2 0%, #2c5282 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 10px 20px rgba(29, 177, 194, 0.2);
+}
+
+.tth-btn-solid:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 25px rgba(29, 177, 194, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+  .tth-about-grid {
+    grid-template-columns: 1fr;
+  }
+  .tth-symptoms-grid {
+    grid-template-columns: 1fr;
+  }
+}
