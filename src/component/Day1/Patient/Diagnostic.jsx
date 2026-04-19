@@ -1,19 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Diagnostic.css';
 
 const Icon = ({ name, className }) => {
   const icons = {
     overview: <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" />,
-    symptom: <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01" />,
-    vitals: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
-    meds: <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />,
-    appointments: <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />,
-    messages: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z" />,
-    check: <React.Fragment><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m22 4-11 11.03L9 13.06" /></React.Fragment>,
-    search: <React.Fragment><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3" /></React.Fragment>,
-    bell: <React.Fragment><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9ZM10.3 21a1.94 1.94 0 0 0 3.4 0" /></React.Fragment>,
-    settings: <React.Fragment><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 1 1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3" /></React.Fragment>,
-    book: <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V3A2.5 2.5 0 0 1 6.5 5H20v14H6.5a2.5 2.5 0 0 0-2.5 2.5z" />,
+    symptom: <path d="M11 2a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 0-2 2v4a8 8 0 0 0 16 0v-4a2 2 0 0 0-2-2 2 2 0 0 1-2-2V4a2 2 0 0 0-2-2h-4z" />,
+    vitals: <path d="M3 12h3l3-9 4 18 4-9h4" />,
+    meds: <path d="M9 2h6v2H9V2zm-2 4h10v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6zm3 8h4m-2-2v4" />,
+    appointments: <React.Fragment><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18" /></React.Fragment>,
+    messages: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" />,
+    book: <path d="M20 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zM4 17V7h16v10H4zM7 9h2v2H7V9zm0 4h2v2H7v-2zm4-4h6v2h-6V9zm0 4h6v2h-6v-2z" />,
     pharmacy: <path d="M12 2v20M5 12h14" />,
     video: <React.Fragment><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></React.Fragment>
   };
@@ -34,13 +31,16 @@ const Icon = ({ name, className }) => {
 };
 
 const Diagnostic = () => {
+  const navigate = useNavigate();
   const menuItems = [
-    { id: 'overview', icon: 'overview', label: 'Overview' },
-    { id: 'symptom', icon: 'symptom', label: 'Symptom Checker', active: true },
+    { id: 'dashboard', icon: 'overview', label: 'Dashboard', active: true },
+    { id: 'symptom', icon: 'symptom', label: 'Symptom Checker' },
     { id: 'vitals', icon: 'vitals', label: 'Vitals' },
     { id: 'meds', icon: 'meds', label: 'Medications' },
     { id: 'appointments', icon: 'appointments', label: 'Appointments' },
     { id: 'messages', icon: 'messages', label: 'Messages' },
+    { id: 'reminder', icon: 'appointments', label: 'REMINDER' },
+    { id: 'records', icon: 'book', label: 'MY RECORDS' },
   ];
 
   const conditions = [
@@ -54,17 +54,45 @@ const Diagnostic = () => {
       {/* Dynamic Sidebar */}
       <aside className="diagnostic-sidebar">
         <div className="sidebar-logo">
-          <h2>VADYA<span style={{ color: '#fff', opacity: 0.8 }}>Go</span></h2>
+          <div className="logo-wrapper">
+            <div className="logo-v">V</div>
+            <div className="logo-a">
+              <svg className="leaf-icon" viewBox="0 0 24 24" fill="#fff"><path d="M12 22s-2-5-2-9c0-4 2-8 2-8s2 4 2 8c0 4-2 9-2 9zM7 18s0-5 3-7c0 0-3-1-4-4 0 0-1 4 1 11zM17 18s0-5-3-7c0 0 3-1 4-4 0 0 1 4-1 11z"/></svg>
+              <span>A</span>
+            </div>
+            <div className="logo-d">D</div>
+            <div className="logo-y">y</div>
+            <div className="logo-small-a">a</div>
+            <div className="logo-g">G</div>
+            <div className="logo-o">o</div>
+            <svg className="logo-stethoscope" viewBox="0 0 100 50" fill="none" stroke="#fff" strokeWidth="3">
+              <path d="M30 10 Q 30 40 50 40 Q 70 40 70 10" />
+              <circle cx="30" cy="8" r="3" fill="#1db1c2" />
+              <circle cx="70" cy="8" r="3" fill="#1db1c2" />
+              <circle cx="50" cy="45" r="4" fill="#1db1c2" stroke="#fff" strokeWidth="1" />
+            </svg>
+          </div>
         </div>
+        
         <nav className="sidebar-menu">
           {menuItems.map(item => (
             <a key={item.id} href={`#${item.id}`} className={`menu-item ${item.active ? 'active' : ''}`}>
               <Icon name={item.icon} />
-              {item.label}
+              <span>{item.label}</span>
             </a>
           ))}
         </nav>
-        <button className="new-assessment-btn">New Assessment</button>
+        
+        <div className="sidebar-footer">
+          <button className="new-consultation-btn">
+            <svg className="plus-circle-svg" viewBox="0 0 24 24" fill="none" stroke="#0d2137" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <span>New Consultation</span>
+          </button>
+        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -103,67 +131,76 @@ const Diagnostic = () => {
         <div className="content-grid">
           {/* Left Summary Column */}
           <div className="summary-column">
-            <div className="summary-card dark">
+            <div className="summary-card dark info-card">
               <div className="card-title">
                 <Icon name="overview" />
                 Input Summary
               </div>
-              <div className="complaints-list">
-                <div className="complaint-item">
-                  <span>Persistent Headache</span>
-                  <span className="value">48 hrs</span>
-                </div>
-                <div className="complaint-item">
-                  <span>Fatigue</span>
-                  <span className="value">Moderate</span>
-                </div>
-                <div className="complaint-item">
-                  <span>Eye Strain</span>
-                  <span className="value">New</span>
+              
+              <div className="info-section">
+                <label>PRIMARY COMPLAINTS</label>
+                <div className="complaints-list">
+                  <div className="complaint-item">
+                    <span>Persistent Headache</span>
+                    <span className="value">48 hrs</span>
+                  </div>
+                  <div className="complaint-item">
+                    <span>Fatigue</span>
+                    <span className="value">Moderate</span>
+                  </div>
+                  <div className="complaint-item">
+                    <span>Eye Strain</span>
+                    <span className="value">New</span>
+                  </div>
                 </div>
               </div>
-              <div className="vitals-bar">
-                <div className="vital-box">
-                  <h4>98.6°</h4>
-                  <span>Temp</span>
+
+              <div className="info-section">
+                <label>VITALS (REPORTED)</label>
+                <div className="vitals-grid">
+                  <div className="vital-mini-box">
+                    <h4>98.6°</h4>
+                    <span>Temp</span>
+                  </div>
+                  <div className="vital-mini-box">
+                    <h4>72</h4>
+                    <span>BPM</span>
+                  </div>
                 </div>
-                <div className="vital-box">
-                  <h4>72</h4>
-                  <span>BPM</span>
-                </div>
+              </div>
+
+              <div className="card-footer">
+                <span onClick={() => navigate('/Diagnosticinput')} className="edit-link" style={{ cursor: 'pointer' }}>Edit details ✎</span>
               </div>
             </div>
 
-            <div className="summary-card">
-              <div className="card-title" style={{ color: '#4a5568' }}>
-                <Icon name="vitals" />
-                Patient Summary
+            <div className="summary-card patient-card">
+              <div className="card-title">
+                <Icon name="check" />
+                PATIENT SUMMARY
               </div>
-              <div className="complaints-list">
-                <div className="complaint-item" style={{ color: '#1a304e', fontWeight: 600 }}>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ color: '#1db1c2' }}>🌡️</div> Temperature
-                  </div>
-                  <span>98.6°F</span>
+              <div className="patient-vitals-list">
+                <div className="patient-vital-row">
+                  <div className="v-icon-wrap"><Icon name="vitals" /></div>
+                  <span className="v-label">Temperature</span>
+                  <span className="v-value">98.6°F</span>
                 </div>
-                <div className="complaint-item" style={{ color: '#1a304e', fontWeight: 600 }}>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ color: '#e53e3e' }}>❤️</div> Heart Rate
-                  </div>
-                  <span>72 BPM</span>
+                <div className="patient-vital-row">
+                  <div className="v-icon-wrap heart"><Icon name="vitals" /></div>
+                  <span className="v-label">Heart Rate</span>
+                  <span className="v-value">72 BPM</span>
                 </div>
-                <div className="complaint-item" style={{ color: '#1a304e', fontWeight: 600 }}>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ color: '#4299e1' }}>📈</div> SPO2
-                  </div>
-                  <span>98%</span>
+                <div className="patient-vital-row">
+                  <div className="v-icon-wrap lung"><Icon name="vitals" /></div>
+                  <span className="v-label">SPO2</span>
+                  <span className="v-value">98%</span>
                 </div>
               </div>
-              <div style={{ marginTop: 20 }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#718096', textTransform: 'uppercase' }}>Primary Symptoms</span>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
+              <div className="symptoms-section">
+                <label>PRIMARY SYMPTOMS</label>
+                <div className="symptom-tags">
                   {['Persistent Headache', 'Photophobia', 'Fatigue'].map(tag => (
-                    <span key={tag} style={{ background: '#f7fafc', padding: '4px 8px', borderRadius: 4, fontSize: 10, color: '#4a5568' }}>{tag}</span>
+                    <span key={tag} className="symptom-tag">{tag}</span>
                   ))}
                 </div>
               </div>
@@ -189,17 +226,20 @@ const Diagnostic = () => {
             </h2>
             
             {conditions.map((c, i) => (
-              <div key={i} className="condition-card">
+              <div key={i} className="condition-card" onClick={() => c.title === 'Tension-Type Headache' && navigate('/Tthdiagnostic')}>
                 <div className="condition-header">
-                  <h3>{c.title}</h3>
-                  <div className="match-pct">
-                    <span className="number" style={{ color: i === 0 ? '#48bb78' : i === 1 ? '#ed8936' : '#a0aec0' }}>{c.match}%</span>
-                    <span className="label">Match</span>
+                  <div className="title-area">
+                    <h3>{c.title}</h3>
+                    <p>{c.desc}</p>
+                  </div>
+                  <div className="match-area">
+                    <span className="match-num">{c.match}%</span>
+                    <span className="match-label">MATCH</span>
                   </div>
                 </div>
-                <p>{c.desc}</p>
-                <div className="clinical-data-link">
-                   📁 Clinical Data <span style={{ marginLeft: 'auto' }}>›</span>
+                <div className="condition-footer">
+                  <span className="clinical-data"><Icon name="overview" className="mini-icon" /> Clinical Data</span>
+                  <span className="arrow">›</span>
                 </div>
               </div>
             ))}
@@ -234,7 +274,7 @@ const Diagnostic = () => {
               </div>
               <div className="map-badge">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" strokeWidth="1"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>
-                 2 Clinics Nearby
+                 <span>2 Clinics Nearby</span>
               </div>
             </div>
           </div>
