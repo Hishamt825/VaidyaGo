@@ -120,13 +120,13 @@ const Medication1 = () => {
                                     <span className="text-[10px] font-medium text-[#627382] uppercase tracking-[0.2em] bg-[#EAEFF2] px-3 py-1 rounded-full">Mon, Oct 23</span>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                    {/* Morning - Active/Taken */}
-                                    <div className="bg-[#effafb] rounded-[24px] p-5 border border-gray-100 relative transition-all hover:shadow-lg group flex overflow-hidden">
-                                        <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#1A7785]"></div>
+                                    {/* Morning */}
+                                    <div className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 relative transition-all hover:shadow-lg group flex overflow-hidden cursor-pointer">
+                                        <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#1A7785] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="flex-1 pl-[4px]">
                                             <div className="flex items-center justify-between mb-[20px]">
-                                                <span className="text-[10px] font-medium text-[#1A7785] uppercase tracking-[0.15em]">Morning</span>
-                                                <div className="w-[24px] h-[24px] rounded-full bg-[#1A7785] flex items-center justify-center text-white shadow-sm">
+                                                <span className="text-[10px] font-medium text-[#627382] group-hover:text-[#1A7785] uppercase tracking-[0.15em] transition-colors">Morning</span>
+                                                <div className="w-[24px] h-[24px] rounded-full bg-gray-100 group-hover:bg-[#1A7785] flex items-center justify-center text-gray-400 group-hover:text-white shadow-sm transition-all">
                                                     <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                                                     </svg>
@@ -134,16 +134,17 @@ const Medication1 = () => {
                                             </div>
                                             <h3 className="text-[18px] font-medium text-[#0D1C2E] mb-1">Metformin</h3>
                                             <p className="text-[14px] text-[#4B707E] mb-4 font-medium tracking-tight">500mg • with food</p>
-                                            <div className="bg-[#d2eded] text-[#1A7785] py-1 px-4 rounded-full text-[10px] font-medium inline-block tracking-tight">
+                                            <div className="bg-[#EAEFF2] group-hover:bg-[#d2eded] text-[#627382] group-hover:text-[#1A7785] py-1 px-4 rounded-full text-[10px] font-medium inline-block tracking-tight transition-colors">
                                                 Taken at 8:15 AM
                                             </div>
                                         </div>
                                     </div>
                                     {/* Afternoon - Pending */}
-                                    <div className="bg-white rounded-[24px] p-5 border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all hover:shadow-lg group">
+                                    <div className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all hover:shadow-lg group relative overflow-hidden cursor-pointer">
+                                        <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#1A7785] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="flex items-center justify-between mb-4">
-                                            <span className="text-[10px] font-medium text-[#627382] uppercase tracking-[0.15em]">Afternoon</span>
-                                            <div className="w-[22px] h-[22px] rounded-full border-[2.2px] border-[#1A7785] flex items-center justify-center text-[#1A7785]">
+                                            <span className="text-[10px] font-medium text-[#627382] group-hover:text-[#1A7785] uppercase tracking-[0.15em] transition-colors">Afternoon</span>
+                                            <div className="w-[22px] h-[22px] rounded-full border-[2.2px] border-gray-200 group-hover:border-[#1A7785] flex items-center justify-center text-gray-300 group-hover:text-[#1A7785] transition-colors">
                                                 <svg className="w-[12px] h-[12px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
@@ -156,10 +157,11 @@ const Medication1 = () => {
                                         </button>
                                     </div>
                                     {/* Evening */}
-                                    <div className="bg-white rounded-[24px] p-5 border border-gray-100 shadow-sm opacity-60">
+                                    <div className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 shadow-sm opacity-60 hover:opacity-100 transition-all group relative overflow-hidden cursor-pointer">
+                                        <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#1A7785] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="flex items-center justify-between mb-4">
-                                            <span className="text-[10px] font-medium text-[#627382] uppercase tracking-[0.15em]">Evening</span>
-                                            <div className="w-[22px] h-[22px] rounded-full border-[2px] border-gray-200 flex items-center justify-center text-gray-300">
+                                            <span className="text-[10px] font-medium text-[#627382] group-hover:text-[#1A7785] uppercase tracking-[0.15em] transition-colors">Evening</span>
+                                            <div className="w-[22px] h-[22px] rounded-full border-[2px] border-gray-200 group-hover:border-[#1A7785] flex items-center justify-center text-gray-300 group-hover:text-[#1A7785] transition-colors">
                                             </div>
                                         </div>
                                         <h3 className="text-[18px] font-medium text-[#0D1C2E] mb-1">Omega-3</h3>
@@ -265,12 +267,14 @@ const Medication1 = () => {
                             </div>
 
                             {/* Refills Tracker */}
-                            <div className="bg-white rounded-[32px] p-6 shadow-sm flex flex-col min-h-[340px]">
-                                <div className="flex items-center justify-between mb-5">
-                                    <h2 className="text-[18px] font-medium text-[#0D1C2E]">Refills</h2>
-                                    <button className="text-[#627382] hover:animate-spin transition-all">
-                                        <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                    </button>
+                            <div className="bg-white rounded-[32px] p-6 shadow-sm flex flex-col">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <h2 className="text-[18px] font-medium text-[#0D1C2E]">Refills</h2>
+                                        <button className="text-[#627382] hover:animate-spin transition-all">
+                                            <svg className="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="space-y-2.5">
                                     <div className="bg-[#EAEFF2] bg-opacity-70 rounded-[20px] p-4 flex items-center justify-between border border-white shadow-sm">
@@ -294,18 +298,18 @@ const Medication1 = () => {
                                         <span className="text-[9px] font-medium text-amber-600 bg-amber-50 px-3 py-1 rounded-full uppercase tracking-widest opacity-70">Pending</span>
                                     </div>
                                 </div>
-                                <button className="w-full text-center mt-auto pt-[16px] text-[12px] font-medium text-[#1A7785] hover:opacity-80 flex items-center justify-center gap-[8px] tracking-[0.05em] uppercase">
-                                    VIEW ALL <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                <button className="w-full text-center pt-4 text-[11px] font-black text-[#1A7785] hover:opacity-80 flex items-center justify-center gap-[6px] tracking-[0.1em] uppercase">
+                                    VIEW ALL <svg className="w-[12px] h-[12px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                 </button>
                             </div>
 
                             {/* Adherence Score */}
                             <div className="bg-[#C5E4E4] rounded-[32px] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-white/50 relative overflow-hidden group">
-                                <div className="flex justify-between items-start mb-6">
+                                <div className="flex justify-between items-start mb-4">
                                     <h2 className="text-[10px] font-medium text-[#0B4A54] uppercase tracking-[0.2em] opacity-80">Adherence Score</h2>
                                     <span className="text-[32px] font-[900] text-[#0B4A54] leading-none">94%</span>
                                 </div>
-                                <div className="relative h-[10px] w-full bg-white/50 rounded-full mb-[24px] overflow-hidden">
+                                <div className="relative h-[10px] w-full bg-white/50 rounded-full mb-4 overflow-hidden">
                                     <div className="absolute top-0 left-0 h-full bg-[#006A70] rounded-full group-hover:w-[94%] transition-all duration-[2s]" style={{ width: '94%' }}></div>
                                 </div>
                                 <p className="text-[15px] text-[#1D5E66] font-medium leading-relaxed opacity-90">

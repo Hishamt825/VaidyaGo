@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from './Patient_sidebar';
-import Profile from './Profile';
-import Account from './Account';
-import Notification from './notification';
-import phImg from '../../assets/ph.png';
-import wellnessImg from '../../assets/wellness_vitals.png';
+import Sidebar from '../Patient_sidebar';
+import Profile from '../Profile';
+import Account from '../Account';
+import Notification from '../notification';
+import phImg from '../../../assets/ph.png';
+import wellnessImg from '../../../assets/wellness_vitals.png';
+import Adddevice from './Adddevice';
+import Heart from './Heart';
+
 
 /* ─────────────────────────────────────────────
    REUSABLE COMPONENTS
@@ -29,15 +32,20 @@ const VitalStatCard = ({ icon, label, value, unit, status, statusColor, bgColor 
     </div>
 );
 
-const HealthStatusCard = ({ label, icon, status, statusIcon, note, colorClass, borderClass, glowClass }) => (
-    <div className={`bg-white rounded-[24px] p-6 flex flex-col items-center flex-1 shadow-sm border ${borderClass} group cursor-pointer hover:shadow-md transition-shadow`}>
+const HealthStatusCard = ({ label, icon, status, statusIcon, note, colorClass, borderClass, glowClass, onClick }) => (
+    <div 
+        onClick={onClick}
+        className={`bg-white rounded-[24px] p-6 flex flex-col items-center flex-1 shadow-sm border ${borderClass} group cursor-pointer hover:shadow-md transition-shadow`}
+    >
         <p className="text-[#627382] text-[11px] font-medium uppercase tracking-[0.2em] mb-4">{label}</p>
         
         {/* Circle with glow */}
         <div className="relative mb-5">
             <div className={`absolute inset-0 rounded-full blur-[20px] opacity-40 transition-all group-hover:blur-[25px] group-hover:opacity-60 ${glowClass}`}></div>
-            <div className={`relative w-[92px] h-[92px] rounded-full flex items-center justify-center text-white shadow-lg transition-transform group-hover:animate-pump ${colorClass}`}>
-                {icon}
+            <div className={`relative w-[92px] h-[92px] rounded-full flex items-center justify-center text-white shadow-lg transition-transform ${colorClass}`}>
+                <div className="animate-pump">
+                    {icon}
+                </div>
             </div>
         </div>
 
@@ -63,6 +71,8 @@ const Vitals = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isAddDeviceOpen, setIsAddDeviceOpen] = useState(false);
+    const [isHeartModalOpen, setIsHeartModalOpen] = useState(false);
 
     return (
         <div 
@@ -199,6 +209,7 @@ const Vitals = () => {
                                 
                                 <div className="flex flex-col md:flex-row items-center justify-between gap-[20px]">
                                     <HealthStatusCard 
+                                        onClick={() => setIsHeartModalOpen(true)}
                                         label="Heart"
                                         icon={<svg className="w-[36px] h-[36px]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>}
                                         status="GOOD"
@@ -328,7 +339,10 @@ const Vitals = () => {
                                     </div>
                                 </div>
                                 
-                                <button className="w-full bg-white text-[#0B1F4D] py-[12px] rounded-full font-medium text-[16px] hover:bg-gray-100 transition-all shadow-md">
+                                <button 
+                                    onClick={() => setIsAddDeviceOpen(true)}
+                                    className="w-full bg-white text-[#0B1F4D] py-[12px] rounded-full font-medium text-[16px] hover:bg-gray-100 transition-all shadow-md"
+                                >
                                     Add New Device
                                 </button>
                             </div>
@@ -373,6 +387,16 @@ const Vitals = () => {
                 <Account onClose={() => setActiveModal(null)} />
             )}
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+            
+            <Adddevice 
+                isOpen={isAddDeviceOpen} 
+                onClose={() => setIsAddDeviceOpen(false)} 
+            />
+            
+            <Heart 
+                isOpen={isHeartModalOpen} 
+                onClose={() => setIsHeartModalOpen(false)} 
+            />
         </div>
     );
 };

@@ -112,14 +112,14 @@ const Patient_dashboard = () => {
                                         Upload your first prescription or medical report. Our AI will automatically organize your health data into your timeline.
                                     </p>
                                 </div>
-                                <label className="mt-1 self-start flex items-center gap-[14px] bg-gradient-to-r from-[#0B253D] to-[#175B61]
-                 text-white text-[16px] font-semibold px-[32px] py-[15px] rounded-full shadow-[0_10px_25px_rgba(11,37,61,0.3)] hover:scale-[1.05] transition-all cursor-pointer">
+                                <label className="mt-1 self-start flex items-center gap-[10px] bg-gradient-to-r from-[#0B253D] to-[#175B61]
+                 text-white text-[14px] font-semibold px-[24px] py-[12px] rounded-full shadow-[0_10px_25px_rgba(11,37,61,0.3)] hover:scale-[1.05] transition-all cursor-pointer">
                                     <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={(e) => {
                                         if (e.target.files && e.target.files.length > 0) {
                                             navigate('/Patient_dashboard1');
                                         }
                                     }} />
-                                    <svg className="w-[24px] h-[24px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                         <circle cx="12" cy="13" r="3" strokeWidth="2.2" />
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19 8h-3m1.5-1.5v3" />

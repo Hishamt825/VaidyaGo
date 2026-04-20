@@ -51,7 +51,7 @@ import Symptom from './components/Patient/Symptom';
 import Patient_sidebar from './components/Patient/Patient_sidebar';
 import Account from './components/Patient/Account';
 import Notification from './components/Patient/notification';
-import Vitals from './components/Patient/Vitals';
+import Vitals from './components/Patient/Vitals/Vitals';
 import Reminder from './components/Patient/Reminder';
 import Medication1 from './components/Patient/Medication1';
 import Setting from './components/Patient/Setting';
@@ -59,6 +59,10 @@ import Appointment from './components/Patient/Appointment';
 import Message from './components/Patient/Message';
 import Record from './components/Patient/Record';
 import Reminder1 from './components/Patient/Reminder1';
+import Strengthening from './components/Patient/Exercise/Strengthening';
+import Guided from './components/Patient/Exercise/Guided';
+import VitalsDetail from './components/Patient/Vitals/Detail';
+
 
 
 // Debug logging to find the invalid component
@@ -129,6 +133,10 @@ const App = () => {
       <Route path="/Message" element={<Message />} />
       <Route path="/Record" element={<Record />} />
       <Route path="/Reminder1" element={<Reminder1 />} />
+      <Route path="/Strengthening" element={<Strengthening />} />
+      <Route path="/Guided" element={<Guided />} />
+      <Route path="/VitalsDetail" element={<VitalsDetail />} />
+
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 
     </Routes>

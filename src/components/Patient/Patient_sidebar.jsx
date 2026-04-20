@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/vadyago_pat.png';
 import visulImg from '../../assets/Visual.png';
+import Selectexercise from './Exercise/Selectexercise';
 
 /* ─────────────────────────────────────────────
    MENU ITEMS
@@ -69,10 +70,18 @@ const MENU = [
         ),
     },
     {
-        name: 'My Records',
+        name: 'My Record',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 19V5a2 2 0 012-2h4l2 2h4a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2z" />
+            </svg>
+        ),
+    },
+    {
+        name: 'Exercise',
+        icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
         ),
     },
@@ -83,6 +92,7 @@ const MENU = [
 ───────────────────────────────────────────── */
 const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
     const navigate = useNavigate();
+    const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
 
     return (
         <>
@@ -100,7 +110,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
         w-[220px] flex flex-col justify-start
         transition-transform duration-300 ease-in-out border-r border-white/5
         ${isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
-        bg-[#0B1423]/10 backdrop-blur-2xl
+        bg-[#0B1423]/15 backdrop-blur-2xl
       `}
             >
                 {/* Logo Area - Aligned with Header Height (72px) */}
@@ -125,18 +135,23 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                     else if (item.name === 'Medications') navigate('/Medication');
                                     else if (item.name === 'Reminder') navigate('/Reminder1');
                                     else if (item.name === 'Messages') navigate('/Message');
-                                    else if (item.name === 'My Records') navigate('/Record');
+                                    else if (item.name === 'My Record') navigate('/Record');
+                                    else if (item.name === 'Exercise') setIsExerciseModalOpen(true);
                                 }}
                                 className={`
+                                    relative group
                                     w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl
                                     text-[14.5px] font-medium text-left transition-all duration-300
                                     ${isActive
-                                        ? 'bg-[#6ED4D4] text-[#0B1F4D] shadow-lg shadow-[#6ED4D4]/20'
+                                        ? 'bg-gradient-to-br from-[#49AAB3] to-[#1A7785] text-white shadow-lg shadow-[#1A7785]/20'
                                         : 'text-white/60 hover:text-white hover:bg-white/5'
                                     }
                                 `}
                             >
-                                <span className={`shrink-0 ${isActive ? 'text-[#0B1F4D]' : 'text-white/40 group-hover:text-white'}`}>
+                                {isActive && (
+                                    <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 w-[4px] h-[24px] bg-[#6ED4D4] rounded-r-full shadow-[0_0_12px_#6ED4D4]" />
+                                )}
+                                <span className={`shrink-0 ${isActive ? 'text-white' : 'text-white/40 group-hover:text-white'}`}>
                                     {item.icon}
                                 </span>
                                 <span className="tracking-tight">{item.name}</span>
@@ -162,6 +177,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
 
 
             </aside>
+            {isExerciseModalOpen && <Selectexercise onClose={() => setIsExerciseModalOpen(false)} />}
         </>
     );
 };
