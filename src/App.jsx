@@ -65,18 +65,6 @@ import VitalsDetail from './components/Patient/Vitals/Detail';
 
 
 
-// Debug logging to find the invalid component
-const components = { MainPage, About, ContactUs, Section3, Finallogin, Admin_signup, AdminLoginPage, VerticalProgress1, Profile, Admin_dashboard1, AdminDoctor, DasyWilliam, AdminSidebar, ProtectedRoute, Signup1, VerticalProgressBar, Service, Form1, Form2, Form3, Form4, Vertical, DoctorCard, Adddoctor, Bot, App1_Dashboard, Settingpage };
-
-
-Object.entries(components).forEach(([name, comp]) => {
-  if (Array.isArray(comp)) {
-    console.error(`ERROR: Component ${name} is an array!`);
-  } else if (!comp) {
-    console.error(`ERROR: Component ${name} is undefined or null!`);
-  }
-});
-
 const App = () => {
   return (
 
