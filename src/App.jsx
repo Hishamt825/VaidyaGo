@@ -16,6 +16,7 @@ import Savechange from './component/Day1/Patient/Savechange';
 import Tthdiagnostic from './component/Day1/Patient/Tthdiagnostic';
 import Myrecord from './component/Day1/Patient/Myrecord';
 import Askspecialist from './component/Day1/Patient/Askspecialist';
+import Dseasonal from './component/Day1/Patient/Dseasonal';
 
 
 function App() {
@@ -56,6 +57,8 @@ function App() {
       <Route path="/myrecord" element={<Myrecord />} />
       <Route path="/Askspecialist" element={<Askspecialist />} />
       <Route path="/askspecialist" element={<Askspecialist />} />
+      <Route path="/Dseasonal" element={<Dseasonal />} />
+      <Route path="/dseasonal" element={<Dseasonal />} />
 
     </Routes>
   )
