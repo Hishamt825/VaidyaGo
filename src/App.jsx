@@ -62,6 +62,7 @@ import Reminder1 from './components/Patient/Reminder1';
 import Strengthening from './components/Patient/Exercise/Strengthening';
 import Guided from './components/Patient/Exercise/Guided';
 import VitalsDetail from './components/Patient/Vitals/Detail';
+import VitalsHistory from './components/Patient/Vitals/Vitals_history';
 
 
 
@@ -124,6 +125,7 @@ const App = () => {
       <Route path="/Strengthening" element={<Strengthening />} />
       <Route path="/Guided" element={<Guided />} />
       <Route path="/VitalsDetail" element={<VitalsDetail />} />
+      <Route path="/VitalsHistory" element={<VitalsHistory />} />
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 

@@ -8,6 +8,10 @@ import phImg from '../../../assets/ph.png';
 import wellnessImg from '../../../assets/wellness_vitals.png';
 import Adddevice from './Adddevice';
 import Heart from './Heart';
+import Pressure_heart from './Pressure_heart';
+import Breathing from './Breathing';
+import Genrate from './Genrate';
+import Health_report from './Health_report';
 
 
 /* ─────────────────────────────────────────────
@@ -73,6 +77,12 @@ const Vitals = () => {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isAddDeviceOpen, setIsAddDeviceOpen] = useState(false);
     const [isHeartModalOpen, setIsHeartModalOpen] = useState(false);
+    const [isPressureModalOpen, setIsPressureModalOpen] = useState(false);
+    const [isBreathingModalOpen, setIsBreathingModalOpen] = useState(false);
+    const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+    const [isReportOpen, setIsReportOpen] = useState(false);
+    
+    const isAnyModalOpen = activeModal || isNotificationOpen || isAddDeviceOpen || isHeartModalOpen || isPressureModalOpen || isBreathingModalOpen || isGenerateModalOpen || isReportOpen;
 
     return (
         <div 
@@ -88,7 +98,7 @@ const Vitals = () => {
             />
 
             {/* Main Area */}
-            <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden transition-all duration-500 ${isAnyModalOpen ? 'blur-md pointer-events-none' : ''}`}>
                 
                 {/* Header Navbar */}
                 <header className="h-[72px] flex items-center justify-between px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
@@ -148,7 +158,10 @@ const Vitals = () => {
                                     </div>
                                 </div>
                             </div>
-                            <button className="flex items-center gap-[10px] bg-white text-[#0B1F4D] px-[24px] py-[13px] rounded-full font-medium text-[16px] shadow-lg hover:bg-gray-100 transition-all hover:-translate-y-1">
+                            <button 
+                                onClick={() => setIsGenerateModalOpen(true)}
+                                className="flex items-center gap-[10px] bg-white text-[#0B1F4D] px-[24px] py-[13px] rounded-full font-medium text-[16px] shadow-lg hover:bg-gray-100 transition-all hover:-translate-y-1"
+                            >
                                 <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
@@ -220,6 +233,7 @@ const Vitals = () => {
                                         borderClass="border-emerald-50"
                                     />
                                     <HealthStatusCard 
+                                        onClick={() => setIsPressureModalOpen(true)}
                                         label="Pressure"
                                         icon={<svg className="w-[36px] h-[36px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M17 12H7m10 0l-4-4m4 4l-4 4" /></svg>}
                                         status="WATCH"
@@ -230,6 +244,7 @@ const Vitals = () => {
                                         borderClass="border-amber-100"
                                     />
                                     <HealthStatusCard 
+                                        onClick={() => setIsBreathingModalOpen(true)}
                                         label="Breathing"
                                         icon={<svg className="w-[36px] h-[36px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 13h5.5l2-5 4 10 2-5H21" /></svg>}
                                         status="GREAT"
@@ -261,7 +276,12 @@ const Vitals = () => {
                             <div className="bg-white rounded-[32px] p-6 shadow-sm border border-[#f0f4f5]">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-[18px] font-medium tracking-tight">Vitals History</h3>
-                                    <button className="text-[#1A7785] text-[14px] font-medium hover:underline">Full Records ↗</button>
+                                    <button 
+                                        onClick={() => navigate('/VitalsHistory')}
+                                        className="text-[#1A7785] text-[14px] font-medium hover:underline"
+                                    >
+                                        Full Records ↗
+                                    </button>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
@@ -396,6 +416,27 @@ const Vitals = () => {
             <Heart 
                 isOpen={isHeartModalOpen} 
                 onClose={() => setIsHeartModalOpen(false)} 
+            />
+
+            <Pressure_heart 
+                isOpen={isPressureModalOpen} 
+                onClose={() => setIsPressureModalOpen(false)} 
+            />
+
+            <Breathing 
+                isOpen={isBreathingModalOpen} 
+                onClose={() => setIsBreathingModalOpen(false)} 
+            />
+
+            <Genrate 
+                isOpen={isGenerateModalOpen} 
+                onClose={() => setIsGenerateModalOpen(false)} 
+                onGenerate={() => setIsReportOpen(true)}
+            />
+
+            <Health_report 
+                isOpen={isReportOpen} 
+                onClose={() => setIsReportOpen(false)} 
             />
         </div>
     );
