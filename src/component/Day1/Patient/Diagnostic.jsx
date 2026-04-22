@@ -1,18 +1,51 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '../../../assets/Group (1).svg';
 import './Diagnostic.css';
 
 const Icon = ({ name, className }) => {
   const icons = {
-    overview: <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" />,
-    symptom: <path d="M11 2a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 0-2 2v4a8 8 0 0 0 16 0v-4a2 2 0 0 0-2-2 2 2 0 0 1-2-2V4a2 2 0 0 0-2-2h-4z" />,
-    vitals: <path d="M3 12h3l3-9 4 18 4-9h4" />,
-    meds: <path d="M9 2h6v2H9V2zm-2 4h10v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6zm3 8h4m-2-2v4" />,
-    appointments: <React.Fragment><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18" /></React.Fragment>,
+    overview: (
+      <React.Fragment>
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </React.Fragment>
+    ),
+    symptom: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
+    vitals: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
+    meds: (
+      <React.Fragment>
+        <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />
+        <path d="m8.5 8.5 7 7" />
+      </React.Fragment>
+    ),
+    appointments: (
+      <React.Fragment>
+        <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+      </React.Fragment>
+    ),
     messages: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" />,
-    book: <path d="M20 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zM4 17V7h16v10H4zM7 9h2v2H7V9zm0 4h2v2H7v-2zm4-4h6v2h-6V9zm0 4h6v2h-6v-2z" />,
+    reminder: <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />,
+    records: <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />,
+    search: (
+      <React.Fragment>
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </React.Fragment>
+    ),
+    bell: <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />,
+    settings: (
+      <React.Fragment>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </React.Fragment>
+    ),
+    video: <React.Fragment><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></React.Fragment>,
     pharmacy: <path d="M12 2v20M5 12h14" />,
-    video: <React.Fragment><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></React.Fragment>
+    book: <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V5A2.5 2.5 0 0 1 6.5 2.5H20M20 2.5v19.5" />,
+    check: <polyline points="20 6 9 17 4 12" />
   };
 
   return (
@@ -21,7 +54,7 @@ const Icon = ({ name, className }) => {
       viewBox="0 0 24 24" 
       fill="none" 
       stroke="currentColor" 
-      strokeWidth="2" 
+      strokeWidth="2.5" 
       strokeLinecap="round" 
       strokeLinejoin="round"
     >
@@ -39,8 +72,8 @@ const Diagnostic = () => {
     { id: 'meds', icon: 'meds', label: 'Medications' },
     { id: 'appointments', icon: 'appointments', label: 'Appointments' },
     { id: 'messages', icon: 'messages', label: 'Messages' },
-    { id: 'reminder', icon: 'appointments', label: 'REMINDER' },
-    { id: 'records', icon: 'book', label: 'MY RECORDS' },
+    { id: 'reminder', icon: 'reminder', label: 'REMINDER' },
+    { id: 'records', icon: 'records', label: 'MY RECORDS' },
   ];
 
   const conditions = [
@@ -54,30 +87,20 @@ const Diagnostic = () => {
       {/* Dynamic Sidebar */}
       <aside className="diagnostic-sidebar">
         <div className="sidebar-logo">
-          <div className="logo-wrapper">
-            <div className="logo-v">V</div>
-            <div className="logo-a">
-              <svg className="leaf-icon" viewBox="0 0 24 24" fill="#fff"><path d="M12 22s-2-5-2-9c0-4 2-8 2-8s2 4 2 8c0 4-2 9-2 9zM7 18s0-5 3-7c0 0-3-1-4-4 0 0-1 4 1 11zM17 18s0-5-3-7c0 0 3-1 4-4 0 0 1 4-1 11z"/></svg>
-              <span>A</span>
+          <div className="logo-container">
+            <div className="logo-icon-stack">
+              <img src={logo} alt="VaidyaGo Logo" />
             </div>
-            <div className="logo-d">D</div>
-            <div className="logo-y">y</div>
-            <div className="logo-small-a">a</div>
-            <div className="logo-g">G</div>
-            <div className="logo-o">o</div>
-            <svg className="logo-stethoscope" viewBox="0 0 100 50" fill="none" stroke="#fff" strokeWidth="3">
-              <path d="M30 10 Q 30 40 50 40 Q 70 40 70 10" />
-              <circle cx="30" cy="8" r="3" fill="#1db1c2" />
-              <circle cx="70" cy="8" r="3" fill="#1db1c2" />
-              <circle cx="50" cy="45" r="4" fill="#1db1c2" stroke="#fff" strokeWidth="1" />
-            </svg>
+            <span className="logo-text">VaidyaGo</span>
           </div>
         </div>
         
         <nav className="sidebar-menu">
           {menuItems.map(item => (
             <a key={item.id} href={`#${item.id}`} className={`menu-item ${item.active ? 'active' : ''}`}>
-              <Icon name={item.icon} />
+              <div className="menu-icon-wrapper">
+                <Icon name={item.icon} />
+              </div>
               <span>{item.label}</span>
             </a>
           ))}
@@ -85,11 +108,13 @@ const Diagnostic = () => {
         
         <div className="sidebar-footer">
           <button className="new-consultation-btn">
-            <svg className="plus-circle-svg" viewBox="0 0 24 24" fill="none" stroke="#0d2137" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="16"></line>
-              <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
+            <div className="plus-circle-blue">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                 <circle cx="12" cy="12" r="10" />
+                 <line x1="12" y1="8" x2="12" y2="16" />
+                 <line x1="8" y1="12" x2="16" y2="12" />
+               </svg>
+            </div>
             <span>New Consultation</span>
           </button>
         </div>
@@ -226,7 +251,14 @@ const Diagnostic = () => {
             </h2>
             
             {conditions.map((c, i) => (
-              <div key={i} className="condition-card" onClick={() => c.title === 'Tension-Type Headache' && navigate('/Tthdiagnostic')}>
+              <div 
+                key={i} 
+                className="condition-card" 
+                onClick={() => {
+                  if (c.title === 'Tension-Type Headache') navigate('/Tthdiagnostic');
+                  if (c.title === 'Seasonal Allergies (Rhinitis)') navigate('/Dseasonal');
+                }}
+              >
                 <div className="condition-header">
                   <div className="title-area">
                     <h3>{c.title}</h3>

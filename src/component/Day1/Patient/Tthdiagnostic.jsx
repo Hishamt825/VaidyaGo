@@ -111,7 +111,7 @@ const Tthdiagnostic = () => {
             Print Report
           </a>
           <div className="tth-actions">
-            <button className="tth-btn tth-btn-outline">Ask a Specialist</button>
+            <button className="tth-btn tth-btn-outline" onClick={() => navigate('/Askspecialist')}>Ask a Specialist</button>
             <button className="tth-btn tth-btn-solid" onClick={() => navigate('/Myrecord')}>Save to My Record</button>
           </div>
         </footer>
