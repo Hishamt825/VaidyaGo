@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from './Patient_sidebar';
-import Profile from './Profile';
-import Account from './Account';
-import Notification from './notification';
-import phImg from '../../assets/ph.png';
-import regimenBg from '../../assets/regimen_abstract_bg.png';
+import Sidebar from '../Patient_sidebar';
+import Profile from '../Profile';
+import Account from '../Account';
+import Notification from '../notification';
+import phImg from '../../../assets/ph.png';
+import regimenBg from '../../../assets/regimen_abstract_bg.png';
+import Daily_report from './Daily_report';
+import Update_logs from './Update_logs';
 
 const Medication1 = () => {
     const navigate = useNavigate();
@@ -13,10 +15,15 @@ const Medication1 = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isDailyReportOpen, setIsDailyReportOpen] = useState(false);
+    const [isUpdateLogsOpen, setIsUpdateLogsOpen] = useState(false);
 
     return (
-        <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+        <div className="relative h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
              style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
+            
+            {/* Main Content Wrapper - This gets blurred */}
+            <div className={`flex h-full w-full transition-all duration-300 ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
             
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
@@ -95,13 +102,19 @@ const Medication1 = () => {
                                         You have 4 medications scheduled for today. Your next dose of <span className="font-medium text-[#0D1C2E]">Lisinopril</span> is at 2:00 PM.
                                     </p>
                                     <div className="flex flex-wrap gap-2.5">
-                                        <button className="flex items-center gap-2 bg-[#EAEFF2] hover:bg-[#dfe4e7] text-[#0D1C2E] px-4 py-2.5 rounded-full font-medium text-[15px] transition-all">
+                                        <button 
+                                            onClick={() => setIsDailyReportOpen(true)}
+                                            className="flex items-center gap-2 bg-[#EAEFF2] hover:bg-[#dfe4e7] text-[#0D1C2E] px-4 py-2.5 rounded-full font-medium text-[15px] transition-all"
+                                        >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
                                             Daily Report
                                         </button>
-                                        <button className="bg-[#1A7785] hover:bg-[#125863] text-white px-4 py-2.5 rounded-full font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20">
+                                        <button 
+                                            onClick={() => setIsUpdateLogsOpen(true)}
+                                            className="bg-[#1A7785] hover:bg-[#125863] text-white px-4 py-2.5 rounded-full font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20"
+                                        >
                                             Update Logs
                                         </button>
                                     </div>
@@ -232,7 +245,7 @@ const Medication1 = () => {
                         {/* Right Sidebar Column */}
                         <div className="flex flex-col gap-6">
                             {/* Assistant AI */}
-                            <div className="bg-[#0B1423] rounded-[32px] p-6 text-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex flex-col min-h-[300px]">
+                            <div className="bg-[#0B1F4D] rounded-[32px] p-6 text-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex flex-col min-h-[300px]">
                                 <div className="flex items-center gap-[12px] mb-[24px]">
                                     <div className="w-[40px] h-[40px] rounded-xl bg-gradient-to-br from-[#49AAB3] to-[#1A7785] flex items-center justify-center">
                                         <svg className="w-[22px] h-[22px] text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -363,8 +376,10 @@ const Medication1 = () => {
 
                 </main>
             </div>
+        </div>
 
-            {activeModal === 'profile' && (
+        {/* Modals - Outside the blurred content */}
+        {activeModal === 'profile' && (
                 <Profile 
                     onClose={() => setActiveModal(null)} 
                     onAccountSettings={() => setActiveModal('account')} 
@@ -374,6 +389,18 @@ const Medication1 = () => {
                 <Account onClose={() => setActiveModal(null)} />
             )}
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+            
+             {/* Modals - Outside the blurred container */}
+            {isDailyReportOpen && (
+                <div className="fixed inset-0 z-[200]">
+                     <Daily_report onClose={() => setIsDailyReportOpen(false)} />
+                </div>
+            )}
+            {isUpdateLogsOpen && (
+                <div className="fixed inset-0 z-[200]">
+                     <Update_logs onClose={() => setIsUpdateLogsOpen(false)} />
+                </div>
+            )}
         </div>
     );
 };
