@@ -53,7 +53,7 @@ import Account from './components/Patient/Account';
 import Notification from './components/Patient/notification';
 import Vitals from './components/Patient/Vitals/Vitals';
 import Reminder from './components/Patient/Reminder';
-import Medication1 from './components/Patient/Medication1';
+import Medication1 from './components/Patient/Medication/Medication1';
 import Setting from './components/Patient/Setting';
 import Appointment from './components/Patient/Appointment';
 import Message from './components/Patient/Message';
@@ -63,6 +63,9 @@ import Strengthening from './components/Patient/Exercise/Strengthening';
 import Guided from './components/Patient/Exercise/Guided';
 import VitalsDetail from './components/Patient/Vitals/Detail';
 import VitalsHistory from './components/Patient/Vitals/Vitals_history';
+import View_request from './components/Patient/Medication/View_request';
+import Order from './components/Patient/Medication/Order';
+import Lisinopril from './components/Patient/Medication/Lisinopril';
 
 
 
@@ -116,6 +119,8 @@ const App = () => {
       <Route path="/notification" element={<Notification />} />
       <Route path="/Vitals" element={<Vitals />} />
       <Route path="/Medication" element={<Medication1 />} />
+      <Route path="/Medication1" element={<Medication1 />} />
+      <Route path="/medication1" element={<Medication1 />} />
       <Route path="/Reminder" element={<Reminder />} />
       <Route path="/Setting" element={<Setting />} />
       <Route path="/Appointment" element={<Appointment />} />
@@ -126,6 +131,10 @@ const App = () => {
       <Route path="/Guided" element={<Guided />} />
       <Route path="/VitalsDetail" element={<VitalsDetail />} />
       <Route path="/VitalsHistory" element={<VitalsHistory />} />
+      <Route path="/View-request" element={<View_request />} />
+      <Route path="/View_request" element={<View_request />} />
+      <Route path="/Order" element={<Order />} />
+      <Route path="/Lisinopril" element={<Lisinopril />} />
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 
