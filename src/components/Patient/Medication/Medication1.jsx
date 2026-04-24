@@ -12,6 +12,8 @@ import Schedule from './Schedule';
 import New_request from './New_request';
 import Metformin from './Metformin';
 import Past_medication from './Past_medication';
+import Request_refill from './Request_refill';
+import Refill_request from './Refill_request';
 
 const Medication1 = () => {
     const navigate = useNavigate();
@@ -25,13 +27,15 @@ const Medication1 = () => {
     const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
     const [isMorningScheduleOpen, setIsMorningScheduleOpen] = useState(false);
     const [isPastMedicationOpen, setIsPastMedicationOpen] = useState(false);
+    const [isRefillOpen, setIsRefillOpen] = useState(false);
+    const [isRefillRequestOpen, setIsRefillRequestOpen] = useState(false);
 
     return (
         <div className="relative h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
              style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
             
             {/* Main Content Wrapper - This gets blurred */}
-            <div className={`flex h-full w-full transition-all duration-300 ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen || isScheduleOpen || isNewRequestOpen || isMorningScheduleOpen || isPastMedicationOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
+            <div className={`flex h-full w-full transition-all duration-300 ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen || isScheduleOpen || isNewRequestOpen || isMorningScheduleOpen || isPastMedicationOpen || isRefillOpen || isRefillRequestOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
             
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
@@ -232,7 +236,10 @@ const Medication1 = () => {
                                                 <p className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Dosage</p>
                                                 <p className="text-[14px] font-[900] text-[#0D1C2E]">500mg Twice Daily</p>
                                             </div>
-                                            <button className="bg-[#006A70] hover:bg-[#005a5f] text-white px-4 py-2.5 rounded-[14px] font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20">
+                                            <button 
+                                                onClick={() => setIsRefillOpen(true)}
+                                                className="bg-[#006A70] hover:bg-[#005a5f] text-white px-4 py-2.5 rounded-[14px] font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20"
+                                            >
                                                 Request Refill
                                             </button>
                                         </div>
@@ -254,7 +261,10 @@ const Medication1 = () => {
                                                 <p className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Dosage</p>
                                                 <p className="text-[14px] font-[900] text-[#0D1C2E]">10mg Once Daily</p>
                                             </div>
-                                            <button className="bg-[#006A70] hover:bg-[#005a5f] text-white px-4 py-2.5 rounded-[14px] font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20">
+                                            <button 
+                                                onClick={() => setIsRefillOpen(true)}
+                                                className="bg-[#006A70] hover:bg-[#005a5f] text-white px-4 py-2.5 rounded-[14px] font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20"
+                                            >
                                                 Request Refill
                                             </button>
                                         </div>
@@ -332,7 +342,10 @@ const Medication1 = () => {
                                         <span className="text-[9px] font-medium text-amber-600 bg-amber-50 px-3 py-1 rounded-full uppercase tracking-widest opacity-70">Pending</span>
                                     </div>
                                 </div>
-                                <button className="w-full text-center pt-4 text-[11px] font-black text-[#1A7785] hover:opacity-80 flex items-center justify-center gap-[6px] tracking-[0.1em] uppercase">
+                                <button 
+                                    onClick={() => setIsRefillRequestOpen(true)}
+                                    className="w-full text-center pt-4 text-[11px] font-black text-[#1A7785] hover:opacity-80 flex items-center justify-center gap-[6px] tracking-[0.1em] uppercase"
+                                >
                                     VIEW ALL <svg className="w-[12px] h-[12px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                 </button>
                             </div>
@@ -446,6 +459,16 @@ const Medication1 = () => {
             {isPastMedicationOpen && (
                 <div className="fixed inset-0 z-[200]">
                      <Past_medication onClose={() => setIsPastMedicationOpen(false)} />
+                </div>
+            )}
+            {isRefillOpen && (
+                <div className="fixed inset-0 z-[300]">
+                    <Request_refill onClose={() => setIsRefillOpen(false)} onConfirm={() => setIsRefillOpen(false)} />
+                </div>
+            )}
+            {isRefillRequestOpen && (
+                <div className="fixed inset-0 z-[400]">
+                    <Refill_request onClose={() => setIsRefillRequestOpen(false)} onTrackAll={() => navigate('/Order')} />
                 </div>
             )}
         </div>
