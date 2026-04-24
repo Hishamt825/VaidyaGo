@@ -8,6 +8,10 @@ import phImg from '../../../assets/ph.png';
 import regimenBg from '../../../assets/regimen_abstract_bg.png';
 import Daily_report from './Daily_report';
 import Update_logs from './Update_logs';
+import Schedule from './Schedule';
+import New_request from './New_request';
+import Metformin from './Metformin';
+import Past_medication from './Past_medication';
 
 const Medication1 = () => {
     const navigate = useNavigate();
@@ -17,13 +21,17 @@ const Medication1 = () => {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isDailyReportOpen, setIsDailyReportOpen] = useState(false);
     const [isUpdateLogsOpen, setIsUpdateLogsOpen] = useState(false);
+    const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+    const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
+    const [isMorningScheduleOpen, setIsMorningScheduleOpen] = useState(false);
+    const [isPastMedicationOpen, setIsPastMedicationOpen] = useState(false);
 
     return (
         <div className="relative h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
              style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
             
             {/* Main Content Wrapper - This gets blurred */}
-            <div className={`flex h-full w-full transition-all duration-300 ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
+            <div className={`flex h-full w-full transition-all duration-300 ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen || isScheduleOpen || isNewRequestOpen || isMorningScheduleOpen || isPastMedicationOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
             
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
@@ -131,10 +139,20 @@ const Medication1 = () => {
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-[18px] font-[900] text-[#0D1C2E]">Today's Schedule</h2>
                                     <span className="text-[10px] font-medium text-[#627382] uppercase tracking-[0.2em] bg-[#EAEFF2] px-3 py-1 rounded-full">Mon, Oct 23</span>
+                                    <button 
+                                        onClick={() => setIsScheduleOpen(true)}
+                                        className="flex items-center gap-1.5 bg-[#1A7785] hover:bg-[#125863] text-white px-3 py-1.5 rounded-full text-[11px] font-bold transition-all shadow-sm"
+                                    >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
+                                        ADD SCHEDULE
+                                    </button>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                                     {/* Morning */}
-                                    <div className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 relative transition-all hover:shadow-lg group flex overflow-hidden cursor-pointer">
+                                    <div 
+                                        onClick={() => setIsMorningScheduleOpen(true)}
+                                        className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 relative transition-all hover:shadow-lg group flex overflow-hidden cursor-pointer"
+                                    >
                                         <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#1A7785] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="flex-1 pl-[4px]">
                                             <div className="flex items-center justify-between mb-[20px]">
@@ -187,7 +205,10 @@ const Medication1 = () => {
                             <div className="flex flex-col gap-5">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-[18px] font-medium text-white">Active Prescriptions</h2>
-                                    <button className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3.5 py-2 rounded-full text-[14px] font-medium border border-white/10 transition-all">
+                                    <button 
+                                        onClick={() => setIsNewRequestOpen(true)}
+                                        className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3.5 py-2 rounded-full text-[14px] font-medium border border-white/10 transition-all"
+                                    >
                                         <svg className="w-[12px] h-[12px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
                                         New Request
                                     </button>
@@ -350,8 +371,11 @@ const Medication1 = () => {
                                         <th className="px-6 py-4">Reason</th>
                                     </tr>
                                 </thead>
-                                <tbody className="text-[#0D1C2E]">
-                                    <tr className="border-t border-gray-50 hover:bg-gray-50 transition-colors group">
+                                <tbody className="text-[#0D1C2E] cursor-pointer">
+                                    <tr 
+                                        onClick={() => setIsPastMedicationOpen(true)}
+                                        className="border-t border-gray-50 hover:bg-gray-50 transition-colors group"
+                                    >
                                         <td className="px-6 py-4">
                                             <p className="font-medium text-[15px]">Amoxicillin</p>
                                             <p className="text-[10px] text-[#627382] font-medium">500mg Capsule</p>
@@ -360,7 +384,10 @@ const Medication1 = () => {
                                         <td className="px-6 py-4 text-[14px] font-medium text-[#0D1C2E]">Dr. Gregory House</td>
                                         <td className="px-6 py-4 text-[14px] font-medium text-[#627382]">Sinus Infection</td>
                                     </tr>
-                                    <tr className="border-t border-gray-50 hover:bg-gray-50 transition-colors">
+                                    <tr 
+                                        onClick={() => setIsPastMedicationOpen(true)}
+                                        className="border-t border-gray-50 hover:bg-gray-50 transition-colors"
+                                    >
                                         <td className="px-6 py-4">
                                             <p className="font-medium text-[15px]">Prednisone</p>
                                             <p className="text-[10px] text-[#627382] font-medium">10mg Tablet</p>
@@ -399,6 +426,26 @@ const Medication1 = () => {
             {isUpdateLogsOpen && (
                 <div className="fixed inset-0 z-[200]">
                      <Update_logs onClose={() => setIsUpdateLogsOpen(false)} />
+                </div>
+            )}
+            {isScheduleOpen && (
+                <div className="fixed inset-0 z-[200]">
+                     <Schedule onClose={() => setIsScheduleOpen(false)} />
+                </div>
+            )}
+            {isNewRequestOpen && (
+                <div className="fixed inset-0 z-[200]">
+                     <New_request onClose={() => setIsNewRequestOpen(false)} />
+                </div>
+            )}
+            {isMorningScheduleOpen && (
+                <div className="fixed inset-0 z-[200]">
+                     <Metformin onClose={() => setIsMorningScheduleOpen(false)} />
+                </div>
+            )}
+            {isPastMedicationOpen && (
+                <div className="fixed inset-0 z-[200]">
+                     <Past_medication onClose={() => setIsPastMedicationOpen(false)} />
                 </div>
             )}
         </div>
