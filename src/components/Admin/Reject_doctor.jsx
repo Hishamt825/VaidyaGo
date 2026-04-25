@@ -153,7 +153,7 @@ const Reject_doctor = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-[#E5E5E5] overflow-x-hidden">
+        <div className="flex h-screen bg-[#E5E5E5] overflow-hidden">
             {/* ================= SIDEBAR ================= */}
             <AdminSidebar
                 active={active}
@@ -163,7 +163,7 @@ const Reject_doctor = () => {
             />
 
             {/* ================= MAIN CONTENT ================= */}
-            <main className="flex-1 pt-3 pr-2 md:pr-4 pl-2 md:pl-4 max-w-full overflow-x-hidden">
+            <main className="flex-1 h-full overflow-y-auto pt-3 pr-2 md:pr-4 pl-2 md:pl-4 max-w-full">
 
                 {/* TOP BAR */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">

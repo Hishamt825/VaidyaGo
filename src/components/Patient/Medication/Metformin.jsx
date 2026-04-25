@@ -1,7 +1,7 @@
 import React from 'react';
 import phImg from '../../../assets/ph.png';
 
-const Metformin = ({ onClose }) => {
+const Metformin = ({ onClose, type = "Morning" }) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center p-4 z-[300]">
             {/* Backdrop */}
@@ -17,7 +17,7 @@ const Metformin = ({ onClose }) => {
                 <div className="p-8 pb-4 flex justify-between items-start">
                     <div>
                         <span className="text-[10px] font-black text-[#1A7785] uppercase tracking-[0.25em] mb-1 block">Daily Routine</span>
-                        <h2 className="text-[28px] font-[900] text-[#0D1C2E]">Morning Schedule</h2>
+                        <h2 className="text-[28px] font-[900] text-[#0D1C2E]">{type} Schedule</h2>
                     </div>
                     <button 
                         onClick={onClose}

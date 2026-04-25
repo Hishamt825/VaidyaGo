@@ -26,13 +26,27 @@ const VitalsHistory = () => {
     const navigate = useNavigate();
     const [active, setActive] = useState('Vitals');
     const [selectedTab, setSelectedTab] = useState('All Vitals');
+    const [currentPage, setCurrentPage] = useState(1);
     
-    const vitalsData = [
-        { date: 'Oct 24, 2023', time: '08:45 AM', hr: '78', bp: '120/80', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600' },
-        { date: 'Oct 23, 2023', time: '08:15 PM', hr: '82', bp: '124/82', spo2: '97%', temp: '36.8°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500' },
-        { date: 'Oct 23, 2023', time: '10:30 AM', hr: '94', bp: '138/88', spo2: '96%', temp: '37.2°C', status: 'Caution', statusColor: 'bg-rose-50 border-rose-100 text-rose-500' },
-        { date: 'Oct 22, 2023', time: '09:00 AM', hr: '74', bp: '118/76', spo2: '99%', temp: '36.5°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600' },
+    const allVitalsData = [
+        // Page 1
+        { date: 'Oct 24, 2023', time: '08:45 AM', hr: '78', bp: '120/80', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 1 },
+        { date: 'Oct 23, 2023', time: '08:15 PM', hr: '82', bp: '124/82', spo2: '97%', temp: '36.8°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500', page: 1 },
+        { date: 'Oct 23, 2023', time: '10:30 AM', hr: '94', bp: '138/88', spo2: '96%', temp: '37.2°C', status: 'Caution', statusColor: 'bg-rose-50 border-rose-100 text-rose-500', page: 1 },
+        { date: 'Oct 22, 2023', time: '09:00 AM', hr: '74', bp: '118/76', spo2: '99%', temp: '36.5°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 1 },
+        // Page 2
+        { date: 'Oct 21, 2023', time: '11:20 AM', hr: '80', bp: '122/80', spo2: '98%', temp: '36.7°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 2 },
+        { date: 'Oct 20, 2023', time: '07:45 PM', hr: '76', bp: '119/78', spo2: '97%', temp: '36.6°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500', page: 2 },
+        { date: 'Oct 19, 2023', time: '02:30 PM', hr: '88', bp: '130/84', spo2: '96%', temp: '36.9°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500', page: 2 },
+        { date: 'Oct 18, 2023', time: '10:15 AM', hr: '72', bp: '116/74', spo2: '99%', temp: '36.4°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 2 },
+        // Page 3
+        { date: 'Oct 17, 2023', time: '09:10 AM', hr: '79', bp: '121/79', spo2: '98%', temp: '36.7°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 3 },
+        { date: 'Oct 16, 2023', time: '08:00 PM', hr: '85', bp: '128/82', spo2: '97%', temp: '36.8°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500', page: 3 },
+        { date: 'Oct 15, 2023', time: '01:20 PM', hr: '92', bp: '135/86', spo2: '95%', temp: '37.1°C', status: 'Caution', statusColor: 'bg-rose-50 border-rose-100 text-rose-500', page: 3 },
+        { date: 'Oct 14, 2023', time: '11:45 AM', hr: '75', bp: '117/75', spo2: '99%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 3 },
     ];
+
+    const vitalsData = allVitalsData.filter(item => item.page === currentPage);
 
     return (
         <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden" 
@@ -42,7 +56,15 @@ const VitalsHistory = () => {
 
             <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                 {/* Top Navbar standardized to Medication1 style */}
-                <header className="h-[72px] flex items-center justify-between px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
+                <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
+                    <button 
+                        onClick={() => navigate('/Vitals')}
+                        className="w-[40px] h-[40px] rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all group shrink-0"
+                        title="Back to Vitals"
+                    >
+                        <ChevronLeft className="group-hover:-translate-x-1 transition-transform" size={20} />
+                    </button>
+
                     <div className="flex-1 max-w-[280px]">
                         <div className="relative group">
                             <input
@@ -161,9 +183,15 @@ const VitalsHistory = () => {
                                 <thead>
                                     <tr className="bg-[#FBFCFD] border-b border-gray-50">
                                         <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Date & Time</th>
-                                        <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Heart Rate</th>
-                                        <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Blood Pressure</th>
-                                        <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">SpO2</th>
+                                        {(selectedTab === 'All Vitals' || selectedTab === 'Heart Rate') && (
+                                            <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Heart Rate</th>
+                                        )}
+                                        {(selectedTab === 'All Vitals' || selectedTab === 'Blood Pressure') && (
+                                            <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Blood Pressure</th>
+                                        )}
+                                        {(selectedTab === 'All Vitals' || selectedTab === 'SpO2') && (
+                                            <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">SpO2</th>
+                                        )}
                                         <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Temperature</th>
                                         <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Status</th>
                                     </tr>
@@ -177,14 +205,20 @@ const VitalsHistory = () => {
                                                     <span className="text-[#627382] text-[11px] font-medium opacity-60 whitespace-nowrap">{row.time}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <div className="flex items-baseline gap-1">
-                                                    <span className={`text-[16px] font-bold ${idx === 2 ? 'text-rose-500' : 'text-[#0D1C2E]'}`}>{row.hr}</span>
-                                                    <span className="text-[10px] font-bold text-[#627382] opacity-40">BPM</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold tracking-tight text-left">{row.bp}</td>
-                                            <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.spo2}</td>
+                                            {(selectedTab === 'All Vitals' || selectedTab === 'Heart Rate') && (
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-baseline gap-1">
+                                                        <span className={`text-[16px] font-bold ${idx === 2 ? 'text-rose-500' : 'text-[#0D1C2E]'}`}>{row.hr}</span>
+                                                        <span className="text-[10px] font-bold text-[#627382] opacity-40">BPM</span>
+                                                    </div>
+                                                </td>
+                                            )}
+                                            {(selectedTab === 'All Vitals' || selectedTab === 'Blood Pressure') && (
+                                                <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold tracking-tight text-left">{row.bp}</td>
+                                            )}
+                                            {(selectedTab === 'All Vitals' || selectedTab === 'SpO2') && (
+                                                <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.spo2}</td>
+                                            )}
                                             <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.temp}</td>
                                             <td className="px-8 py-6">
                                                 <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border whitespace-nowrap ${row.statusColor}`}>
@@ -199,13 +233,31 @@ const VitalsHistory = () => {
 
                         {/* Pagination */}
                         <div className="p-6 md:px-8 border-t border-gray-50 flex items-center justify-between">
-                            <p className="text-[#627382] text-[12px] font-medium opacity-60 italic">Showing 1 to 4 of 128 records</p>
+                            <p className="text-[#627382] text-[12px] font-medium opacity-60 italic">
+                                Showing {(currentPage - 1) * 4 + 1} to {currentPage * 4} of 128 records
+                            </p>
                             <div className="flex items-center gap-2">
-                                <button className="w-8 h-8 rounded-lg flex items-center justify-center text-[#627382] hover:bg-[#F4F8FA] transition-all"><ChevronLeft size={16} /></button>
-                                <button className="w-8 h-8 rounded-lg bg-[#0B1F4D] text-white flex items-center justify-center text-[12px] font-bold shadow-lg">1</button>
-                                <button className="w-8 h-8 rounded-lg flex items-center justify-center text-[#627382] hover:bg-[#F4F8FA] text-[12px] font-bold">2</button>
-                                <button className="w-8 h-8 rounded-lg flex items-center justify-center text-[#627382] hover:bg-[#F4F8FA] text-[12px] font-bold">3</button>
-                                <button className="w-8 h-8 rounded-lg flex items-center justify-center text-[#627382] hover:bg-[#F4F8FA] transition-all"><ChevronRight size={16} /></button>
+                                <button 
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-[#627382] hover:bg-[#F4F8FA] transition-all"
+                                >
+                                    <ChevronLeft size={16} />
+                                </button>
+                                {[1, 2, 3].map(pageNum => (
+                                    <button 
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-[12px] font-bold transition-all ${currentPage === pageNum ? 'bg-[#0B1F4D] text-white shadow-lg' : 'text-[#627382] hover:bg-[#F4F8FA]'}`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                ))}
+                                <button 
+                                    onClick={() => setCurrentPage(prev => Math.min(3, prev + 1))}
+                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-[#627382] hover:bg-[#F4F8FA] transition-all"
+                                >
+                                    <ChevronRight size={16} />
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -66,6 +66,9 @@ import VitalsHistory from './components/Patient/Vitals/Vitals_history';
 import View_request from './components/Patient/Medication/View_request';
 import Order from './components/Patient/Medication/Order';
 import Lisinopril from './components/Patient/Medication/Lisinopril';
+import Metformin_detail from './components/Patient/Medication/Metformin_detail';
+import Atorvastatin from './components/Patient/Medication/Atorvastatin';
+import Amoxicillin from './components/Patient/Medication/Amoxicillin';
 
 
 
@@ -135,6 +138,9 @@ const App = () => {
       <Route path="/View_request" element={<View_request />} />
       <Route path="/Order" element={<Order />} />
       <Route path="/Lisinopril" element={<Lisinopril />} />
+      <Route path="/Metformin" element={<Metformin_detail />} />
+      <Route path="/Atorvastatin" element={<Atorvastatin />} />
+      <Route path="/Amoxicillin" element={<Amoxicillin />} />
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 

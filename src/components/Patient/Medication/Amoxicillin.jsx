@@ -9,7 +9,7 @@ import mapImg from '../../../assets/map.png';
 import Reminder from './Reminder';
 import Request_refill from './Request_refill';
 
-const Lisinopril = () => {
+const Amoxicillin = () => {
     const navigate = useNavigate();
     const [active, setActive] = useState('Medications');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -76,15 +76,13 @@ const Lisinopril = () => {
                     </header>
 
                     <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-4 pb-12 overflow-y-auto custom-scrollbar">
-
-
                         {/* Page Header Area */}
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                             <div className="flex-1">
                                 <span className="bg-[#6ED4D4]/20 text-[#6ED4D4] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-[#6ED4D4]/30 mb-4 inline-block">
                                     Active Regimen
                                 </span>
-                                <h1 className="text-[42px] font-bold text-white leading-tight mb-2 tracking-tight">Lisinopril 10mg Oral Tablet</h1>
+                                <h1 className="text-[42px] font-bold text-white leading-tight mb-2 tracking-tight">Amoxicillin 250mg Capsule</h1>
                                 <div className="flex items-center gap-4 text-white/50 text-[14px] font-medium">
                                     <span>Patient: Alex Rivera</span>
                                     <span className="w-1 h-1 rounded-full bg-white/20" />
@@ -125,8 +123,8 @@ const Lisinopril = () => {
                                                     </svg>
                                                 </div>
                                                 <div>
-                                                    <h2 className="text-[28px] font-bold text-[#0D1C2E]">1 Tablet, Once daily</h2>
-                                                    <p className="text-[#627382] text-[15px] font-medium">Preferably in the morning with a full glass of water.</p>
+                                                    <h2 className="text-[28px] font-bold text-[#0D1C2E]">1 Capsule, 3 Times Daily</h2>
+                                                    <p className="text-[#627382] text-[15px] font-medium">Complete the full course as prescribed.</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -137,11 +135,11 @@ const Lisinopril = () => {
                                     <div className="grid grid-cols-2 gap-4 pt-6 border-t border-slate-100">
                                         <div>
                                             <p className="text-[9px] font-bold text-[#627382] uppercase tracking-[0.2em] mb-1">Next Dose</p>
-                                            <p className="text-[15px] font-bold text-[#0D1C2E]">Tomorrow, 08:00 AM</p>
+                                            <p className="text-[15px] font-bold text-[#0D1C2E]">Today, 02:00 PM</p>
                                         </div>
                                         <div>
                                             <p className="text-[9px] font-bold text-[#627382] uppercase tracking-[0.2em] mb-1">Last Taken</p>
-                                            <p className="text-[15px] font-bold text-[#0D1C2E]">Today, 07:58 AM</p>
+                                            <p className="text-[15px] font-bold text-[#0D1C2E]">Today, 08:00 AM</p>
                                         </div>
                                     </div>
                                 </div>
@@ -157,7 +155,7 @@ const Lisinopril = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-[10px] text-[#627382] font-medium uppercase tracking-wider mb-0.5">Prescribing Physician</p>
-                                                    <p className="text-[16px] font-bold text-[#0D1C2E]">Dr. Julian Thorne</p>
+                                                    <p className="text-[16px] font-bold text-[#0D1C2E]">Dr. Gregory House</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-4">
@@ -166,7 +164,7 @@ const Lisinopril = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-[10px] text-[#627382] font-medium uppercase tracking-wider mb-0.5">Preferred Pharmacy</p>
-                                                    <p className="text-[16px] font-bold text-[#0D1C2E]">VaidyaGo Pharmacy Hub</p>
+                                                    <p className="text-[16px] font-bold text-[#0D1C2E]">Care First Pharmacy</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-4 text-[#1A7785]">
@@ -175,7 +173,7 @@ const Lisinopril = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-[10px] font-medium uppercase tracking-wider mb-0.5 opacity-70">Refills Remaining</p>
-                                                    <p className="text-[16px] font-bold">4 Refills Available</p>
+                                                    <p className="text-[16px] font-bold">0 Refills (Antibiotic)</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -193,8 +191,8 @@ const Lisinopril = () => {
                                             </div>
                                         </div>
                                         <div className="p-6">
-                                            <p className="text-[15px] font-bold text-[#0D1C2E]">Sanctuary Pharmacy Center</p>
-                                            <p className="text-[12px] text-[#627382] font-medium mb-4">1221 Wellness Way, Ste 400</p>
+                                            <p className="text-[15px] font-bold text-[#0D1C2E]">SafeCare Pharmacy</p>
+                                            <p className="text-[12px] text-[#627382] font-medium mb-4">998 Medical Plaza, Ste 200</p>
                                             <button className="text-[11px] font-black text-[#1A7785] uppercase tracking-widest hover:opacity-70 flex items-center gap-2">
                                                 Get Directions <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" /></svg>
                                             </button>
@@ -207,10 +205,10 @@ const Lisinopril = () => {
                                     <h3 className="text-[11px] font-bold text-[#1A7785] uppercase tracking-[0.2em] mb-6">Usage Instructions</h3>
                                     <div className="space-y-5">
                                         {[
-                                            "Take this medication by mouth with or without food as directed by your doctor, usually once daily.",
-                                            "The dosage is based on your medical condition and response to treatment.",
-                                            "Use this medication regularly to get the most benefit from it. To help you remember, take it at the same time each day.",
-                                            "It is important to continue taking this medication even if you feel well. Most people with high blood pressure do not feel sick."
+                                            "Take this medication by mouth with or without food as directed by your doctor, usually every 8 hours.",
+                                            "Antibiotics work best when the amount of medicine in your body is kept at a constant level. Therefore, take this drug at evenly spaced intervals.",
+                                            "Continue to take this medication until the full prescribed amount is finished, even if symptoms disappear after a few days.",
+                                            "Stopping the medication too early may allow bacteria to continue to grow, which may result in a return of the infection."
                                         ].map((step, i) => (
                                             <div key={i} className="flex gap-4">
                                                 <div className="w-6 h-6 rounded-full bg-[#EBF5F6] flex items-center justify-center text-[#1A7785] text-[12px] font-bold shrink-0">
@@ -229,13 +227,13 @@ const Lisinopril = () => {
                                 {/* Physical Appearance */}
                                 <div className="bg-white rounded-[32px] overflow-hidden shadow-xl">
                                     <div className="h-[200px] bg-[#EBF5F6] flex items-center justify-center p-8">
-                                        <div className="w-32 h-16 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center text-[10px] font-bold text-[#1A7785] uppercase tracking-widest">
-                                            L10
+                                        <div className="w-24 h-12 bg-[#FFEBEE] rounded-full shadow-lg border border-slate-100 flex items-center justify-center text-[10px] font-bold text-[#E85B5A] uppercase tracking-widest">
+                                            AMX 250
                                         </div>
                                     </div>
                                     <div className="p-6 text-center">
                                         <p className="text-[10px] font-bold text-[#627382] uppercase tracking-[0.2em] mb-1">Physical Appearance</p>
-                                        <p className="text-[15px] font-bold text-[#0D1C2E]">White, Oval, Imprint 'L10'</p>
+                                        <p className="text-[15px] font-bold text-[#0D1C2E]">Pink/Yellow Capsule, Imprint 'AMX 250'</p>
                                     </div>
                                 </div>
 
@@ -251,7 +249,7 @@ const Lisinopril = () => {
                                                 <p className="text-[14px] font-bold">Common Uses</p>
                                             </div>
                                             <p className="text-[13px] text-white/60 leading-relaxed">
-                                                Used to treat high blood pressure. Lowering blood pressure helps prevent strokes, heart attacks, and kidney problems.
+                                                Used to treat a wide variety of bacterial infections. It works by stopping the growth of bacteria.
                                             </p>
                                         </div>
 
@@ -261,7 +259,7 @@ const Lisinopril = () => {
                                                 <p className="text-[14px] font-bold">Storage Tips</p>
                                             </div>
                                             <p className="text-[13px] text-white/60 leading-relaxed">
-                                                Store at room temperature away from light and moisture. Do not store in the bathroom.
+                                                Store at room temperature away from light and moisture. Keep the bottle tightly closed.
                                             </p>
                                         </div>
 
@@ -271,9 +269,9 @@ const Lisinopril = () => {
                                                 <p className="text-[12px] font-bold uppercase tracking-wider">Watch For</p>
                                             </div>
                                             <ul className="space-y-2 text-[13px] text-white/80 font-medium">
-                                                <li>• Dizziness or lightheadedness</li>
-                                                <li>• Dry cough that persists</li>
-                                                <li>• Swelling of the face/lips</li>
+                                                <li>• Diarrhea or upset stomach</li>
+                                                <li>• Skin rash or itching</li>
+                                                <li>• Signs of a new infection</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -283,16 +281,16 @@ const Lisinopril = () => {
                                 <div className="bg-white rounded-[32px] p-8 shadow-xl">
                                     <h3 className="text-[11px] font-bold text-[#627382] uppercase tracking-[0.2em] mb-6">Adherence History</h3>
                                     <div className="h-24 flex items-end gap-2 mb-4">
-                                        {[40, 60, 50, 90, 80, 45].map((h, i) => (
+                                        {[100, 100, 100, 100, 100, 100].map((h, i) => (
                                             <div 
                                                 key={i} 
-                                                className={`flex-1 rounded-t-lg transition-all duration-1000 ${i === 3 ? 'bg-[#006A70]' : 'bg-[#49AAB3] opacity-60'}`}
+                                                className={`flex-1 rounded-t-lg transition-all duration-1000 ${i === 5 ? 'bg-[#006A70]' : 'bg-[#49AAB3] opacity-60'}`}
                                                 style={{ height: `${h}%` }}
                                             />
                                         ))}
                                     </div>
                                     <p className="text-center text-[11px] font-black text-[#1A7785] uppercase tracking-widest">
-                                        92% Compliance Rate
+                                        100% Compliance Rate
                                     </p>
                                 </div>
                             </div>
@@ -311,4 +309,4 @@ const Lisinopril = () => {
     );
 };
 
-export default Lisinopril;
+export default Amoxicillin;

@@ -116,12 +116,12 @@ const AdminDoctor = () => {
     const firstDay = new Date(year, month, 1).getDay();
 
     return (
-        <div className="flex min-h-screen bg-[#F7F9FB]">
+        <div className="flex h-screen bg-[#F7F9FB] overflow-hidden">
 
             {/* ================= SIDEBAR ================= */}
             <AdminSidebar active={active} setActive={setActive} />
             {/* ================= MAIN ================= */}
-            <main className="flex-1 pt-3 pr-2 pl-4">
+            <main className="flex-1 h-full overflow-y-auto pt-3 pr-2 pl-4">
 
 
                 {/* TOP BAR */}

@@ -172,10 +172,10 @@ const handleDisconnectGoogle = async () => {
 };
 
   return (
-    <div className="flex min-h-screen bg-[#f5f8fb]">
+    <div className="flex h-screen bg-[#f5f8fb] overflow-hidden">
       
       {/* LEFT ICON BAR */}
-      <div className="w-14 bg-white flex flex-col items-center shadow-lg border-r border-[#19718A] py-4 rounded-full">
+      <div className="h-full w-14 bg-white flex flex-col items-center shadow-lg border-r border-[#19718A] py-4 rounded-full">
         <div 
           onClick={() => navigate("/Admin_dashboard1")} 
           className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-100 cursor-pointer hover:bg-blue-200 transition-colors"
@@ -191,7 +191,7 @@ const handleDisconnectGoogle = async () => {
       </div>
 
       {/* MAIN SIDEBAR */}
-      <div className="w-64 bg-[#eef5f9] border-r p-6">
+      <div className="h-full w-64 bg-[#eef5f9] border-r p-6">
         <img src="/assets/v.png" className="h-12 mb-6" alt="" />
 
         <p className="text-[14px] text-gray-500 mb-3">Personal Account</p>
@@ -205,7 +205,7 @@ const handleDisconnectGoogle = async () => {
       </div>
 
       {/* RIGHT PROFILE CONTENT */}
-      <div className="flex-1 bg-white px-20 py-16">
+      <div className="flex-1 h-full overflow-y-auto bg-white px-20 py-16">
 
         {/* HEADER */}
      

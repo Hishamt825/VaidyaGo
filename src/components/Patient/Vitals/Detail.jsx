@@ -12,7 +12,8 @@ import {
   Zap,
   ShieldCheck,
   TrendingUp,
-  Waves
+  Waves,
+  ChevronLeft
 } from 'lucide-react';
 import Sidebar from '../Patient_sidebar';
 import Profile from '../Profile';
@@ -78,7 +79,15 @@ const Detail = () => {
             <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden transition-all duration-500 ${isAnyModalOpen ? 'blur-md pointer-events-none' : ''}`}>
                 
                 {/* Top Navbar standardized to Medication1 style */}
-                <header className="h-[72px] flex items-center justify-between px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
+                <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
+                    <button 
+                        onClick={() => navigate('/Vitals')}
+                        className="w-[40px] h-[40px] rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all group shrink-0"
+                        title="Back to Vitals"
+                    >
+                        <ChevronLeft className="group-hover:-translate-x-1 transition-transform" size={20} />
+                    </button>
+
                     <div className="flex-1 max-w-[280px]">
                         <div className="relative group">
                             <input

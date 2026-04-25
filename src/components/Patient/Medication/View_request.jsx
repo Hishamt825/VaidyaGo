@@ -30,16 +30,26 @@ const View_request = () => {
 
     return (
         <div className="relative h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
-             style={{ background: 'linear-gradient(180deg, #0A1A3B 0%, #144C5C 40%, #2D8A94 75%, #5FB9C1 100%)' }}>
-            
+            style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
+
             {/* Main Content Wrapper */}
             <div className={`flex h-full w-full transition-all duration-300 ${activeModal || isNotificationOpen || isProgressOpen || isTomorrowOpen || isMessageOpen || isCancelOpen ? 'blur-[8px] scale-[0.98]' : ''}`}>
-                
+
                 <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
                 <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                     {/* Top Navbar */}
-                    <header className="h-[72px] flex items-center justify-between px-6 md:px-12 shrink-0 border-b border-white/5 mb-1">
+                    <header className="h-[72px] flex items-center gap-4 px-6 md:px-12 shrink-0 border-b border-white/5 mb-1">
+                        <button 
+                            onClick={() => navigate('/Medication')}
+                            className="w-[40px] h-[40px] rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all group shrink-0"
+                            title="Back to Medications"
+                        >
+                            <svg className="w-[20px] h-[20px] group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+
                         <div className="flex-1 max-w-[280px]">
                             <div className="relative group">
                                 <input
@@ -53,7 +63,7 @@ const View_request = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-[32px]">
+                        <div className="flex items-center gap-[32px] ml-auto">
                             <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block cursor-pointer transition-colors">Language</span>
                             <div className="flex items-center gap-[20px]">
                                 <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
@@ -75,17 +85,15 @@ const View_request = () => {
                         </div>
                     </header>
 
-                    <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-6 pb-12 overflow-y-auto custom-scrollbar">
-                        
-                        {/* Page Top Actions */}
-                        <div className="flex items-center justify-between mb-8">
-                            <button onClick={() => navigate('/Medication')} className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-[14px] font-semibold">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
-                                </svg>
-                                Back to Medication Dashboard
-                            </button>
-                            <div className="flex items-center gap-6">
+                    <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-2 pb-12 overflow-y-auto custom-scrollbar">
+
+                        {/* Page Header Title & Actions */}
+                        <div className="flex items-start justify-between mb-8">
+                            <div>
+                                <h1 className="text-[48px] font-bold text-white leading-tight tracking-tight mb-1">Refill Request Details</h1>
+                                <p className="text-white/70 text-[18px] font-medium">Alex Rivera • ID #8842-RX</p>
+                            </div>
+                            <div className="flex items-center gap-6 pt-6">
                                 <button 
                                     onClick={() => setIsMessageOpen(true)}
                                     className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-[14px] font-bold transition-all backdrop-blur-md shadow-lg"
@@ -102,21 +110,15 @@ const View_request = () => {
                                     Cancel Request
                                 </button>
                             </div>
-                        </div>
-
-                        {/* Page Header Title */}
-                        <div className="mb-10">
-                            <h1 className="text-[48px] font-bold text-white leading-tight tracking-tight mb-1">Refill Request Details</h1>
-                            <p className="text-white/70 text-[18px] font-medium">Alex Rivera • ID #8842-RX</p>
                         </div>                        {/* Main Grid Layout */}
                         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
-                            
+
                             {/* Left Column: Status, Track Order, Medications */}
                             <div className="flex flex-col gap-8">
-                                
+
                                 {/* Top Info Cards */}
                                 <div className="flex flex-wrap md:flex-nowrap gap-5">
-                                    <div 
+                                    <div
                                         className="w-full md:w-1/2 bg-white rounded-[32px] p-8 shadow-2xl flex flex-col justify-center min-h-[180px] cursor-pointer hover:bg-slate-50 transition-colors group/card"
                                         onClick={() => setIsProgressOpen(true)}
                                     >
@@ -131,7 +133,7 @@ const View_request = () => {
                                             Verified by Clinician
                                         </div>
                                     </div>
-                                    <div 
+                                    <div
                                         className="w-full md:w-1/2 bg-[#0A1A3B] rounded-[32px] p-8 shadow-2xl border border-white/5 flex flex-col justify-center min-h-[180px] cursor-pointer hover:bg-[#0D1C2E] transition-colors group/card2"
                                         onClick={() => setIsTomorrowOpen(true)}
                                     >
@@ -147,7 +149,7 @@ const View_request = () => {
                                 </div>
 
                                 {/* Tracking Timeline */}
-                                <div 
+                                <div
                                     className="bg-[#5FB9C1]/30 backdrop-blur-xl rounded-[32px] p-10 border border-white/10 shadow-2xl cursor-pointer hover:bg-[#5FB9C1]/40 transition-all group"
                                     onClick={() => navigate('/Order')}
                                 >
@@ -165,12 +167,12 @@ const View_request = () => {
                                             </svg>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="relative flex justify-between">
                                         <div className="absolute top-[22px] left-[22px] right-[22px] h-[3px] bg-white/10 z-0 rounded-full">
                                             <div className="h-full bg-[#6ED4D4] transition-all duration-1000 shadow-[0_0_15px_rgba(110,212,212,0.8)] rounded-full" style={{ width: '33.33%' }}></div>
                                         </div>
-                                        
+
                                         {[
                                             { label: 'Request Received', date: 'Oct 24, 9:30 AM', status: 'completed', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
                                             { label: 'In Progress', date: 'Oct 24, 11:45 AM', status: 'current', icon: 'M21 13V6a2 2 0 00-2-2H5a2 2 0 00-2 2v7m18 0v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5m18 0h-3.586a1 1 0 01-.707-.293l-1.414-1.414A1 1 0 0014.586 11H9.414a1 1 0 00-.707.293L7.293 12.707A1 1 0 016.586 13H3' },
@@ -178,11 +180,10 @@ const View_request = () => {
                                             { label: 'Completed', date: 'Pending', status: 'pending', icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' },
                                         ].map((step, i) => (
                                             <div key={i} className="relative flex flex-col items-center text-center z-10">
-                                                <div className={`w-11 h-11 rounded-full flex items-center justify-center mb-5 transition-all duration-500 ${
-                                                    step.status === 'completed' ? 'bg-[#1A7785] text-white shadow-lg' : 
-                                                    step.status === 'current' ? 'bg-[#0D1C2E] text-white shadow-[0_0_25px_rgba(13,28,46,0.6)] scale-110 border-2 border-[#6ED4D4]/50' : 
-                                                    'bg-white/10 text-white/30 border border-white/10 backdrop-blur-md'
-                                                }`}>
+                                                <div className={`w-11 h-11 rounded-full flex items-center justify-center mb-5 transition-all duration-500 ${step.status === 'completed' ? 'bg-[#1A7785] text-white shadow-lg' :
+                                                        step.status === 'current' ? 'bg-[#0D1C2E] text-white shadow-[0_0_25px_rgba(13,28,46,0.6)] scale-110 border-2 border-[#6ED4D4]/50' :
+                                                            'bg-white/10 text-white/30 border border-white/10 backdrop-blur-md'
+                                                    }`}>
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d={step.icon} />
                                                     </svg>
@@ -207,14 +208,20 @@ const View_request = () => {
                                         </h2>
                                         <button className="text-[13px] font-bold text-[#1A7785] hover:opacity-80 transition-opacity border-b-2 border-[#1A7785]/20 pb-0.5">Download Summary</button>
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         {medications.map((med, i) => (
-                                            <div 
-                                                key={i} 
+                                            <div
+                                                key={i}
                                                 onClick={() => {
                                                     if (med.name === 'Lisinopril') {
                                                         navigate('/Lisinopril');
+                                                    } else if (med.name === 'Metformin') {
+                                                        navigate('/Metformin');
+                                                    } else if (med.name === 'Atorvastatin') {
+                                                        navigate('/Atorvastatin');
+                                                    } else if (med.name === 'Amoxicillin') {
+                                                        navigate('/Amoxicillin');
                                                     }
                                                 }}
                                                 className="bg-[#F8FBFC] border border-[#1A7785]/15 rounded-[28px] p-6 flex items-center justify-between group hover:border-[#1A7785]/40 hover:bg-white hover:shadow-xl transition-all duration-300 cursor-pointer"
@@ -273,7 +280,7 @@ const View_request = () => {
                                             </div>
                                             <div>
                                                 <p className="text-[15px] font-bold text-[#0D1C2E] mb-1">1202 Healing Way</p>
-                                                <p className="text-[13px] text-[#627382] font-medium leading-relaxed">Suite 100, West District<br/>Seattle, WA 98101</p>
+                                                <p className="text-[13px] text-[#627382] font-medium leading-relaxed">Suite 100, West District<br />Seattle, WA 98101</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-5">

@@ -205,7 +205,7 @@ const Admin_dashboard1 = () => {
     const firstDay = new Date(year, month, 1).getDay();
 
     return (
-        <div className="flex min-h-screen bg-[#F7F9FB] overflow-x-hidden">
+        <div className="flex h-screen bg-[#F7F9FB] overflow-hidden">
 
             {/* ================= SIDEBAR ================= */}
             <AdminSidebar
@@ -216,7 +216,7 @@ const Admin_dashboard1 = () => {
             />
 
             {/* ================= MAIN ================= */}
-            <main className="flex-1 pt-3 pr-2 pl-4 max-w-full overflow-hidden">
+            <main className="flex-1 h-full overflow-y-auto pt-3 pr-2 pl-4 max-w-full">
 
                 {/* TOP BAR */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">

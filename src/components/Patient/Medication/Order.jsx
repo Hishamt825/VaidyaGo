@@ -26,11 +26,11 @@ const Order = () => {
 
     return (
         <div className="relative h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
-             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
-            
+            style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
+
             {/* Main Content Wrapper - This gets blurred */}
             <div className={`flex h-full w-full transition-all duration-300 ${activeModal || isNotificationOpen || isMessageOpen || isCancelOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
-                
+
                 <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
                 <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
@@ -64,7 +64,7 @@ const Order = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                 </button>
-                                <div 
+                                <div
                                     onClick={() => setActiveModal('profile')}
                                     className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform"
                                 >
@@ -75,13 +75,14 @@ const Order = () => {
                     </header>
 
                     <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-5 pb-10 overflow-y-auto custom-scrollbar">
-                        
                         {/* Page Header */}
-                        <div className="flex items-start justify-between mb-6">
-                            <div>
-                                <h1 className="text-[32px] font-bold text-white leading-tight mb-1 tracking-tight">Order Tracking</h1>
-                                <p className="text-white/60 text-[14px] font-medium">Real-time status of your medical essentials</p>
-                            </div>
+                        <div className="flex items-center justify-between mb-8">
+                            <button onClick={() => navigate('/View_request')} className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-[14px] font-semibold">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                                </svg>
+                                Back to Request Details
+                            </button>
                             <div className="flex items-center gap-6">
                                 <button 
                                     onClick={() => setIsMessageOpen(true)}
@@ -99,6 +100,12 @@ const Order = () => {
                                     Cancel Request
                                 </button>
                             </div>
+                        </div>
+
+                        {/* Title & Status */}
+                        <div className="mb-8">
+                            <h1 className="text-[32px] font-bold text-white leading-tight mb-1 tracking-tight">Order Tracking</h1>
+                            <p className="text-white/60 text-[14px] font-medium">Real-time status of your medical essentials</p>
                         </div>
 
                         {/* Tracking Timeline Bar */}
@@ -166,7 +173,7 @@ const Order = () => {
 
                         {/* Main Grid Content */}
                         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
-                            
+
                             {/* Left Column: Map */}
                             <div className="relative bg-[#A0AEC0] rounded-[28px] overflow-hidden min-h-[440px] shadow-2xl flex items-center justify-center border border-white/10">
                                 {/* Map Image */}
@@ -209,7 +216,7 @@ const Order = () => {
 
                             {/* Right Column: Order Info */}
                             <div className="flex flex-col gap-6">
-                                
+
                                 {/* Order Summary Card */}
                                 <div className="bg-white rounded-[28px] p-6 shadow-xl border border-slate-50 relative overflow-hidden">
                                     <div className="flex items-center justify-between mb-5">

@@ -26,6 +26,7 @@ const Medication1 = () => {
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
     const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
     const [isMorningScheduleOpen, setIsMorningScheduleOpen] = useState(false);
+    const [scheduleType, setScheduleType] = useState('Morning');
     const [isPastMedicationOpen, setIsPastMedicationOpen] = useState(false);
     const [isRefillOpen, setIsRefillOpen] = useState(false);
     const [isRefillRequestOpen, setIsRefillRequestOpen] = useState(false);
@@ -41,7 +42,8 @@ const Medication1 = () => {
 
             <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                 {/* Top Navbar */}
-                <header className="h-[72px] flex items-center justify-between px-6 md:px-8 shrink-0 border-b border-white/5 mb-1">
+                <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1">
+
                     <div className="flex-1 max-w-[280px]">
                         <div className="relative group">
                             <input
@@ -56,8 +58,8 @@ const Medication1 = () => {
                     </div>
 
 
-                    <div className="flex items-center gap-[32px]">
-                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block cursor-pointer transition-colors">Language</span>
+                    <div className="flex items-center gap-[32px] ml-auto">
+                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
                         <div className="flex items-center gap-[20px]">
                             <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                 <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,7 +156,10 @@ const Medication1 = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                                     {/* Morning */}
                                     <div 
-                                        onClick={() => setIsMorningScheduleOpen(true)}
+                                        onClick={() => {
+                                            setScheduleType('Morning');
+                                            setIsMorningScheduleOpen(true);
+                                        }}
                                         className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 relative transition-all hover:shadow-lg group flex overflow-hidden cursor-pointer"
                                     >
                                         <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#1A7785] opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -175,7 +180,13 @@ const Medication1 = () => {
                                         </div>
                                     </div>
                                     {/* Afternoon - Pending */}
-                                    <div className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all hover:shadow-lg group relative overflow-hidden cursor-pointer">
+                                    <div 
+                                        onClick={() => {
+                                            setScheduleType('Evening');
+                                            setIsMorningScheduleOpen(true);
+                                        }}
+                                        className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all hover:shadow-lg group relative overflow-hidden cursor-pointer"
+                                    >
                                         <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#1A7785] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="flex items-center justify-between mb-4">
                                             <span className="text-[10px] font-medium text-[#627382] group-hover:text-[#1A7785] uppercase tracking-[0.15em] transition-colors">Afternoon</span>
@@ -192,7 +203,13 @@ const Medication1 = () => {
                                         </button>
                                     </div>
                                     {/* Evening */}
-                                    <div className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 shadow-sm opacity-60 hover:opacity-100 transition-all group relative overflow-hidden cursor-pointer">
+                                    <div 
+                                        onClick={() => {
+                                            setScheduleType('Evening');
+                                            setIsMorningScheduleOpen(true);
+                                        }}
+                                        className="bg-white hover:bg-[#effafb] rounded-[24px] p-5 border border-gray-200 hover:border-[#1A7785]/20 shadow-sm opacity-60 hover:opacity-100 transition-all group relative overflow-hidden cursor-pointer"
+                                    >
                                         <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#1A7785] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="flex items-center justify-between mb-4">
                                             <span className="text-[10px] font-medium text-[#627382] group-hover:text-[#1A7785] uppercase tracking-[0.15em] transition-colors">Evening</span>
@@ -219,7 +236,10 @@ const Medication1 = () => {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div className="bg-white rounded-[32px] p-6 shadow-sm relative group overflow-hidden border border-gray-50">
+                                    <div 
+                                        onClick={() => navigate('/Metformin')}
+                                        className="bg-white rounded-[32px] p-6 shadow-sm relative group overflow-hidden border border-gray-50 cursor-pointer hover:shadow-lg transition-all"
+                                    >
                                         <div className="flex justify-between items-start mb-5">
                                             <div className="w-10 h-10 rounded-2xl bg-[#DFEEF0] flex items-center justify-center text-[#1A7785]">
                                                 <svg className="w-5 h-5 animate-pump" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
@@ -244,7 +264,10 @@ const Medication1 = () => {
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="bg-white rounded-[32px] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)] relative group overflow-hidden border border-gray-50">
+                                                                     <div 
+                                        onClick={() => navigate('/Lisinopril')}
+                                        className="bg-white rounded-[32px] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)] relative group overflow-hidden border border-gray-50 cursor-pointer hover:shadow-lg transition-all"
+                                    >
                                         <div className="flex justify-between items-start mb-6">
                                             <div className="w-10 h-10 rounded-2xl bg-[#DFF4F5] flex items-center justify-center text-[#1A7785]">
                                                 <svg className="w-5 h-5 animate-pump" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
@@ -270,8 +293,8 @@ const Medication1 = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                         </div>
+                    </div>
 
                         {/* Right Sidebar Column */}
                         <div className="flex flex-col gap-6">
@@ -365,8 +388,8 @@ const Medication1 = () => {
                                 <div className="absolute -bottom-[30px] left-0 right-0 h-[80px] pointer-events-none opacity-20 transform scale-x-110">
                                     <img src={regimenBg} alt="" className="w-full h-full object-cover rounded-full" />
                                 </div>
-                            </div>
                         </div>
+                    </div>
 
                     </div>
 
@@ -453,7 +476,7 @@ const Medication1 = () => {
             )}
             {isMorningScheduleOpen && (
                 <div className="fixed inset-0 z-[200]">
-                     <Metformin onClose={() => setIsMorningScheduleOpen(false)} />
+                     <Metformin type={scheduleType} onClose={() => setIsMorningScheduleOpen(false)} />
                 </div>
             )}
             {isPastMedicationOpen && (
