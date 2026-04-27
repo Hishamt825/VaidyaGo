@@ -10,6 +10,10 @@ import Service from './components/Hospital/Service';
 
 
 import Finallogin from './components/Login-hospital/Finallogin';
+import Forget from './components/Login-hospital/Forget';
+import Otp from './components/Login-hospital/Otp';
+import New_pass from './components/Login-hospital/New_pass';
+import Logout from './components/Login-hospital/Logout';
 import Admin_signup from './components/Admin/admin-signup';
 import AdminLoginPage from './components/Admin/AdminLoginPage';
 import VerticalProgress1 from './components/Admin/VerticalProgress1';
@@ -75,6 +79,7 @@ import Dslot from './component/Day1/Doctor/Dslot';
 import Editprofile from './component/Day1/Doctor/Editprofile';
 import Appointmentb from './component/Day1/Doctor/Appointmentb';
 import Reject from './components/Admin/Reject';
+import Consultation1 from './component/Day1/Consultation/Consultation1';
 
 
 
@@ -91,6 +96,10 @@ const App = () => {
       <Route path="/Section3" element={<Section3 />} />
 
       <Route path="/Finallogin" element={<Finallogin />} />
+      <Route path="/Forget" element={<Forget />} />
+      <Route path="/Otp" element={<Otp />} />
+      <Route path="/New_pass" element={<New_pass />} />
+      <Route path="/Logout" element={<Logout />} />
       <Route path="/Admin-signup" element={<Admin_signup />} />
       <Route path="/AdminLoginPage" element={<AdminLoginPage />} />
       <Route path="/Adddoctor" element={<Adddoctor />} />
@@ -154,6 +163,7 @@ const App = () => {
       <Route path="/Editprofile" element={<Editprofile />} />
       <Route path="/Appointmentb" element={<Appointmentb />} />
       <Route path="/Reject" element={<Reject />} />
+      <Route path="/Consultation1" element={<Consultation1 />} />
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 

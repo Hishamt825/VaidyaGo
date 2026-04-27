@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DasyWilliam from "./DasyWilliam";
 import Profile from "./Profile";
+import Notification from "../Patient/notification";
 
 import AdminSidebar from "./AdminSidebar";
 import { AnimatePresence, motion } from "framer-motion";
@@ -58,6 +59,7 @@ const Admin_dashboard1 = () => {
     const [openProfile, setOpenProfile] = useState(false);
     const menuRef = useRef(null);
     const [showFullApproval, setShowFullApproval] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [expandedApprovalId, setExpandedApprovalId] = useState(1);
     const [month, setMonth] = useState(0); // January
     const [year, setYear] = useState(2025);
@@ -74,6 +76,7 @@ const Admin_dashboard1 = () => {
     const [attachedFile, setAttachedFile] = useState(null);
     const [showRejectedStatusModal, setShowRejectedStatusModal] = useState(false);
     const fileInputRef = useRef(null);
+    const approvalRef = useRef(null);
 
     const [doctors, setDoctors] = useState([
         { id: 1, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
@@ -216,32 +219,25 @@ const Admin_dashboard1 = () => {
 
                     <div className="flex items-center justify-between w-full md:w-auto gap-4">
                         <div className="flex items-center gap-3">
-
                             {/* Settings */}
-
-
-                            <img
-                                src="/assets/sett.png"
-                                className="w-18 h-14 opacity-80"
-                            />
-
-
-
-                            {/* Image / Notification */}
-                            <div className="w-14 h-10 bg-white 
-                             border-black/50 
-                              rounded-full  shadow-[0_10px_20px_rgba(10,0,0,0.2)]
-                                    rounded-md 
-                                    flex items-center justify-center 
-                                     cursor-pointer hover:bg-gray-50 transition">
-
-                                <img
-                                    src="/assets/im.png"
-                                    className="w-10 h-8 opacity-80"
-                                />
-
+                            <div 
+                                onClick={() => setOpenProfile(true)}
+                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all">
+                                <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
                             </div>
 
+                            {/* Notification */}
+                            <div 
+                                onClick={() => setIsNotificationOpen(true)}
+                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all relative">
+                                <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#9367D8] rounded-full flex items-center justify-center text-white text-[11px] font-bold border-2 border-white shadow-sm">1</div>
+                            </div>
                         </div>
 
                         <div className="relative" ref={menuRef}>
@@ -709,7 +705,7 @@ const Admin_dashboard1 = () => {
                     </div>
 
                     {/* ================= APPROVAL SECTION ================= */}
-                    <div className="col-span-12 -mt-3">
+                    <div className="col-span-12 -mt-3" ref={approvalRef}>
                         <h3 className="text-[20px] font-bold text-gray-800 mb-3 px-1">
                             Approval Section
                         </h3>
@@ -729,7 +725,7 @@ const Admin_dashboard1 = () => {
                                     <div className="space-y-2">
                                         <div className="space-y-3">
                                             <AnimatePresence>
-                                                {doctors.map((doctor) => (
+                                                {doctors.slice(0, 3).map((doctor) => (
                                                     <motion.div
                                                         key={doctor.id}
                                                         layout
@@ -953,8 +949,11 @@ const Admin_dashboard1 = () => {
 
                                     {/* VIEW LESS */}
                                     <div className="text-right mt-4">
-                                        <button onClick={() => setShowFullApproval(false)} className="text-[14px] font-bold text-gray-400 hover:text-[#19718A] transition-colors">
-                                            View More
+                                        <button onClick={() => {
+                                            setShowFullApproval(false);
+                                            approvalRef.current?.scrollIntoView({ behavior: 'smooth' });
+                                        }} className="text-[14px] font-bold text-gray-400 hover:text-[#19718A] transition-colors">
+                                            View Less
                                         </button>
                                     </div>
                                 </div>
@@ -1548,6 +1547,7 @@ const Admin_dashboard1 = () => {
                         </div>
                     )}
                 </AnimatePresence>
+                {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
             </main>
         </div>
     );

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Sync = ({ onClose }) => {
+    const navigate = useNavigate();
     return (
         <div className="fixed inset-0 z-[900] flex items-center justify-center p-4">
             {/* Backdrop */}
@@ -50,7 +52,10 @@ const Sync = ({ onClose }) => {
                         BACK TO DASHBOARD
                     </button>
                     <button 
-                        onClick={onClose}
+                        onClick={() => {
+                            navigate('/Reminder1');
+                            onClose();
+                        }}
                         className="text-[13px] font-bold text-[#1A7785] hover:text-[#0D1C2E] transition-colors"
                     >
                         View My Schedule
