@@ -14,15 +14,41 @@ const tabsData = [
 ];
 
 const doctorsData = [
+    // CARDIOLOGIST
     { id: 1, name: "Dr.Hifza Javed", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.7, status: "rejected" },
-    { id: 2, name: "Dr.Sumaiya Javed", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.8, status: "rejected" },
-    { id: 3, name: "Dr.Ahmad", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.5, status: "rejected" },
-    { id: 4, name: "Dr.Varun Mishra", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.9, status: "rejected" },
     { id: 5, name: "Dr.sidharth m.", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.6, status: "rejected" },
     { id: 6, name: "Dr.priya mehra", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.7, status: "rejected" },
-    { id: 7, name: "Dr.Aman Verma", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.4, status: "rejected" },
+    { id: 10, name: "Dr.Karan Johar", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.3, status: "rejected" },
+    { id: 15, name: "Dr.Amit Shah", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.5, status: "rejected" },
+    { id: 16, name: "Dr.Rajdeep", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.1, status: "rejected" },
+
+    // NEUROLOGIST
+    { id: 2, name: "Dr.Sumaiya Javed", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.8, status: "rejected" },
+    { id: 11, name: "Dr.Zoya Akhtar", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.5, status: "rejected" },
+    { id: 17, name: "Dr.Vikram", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.6, status: "rejected" },
+    { id: 18, name: "Dr.Sonia", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.7, status: "rejected" },
+    { id: 19, name: "Dr.Rohan", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.2, status: "rejected" },
+
+    // DERMATOLOGY
+    { id: 3, name: "Dr.Ahmad", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.5, status: "rejected" },
     { id: 8, name: "Dr.Sneha Kapoor", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.6, status: "rejected" },
+    { id: 20, name: "Dr.Manish", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.3, status: "rejected" },
+    { id: 21, name: "Dr.Kriti", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.8, status: "rejected" },
+    { id: 22, name: "Dr.Arjun", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.4, status: "rejected" },
+
+    // ONCOLOGY
+    { id: 4, name: "Dr.Varun Mishra", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.9, status: "rejected" },
     { id: 9, name: "Dr.Rajesh Khanna", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.8, status: "rejected" },
+    { id: 23, name: "Dr.Sanjay", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.7, status: "rejected" },
+    { id: 24, name: "Dr.Meera", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.6, status: "rejected" },
+    { id: 25, name: "Dr.Kabir", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.5, status: "rejected" },
+
+    // ORTHOPEDICS
+    { id: 7, name: "Dr.Aman Verma", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.4, status: "rejected" },
+    { id: 12, name: "Dr.Farhan Akhtar", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.6, status: "rejected" },
+    { id: 26, name: "Dr.Ranveer", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.8, status: "rejected" },
+    { id: 27, name: "Dr.Deepika", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.7, status: "rejected" },
+    { id: 28, name: "Dr.Hrithik", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.9, status: "rejected" },
 ];
 
 const Reject = () => {
