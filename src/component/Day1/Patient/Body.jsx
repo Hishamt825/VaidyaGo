@@ -2,37 +2,67 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Body.css';
 import frontalBody from '../../../assets/human-body-frontal-removebg-preview 1.svg';
-
 import patientPhoto from '../../../assets/Patient Photo.svg';
 
-const Icon = ({ name }) => {
+const Icon = ({ name, className }) => {
   const icons = {
-    overview: <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" />,
-    symptom: <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01" />,
+    overview: (
+      <React.Fragment>
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </React.Fragment>
+    ),
+    symptom: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
     vitals: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
-    meds: <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />,
-    appointments: <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />,
-    messages: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z" />,
-    search: <React.Fragment><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3" /></React.Fragment>,
-    bell: <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9ZM10.3 21a1.94 1.94 0 0 0 3.4 0" />,
-    settings: <React.Fragment><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 1 1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3" /></React.Fragment>,
+    meds: (
+      <React.Fragment>
+        <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />
+        <path d="m8.5 8.5 7 7" />
+      </React.Fragment>
+    ),
+    appointments: (
+      <React.Fragment>
+        <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+      </React.Fragment>
+    ),
+    messages: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" />,
+    reminder: <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />,
+    records: <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />,
+    plusCircle: (
+      <React.Fragment>
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="16" />
+        <line x1="8" y1="12" x2="16" y2="12" />
+      </React.Fragment>
+    ),
+    search: (
+      <React.Fragment>
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </React.Fragment>
+    ),
+    bell: <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />,
+    settings: (
+      <React.Fragment>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.51 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </React.Fragment>
+    ),
+    chevronRight: <path d="m9 18 6-6-6-6" />,
+    target: <React.Fragment><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" /></React.Fragment>,
     rotate: <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38" />,
     layers: <React.Fragment><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 12 10 5 10-5"/><path d="m2 17 10 5 10-5"/></React.Fragment>,
-    support: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
-    logout: <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />,
-    upload: <path d="M16 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2ZM9 2h6M10 13h4m-4 3h4m-5-8h2v2h-2V8Zm0 0V8m0 2v-2" />,
-    chevronRight: <path d="m9 18 6-6-6-6" />,
-    target: <React.Fragment><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" /></React.Fragment>
   };
 
   return (
     <svg 
-      width="20" 
-      height="20" 
+      className={className} 
       viewBox="0 0 24 24" 
       fill="none" 
       stroke="currentColor" 
-      strokeWidth="2" 
+      strokeWidth="2.2" 
       strokeLinecap="round" 
       strokeLinejoin="round"
     >
@@ -162,12 +192,14 @@ const Body = () => {
   };
 
   const sidebarItems = [
-    { id: 'overview', icon: 'overview', label: 'Overview' },
-    { id: 'symptom', icon: 'symptom', label: 'Symptom Checker', active: true },
+    { id: 'dashboard', icon: 'overview', label: 'Dashboard', active: true },
+    { id: 'symptom', icon: 'symptom', label: 'Symptom Checker' },
     { id: 'vitals', icon: 'vitals', label: 'Vitals' },
     { id: 'meds', icon: 'meds', label: 'Medications' },
     { id: 'appointments', icon: 'appointments', label: 'Appointments' },
     { id: 'messages', icon: 'messages', label: 'Messages' },
+    { id: 'reminder', icon: 'reminder', label: 'REMINDER' },
+    { id: 'records', icon: 'records', label: 'MY RECORDS' },
   ];
 
   React.useEffect(() => {
@@ -188,27 +220,40 @@ const Body = () => {
     revealElements.forEach(el => observer.observe(el));
 
     return () => observer.disconnect();
-  }, [activeRegion]); // Re-run when region changes to apply animations to new cards
+  }, [activeRegion]);
 
   return (
     <div className="body-layout">
-      {/* Sidebar */}
+      {/* Dynamic Sidebar - Match Diagnostic.jsx */}
       <aside className="body-sidebar">
         <div className="sidebar-logo">
-          <h2>VADYA<span style={{ color: '#fff', opacity: 0.8 }}>Go</span></h2>
+          <div className="logo-container">
+            <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
+               <path d="M20 5L32 12V28L20 35L8 28V12L20 5Z" stroke="#1db1c2" strokeWidth="4" />
+               <circle cx="20" cy="20" r="6" fill="#1db1c2" />
+            </svg>
+            <h2>Vaidya<span>Go</span></h2>
+          </div>
         </div>
+
         <nav className="sidebar-menu">
           {sidebarItems.map(item => (
             <a key={item.id} href={`#${item.id}`} className={`menu-item ${item.active ? 'active' : ''}`}>
-              <Icon name={item.icon} />
-              {item.label}
+              <div className="menu-icon-wrapper">
+                <Icon name={item.icon} />
+              </div>
+              <span>{item.label}</span>
             </a>
           ))}
         </nav>
-        <button className="new-assessment-btn">New Assessment</button>
+
         <div className="sidebar-footer">
-          <a href="#support" className="footer-item"><Icon name="support" /> Support</a>
-          <a href="#logout" className="footer-item"><Icon name="logout" /> Sign Out</a>
+          <button className="new-consultation-btn">
+            <div className="plus-circle-blue">
+               <Icon name="plusCircle" />
+            </div>
+            <span>New Consultation</span>
+          </button>
         </div>
       </aside>
 
@@ -220,12 +265,18 @@ const Body = () => {
             <input type="text" placeholder="Search medications..." />
           </div>
           <div className="header-icons">
-            <span>Language</span>
+            <span className="lang-text">Language</span>
             <div className="icon-wrapper"><Icon name="bell" /></div>
             <div className="icon-wrapper"><Icon name="settings" /></div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" />
+            <div className="profile-img-wrapper">
+               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" />
+            </div>
           </div>
         </header>
+
+        <div className="welcome-text-container">
+           <h1>Welcome to VaidyaGo</h1>
+        </div>
 
         <section className="welcome-banner">
           <div className="banner-icon">
@@ -372,7 +423,7 @@ const Body = () => {
               <span>ID: PX-8920 | 64 yrs</span>
             </div>
           </div>
-          <Icon name="target" />
+          <Icon name="target" className="target-icon" />
         </div>
       </div>
     </div>

@@ -35,6 +35,7 @@
   height: 100vh;
   box-shadow: 10px 0 30px rgba(0,0,0,0.1);
   font-family: 'Inter', sans-serif;
+  z-index: 100;
 }
 
 .sidebar-logo {
@@ -779,3 +780,23 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
+
+.diagnostic-layout-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.content-blur {
+  filter: blur(4px);
+  pointer-events: none;
+  transition: all 0.4s ease;
+  user-select: none;
+}
+
+.popup-active {
+  overflow: hidden;
+  height: 100vh;
+}
+

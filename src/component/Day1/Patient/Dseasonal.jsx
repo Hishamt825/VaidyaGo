@@ -82,8 +82,16 @@ const Icon = ({ name, size = 20, className }) => {
   );
 };
 
-const Dseasonal = () => {
+const Dseasonal = ({ onClose }) => {
   const navigate = useNavigate();
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate(-1);
+    }
+  };
 
   const triggers = [
     { name: 'Ragweed Pollen', status: 'STRONG REACTION', type: 'strong' },
@@ -116,57 +124,59 @@ const Dseasonal = () => {
   ];
 
   return (
-    <div className="ds-page-wrapper">
-      {/* Mock Background for Visual Depth */}
-      <div className="ds-mock-bg">
-        <aside className="ds-mock-sidebar">
-          <div className="ds-mock-logo-area">
-            <div className="ds-mock-logo-icon">V</div>
-            <div className="ds-mock-logo-text">
-              <span className="ds-m-main-logo">VaidyaGo</span>
-              <span className="ds-m-sub-logo">YOUR CARE PARTNER</span>
+    <div className={`ds-page-wrapper ${onClose ? 'is-modal' : ''}`}>
+      {/* Mock Background for Visual Depth - Only show if NOT in modal mode */}
+      {!onClose && (
+        <div className="ds-mock-bg">
+          <aside className="ds-mock-sidebar">
+            <div className="ds-mock-logo-area">
+              <div className="ds-mock-logo-icon">V</div>
+              <div className="ds-mock-logo-text">
+                <span className="ds-m-main-logo">VaidyaGo</span>
+                <span className="ds-m-sub-logo">YOUR CARE PARTNER</span>
+              </div>
             </div>
-          </div>
 
-          <div className="ds-mock-nav">
-            {[
-              { t: 'My Home', active: true },
-              { t: 'My Insights' },
-              { t: 'Care Plan' },
-              { t: 'Messages' }
-            ].map(item => (
-              <div key={item.t} className={`ds-mock-nav-item ${item.active ? 'ds-m-active' : ''}`}>
-                <div className="ds-mock-nav-icon"></div>
-                <span>{item.t}</span>
-              </div>
-            ))}
-          </div>
+            <div className="ds-mock-nav">
+              {[
+                { t: 'My Home', active: true },
+                { t: 'My Insights' },
+                { t: 'Care Plan' },
+                { t: 'Messages' }
+              ].map(item => (
+                <div key={item.t} className={`ds-mock-nav-item ${item.active ? 'ds-m-active' : ''}`}>
+                  <div className="ds-mock-nav-icon"></div>
+                  <span>{item.t}</span>
+                </div>
+              ))}
+            </div>
 
-          <div className="ds-mock-sidebar-footer">
-            <button className="ds-mock-book-btn">Book Appointment</button>
-          </div>
-        </aside>
-        
-        <main className="ds-mock-main">
-          <header className="ds-mock-header">
-            <div className="ds-mock-search"></div>
-            <div className="ds-mock-profile"></div>
-          </header>
-          <div className="ds-mock-grid">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="ds-mock-card">
-                <div className="ds-mock-line-lg"></div>
-                <div className="ds-mock-line-sm"></div>
-                <div className="ds-mock-line-sm"></div>
-              </div>
-            ))}
-          </div>
-        </main>
-      </div>
+            <div className="ds-mock-sidebar-footer">
+              <button className="ds-mock-book-btn">Book Appointment</button>
+            </div>
+          </aside>
+          
+          <main className="ds-mock-main">
+            <header className="ds-mock-header">
+              <div className="ds-mock-search"></div>
+              <div className="ds-mock-profile"></div>
+            </header>
+            <div className="ds-mock-grid">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="ds-mock-card">
+                  <div className="ds-mock-line-lg"></div>
+                  <div className="ds-mock-line-sm"></div>
+                  <div className="ds-mock-line-sm"></div>
+                </div>
+              ))}
+            </div>
+          </main>
+        </div>
+      )}
 
-      <div className="ds-overlay">
-        <div className="ds-modal">
-          <button className="ds-close-btn" onClick={() => navigate(-1)}>
+      <div className="ds-overlay" onClick={handleClose}>
+        <div className="ds-modal" onClick={e => e.stopPropagation()}>
+          <button className="ds-close-btn" onClick={handleClose}>
             <Icon name="close" size={24} />
           </button>
 

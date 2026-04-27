@@ -6,6 +6,17 @@
   background: #f1f5f9;
 }
 
+.ds-page-wrapper.is-modal {
+  background: transparent;
+  height: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3000;
+}
+
 /* Mock Background Styles */
 .ds-mock-bg {
   position: absolute;
@@ -188,8 +199,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.02);
-  backdrop-filter: blur(1.5px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;

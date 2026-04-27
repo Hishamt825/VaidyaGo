@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../../assets/Group (1).svg';
 import './Diagnostic.css';
+import Tthdiagnostic from './Tthdiagnostic';
+import Cervicogenic from './Cervicogenic';
+import Dseasonal from './Dseasonal';
+import ConnectPopup from './ConnectPopup';
+import PharmacyPopup from './PharmacyPopup';
+import HealthGuidePopup from './HealthGuidePopup';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -65,6 +71,14 @@ const Icon = ({ name, className }) => {
 
 const Diagnostic = () => {
   const navigate = useNavigate();
+  const [showConnect, setShowConnect] = useState(false);
+  const [showPharmacy, setShowPharmacy] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
+  const [showTTH, setShowTTH] = useState(false);
+  const [showCervicogenic, setShowCervicogenic] = useState(false);
+  const [showDseasonal, setShowDseasonal] = useState(false);
+
+  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal;
   const menuItems = [
     { id: 'dashboard', icon: 'overview', label: 'Dashboard', active: true },
     { id: 'symptom', icon: 'symptom', label: 'Symptom Checker' },
@@ -83,7 +97,8 @@ const Diagnostic = () => {
   ];
 
   return (
-    <div className="diagnostic-layout">
+    <div className={`diagnostic-layout-wrapper ${isPopupOpen ? 'popup-active' : ''}`}>
+      <div className={`diagnostic-layout ${isPopupOpen ? 'content-blur' : ''}`}>
       {/* Dynamic Sidebar */}
       <aside className="diagnostic-sidebar">
         <div className="sidebar-logo">
@@ -255,8 +270,9 @@ const Diagnostic = () => {
                 key={i} 
                 className="condition-card" 
                 onClick={() => {
-                  if (c.title === 'Tension-Type Headache') navigate('/Tthdiagnostic');
-                  if (c.title === 'Seasonal Allergies (Rhinitis)') navigate('/Dseasonal');
+                  if (c.title === 'Tension-Type Headache') setShowTTH(true);
+                  if (c.title === 'Seasonal Allergies (Rhinitis)') setShowDseasonal(true);
+                  if (c.title === 'Cervicogenic Headache') setShowCervicogenic(true);
                 }}
               >
                 <div className="condition-header">
@@ -282,19 +298,37 @@ const Diagnostic = () => {
                 <Icon name="video" />
                 <h4>Book a Consultation</h4>
                 <p>Speak with a General Practitioner via telehealth in &lt; 15 mins.</p>
-                <a href="#connect">Connect Now →</a>
+                <span 
+                  onClick={() => setShowConnect(true)} 
+                  className="connect-link-styled" 
+                  style={{ cursor: 'pointer', color: '#3182ce', fontWeight: 800, fontSize: 11 }}
+                >
+                  Connect Now →
+                </span>
               </div>
               <div className="action-card">
                 <Icon name="pharmacy" />
                 <h4>Find a Pharmacy</h4>
                 <p>Locate pharmacies nearby for immediate relief medications.</p>
-                <a href="#map">Open Map →</a>
+                <span 
+                  onClick={() => setShowPharmacy(true)} 
+                  className="open-map-styled" 
+                  style={{ cursor: 'pointer', color: '#3182ce', fontWeight: 800, fontSize: 11 }}
+                >
+                  Open Map →
+                </span>
               </div>
               <div className="action-card">
                 <Icon name="book" />
                 <h4>Health Guide</h4>
                 <p>Deep dive into managed care strategies for these conditions.</p>
-                <a href="#read">Read More →</a>
+                <span 
+                  onClick={() => setShowGuide(true)} 
+                  className="read-more-styled" 
+                  style={{ cursor: 'pointer', color: '#3182ce', fontWeight: 800, fontSize: 11 }}
+                >
+                  Read More →
+                </span>
               </div>
             </div>
 
@@ -313,7 +347,30 @@ const Diagnostic = () => {
         </div>
       </main>
     </div>
-  );
+
+    {showConnect && (
+      <ConnectPopup onClose={() => setShowConnect(false)} />
+    )}
+    {showPharmacy && (
+      <PharmacyPopup onClose={() => setShowPharmacy(false)} />
+    )}
+    {showGuide && (
+      <HealthGuidePopup onClose={() => setShowGuide(false)} />
+    )}
+
+    {showTTH && (
+      <Tthdiagnostic onClose={() => setShowTTH(false)} />
+    )}
+
+    {showCervicogenic && (
+      <Cervicogenic onClose={() => setShowCervicogenic(false)} />
+    )}
+
+    {showDseasonal && (
+      <Dseasonal onClose={() => setShowDseasonal(false)} />
+    )}
+  </div>
+);
 };
 
 export default Diagnostic;

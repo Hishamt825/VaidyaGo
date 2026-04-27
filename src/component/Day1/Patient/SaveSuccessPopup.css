@@ -1,0 +1,119 @@
+/* SaveSuccessPopup.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+.ss-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ss-modal {
+  background: #ffffff;
+  width: 90%;
+  max-width: 440px;
+  border-radius: 40px;
+  padding: 50px 40px;
+  text-align: center;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.ss-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #1db1c2 0%, #2c5282 100%);
+}
+
+.ss-icon-wrap {
+  width: 80px;
+  height: 80px;
+  background: #1e8797;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 30px;
+  color: white;
+  box-shadow: 0 10px 20px rgba(30, 135, 151, 0.2);
+}
+
+.ss-modal h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 20px;
+  letter-spacing: -0.5px;
+}
+
+.ss-modal p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #64748b;
+  margin-bottom: 40px;
+}
+
+.ss-modal p b {
+  color: #1e8797;
+  font-weight: 700;
+}
+
+.ss-btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, #166070 0%, #198797 100%);
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 15px 30px -5px rgba(22, 96, 112, 0.4);
+  transition: all 0.2s ease;
+  margin-bottom: 15px;
+}
+
+.ss-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -5px rgba(22, 96, 112, 0.5);
+}
+
+.ss-btn-dismiss {
+  background: transparent;
+  border: none;
+  color: #1e8797;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 10px;
+  transition: opacity 0.2s;
+}
+
+.ss-btn-dismiss:hover {
+  opacity: 0.7;
+}
