@@ -66,12 +66,10 @@ import VitalsHistory from './components/Patient/Vitals/Vitals_history';
 import View_request from './components/Patient/Medication/View_request';
 import Order from './components/Patient/Medication/Order';
 import Lisinopril from './components/Patient/Medication/Lisinopril';
-<<<<<<< HEAD
 import Metformin_detail from './components/Patient/Medication/Metformin_detail';
 import Atorvastatin from './components/Patient/Medication/Atorvastatin';
 import Amoxicillin from './components/Patient/Medication/Amoxicillin';
-<<<<<<< HEAD
-=======
+
 import Hisham from './component/Day1/Hisham';
 import Consultation1 from './component/Day1/Consultation/Consultation1';
 import Appointment_Day1 from './component/Day1/Doctor/Appointment';
@@ -94,22 +92,15 @@ import NeckAlignment from './component/Day1/Patient/NeckAlignment';
 import Myrecord from './component/Day1/Patient/Myrecord';
 import Savechange from './component/Day1/Patient/Savechange';
 
->>>>>>> frontend
-=======
 import Appointment2 from './component/Day1/Doctor/Appointment2';
-import Dsetting from './component/Day1/Doctor/Dsetting';
-import Dslot from './component/Day1/Doctor/Dslot';
-import Editprofile from './component/Day1/Doctor/Editprofile';
 import Appointmentb from './component/Day1/Doctor/Appointmentb';
 import Reject from './components/Admin/Reject';
->>>>>>> adiba
 
 
 
 const App = () => {
   return (
 
-    //  <BrowserRouter> 
     <Routes>
 
       <Route path="/MainPage" element={<MainPage />} />
@@ -186,15 +177,11 @@ const App = () => {
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 
-      {/* Day1 Components */}
       <Route path="/Consultation1" element={<Consultation1 />} />
       <Route path="/Appointment_Day1" element={<Appointment_Day1 />} />
       <Route path="/Appointment2_Day1" element={<Appointment2_Day1 />} />
       <Route path="/Appointmentb_Day1" element={<Appointmentb_Day1 />} />
       <Route path="/Bot_Day1" element={<Bot_Day1 />} />
-      <Route path="/Dsetting" element={<Dsetting />} />
-      <Route path="/Dslot" element={<Dslot />} />
-      <Route path="/Editprofile" element={<Editprofile />} />
       <Route path="/Service_Day1" element={<Service_Day1 />} />
       <Route path="/Sidebar_Day1" element={<Sidebar_Day1 />} />
       <Route path="/Askspecialist" element={<Askspecialist />} />
@@ -208,12 +195,8 @@ const App = () => {
       <Route path="/Myrecord" element={<Myrecord />} />
       <Route path="/Savechange" element={<Savechange />} />
 
-      
-
     </Routes>
 
-
-    //  </BrowserRouter> 
   );
 };
 
