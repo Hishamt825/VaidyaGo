@@ -1,0 +1,160 @@
+/* ConnectPopup.css */
+.connect-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.connect-modal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.connect-header {
+  padding: 40px 30px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top-icon-box {
+  background: #eef7f9;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+  color: #1a4f63;
+}
+
+.connect-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0d2141;
+  margin: 0 0 15px 0;
+}
+
+.connect-header p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.connect-header p strong {
+  color: #178393;
+}
+
+.options-container {
+  padding: 10px 25px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.connect-option {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #f1f7f9;
+  padding: 18px 22px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.connect-option:hover {
+  background: #e8f2f5;
+  transform: translateX(5px);
+}
+
+.option-icon-box {
+  width: 48px;
+  height: 48px;
+  background: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a4f63;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.option-text-box {
+  flex: 1;
+}
+
+.option-text-box h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a304e;
+}
+
+.option-text-box p {
+  margin: 5px 0 0 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.chevron-right {
+  color: #cbd5e1;
+}
+
+.connect-footer {
+  background: #f1f7f9;
+  padding: 18px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dismiss-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.online-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #178393;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #178393;
+  border-radius: 50%;
+}

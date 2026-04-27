@@ -66,9 +66,34 @@ import VitalsHistory from './components/Patient/Vitals/Vitals_history';
 import View_request from './components/Patient/Medication/View_request';
 import Order from './components/Patient/Medication/Order';
 import Lisinopril from './components/Patient/Medication/Lisinopril';
+<<<<<<< HEAD
 import Metformin_detail from './components/Patient/Medication/Metformin_detail';
 import Atorvastatin from './components/Patient/Medication/Atorvastatin';
 import Amoxicillin from './components/Patient/Medication/Amoxicillin';
+=======
+import Hisham from './component/Day1/Hisham';
+import Consultation1 from './component/Day1/Consultation/Consultation1';
+import Appointment_Day1 from './component/Day1/Doctor/Appointment';
+import Appointment2_Day1 from './component/Day1/Doctor/Appointment2';
+import Appointmentb_Day1 from './component/Day1/Doctor/Appointmentb';
+import Bot_Day1 from './component/Day1/Doctor/Bot';
+import Dsetting from './component/Day1/Doctor/Dsetting';
+import Dslot from './component/Day1/Doctor/Dslot';
+import Editprofile from './component/Day1/Doctor/Editprofile';
+import Service_Day1 from './component/Day1/Doctor/Service';
+import Sidebar_Day1 from './component/Day1/Doctor/Sidebar';
+import Askspecialist from './component/Day1/Patient/Askspecialist';
+import Body from './component/Day1/Patient/Body';
+import Diagnostic from './component/Day1/Patient/Diagnostic';
+import Diagnosticinput from './component/Day1/Patient/Diagnosticinput';
+import Cervicogenic from './component/Day1/Patient/Cervicogenic';
+import Dseasonal from './component/Day1/Patient/Dseasonal';
+import Tthdiagnostic from './component/Day1/Patient/Tthdiagnostic';
+import NeckAlignment from './component/Day1/Patient/NeckAlignment';
+import Myrecord from './component/Day1/Patient/Myrecord';
+import Savechange from './component/Day1/Patient/Savechange';
+
+>>>>>>> frontend
 
 
 
@@ -100,6 +125,7 @@ const App = () => {
       <Route path="/VerticalProgressBar" element={<VerticalProgressBar />} />
 
       <Route path="/Service" element={<Service />} />
+      <Route path="/Hisham" element={<Hisham />} />
 
       <Route path="/Form1" element={<Form1 />} />
       <Route path="/Form2" element={<Form2 />} />
@@ -143,6 +169,30 @@ const App = () => {
       <Route path="/Amoxicillin" element={<Amoxicillin />} />
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
+
+      {/* Day1 Components */}
+      <Route path="/Consultation1" element={<Consultation1 />} />
+      <Route path="/Appointment_Day1" element={<Appointment_Day1 />} />
+      <Route path="/Appointment2_Day1" element={<Appointment2_Day1 />} />
+      <Route path="/Appointmentb_Day1" element={<Appointmentb_Day1 />} />
+      <Route path="/Bot_Day1" element={<Bot_Day1 />} />
+      <Route path="/Dsetting" element={<Dsetting />} />
+      <Route path="/Dslot" element={<Dslot />} />
+      <Route path="/Editprofile" element={<Editprofile />} />
+      <Route path="/Service_Day1" element={<Service_Day1 />} />
+      <Route path="/Sidebar_Day1" element={<Sidebar_Day1 />} />
+      <Route path="/Askspecialist" element={<Askspecialist />} />
+      <Route path="/Body" element={<Body />} />
+      <Route path="/Diagnostic" element={<Diagnostic />} />
+      <Route path="/Diagnosticinput" element={<Diagnosticinput />} />
+      <Route path="/Cervicogenic" element={<Cervicogenic />} />
+      <Route path="/Dseasonal" element={<Dseasonal />} />
+      <Route path="/Tthdiagnostic" element={<Tthdiagnostic />} />
+      <Route path="/NeckAlignment" element={<NeckAlignment />} />
+      <Route path="/Myrecord" element={<Myrecord />} />
+      <Route path="/Savechange" element={<Savechange />} />
+
+      
 
     </Routes>
 
