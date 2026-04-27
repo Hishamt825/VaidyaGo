@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NeckAlignment.css';
-import anatomicalHead from '../../../assets/anatomical_head.png';
+import skullAnatomy from '../../../assets/skull_anatomy.png';
 
 const Icon = ({ name, size = 20, className }) => {
   const icons = {
@@ -133,7 +133,7 @@ const NeckAlignment = ({ onClose }) => {
                 <p>The Atlas (C1) and Axis (C2) form the most mobile part of your entire spine, allowing for a vast range of rotation.</p>
               </div>
               <div className="na-skull-render">
-                <img src={anatomicalHead} alt="Cervical spine" />
+                <img src={skullAnatomy} alt="Skull anatomy" />
                 <div className="na-render-tools">
                    <button><Icon name="zoom" size={16} /></button>
                    <button><Icon name="rotate" size={16} /></button>
