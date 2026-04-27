@@ -24,47 +24,58 @@ const AllLabReportsModal = ({ onClose }) => {
         }
     };
 
+    const filteredReports = allReports.filter(report => {
+        const matchesSearch = report.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             report.lab.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        if (activeFilter === 'Recent') return matchesSearch;
+        if (activeFilter === 'Normal') return matchesSearch && report.status === 'Normal';
+        if (activeFilter === 'Follow-up') return matchesSearch && report.status === 'Follow-up Required';
+        if (activeFilter === 'Pending') return matchesSearch && report.status === 'Pending';
+        return matchesSearch;
+    });
+
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center px-4 md:px-6 py-10">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+            {/* Light Blur Backdrop */}
+            <div className="absolute inset-0 bg-white/5 backdrop-blur-xl transition-opacity duration-300" onClick={onClose} />
             
-            <div className="relative w-full max-w-[800px] bg-gradient-to-b from-[#F1F5F9] to-white rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col pt-6 pb-8 px-8 border border-black/5">
+            <div className="relative w-full max-w-[820px] bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col p-6 border border-black/5">
                 
                 {/* Header */}
-                <div className="flex justify-between items-start mb-6">
-                    <div className="text-black">
-                        <h2 className="text-xl font-bold tracking-tight mb-0.5">All Lab Reports</h2>
-                        <p className="opacity-60 text-[13.5px] font-medium">Manage and review your complete diagnostic history</p>
+                <div className="flex justify-between items-start mb-5">
+                    <div className="text-[#0D1C2E]">
+                        <h2 className="text-[22px] font-extrabold tracking-tight mb-0.5">All Lab Reports</h2>
+                        <p className="opacity-60 text-[13px] font-medium">Manage and review your complete diagnostic history</p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="bg-black/5 hover:bg-black/10 text-black px-6 py-2.5 rounded-full text-[13px] font-bold flex items-center gap-2 transition-all border border-black/5 shadow-sm">
-                            <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                        <button className="bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#0D1C2E] px-6 py-2.5 rounded-full text-[13.5px] font-bold flex items-center gap-2 transition-all border border-gray-100 shadow-sm">
+                            <svg className="w-4.5 h-4.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                             Share All
                         </button>
-                        <button onClick={onClose} className="text-black hover:opacity-40 transition-all p-1">
+                        <button onClick={onClose} className="text-[#0D1C2E] hover:opacity-40 transition-all p-1">
                             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
                 </div>
 
                 {/* Search & Filters */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
-                    <div className="relative flex-1 max-w-[340px]">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div className="relative flex-1 max-w-[360px]">
                         <input 
                             type="text"
                             placeholder="Search by test or lab name..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white rounded-full py-2.5 pl-11 pr-5 text-[13.5px] outline-none shadow-sm placeholder-[#94A3B8]"
+                            className="w-full bg-[#F8FAFB] rounded-full py-2.5 px-6 text-[13.5px] outline-none shadow-sm placeholder-[#94A3B8] border border-gray-50 focus:border-[#1A7785] transition-all"
                         />
-                        <svg className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#CBD5E1]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
                     <div className="flex items-center gap-2">
                         {filters.map(filter => (
                             <button
                                 key={filter}
                                 onClick={() => setActiveFilter(filter)}
-                                className={`px-5 py-2 rounded-full text-[13px] font-bold transition-all ${activeFilter === filter ? 'bg-[#0B1E3C] text-white shadow-lg' : 'bg-white text-[#475569] border border-[#E2E8F0]'}`}
+                                className={`px-5 py-2 rounded-full text-[13px] font-bold transition-all ${activeFilter === filter ? 'bg-[#0B1E3C] text-white shadow-lg' : 'bg-white text-[#64748B] border border-[#E2E8F0] hover:border-[#CBD5E1]'}`}
                             >
                                 {filter}
                             </button>
@@ -73,43 +84,57 @@ const AllLabReportsModal = ({ onClose }) => {
                 </div>
 
                 {/* Table */}
-                <div className="w-full mb-8">
+                <div className="flex-1 overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                     <table className="w-full">
                         <thead>
-                            <tr className="text-left text-[11px] font-black tracking-widest text-black uppercase opacity-40">
-                                <th className="pb-4 pl-4">Test Name</th>
-                                <th className="pb-4">Date</th>
-                                <th className="pb-4">Laboratory</th>
-                                <th className="pb-4">Status</th>
-                                <th className="pb-4 text-right pr-4">Actions</th>
+                            <tr className="text-left text-[10px] font-black tracking-widest text-[#64748B] uppercase opacity-60">
+                                <th className="pb-3 pl-2">TEST NAME</th>
+                                <th className="pb-3">DATE</th>
+                                <th className="pb-3">LABORATORY</th>
+                                <th className="pb-3">STATUS</th>
+                                <th className="pb-3 text-right pr-2">ACTIONS</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200/50">
-                            {allReports.map((report) => (
-                                <tr key={report.id} className="group hover:bg-white/40 transition-all cursor-default">
-                                    <td className="py-3.5 pl-4 rounded-l-2xl">
+                        <tbody className="divide-y divide-gray-100/40">
+                            {filteredReports.map((report) => (
+                                <tr key={report.id} className="group hover:bg-[#F8FAFB]/60 transition-all cursor-default">
+                                    <td className="py-2.5 pl-2 rounded-l-2xl">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-[42px] h-[42px] rounded-xl bg-gray-200/50 flex items-center justify-center text-[#475569] group-hover:bg-[#CBD5E1] transition-colors border border-gray-200">
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">{getIcon(report.icon)}</svg>
+                                            <div className="w-[38px] h-[38px] rounded-[12px] bg-[#F1F5F9] flex items-center justify-center text-[#64748B] group-hover:bg-[#E2E8F0] transition-colors border border-gray-100 shadow-sm shrink-0">
+                                                <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">{getIcon(report.icon)}</svg>
                                             </div>
-                                            <span className="text-[15px] font-bold text-black">{report.name}</span>
+                                            <span className="text-[14.5px] font-bold text-[#0D1C2E] group-hover:text-[#1A7785] transition-colors">{report.name}</span>
                                         </div>
                                     </td>
-                                    <td className="py-3.5">
-                                        <span className="text-[14px] font-semibold text-black/60">{report.date}</span>
+                                    <td className="py-2.5">
+                                        <div className="flex flex-col">
+                                            <span className="text-[13px] font-bold text-[#64748B]">{report.date.split(',')[0]}</span>
+                                            <span className="text-[11px] font-bold text-[#94A3B8]">{report.date.split(',')[1]}</span>
+                                        </div>
                                     </td>
-                                    <td className="py-3.5">
-                                        <span className="text-[14px] font-semibold text-black/60">{report.lab}</span>
+                                    <td className="py-2.5">
+                                        <span className="text-[13px] font-bold text-[#64748B]">{report.lab}</span>
                                     </td>
-                                    <td className="py-3.5">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${report.status === 'Normal' ? 'bg-[#14B8A6] text-white shadow-sm' : report.status === 'Pending' ? 'bg-[#334155] text-white' : 'bg-[#EF4444] text-white opacity-80'}`}>
-                                            {report.status}
-                                        </span>
+                                    <td className="py-2.5">
+                                        {report.status === 'Normal' ? (
+                                            <span className="px-2.5 py-1 rounded-full bg-[#14B8A6] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
+                                                NORMAL
+                                            </span>
+                                        ) : report.status === 'Pending' ? (
+                                            <span className="px-2.5 py-1 rounded-full bg-[#334155] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
+                                                PENDING
+                                            </span>
+                                        ) : (
+                                            <div className="flex flex-col">
+                                                <span className="w-fit px-2 py-0.5 bg-[#EF4444] text-white text-[8px] font-black uppercase tracking-wider rounded-t-md">FOLLOW-UP</span>
+                                                <span className="w-fit px-2 py-0.5 bg-[#EF4444] text-white text-[8px] font-black uppercase tracking-wider rounded-b-md mt-[1px]">REQUIRED</span>
+                                            </div>
+                                        )}
                                     </td>
-                                    <td className="py-3.5 text-right pr-4 rounded-r-2xl">
-                                        <div className="flex items-center justify-end gap-6 text-black/40">
-                                            <button className="hover:text-black transition-colors"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></button>
-                                            <button className="hover:text-black transition-colors"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg></button>
+                                    <td className="py-2.5 text-right pr-2 rounded-r-2xl">
+                                        <div className="flex items-center justify-end gap-5 text-[#94A3B8]">
+                                            <button className="hover:text-[#1A7785] transition-colors scale-100"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></button>
+                                            <button className="hover:text-[#1A7785] transition-colors scale-100"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -119,25 +144,25 @@ const AllLabReportsModal = ({ onClose }) => {
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between mt-4">
-                    <p className="text-[14px] font-semibold text-black/40">Showing 1-15 of 42 reports</p>
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
+                    <p className="text-[13px] font-bold text-[#94A3B8]">Showing 1-15 of 42 reports</p>
                     <div className="flex items-center gap-3">
-                        <button className="w-8 h-8 rounded-lg flex items-center justify-center text-black/20 hover:bg-black/5 transition-colors">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+                        <button className="w-7 h-7 rounded-lg flex items-center justify-center text-[#CBD5E1] hover:text-[#0D1C2E] transition-colors">
+                            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
                         </button>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2">
                             {[1, 2, 3].map(page => (
                                 <button
                                     key={page}
                                     onClick={() => setCurrentPage(page)}
-                                    className={`w-8 h-8 rounded-lg text-[14px] font-black transition-all ${currentPage === page ? 'bg-black text-white shadow-lg' : 'text-black/40 hover:bg-black/5'}`}
+                                    className={`w-8 h-8 rounded-full text-[13px] font-black transition-all ${currentPage === page ? 'bg-black text-white shadow-lg shadow-black/20' : 'text-[#CBD5E1] hover:text-[#0D1C2E]'}`}
                                 >
                                     {page}
                                 </button>
                             ))}
                         </div>
-                        <button className="w-8 h-8 rounded-lg flex items-center justify-center text-black/20 hover:bg-black/5 transition-colors">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+                        <button className="w-7 h-7 rounded-lg flex items-center justify-center text-[#CBD5E1] hover:text-[#0D1C2E] transition-colors">
+                            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
                         </button>
                     </div>
                 </div>

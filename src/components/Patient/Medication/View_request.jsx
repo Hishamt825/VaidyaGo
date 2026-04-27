@@ -9,6 +9,7 @@ import Progress from './Progress';
 import Tomorrow from './Tomorrow';
 import Message from './Message';
 import Cancel from './Cancel';
+import Concierge from './Concierge';
 
 const View_request = () => {
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ const View_request = () => {
     const [isTomorrowOpen, setIsTomorrowOpen] = useState(false);
     const [isMessageOpen, setIsMessageOpen] = useState(false);
     const [isCancelOpen, setIsCancelOpen] = useState(false);
+    const [isConciergeOpen, setIsConciergeOpen] = useState(false);
 
     const medications = [
         { name: 'Lisinopril', dose: '10mg Oral Tablet', freq: 'Once daily (morning)', qty: 30 },
@@ -33,7 +35,7 @@ const View_request = () => {
             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
 
             {/* Main Content Wrapper */}
-            <div className={`flex h-full w-full transition-all duration-300 ${activeModal || isNotificationOpen || isProgressOpen || isTomorrowOpen || isMessageOpen || isCancelOpen ? 'blur-[8px] scale-[0.98]' : ''}`}>
+            <div className={`flex h-full w-full transition-all duration-300 ${activeModal || isNotificationOpen || isProgressOpen || isTomorrowOpen || isMessageOpen || isCancelOpen || isConciergeOpen ? 'blur-[8px] scale-[0.98]' : ''}`}>
 
                 <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
@@ -55,7 +57,7 @@ const View_request = () => {
                                 <input
                                     type="text"
                                     placeholder="Search..."
-                                    className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+                                    className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[14px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
                                 />
                                 <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -85,13 +87,13 @@ const View_request = () => {
                         </div>
                     </header>
 
-                    <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-2 pb-12 overflow-y-auto custom-scrollbar">
+                    <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-1 pb-8 overflow-y-auto custom-scrollbar">
 
                         {/* Page Header Title & Actions */}
-                        <div className="flex items-start justify-between mb-8">
+                        <div className="flex items-start justify-between mb-4">
                             <div>
-                                <h1 className="text-[48px] font-bold text-white leading-tight tracking-tight mb-1">Refill Request Details</h1>
-                                <p className="text-white/70 text-[18px] font-medium">Alex Rivera • ID #8842-RX</p>
+                                <h1 className="text-[28px] font-bold text-white leading-tight tracking-tight mb-1">Refill Request Details</h1>
+                                <p className="text-white/70 text-[14px] font-medium">Alex Rivera • ID #8842-RX</p>
                             </div>
                             <div className="flex items-center gap-6 pt-6">
                                 <button 
@@ -111,19 +113,19 @@ const View_request = () => {
                                 </button>
                             </div>
                         </div>                        {/* Main Grid Layout */}
-                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 items-start">
 
                             {/* Left Column: Status, Track Order, Medications */}
-                            <div className="flex flex-col gap-8">
+                            <div className="flex flex-col gap-5">
 
                                 {/* Top Info Cards */}
-                                <div className="flex flex-wrap md:flex-nowrap gap-5">
+                                <div className="flex flex-wrap md:flex-nowrap gap-4">
                                     <div
-                                        className="w-full md:w-1/2 bg-white rounded-[32px] p-8 shadow-2xl flex flex-col justify-center min-h-[180px] cursor-pointer hover:bg-slate-50 transition-colors group/card"
+                                        className="w-full md:w-1/2 bg-white rounded-[32px] p-6 shadow-2xl flex flex-col justify-center min-h-[150px] cursor-pointer hover:bg-slate-50 transition-colors group/card"
                                         onClick={() => setIsProgressOpen(true)}
                                     >
-                                        <p className="text-[11px] font-bold text-[#627382] uppercase tracking-[0.2em] mb-2.5">Current Status</p>
-                                        <h3 className="text-[36px] font-bold text-[#0D1C2E] mb-4 leading-none tracking-tight group-hover/card:text-[#1A7785] transition-colors">In Progress</h3>
+                                        <p className="text-[11px] font-bold text-[#627382] uppercase tracking-[0.2em] mb-1.5">Current Status</p>
+                                        <h3 className="text-[26px] font-bold text-[#0D1C2E] mb-2 leading-none tracking-tight group-hover/card:text-[#1A7785] transition-colors">In Progress</h3>
                                         <div className="inline-flex items-center gap-2 bg-[#F0F9F9] text-[#1A7785] px-4 py-2 rounded-full text-[12px] font-bold self-start border border-[#6ED4D4]/20">
                                             <div className="w-5 h-5 rounded-full bg-[#1A7785] flex items-center justify-center text-white">
                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,11 +136,11 @@ const View_request = () => {
                                         </div>
                                     </div>
                                     <div
-                                        className="w-full md:w-1/2 bg-[#0A1A3B] rounded-[32px] p-8 shadow-2xl border border-white/5 flex flex-col justify-center min-h-[180px] cursor-pointer hover:bg-[#0D1C2E] transition-colors group/card2"
+                                        className="w-full md:w-1/2 bg-[#0A1A3B] rounded-[32px] p-6 shadow-2xl border border-white/5 flex flex-col justify-center min-h-[150px] cursor-pointer hover:bg-[#0D1C2E] transition-colors group/card2"
                                         onClick={() => setIsTomorrowOpen(true)}
                                     >
-                                        <p className="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em] mb-2.5">Estimated Availability</p>
-                                        <h3 className="text-[36px] font-bold text-white mb-4 leading-none tracking-tight group-hover/card2:text-[#6ED4D4] transition-colors">Tomorrow, by 4:00 PM</h3>
+                                        <p className="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em] mb-1.5">Estimated Availability</p>
+                                        <h3 className="text-[26px] font-bold text-white mb-2 leading-none tracking-tight group-hover/card2:text-[#6ED4D4] transition-colors">Tomorrow, by 4:00 PM</h3>
                                         <div className="flex items-center gap-2 text-white/40 text-[13px] font-medium">
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -150,10 +152,10 @@ const View_request = () => {
 
                                 {/* Tracking Timeline */}
                                 <div
-                                    className="bg-[#5FB9C1]/30 backdrop-blur-xl rounded-[32px] p-10 border border-white/10 shadow-2xl cursor-pointer hover:bg-[#5FB9C1]/40 transition-all group"
+                                    className="bg-[#5FB9C1]/30 backdrop-blur-xl rounded-[32px] p-8 border border-white/10 shadow-2xl cursor-pointer hover:bg-[#5FB9C1]/40 transition-all group"
                                     onClick={() => navigate('/Order')}
                                 >
-                                    <div className="flex items-center justify-between mb-10">
+                                    <div className="flex items-center justify-between mb-5">
                                         <div className="flex items-center gap-3">
                                             <svg className="w-6 h-6 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -196,9 +198,9 @@ const View_request = () => {
                                 </div>
 
                                 {/* Medication Details Card */}
-                                <div className="bg-white rounded-[32px] p-8 shadow-2xl">
-                                    <div className="flex items-center justify-between mb-8">
-                                        <h2 className="text-[20px] font-bold text-[#0D1C2E] flex items-center gap-3">
+                                <div className="bg-white rounded-[32px] p-6 shadow-2xl">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h2 className="text-[18px] font-bold text-[#0D1C2E] flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-xl bg-[#F0F9F9] flex items-center justify-center text-[#1A7785]">
                                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -209,7 +211,7 @@ const View_request = () => {
                                         <button className="text-[13px] font-bold text-[#1A7785] hover:opacity-80 transition-opacity border-b-2 border-[#1A7785]/20 pb-0.5">Download Summary</button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {medications.map((med, i) => (
                                             <div
                                                 key={i}
@@ -224,7 +226,7 @@ const View_request = () => {
                                                         navigate('/Amoxicillin');
                                                     }
                                                 }}
-                                                className="bg-[#F8FBFC] border border-[#1A7785]/15 rounded-[28px] p-6 flex items-center justify-between group hover:border-[#1A7785]/40 hover:bg-white hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                                className="bg-[#F8FBFC] border border-[#1A7785]/15 rounded-[28px] p-4 flex items-center justify-between group hover:border-[#1A7785]/40 hover:bg-white hover:shadow-xl transition-all duration-300 cursor-pointer"
                                             >
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1A7785] shadow-sm border border-[#E9F3F5] rotate-[135deg]">
@@ -249,7 +251,7 @@ const View_request = () => {
                                             </div>
                                         ))}
                                     </div>
-                                    <button className="w-full mt-8 py-3 text-[12px] font-bold text-[#1A7785] uppercase tracking-[0.2em] hover:bg-[#F4F9F9] rounded-2xl transition-all flex items-center justify-center gap-2 group">
+                                    <button className="w-full mt-6 py-2.5 text-[12px] font-bold text-[#1A7785] uppercase tracking-[0.2em] hover:bg-[#F4F9F9] rounded-2xl transition-all flex items-center justify-center gap-2 group">
                                         View 8 more medications
                                         <svg className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
@@ -259,18 +261,18 @@ const View_request = () => {
                             </div>
 
                             {/* Right Column: Sidebar (Pharmacy, Insurance, Help) */}
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-col gap-5">
                                 {/* Pharmacy Details Card */}
                                 <div className="bg-white rounded-[32px] overflow-hidden shadow-2xl border border-white/50">
-                                    <div className="h-[180px] relative">
+                                    <div className="h-[140px] relative">
                                         <img src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&q=80&w=800" alt="Pharmacy" className="w-full h-full object-cover" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                                        <div className="absolute bottom-5 left-6">
-                                            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.25em] mb-1">Pharmacy Location</p>
-                                            <h4 className="text-[22px] font-bold text-white">Sanctuary Pharmacy</h4>
+                                        <div className="absolute bottom-4 left-6">
+                                            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.25em] mb-0.5">Pharmacy Location</p>
+                                            <h4 className="text-[20px] font-bold text-white">Sanctuary Pharmacy</h4>
                                         </div>
                                     </div>
-                                    <div className="p-8 space-y-6">
+                                    <div className="p-6 space-y-4">
                                         <div className="flex items-start gap-5">
                                             <div className="w-11 h-11 rounded-full bg-[#F0F9F9] flex items-center justify-center shrink-0 text-[#1A7785]">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,8 +317,8 @@ const View_request = () => {
                                 </div>
 
                                 {/* Insurance Status Card */}
-                                <div className="bg-[#5FB9C1]/30 backdrop-blur-xl rounded-[32px] p-8 border border-white/10 shadow-2xl">
-                                    <div className="flex items-center gap-3.5 mb-5">
+                                <div className="bg-[#5FB9C1]/30 backdrop-blur-xl rounded-[32px] p-6 border border-white/10 shadow-2xl">
+                                    <div className="flex items-center gap-3 mb-4">
                                         <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -330,12 +332,15 @@ const View_request = () => {
                                 </div>
 
                                 {/* Help Card */}
-                                <div className="bg-white/90 backdrop-blur-xl rounded-[32px] p-8 shadow-2xl text-center border border-white">
-                                    <h4 className="text-[18px] font-bold text-[#0D1C2E] mb-3">Need help with this request?</h4>
-                                    <p className="text-[13px] text-[#627382] font-medium leading-relaxed mb-8 px-2">
+                                <div className="bg-white/90 backdrop-blur-xl rounded-[32px] p-6 shadow-2xl text-center border border-white">
+                                    <h4 className="text-[17px] font-bold text-[#0D1C2E] mb-2">Need help with this request?</h4>
+                                    <p className="text-[13px] text-[#627382] font-medium leading-relaxed mb-5 px-2">
                                         Our medical concierge team is available 24/7 for order inquiries.
                                     </p>
-                                    <button className="text-[14px] font-bold text-[#1A7785] hover:opacity-80 transition-opacity flex items-center justify-center gap-2.5 mx-auto group">
+                                    <button 
+                                        onClick={() => setIsConciergeOpen(true)}
+                                        className="text-[14px] font-bold text-[#1A7785] hover:opacity-80 transition-opacity flex items-center justify-center gap-2.5 mx-auto group"
+                                    >
                                         Connect with Concierge
                                         <svg className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -356,6 +361,7 @@ const View_request = () => {
             {isTomorrowOpen && <Tomorrow onClose={() => setIsTomorrowOpen(false)} />}
             {isMessageOpen && <Message onClose={() => setIsMessageOpen(false)} />}
             {isCancelOpen && <Cancel onClose={() => setIsCancelOpen(false)} onConfirm={() => setIsCancelOpen(false)} />}
+            {isConciergeOpen && <Concierge onClose={() => setIsConciergeOpen(false)} />}
         </div>
     );
 };
