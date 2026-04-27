@@ -3,7 +3,7 @@ import Vertical from "./Vertical";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../baseUrl";
 
-const Form1 = () => {
+const Form1 = ({ onNext }) => {
   const navigate = useNavigate();
 
   const [activeStep, setActiveStep] = useState(1);
@@ -214,8 +214,12 @@ const handleSubmit = async (e) => {
     }
 
     // ✅ Common next step
-    setActiveStep(2);
-    setTimeout(() => navigate("/Form2"), 500);
+    if (onNext) {
+      onNext(2);
+    } else {
+      setActiveStep(2);
+      setTimeout(() => navigate("/Form2"), 500);
+    }
 
   } catch (error) {
     console.error("Error:", error);

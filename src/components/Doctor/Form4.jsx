@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Vertical from "./Vertical";
 import BASE_URL from "../../baseUrl";
 
-const Form4 = () => {
+const Form4 = ({ onNext }) => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(4);
   const [loading, setLoading] = useState(false);
@@ -114,6 +114,10 @@ const Form4 = () => {
   };
 
   const handleStepChange = (step) => {
+    if (onNext) {
+      onNext(step);
+      return;
+    }
     setActiveStep(step);
     navigate(`/Form${step}`);
   };

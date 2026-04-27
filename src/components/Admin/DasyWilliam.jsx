@@ -28,16 +28,16 @@ shadow-[0_10px_40px_rgba(0,120,255,0.15)]"
                         />
 
                       <div
-  className="leading-tight cursor-pointer"
-  onClick={() => navigate("/profile")} // <-- change this to the route you want
->
-  <h2 className="font-semibold text-[18px] text-gray-700">
-      Dasy William
-  </h2>
-  <p className="text-sky-600 text-[14px]">
-      javedtuba@gmail.com
-  </p>
-</div>
+                        className="leading-tight cursor-pointer"
+                        onClick={() => setOpenProfile(true)}
+                      >
+                        <h2 className="font-semibold text-[18px] text-gray-700">
+                            Dasy William
+                        </h2>
+                        <p className="text-sky-600 text-[14px]">
+                            javedtuba@gmail.com
+                        </p>
+                      </div>
                     </div>
 
                     <button
@@ -76,7 +76,9 @@ shadow-[0_10px_40px_rgba(0,120,255,0.15)]"
             <div className="py-2">
 
                 {/* Settings */}
-                <div className="flex items-center justify-between py-2 px-4 hover:bg-gray-100 cursor-pointer transition">
+                <div 
+                    onClick={() => setOpenProfile(true)}
+                    className="flex items-center justify-between py-2 px-4 hover:bg-gray-100 cursor-pointer transition">
                     <div className="flex items-center gap-3">
                         <img src="/assets/settt.png" className="w-6 h-6 object-contain" />
                         <p className="text-[16px] font-medium text-gray-700">Settings</p>

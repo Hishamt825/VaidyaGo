@@ -4,6 +4,10 @@ import logoUrl from '../../../assets/logo_1.svg';
 import img1 from '../../../assets/Ellipse_139.svg';
 import img2 from '../../../assets/Ellipse_139_1.svg';
 import img3 from '../../../assets/Ellipse_139_2.svg';
+import Profile from '../../../components/Admin/Profile';
+import DasyWilliam from '../../../components/Admin/DasyWilliam';
+import Notification from '../../../components/Patient/notification';
+import { AnimatePresence } from 'framer-motion';
 
 
 const navItems = [
@@ -70,6 +74,24 @@ const Appointmentb = () => {
   const activeIndex = navItems.findIndex(item => item.id === activeNav);
   
   const [selectedPatientForDetails, setSelectedPatientForDetails] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (openProfile) {
+    return <Profile setOpenProfile={setOpenProfile} />;
+  }
 
   // Date navigation logic
   const [currentDate, setCurrentDate] = useState(new Date(2026, 1, 13)); // Months are 0-indexed (1 = Feb)
@@ -247,24 +269,40 @@ const Appointmentb = () => {
             </div>
           </div>
           <div className="flex items-center gap-[10px]">
-            <button className="w-[38px] h-[38px] bg-white border border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-center justify-center text-black hover:bg-gray-50 transition-colors">
-               <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-               </svg>
-            </button>
-            <button className="relative w-[38px] h-[38px] bg-white border border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-center justify-center text-[#112330] hover:bg-gray-50 transition-colors">
-              <svg className="w-[19px] h-[19px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            {/* Settings Icon */}
+            <div 
+              onClick={() => setOpenProfile(true)}
+              className="w-14 h-11 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all">
+              <svg className="w-[24px] h-[24px] text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <div className="absolute top-[4px] right-[5px] bg-[#6c2da8] text-white text-[9px] font-bold w-[14px] h-[14px] flex items-center justify-center rounded-full border-none shadow-sm leading-none">1</div>
-            </button>
-            <button className="bg-[#94b8c0] hover:bg-[#85abb2] text-[#1c3947] font-semibold text-[13.5px] py-0 h-[38px] px-[12px] rounded-[6px] flex items-center gap-[6px] transition-colors shadow-sm ml-1">
-              <div className="w-[18px] h-[18px] bg-white rounded-full flex items-center justify-center shrink-0">
-                 <svg className="w-[12px] h-[12px] text-[#94b8c0]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m-8-8h16" /></svg>
+            </div>
+
+            {/* Notification Icon */}
+            <div 
+              onClick={() => setIsNotificationOpen(true)}
+              className="relative w-14 h-11 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center text-gray-700 cursor-pointer hover:bg-gray-50 transition-all">
+              <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <div className="absolute -top-1 -right-1 bg-[#9367D8] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-sm leading-none">1</div>
+            </div>
+
+            <div className="relative ml-2" ref={menuRef}>
+              <div
+                onClick={() => setOpen(!open)}
+                className="flex items-center gap-4 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-all"
+              >
+                <span className="text-[18px] font-semibold text-gray-700 hidden lg:inline">Dasy William</span>
+                <img src="/assets/ph.png" className="w-10 h-10 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.12)] object-cover" />
               </div>
-              Make Appointment
-            </button>
+              <AnimatePresence>
+                {open && !openProfile && (
+                  <DasyWilliam setOpenProfile={setOpenProfile} />
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </header>
 
@@ -571,6 +609,7 @@ const Appointmentb = () => {
         </div>
       )}
 
+      {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
     </div>
   );
 };

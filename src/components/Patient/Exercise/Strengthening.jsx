@@ -4,6 +4,10 @@ import Sidebar from '../Patient_sidebar';
 import Profile from '../Profile';
 import Account from '../Account';
 import Notification from '../notification';
+import Timer from './Timer';
+import Scapular from './Scapular';
+import Prone from './Prone';
+import Discomfort from './Discomfort';
 
 // Assets
 import phImg from '../../../assets/ph.png';
@@ -30,8 +34,8 @@ const TipCard = ({ title, content }) => (
     </div>
 );
 
-const ExerciseOptionCard = ({ img, title, description, badge1, badge2 }) => (
-    <div className="bg-[#E9EDF0] rounded-[24px] p-3 flex flex-col flex-1 group cursor-pointer hover:shadow-lg transition-all duration-500 border border-transparent hover:border-white/40">
+const ExerciseOptionCard = ({ img, title, description, badge1, badge2, onClick }) => (
+    <div onClick={onClick} className="bg-[#E9EDF0] rounded-[24px] p-3 flex flex-col flex-1 group cursor-pointer hover:shadow-lg transition-all duration-500 border border-transparent hover:border-white/40">
         <div className="h-[160px] rounded-[18px] overflow-hidden mb-3 relative shadow-sm">
             <img src={img} alt={title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -56,6 +60,10 @@ const Strengthening = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isTimerOpen, setIsTimerOpen] = useState(false);
+    const [isScapularOpen, setIsScapularOpen] = useState(false);
+    const [isProneOpen, setIsProneOpen] = useState(false);
+    const [isDiscomfortOpen, setIsDiscomfortOpen] = useState(false);
 
     return (
         <div
@@ -156,9 +164,9 @@ const Strengthening = () => {
                             {/* Center: Instructions */}
                             <div className="bg-white rounded-[32px] p-6 md:p-8 flex flex-col h-[560px] justify-between shadow-sm border border-gray-50 overflow-hidden">
                                 <div>
-                                    <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center justify-between mb-4">
                                         <div>
-                                            <p className="text-[#A9B1BB] text-[10px] font-black uppercase tracking-widest mb-1">Target Area</p>
+                                            <p className="text-[#A9B1BB] text-[10px] font-black uppercase tracking-widest mb-0.5">Target Area</p>
                                             <h3 className="text-[#0B2132] text-[18px] font-bold tracking-tight">Deep Flexors (C1-C4)</h3>
                                         </div>
                                         <div className="bg-[#E9F3F6] px-3 py-2 rounded-xl flex items-center gap-2 border border-[#1A7785]/10">
@@ -168,8 +176,8 @@ const Strengthening = () => {
                                     </div>
 
                                     <div>
-                                        <h4 className="text-[#0B2132] text-[12px] font-black uppercase tracking-[0.15em] mb-6 border-l-[3px] border-[#1A7785] pl-4">Instruction</h4>
-                                        <div className="space-y-6">
+                                        <h4 className="text-[#0B2132] text-[12px] font-black uppercase tracking-[0.15em] mb-4 border-l-[3px] border-[#1A7785] pl-4">Instruction</h4>
+                                        <div className="space-y-4">
                                             {[
                                                 "Sit tall with shoulders relaxed and gaze forward.",
                                                 "Gently draw your chin straight back, as if making a 'double chin'.",
@@ -184,7 +192,7 @@ const Strengthening = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-6 flex flex-col gap-6">
+                                <div className="mt-4 flex flex-col gap-4">
                                     <div className="flex items-center gap-4">
                                         <div className="bg-[#F1F6F8] rounded-[24px] p-4 flex flex-col items-center flex-1 shadow-inner border border-gray-50">
                                             <span className="text-[#0B2132] text-[28px] font-bold leading-none mb-1">10</span>
@@ -195,7 +203,10 @@ const Strengthening = () => {
                                             <span className="text-[#627382] text-[10px] font-black uppercase tracking-widest">Sets</span>
                                         </div>
                                     </div>
-                                    <button className="w-full bg-[#1A7785] hover:bg-[#0B2132] text-white py-3.5 rounded-[20px] text-[15px] font-black uppercase tracking-[0.2em] shadow-xl hover:translate-y-[-4px] transition-all duration-500 mb-6">
+                                    <button 
+                                        onClick={() => setIsTimerOpen(true)}
+                                        className="w-full bg-[#1A7785] hover:bg-[#0B2132] text-white py-3.5 rounded-[20px] text-[15px] font-black uppercase tracking-[0.2em] shadow-xl hover:translate-y-[-4px] transition-all duration-500 mb-2"
+                                    >
                                         Start Timer
                                     </button>
                                 </div>
@@ -259,6 +270,7 @@ const Strengthening = () => {
                                 description="Focus on lower trapezius activation."
                                 badge1="12 Reps"
                                 badge2="2 Sets"
+                                onClick={() => setIsScapularOpen(true)}
                             />
                             <ExerciseOptionCard
                                 img={proneImg}
@@ -266,8 +278,12 @@ const Strengthening = () => {
                                 description="Neutral spine maintenance while lying flat."
                                 badge1="30 Sec"
                                 badge2="3 Sets"
+                                onClick={() => setIsProneOpen(true)}
                             />
-                            <div className="bg-[#0B1423] rounded-[32px] p-6 text-white flex flex-col justify-between relative overflow-hidden group cursor-pointer shadow-2xl">
+                            <div 
+                                onClick={() => setIsDiscomfortOpen(true)}
+                                className="bg-[#0B1423] rounded-[32px] p-6 text-white flex flex-col justify-between relative overflow-hidden group cursor-pointer shadow-2xl"
+                            >
                                 <div className="absolute top-[-50px] right-[-50px] w-40 h-40 bg-[#1A7785]/20 rounded-full blur-[60px] group-hover:bg-[#1A7785]/40 transition-colors duration-1000" />
                                 <div className="z-10">
                                     <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-[#6ED4D4] mb-4">
@@ -292,6 +308,42 @@ const Strengthening = () => {
             {activeModal === 'profile' && <Profile onClose={() => setActiveModal(null)} onAccountSettings={() => setActiveModal('account')} />}
             {activeModal === 'account' && <Account onClose={() => setActiveModal(null)} />}
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+            
+            {isTimerOpen && (
+                <Timer 
+                    isOpen={isTimerOpen} 
+                    onClose={() => setIsTimerOpen(false)} 
+                />
+            )}
+
+            {isScapularOpen && (
+                <Scapular
+                    isOpen={isScapularOpen}
+                    onClose={() => setIsScapularOpen(false)}
+                    onStart={() => {
+                        setIsScapularOpen(false);
+                        setIsTimerOpen(true);
+                    }}
+                />
+            )}
+
+            {isProneOpen && (
+                <Prone
+                    isOpen={isProneOpen}
+                    onClose={() => setIsProneOpen(false)}
+                    onStart={() => {
+                        setIsProneOpen(false);
+                        setIsTimerOpen(true);
+                    }}
+                />
+            )}
+
+            {isDiscomfortOpen && (
+                <Discomfort
+                    isOpen={isDiscomfortOpen}
+                    onClose={() => setIsDiscomfortOpen(false)}
+                />
+            )}
         </div>
     );
 };

@@ -7,7 +7,7 @@ import rejectedImg from "../../assets/rejected.png";
 const AdminSidebar = ({ active = "Dashboard", activeSub: activeSubProp = "Active Doctors", setActive, isMobileOpen, setIsMobileOpen, startSubmenuOpen }) => {
   const navigate = useNavigate();
   const [activeSub, setActiveSub] = useState(activeSubProp);
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(startSubmenuOpen !== undefined ? startSubmenuOpen : active === "Doctors");
+    const [isSubmenuOpen, setIsSubmenuOpen] = useState(startSubmenuOpen || false);
 
   const menu = [
     { name: "Dashboard", icon: "/assets/a.png", path: "/Admin_dashboard1" },
@@ -88,7 +88,7 @@ const AdminSidebar = ({ active = "Dashboard", activeSub: activeSubProp = "Active
                       }`}
                   >
                     <span>{item.name}</span>
-                    {item.hasSubmenu && isActive && (
+                    {item.hasSubmenu && (
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
@@ -96,7 +96,7 @@ const AdminSidebar = ({ active = "Dashboard", activeSub: activeSubProp = "Active
                         }}
                         className="cursor-pointer p-1 rounded-full hover:bg-white/10 transition-colors"
                       >
-                        <svg className={`w-[24px] h-[24px] text-white transform transition-transform duration-300 ${isSubmenuOpen ? "rotate-90" : "rotate-0"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className={`w-[24px] h-[24px] transform transition-transform duration-300 ${isSubmenuOpen ? "rotate-90" : "rotate-0"} ${isActive ? "text-white" : "text-[#166E83]"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
@@ -105,7 +105,7 @@ const AdminSidebar = ({ active = "Dashboard", activeSub: activeSubProp = "Active
                 </div>
 
                 {/* Doctors Submenu dropdown */}
-                {isActive && item.hasSubmenu && isSubmenuOpen && (
+                {item.hasSubmenu && isSubmenuOpen && (
                   <div className="relative w-full bg-white border-[#166E83] flex flex-col pt-3 pb-4 z-0 h-[165px]">
                     {/* Master vertical line that stops at the last item */}
                     <div className="absolute left-[60px] top-[-15px] bottom-[30px] w-[1.5px] bg-[#166E83]"></div>
@@ -131,7 +131,7 @@ const AdminSidebar = ({ active = "Dashboard", activeSub: activeSubProp = "Active
                                 } else if (sub.name === "Pending Doctors") {
                                   navigate("/admin-doctor?view=pending");
                                 } else if (sub.name === "Rejected Doctors") {
-                                  navigate("/Reject");
+                                  navigate("/admin-doctor?view=rejected");
                                 }
                               }}
                               className={`border-[1.8px] border-[#166E83] rounded-full pl-[4px] pr-[16px] py-[3.5px] flex items-center gap-[10px] bg-white cursor-pointer hover:bg-teal-50 ml-0 transition-all duration-300 w-[185px] ${isSubActive ? "shadow-[0_4px_12px_rgba(22,110,131,0.35)]" : "shadow-none"}`}
@@ -189,7 +189,7 @@ const AdminSidebar = ({ active = "Dashboard", activeSub: activeSubProp = "Active
                     </button>
                   </div>
                   {/* Ensure icon column aligns with submenu height */}
-                  {isActive && item.hasSubmenu && isSubmenuOpen && <div className="w-full h-[165px]"></div>}
+                  {item.hasSubmenu && isSubmenuOpen && <div className="w-full h-[165px]"></div>}
                 </React.Fragment>
               );
             })}

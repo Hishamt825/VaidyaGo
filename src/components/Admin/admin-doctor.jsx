@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import DasyWilliam from "./DasyWilliam";
-import Profile from "./Profile";
 
+import Profile from "./Profile";
+import Notification from "../Patient/notification";
 import AdminSidebar from "./AdminSidebar";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
-import Adddoctor from "./Adddoctor";
+import Form1 from "../Doctor/Form1";
+import Form2 from "../Doctor/Form2";
+import Form3 from "../Doctor/Form3";
+import Form4 from "../Doctor/Form4";
+
 import doImg from "../../assets/do.png";
 import active1 from "../../assets/active1.png";
 import pen1 from "../../assets/pen1.png";
@@ -17,39 +22,13 @@ const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
-const monthlyData = [
-    { month: "Jan", male: 40, female: 60 },
-    { month: "Feb", male: 45, female: 55 },
-    { month: "Mar", male: 50, female: 65 },
-    { month: "Apr", male: 60, female: 75 },
-    { month: "May", male: 55, female: 70 },
-    { month: "Jun", male: 52, female: 68 },
-    { month: "Jul", male: 48, female: 62 },
-    { month: "Aug", male: 50, female: 66 },
-    { month: "Sep", male: 54, female: 70 },
-    { month: "Oct", male: 58, female: 72 },
-    { month: "Nov", male: 53, female: 68 },
-    { month: "Dec", male: 57, female: 73 },
-];
 
-const weeklyData = [
-    { day: "Mon", value: 20 },
-    { day: "Tue", value: 35 },
-    { day: "Wed", value: 25 },
-    { day: "Thu", value: 40 },
-    { day: "Fri", value: 30 },
-    { day: "Sat", value: 45 },
-    { day: "Sun", value: 28 },
-];
 const tabsData = [
     "ALL",
     "CARDIOLOGIST",
     "ORTHOPEDICS",
     "ONCOLOGY",
     "DERMATOLOGY",
-// future me aur add kar sakte ho
-    // "NEUROLOGY",
-    // "PEDIATRICS",
 ];
 
 const doctorsData = [
@@ -64,15 +43,18 @@ const doctorsData = [
     { id: 9, name: "Dr.Rajesh Khanna", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.8, status: "active" },
     { id: 10, name: "Dr.Karan Johar", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.3, status: "active" },
     { id: 11, name: "Dr.Zoya Akhtar", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.5, status: "active" },
-    { id: 12, name: "Dr.Farhan Akhtar", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.6, status: "active" },
+    { id: 12, name: "Dr.Farhan Akhtar", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.6, status: "rejected" },
     { id: 13, name: "Dr.Rohit Shetty", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.2, status: "pending" },
     { id: 14, name: "Dr.Sanjay Leela", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.9, status: "active" },
+    { id: 15, name: "Dr.Aditya Chopra", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.1, status: "rejected" },
+    { id: 16, name: "Dr.Mahesh Bhatt", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.0, status: "rejected" },
 ];
 
 
 const AdminDoctor = () => {
     const [open, setOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -81,16 +63,25 @@ const AdminDoctor = () => {
     const isSpecialView = Boolean(viewQuery);
 
     const [openType, setOpenType] = useState(isSpecialView ? "grid" : "list");
+    const [activeTab, setActiveTab] = useState("ALL");
+    const [activeCard, setActiveCard] = useState("TOTAL_DOCTORS");
+    const [adminFormStep, setAdminFormStep] = useState(1);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     useEffect(() => {
         setOpenType(isSpecialView ? "grid" : "list");
-    }, [isSpecialView]);
+        setActiveTab("ALL");
+    }, [isSpecialView, viewQuery]);
 
-    const [active, setActive] = useState("Doctors");
-    const menuRef = useRef(null);
-    const [expandedId, setExpandedId] = useState(null);
-    const [activeTab, setActiveTab] = useState("ALL");
-    const [activeCard, setActiveCard] = useState(null);
+    useEffect(() => {
+        if (viewQuery) {
+            if (viewQuery === "active") setActiveCard("ACTIVE");
+            else if (viewQuery === "pending") setActiveCard("PENDING");
+            else if (viewQuery === "rejected") setActiveCard("REJECTED");
+        } else if (activeCard !== "ADD_DOCTORS") {
+            setActiveCard("TOTAL_DOCTORS");
+        }
+    }, [viewQuery]);
 
     const [selectedDate, setSelectedDate] = useState(13);
     const [month, setMonth] = useState(0);
@@ -114,6 +105,10 @@ const AdminDoctor = () => {
         }
     };
 
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+
+    const menuRef = useRef(null);
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -128,28 +123,38 @@ const AdminDoctor = () => {
         return <Profile setOpenProfile={setOpenProfile} />;
     }
 
-
-    const menu = [
-        { name: "Dashboard", icon: "/das.png" },
-        { name: "Doctor", icon: "/doc.png" },
-        { name: "Appointment", icon: "/app.png" },
-    ];
-
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1).getDay();
+    const renderAdminForm = () => {
+        switch (adminFormStep) {
+            case 1: return <Form1 onNext={setAdminFormStep} />;
+            case 2: return <Form2 onNext={setAdminFormStep} />;
+            case 3: return <Form3 onNext={setAdminFormStep} />;
+            case 4: return <Form4 onNext={setAdminFormStep} />;
+            default: return <Form1 onNext={setAdminFormStep} />;
+        }
+    };
 
     return (
-        <div className="flex h-screen bg-white overflow-hidden">
+        <div className="flex h-screen bg-[#F0F2F5] overflow-hidden">
+            <AdminSidebar 
+                active="Doctors" 
+                isMobileOpen={isMobileSidebarOpen}
+                setIsMobileOpen={setIsMobileSidebarOpen}
+            />
 
-            {/* ================= SIDEBAR ================= */}
-            <AdminSidebar active={active} setActive={setActive} />
-            {/* ================= MAIN ================= */}
-            <main className="flex-1 h-full overflow-y-auto pt-3 pr-2 pl-4">
-
-
+            <div className="flex-1 flex flex-col overflow-hidden pt-3 pr-2 pl-4">
                 {/* TOP BAR */}
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center gap-4 w-full max-w-[700px]">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div className="flex items-center gap-4 w-full md:max-w-[700px]">
+
+                        {/* HAMBURGER MENU (Visible only on mobile) */}
+                        <button
+                            onClick={() => setIsMobileSidebarOpen(true)}
+                            className="lg:hidden p-2 rounded-lg bg-white border border-gray-100 shadow-sm"
+                        >
+                            <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
 
                         <div className="relative w-16 h-12 rounded-xl bg-white border border-gray-400 shadow-[0_8px_30px_rgba(0,0,0,0.08)] overflow-hidden flex items-center justify-center">
 
@@ -164,50 +169,43 @@ const AdminDoctor = () => {
 
                         </div>
                         <div className="flex items-center w-full bg-white border-[0.3px] border-black/50 
-                                rounded-full px-10 py-3 shadow-[0_2px_6px_rgba(0,0,0,0.12)]">
+                                rounded-full px-4 md:px-10 py-2 md:py-3 shadow-[0_2px_6px_rgba(0,0,0,0.12)]">
 
                             <img
                                 src="/assets/sea.png"
-                                className="w-6 h-6 mr-2 opacity-70"
+                                className="w-5 h-5 md:w-6 md:h-6 mr-2 opacity-70"
                             />
 
                             <input
                                 type="text"
                                 placeholder="Search"
-                                className="w-full bg-transparent outline-none text-[18px] text-black placeholder-black opacity-80"
+                                className="w-full bg-transparent outline-none text-[16px] text-black placeholder-black opacity-80"
                             />
 
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between w-full md:w-auto gap-4">
                         <div className="flex items-center gap-3">
-
                             {/* Settings */}
-
-
-                            <img
-                                src="/assets/sett.png"
-                                className="w-18 h-14 opacity-80"
-                            />
-
-
-
-                            {/* Image / Notification */}
-                            <div className="w-14 h-10 bg-white 
-                             border-black/50 
-                              rounded-full  shadow-[0_10px_20px_rgba(10,0,0,0.2)]
-                                    rounded-md 
-                                    flex items-center justify-center 
-                                     cursor-pointer hover:bg-gray-50 transition">
-
-                                <img
-                                    src="/assets/im.png"
-                                    className="w-10 h-8 opacity-80"
-                                />
-
+                            <div 
+                                onClick={() => setOpenProfile(true)}
+                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all">
+                                <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
                             </div>
 
+                            {/* Notification */}
+                            <div 
+                                onClick={() => setIsNotificationOpen(true)}
+                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all relative">
+                                <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#9367D8] rounded-full flex items-center justify-center text-white text-[11px] font-bold border-2 border-white shadow-sm">1</div>
+                            </div>
                         </div>
 
                         <div className="relative" ref={menuRef}>
@@ -233,79 +231,97 @@ const AdminDoctor = () => {
                     </div>
                 </div>
 
-                {/* ================= TOP GRID ================= */}
-                {!isSpecialView && (
+                <main className="flex-1 overflow-y-auto p-8 pt-4 custom-scrollbar">
+                    {/* TOP STATS CARDS */}
+                    <div className="flex justify-between items-center mb-0 px-2 mt-[-10px]">
+                        <h1 className="text-[26px] font-bold text-gray-800">Doctor Management</h1>
+                    </div>
+
+                    {/* ================= TOP GRID ================= */}
                     <div className="grid grid-cols-10 gap-6 mt-10">
                         {/* LEFT STATS SECTION */}
                         <div className="col-span-6 h-[400px]">
                             <div className="grid grid-cols-3 gap-4 h-full auto-rows-fr">
                                 {/* CARD 1: Total Doctors */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.1 }}
-                                    onClick={() => navigate('/admin-doctor')}
-                                    className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
+                                <div
+                                    onClick={() => {
+                                        setActiveCard("TOTAL_DOCTORS");
+                                        navigate('/admin-doctor');
+                                    }}
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer overflow-hidden ${
+                                        activeCard === "TOTAL_DOCTORS"
+                                            ? "bg-white border-[2.5px] border-[#1F2E5C]"
+                                            : "bg-white border-[1.2px] border-gray-300"
+                                    }`}
                                 >
                                     <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Total Doctors</h3>
                                     <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                         <img src={doImg} className="h-[140px] object-contain -ml-2 mb-[-12px]" />
                                         <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">100</h2>
                                     </div>
-                                </motion.div>
+                                </div>
 
                                 {/* CARD 2: Active Doctors */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                    onClick={() => navigate('/admin-doctor?view=active')}
-                                    className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
+                                <div
+                                    onClick={() => {
+                                        setActiveCard("ACTIVE");
+                                        navigate('/admin-doctor?view=active');
+                                    }}
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer overflow-hidden ${
+                                        activeCard === "ACTIVE"
+                                            ? "bg-white border-[2.5px] border-[#1F2E5C]"
+                                            : "bg-white border-[1.2px] border-gray-300"
+                                    }`}
                                 >
                                     <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Active Doctors</h3>
                                     <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                         <img src={active1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
                                         <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">50</h2>
                                     </div>
-                                </motion.div>
+                                </div>
 
                                 {/* CARD 3: Pending Doctors */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    onClick={() => navigate('/admin-doctor?view=pending')}
-                                    className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
+                                <div
+                                    onClick={() => {
+                                        setActiveCard("PENDING");
+                                        navigate('/admin-doctor?view=pending');
+                                    }}
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer overflow-hidden ${
+                                        activeCard === "PENDING"
+                                            ? "bg-white border-[2.5px] border-[#1F2E5C]"
+                                            : "bg-white border-[1.2px] border-gray-300"
+                                    }`}
                                 >
                                     <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Pending Doctors</h3>
                                     <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                         <img src={pen1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
                                         <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">50</h2>
                                     </div>
-                                </motion.div>
+                                </div>
 
                                 {/* CARD 4: Rejected Doctors */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    onClick={() => navigate('/reject_doctor')}
-                                    className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
+                                <div
+                                    onClick={() => {
+                                        setActiveCard("REJECTED");
+                                        navigate('/admin-doctor?view=rejected');
+                                    }}
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer overflow-hidden ${
+                                        activeCard === "REJECTED"
+                                            ? "bg-white border-[2.5px] border-[#1F2E5C]"
+                                            : "bg-white border-[1.2px] border-gray-300"
+                                    }`}
                                 >
                                     <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Rejected Doctors</h3>
                                     <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                         <img src={reject1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
                                         <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">100</h2>
                                     </div>
-                                </motion.div>
+                                </div>
 
                                 {/* CARD 5: Add Doctors */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3 }}
+                                <div
                                     onClick={() => setActiveCard("ADD_DOCTORS")}
-                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer ${
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer ${
                                         activeCard === "ADD_DOCTORS"
                                             ? "bg-white border-[2.5px] border-[#1F2E5C]"
                                             : "bg-white border-[1.2px] border-gray-300"
@@ -315,7 +331,7 @@ const AdminDoctor = () => {
                                     <div className="flex justify-center items-end flex-1">
                                         <img src={add2} className="h-[140px] object-contain" />
                                     </div>
-                                </motion.div>
+                                </div>
                             </div>
                         </div>
 
@@ -388,142 +404,150 @@ const AdminDoctor = () => {
                             </div>
                         </div>
                     </div>
-                )}
 
-                {/* ================= MAIN CONTENT OR ADD DOCTOR FORM ================= */}
-                {activeCard === "ADD_DOCTORS" ? (
-                    <div className="mt-6 mb-10 w-full rounded-[20px] bg-white border-[1.5px] border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden">
-                        <Adddoctor />
-                    </div>
-                ) : (
-                    <>
-                        {/* ================= TABS CAPSULE ================= */}
-                        <div className="mt-4 flex items-center justify-between bg-white border border-gray-300 rounded-full pl-2 pr-6 py-2 shadow-[0_2px_10px_rgba(0,0,0,0.04)] mx-2">
-                    <div className="flex items-center space-x-2 overflow-x-auto scrollbar-hide flex-1">
-                        {tabsData.map((tab, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => setActiveTab(tab)}
-                                className={`px-6 py-2.5 rounded-full text-[16px] font-bold tracking-wide transition-all uppercase whitespace-nowrap
-                                    ${activeTab === tab
-                                        ? "bg-[#399CAA] text-white shadow-md"
-                                        : "text-[#B3B3B3] hover:text-gray-600"
-                                    }`}
-                            >
-                                {tab}
-                            </button>
-                        ))}
-
-                        <button className="text-gray-600 ml-2 hover:text-gray-900 transition-colors flex items-center h-full pl-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-[18px] h-[18px]">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div className="flex items-center space-x-3 pl-6 ml-auto">
-                        <button onClick={() => setOpenType("grid")} className="p-1 cursor-pointer transition-all hover:scale-105">
-                            <img src="/assets/tab.png"
-                                className={`w-[22px] h-[22px] object-contain transition-all duration-300 ${openType === 'grid' ? 'opacity-100' : 'opacity-40 grayscale'}`}
-                                style={openType === 'grid' ? { filter: 'sepia(100%) hue-rotate(140deg) saturate(300%) brightness(80%)' } : {}}
-                                alt="Grid View" />
-                        </button>
-                        <button onClick={() => setOpenType("list")} className="p-1 cursor-pointer transition-all hover:scale-105">
-                            <img src="/assets/tab1.png"
-                                className={`w-[22px] h-[22px] object-contain transition-all duration-300 ${openType === 'list' ? 'opacity-100' : 'opacity-40 grayscale'}`}
-                                style={openType === 'list' ? { filter: 'sepia(100%) hue-rotate(140deg) saturate(300%) brightness(80%)' } : {}}
-                                alt="List View" />
-                        </button>
-                    </div>
-                </div>
-
-                {/* ================= GRID VIEW ================= */}
-                {openType === "grid" && (
-                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-2 mb-10 pb-4">
-                        {doctorsData
-                            .filter(doc => (activeTab === "ALL" || doc.role === activeTab) && (!viewQuery || doc.status === viewQuery))
-                            .map((doc, idx) => (
-                                <div key={idx} className="bg-white border border-gray-300 rounded-[12px] flex flex-col items-center pt-5 overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-2 relative">
-                                    {/* Rating Ribbon */}
-                                    <div className="absolute top-4 left-0 bg-[#FFEAC2] text-[#FFA800] text-[12px] font-bold pl-[6px] pr-2 py-[2px] rounded-r-sm flex items-center shadow-sm">
-                                        <span className="mr-[2px]">★</span> {doc.rating}
-                                    </div>
-                                    {/* Avatar */}
-                                    <div className={`w-[90px] h-[90px] md:w-[105px] md:h-[105px] rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm mb-3 mt-2 relative ${viewQuery === 'active' ? 'border-[4px] border-[#00DE5A]' : viewQuery === 'rejected' ? 'border-[4px] border-red-600' : viewQuery === 'pending' ? 'border-[4px] border-[#399CAA]' : 'border-[2px] border-[#00DE5A]'}`}>
-                                        <img src={doc.img} className="w-[110px] h-[110px] object-cover" alt="Doctor" onError={(e) => { e.target.src = '/assets/admin.png' }} />
-                                    </div>
-                                    {/* Name */}
-                                    <h3 className="text-[18px] font-bold text-black leading-tight mb-[6px]">{doc.name}</h3>
-                                    {/* Specialty */}
-                                    <span
-                                        onClick={() => setActiveTab(doc.role)}
-                                        className="bg-[#E4F2F3] text-[#399CAA] font-bold text-[14px] px-6 py-[5px] rounded-full uppercase tracking-widest mb-6 cursor-pointer hover:bg-[#399CAA] hover:text-white transition-all shadow-sm"
-                                    >
-                                        {doc.role}
-                                    </span>
-                                    {/* Bottom Actions */}
-                                    <div className="w-full flex">
-                                        <button className="flex-1 py-3 text-[#5A5A5A] font-semibold text-[14px] bg-[#EAEAEA] border-r border-white hover:bg-gray-200 transition-colors">
-                                            View Detail
-                                        </button>
-                                        <button className="flex-1 py-3 text-[#5A5A5A] font-semibold text-[14px] bg-[#EAEAEA] hover:bg-gray-200 transition-colors">
-                                            Make a Call
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                    </div>
-                )}
-
-                {/* ================= LIST VIEW ================= */}
-                {openType === "list" && (
-                    <div className="mt-4 flex flex-col gap-2 mx-2 mb-10">
-                        {doctorsData
-                            .filter(doc => (activeTab === "ALL" || doc.role === activeTab) && (!viewQuery || doc.status === viewQuery))
-                            .map((doc, idx) => (
-                                <div key={idx} className="bg-white border border-gray-300 px-6 py-[10px] flex items-center justify-between hover:shadow-md transition-shadow duration-200">
-                                    {/* Left: Avatar & Name */}
-                                    <div className="flex items-center gap-5 w-[280px]">
-                                        <div className="w-[70px] h-[70px] rounded-full bg-[#F5B82A] flex items-center justify-center overflow-hidden shrink-0 shadow-sm border-2 border-white ring-1 ring-gray-100">
-                                            <img src={doc.img} className="w-[70px] h-[70px] object-cover" alt="Doctor" onError={(e) => { e.target.src = '/assets/ph.png' }} />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <h3 className="text-[18px] font-bold text-black leading-tight mb-1">{doc.name}</h3>
-                                            <div className="inline-flex items-center bg-[#FFEAC2] px-2 py-[2px] rounded-full w-fit mt-1">
-                                                <span className="text-[#FFA800] text-[12px] mr-1 leading-none">★</span>
-                                                <span className="text-[#FFA800] text-[12px] font-bold leading-none">{doc.rating}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Middle: Specialty */}
-                                    <div className="flex-1 flex justify-center items-center">
-                                        <span
-                                            onClick={() => setActiveTab(doc.role)}
-                                            className="bg-[#E4F2F3] text-[#399CAA] font-bold text-[14px] px-6 py-1.5 rounded-full uppercase tracking-wider cursor-pointer hover:bg-[#399CAA] hover:text-white transition-all shadow-sm"
+                    {/* ================= MAIN CONTENT OR ADD DOCTOR FORM ================= */}
+                    {activeCard === "ADD_DOCTORS" ? (
+                        <div className="mt-6 mb-10 w-full rounded-[20px] bg-white border-[1.5px] border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden">
+                            {renderAdminForm()}
+                        </div>
+                    ) : (
+                        <>
+                            {/* ================= TABS CAPSULE ================= */}
+                            <div className="mt-4 flex items-center justify-between bg-white border border-gray-300 rounded-full pl-2 pr-6 py-2 shadow-[0_2px_10px_rgba(0,0,0,0.04)] mx-2">
+                                <div className="flex items-center space-x-2 overflow-x-auto scrollbar-hide flex-1">
+                                    {tabsData.map((tab, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setActiveTab(tab)}
+                                            className={`px-6 py-2.5 rounded-full text-[16px] font-bold tracking-wide transition-all uppercase whitespace-nowrap
+                                                ${activeTab === tab
+                                                    ? "bg-[#399CAA] text-white shadow-md"
+                                                    : "text-[#B3B3B3] hover:text-gray-600"
+                                                }`}
                                         >
-                                            {doc.role}
-                                        </span>
-                                    </div>
+                                            {tab}
+                                        </button>
+                                    ))}
 
-                                    {/* Right: Actions */}
-                                    <div className="flex items-center gap-4 shrink-0 pr-2">
-                                        <button className="border border-gray-300 text-[#555] font-semibold px-5 py-2 rounded-full text-[14px] hover:bg-gray-50 transition-colors">
-                                            View Detail
-                                        </button>
-                                        <button className="border border-gray-300 text-[#555] font-semibold px-5 py-2 rounded-full text-[14px] hover:bg-gray-50 transition-colors">
-                                            Make a Call
-                                        </button>
-                                    </div>
+                                    <button className="text-gray-600 ml-2 hover:text-gray-900 transition-colors flex items-center h-full pl-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-[18px] h-[18px]">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                        </svg>
+                                    </button>
                                 </div>
-                            ))}
-                    </div>
-                )}
-                </>
-                )}
-            </main>
-        </div>
 
+                                <div className="flex items-center space-x-3 pl-6 ml-auto">
+                                    <button onClick={() => setOpenType("grid")} className="p-1 cursor-pointer transition-all hover:scale-105">
+                                        <img src="/assets/tab.png"
+                                            className={`w-[22px] h-[22px] object-contain transition-all duration-300 ${openType === 'grid' ? 'opacity-100' : 'opacity-40 grayscale'}`}
+                                            style={openType === 'grid' ? { filter: 'sepia(100%) hue-rotate(140deg) saturate(300%) brightness(80%)' } : {}}
+                                            alt="Grid View" />
+                                    </button>
+                                    <button onClick={() => setOpenType("list")} className="p-1 cursor-pointer transition-all hover:scale-105">
+                                        <img src="/assets/tab1.png"
+                                            className={`w-[22px] h-[22px] object-contain transition-all duration-300 ${openType === 'list' ? 'opacity-100' : 'opacity-40 grayscale'}`}
+                                            style={openType === 'list' ? { filter: 'sepia(100%) hue-rotate(140deg) saturate(300%) brightness(80%)' } : {}}
+                                            alt="List View" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* ================= GRID VIEW ================= */}
+                            {openType === "grid" && (
+                                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-2 mb-10 pb-4">
+                                    {doctorsData
+                                        .filter(doc => (activeTab === "ALL" || doc.role === activeTab) && (!viewQuery || doc.status === viewQuery))
+                                        .map((doc, idx) => (
+                                            <div key={idx} className="bg-white border border-gray-300 rounded-[12px] flex flex-col items-center pt-5 overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-2 relative">
+                                                {/* Rating Ribbon */}
+                                                <div className="absolute top-4 left-0 bg-[#FFEAC2] text-[#FFA800] text-[12px] font-bold pl-[6px] pr-2 py-[2px] rounded-r-sm flex items-center shadow-sm">
+                                                    <span className="mr-[2px]">★</span> {doc.rating}
+                                                </div>
+                                                {/* Avatar */}
+                                                <div className={`w-[90px] h-[90px] md:w-[105px] md:h-[105px] rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm mb-3 mt-2 relative border-[4px] ${
+                                                    doc.status === 'active' ? 'border-[#00DE5A]' : 
+                                                    doc.status === 'rejected' ? 'border-red-600' : 
+                                                    'border-[#399CAA]'
+                                                }`}>
+                                                    <img src={doc.img} className="w-[110px] h-[110px] object-cover" alt="Doctor" onError={(e) => { e.target.src = '/assets/admin.png' }} />
+                                                </div>
+                                                {/* Name */}
+                                                <h3 className="text-[18px] font-bold text-black leading-tight mb-[6px]">{doc.name}</h3>
+                                                {/* Specialty */}
+                                                <span
+                                                    onClick={() => setActiveTab(doc.role)}
+                                                    className="bg-[#E4F2F3] text-[#399CAA] font-bold text-[14px] px-6 py-[5px] rounded-full uppercase tracking-widest mb-6 cursor-pointer hover:bg-[#399CAA] hover:text-white transition-all shadow-sm"
+                                                >
+                                                    {doc.role}
+                                                </span>
+                                                {/* Bottom Actions */}
+                                                <div className="w-full flex">
+                                                    <button className="flex-1 py-3 text-[#5A5A5A] font-semibold text-[14px] bg-[#EAEAEA] border-r border-white hover:bg-gray-200 transition-colors">
+                                                        View Detail
+                                                    </button>
+                                                    <button className="flex-1 py-3 text-[#5A5A5A] font-semibold text-[14px] bg-[#EAEAEA] hover:bg-gray-200 transition-colors">
+                                                        Make a Call
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                </div>
+                            )}
+
+                            {/* ================= LIST VIEW ================= */}
+                            {openType === "list" && (
+                                <div className="mt-4 flex flex-col gap-2 mx-2 mb-10">
+                                    {doctorsData
+                                        .filter(doc => (activeTab === "ALL" || doc.role === activeTab) && (!viewQuery || doc.status === viewQuery))
+                                        .map((doc, idx) => (
+                                            <div key={idx} className="bg-white border border-gray-300 px-6 py-[10px] flex items-center justify-between hover:shadow-md transition-shadow duration-200">
+                                                {/* Left: Avatar & Name */}
+                                                <div className="flex items-center gap-5 w-[280px]">
+                                                    <div className={`w-[70px] h-[70px] rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm border-2 border-white ring-[3px] ${
+                                                        doc.status === 'active' ? 'ring-[#00DE5A] bg-[#00DE5A]/10' : 
+                                                        doc.status === 'rejected' ? 'ring-red-600 bg-red-600/10' : 
+                                                        'ring-[#399CAA] bg-[#399CAA]/10'
+                                                    }`}>
+                                                        <img src={doc.img} className="w-[70px] h-[70px] object-cover" alt="Doctor" onError={(e) => { e.target.src = '/assets/ph.png' }} />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <h3 className="text-[18px] font-bold text-black leading-tight mb-1">{doc.name}</h3>
+                                                        <div className="inline-flex items-center bg-[#FFEAC2] px-2 py-[2px] rounded-full w-fit mt-1">
+                                                            <span className="text-[#FFA800] text-[12px] mr-1 leading-none">★</span>
+                                                            <span className="text-[#FFA800] text-[12px] font-bold leading-none">{doc.rating}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Middle: Specialty */}
+                                                <div className="flex-1 flex justify-center items-center">
+                                                    <span
+                                                        onClick={() => setActiveTab(doc.role)}
+                                                        className="bg-[#E4F2F3] text-[#399CAA] font-bold text-[14px] px-6 py-1.5 rounded-full uppercase tracking-wider cursor-pointer hover:bg-[#399CAA] hover:text-white transition-all shadow-sm"
+                                                    >
+                                                        {doc.role}
+                                                    </span>
+                                                </div>
+
+                                                {/* Right: Actions */}
+                                                <div className="flex items-center gap-4 shrink-0 pr-2">
+                                                    <button className="border border-gray-300 text-[#555] font-semibold px-5 py-2 rounded-full text-[14px] hover:bg-gray-50 transition-colors">
+                                                        View Detail
+                                                    </button>
+                                                    <button className="border border-gray-300 text-[#555] font-semibold px-5 py-2 rounded-full text-[14px] hover:bg-gray-50 transition-colors">
+                                                        Make a Call
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                </div>
+                            )}
+                        </>
+                    )}
+                </main>
+            </div>
+            {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+        </div>
     );
 };
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Vertical from "./Vertical";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../baseUrl";
-const Form3 = () => {
+const Form3 = ({ onNext }) => {
   const navigate = useNavigate();
 
   const doctorId = localStorage.getItem("doctor_id");
@@ -22,6 +22,10 @@ const [activeStep, setActiveStep] = useState(3);
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(false);
   const handleStepChange = (step) => {
+    if (onNext) {
+      onNext(step);
+      return;
+    }
     setActiveStep(step);
 
     if (step === 1) navigate("/Form1");
@@ -157,7 +161,11 @@ const [activeStep, setActiveStep] = useState(3);
         }
       } else {
         // ✅ NO CHANGES
-        setTimeout(() => navigate("/Form4"), 500);
+        if (onNext) {
+          onNext(4);
+        } else {
+          setTimeout(() => navigate("/Form4"), 500);
+        }
         setLoading(false);
         return;
       }
@@ -174,7 +182,11 @@ const [activeStep, setActiveStep] = useState(3);
         setInitialData(getData);
       }
       
-      setTimeout(() => navigate("/Form4"), 500);
+      if (onNext) {
+        onNext(4);
+      } else {
+        setTimeout(() => navigate("/Form4"), 500);
+      }
 
     } catch (error) {
       console.error("Submit Error:", error);

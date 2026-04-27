@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Vertical from "./Vertical"; // your stepper component
 import BASE_URL from "../../baseUrl";
-const Form2 = () => {
+const Form2 = ({ onNext }) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -69,6 +69,10 @@ const Form2 = () => {
   };
 
   const handleStepChange = (step) => {
+    if (onNext) {
+      onNext(step);
+      return;
+    }
     const dId = localStorage.getItem("doctor_id");
     const pId = localStorage.getItem("professional_info_id");
     const hId = localStorage.getItem("hospital_info_id");
@@ -222,8 +226,12 @@ const Form2 = () => {
         }
       } else {
         // No change, skip API call
-        setActiveStep(3);
-        setTimeout(() => navigate("/Form3"), 500);
+        if (onNext) {
+          onNext(3);
+        } else {
+          setActiveStep(3);
+          setTimeout(() => navigate("/Form3"), 500);
+        }
         setLoading(false);
         return;
       }
@@ -240,8 +248,12 @@ const Form2 = () => {
       setInitialData(getData);
 
       // Navigate to Form 3
-      setActiveStep(3);
-      setTimeout(() => navigate("/Form3"), 500);
+      if (onNext) {
+        onNext(3);
+      } else {
+        setActiveStep(3);
+        setTimeout(() => navigate("/Form3"), 500);
+      }
     } catch (err) {
       console.error(err);
       alert(err.message || "Something went wrong");
