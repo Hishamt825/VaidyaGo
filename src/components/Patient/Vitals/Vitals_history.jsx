@@ -27,7 +27,9 @@ const VitalsHistory = () => {
     const [active, setActive] = useState('Vitals');
     const [selectedTab, setSelectedTab] = useState('All Vitals');
     const [currentPage, setCurrentPage] = useState(1);
-    
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [filterType, setFilterType] = useState('Last 3 Months');
+
     const allVitalsData = [
         // Page 1
         { date: 'Oct 24, 2023', time: '08:45 AM', hr: '78', bp: '120/80', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 1 },
@@ -49,15 +51,15 @@ const VitalsHistory = () => {
     const vitalsData = allVitalsData.filter(item => item.page === currentPage);
 
     return (
-        <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden" 
-             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
-            
+        <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+            style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
+
             <Sidebar active={active} setActive={setActive} />
 
             <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                 {/* Top Navbar standardized to Medication1 style */}
                 <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
-                    <button 
+                    <button
                         onClick={() => navigate('/Vitals')}
                         className="w-[40px] h-[40px] rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all group shrink-0"
                         title="Back to Vitals"
@@ -106,50 +108,121 @@ const VitalsHistory = () => {
                             <p className="text-white/60 text-[14px] font-medium max-w-xl italic">A comprehensive overview of physiological health metrics over the last 90 days.</p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <button className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-5 py-3 rounded-2xl hover:bg-white/20 transition-all font-bold text-[13px]">
-                                <Filter size={16} />
-                                Last 3 Months
-                            </button>
-                            <button className="flex items-center gap-2 bg-[#0B1F4D] text-white px-6 py-3.5 rounded-2xl shadow-xl hover:scale-105 transition-all font-bold text-[13px]">
-                                <Download size={16} />
-                                Export CSV
-                            </button>
+                            <div className="flex items-center gap-4 relative">
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                        className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-5 py-3 rounded-2xl hover:bg-white/20 transition-all font-bold text-[13px]"
+                                    >
+                                        <Filter size={16} />
+                                        {filterType}
+                                    </button>
+
+                                    {/* Filter Dropdown */}
+                                    {isFilterOpen && (
+                                        <div className="absolute top-full mt-2 right-0 w-[240px] bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200">
+                                            <div className="p-4 border-b border-gray-50 bg-gray-50/50">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[#627382] text-[10px] font-black uppercase tracking-widest opacity-60">Filter Options</span>
+                                                    <div className="relative group/cal">
+                                                        <div className="text-[#1A7785] p-1.5 hover:bg-white rounded-lg transition-all cursor-pointer">
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                        </div>
+                                                        <input
+                                                            type="date"
+                                                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                                                            onChange={(e) => {
+                                                                if (e.target.value) {
+                                                                    setFilterType(e.target.value);
+                                                                    setIsFilterOpen(false);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="p-2">
+                                                {/* Weekly */}
+                                                <div className="px-3 py-2 text-[10px] font-black text-[#1A7785] uppercase tracking-widest opacity-40">Weekly</div>
+                                                {['This Week', 'Last Week'].map(item => (
+                                                    <button
+                                                        key={item}
+                                                        onClick={() => { setFilterType(item); setIsFilterOpen(false); }}
+                                                        className={`w-full text-left px-4 py-2.5 text-[13px] font-bold rounded-xl transition-all ${filterType === item ? 'bg-[#F0F7F8] text-[#1A7785]' : 'text-[#0D1C2E] hover:bg-[#F4F8FA]'}`}
+                                                    >
+                                                        {item}
+                                                    </button>
+                                                ))}
+
+                                                {/* Monthly */}
+                                                <div className="px-3 py-2 mt-1 text-[10px] font-black text-[#1A7785] uppercase tracking-widest opacity-40">Monthly</div>
+                                                {['This Month', 'Last 3 Months', 'Last 6 Months'].map(item => (
+                                                    <button
+                                                        key={item}
+                                                        onClick={() => { setFilterType(item); setIsFilterOpen(false); }}
+                                                        className={`w-full text-left px-4 py-2.5 text-[13px] font-bold rounded-xl transition-all ${filterType === item ? 'bg-[#F0F7F8] text-[#1A7785]' : 'text-[#0D1C2E] hover:bg-[#F4F8FA]'}`}
+                                                    >
+                                                        {item}
+                                                    </button>
+                                                ))}
+
+                                                {/* Yearly */}
+                                                <div className="px-3 py-2 mt-1 text-[10px] font-black text-[#1A7785] uppercase tracking-widest opacity-40">Yearly</div>
+                                                {['2023', '2022'].map(year => (
+                                                    <button
+                                                        key={year}
+                                                        onClick={() => { setFilterType(`Year ${year}`); setIsFilterOpen(false); }}
+                                                        className={`w-full text-left px-4 py-2.5 text-[13px] font-bold rounded-xl transition-all ${filterType === `Year ${year}` ? 'bg-[#F0F7F8] text-[#1A7785]' : 'text-[#0D1C2E] hover:bg-[#F4F8FA]'}`}
+                                                    >
+                                                        {year}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                <button className="flex items-center gap-2 bg-[#0B1F4D] text-white px-6 py-3.5 rounded-2xl shadow-xl hover:scale-105 transition-all font-bold text-[13px]">
+                                    <Download size={16} />
+                                    Export CSV
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     {/* Metric Cards Grid */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-                        <MetricCard 
-                            icon={<Heart size={20} />} 
-                            label="Avg Heart Rate" 
-                            value="72" 
-                            unit="bpm" 
-                            change="↘ 4% vs last period" 
-                            color="text-red-500" 
+                        <MetricCard
+                            icon={<Heart size={20} />}
+                            label="Avg Heart Rate"
+                            value="72"
+                            unit="bpm"
+                            change="↘ 4% vs last period"
+                            color="text-red-500"
                         />
-                        <MetricCard 
-                            icon={<Activity size={20} />} 
-                            label="Avg BP" 
-                            value="118/76" 
-                            unit="mmHg" 
-                            change="Optimal Range" 
-                            color="text-blue-500" 
+                        <MetricCard
+                            icon={<Activity size={20} />}
+                            label="Avg BP"
+                            value="118/76"
+                            unit="mmHg"
+                            change="Optimal Range"
+                            color="text-blue-500"
                         />
-                        <MetricCard 
-                            icon={<Wind size={20} />} 
-                            label="Avg SpO2" 
-                            value="98.2" 
-                            unit="%" 
-                            change="Stable saturation" 
-                            color="text-cyan-600" 
+                        <MetricCard
+                            icon={<Wind size={20} />}
+                            label="Avg SpO2"
+                            value="98.2"
+                            unit="%"
+                            change="Stable saturation"
+                            color="text-cyan-600"
                         />
-                        <MetricCard 
-                            icon={<Thermometer size={20} />} 
-                            label="Avg Temp" 
-                            value="36.7" 
-                            unit="°C" 
-                            change="Normal temperature" 
-                            color="text-amber-600" 
+                        <MetricCard
+                            icon={<Thermometer size={20} />}
+                            label="Avg Temp"
+                            value="36.7"
+                            unit="°C"
+                            change="Normal temperature"
+                            color="text-amber-600"
                         />
                     </div>
 
@@ -159,7 +232,7 @@ const VitalsHistory = () => {
                         <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-50">
                             <div className="flex items-center gap-2 bg-[#F4F8FA] p-1.5 rounded-2xl border border-[#E9EFF2]">
                                 {['All Vitals', 'Heart Rate', 'Blood Pressure', 'SpO2'].map(tab => (
-                                    <button 
+                                    <button
                                         key={tab}
                                         onClick={() => setSelectedTab(tab)}
                                         className={`px-5 py-2 rounded-xl text-[12px] font-black transition-all ${selectedTab === tab ? 'bg-[#0B1F4D] text-white shadow-lg' : 'text-[#627382] hover:text-[#0B1F4D]'}`}
@@ -237,14 +310,14 @@ const VitalsHistory = () => {
                                 Showing {(currentPage - 1) * 4 + 1} to {currentPage * 4} of 128 records
                             </p>
                             <div className="flex items-center gap-2">
-                                <button 
+                                <button
                                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                     className="w-8 h-8 rounded-lg flex items-center justify-center text-[#627382] hover:bg-[#F4F8FA] transition-all"
                                 >
                                     <ChevronLeft size={16} />
                                 </button>
                                 {[1, 2, 3].map(pageNum => (
-                                    <button 
+                                    <button
                                         key={pageNum}
                                         onClick={() => setCurrentPage(pageNum)}
                                         className={`w-8 h-8 rounded-lg flex items-center justify-center text-[12px] font-bold transition-all ${currentPage === pageNum ? 'bg-[#0B1F4D] text-white shadow-lg' : 'text-[#627382] hover:bg-[#F4F8FA]'}`}
@@ -252,7 +325,7 @@ const VitalsHistory = () => {
                                         {pageNum}
                                     </button>
                                 ))}
-                                <button 
+                                <button
                                     onClick={() => setCurrentPage(prev => Math.min(3, prev + 1))}
                                     className="w-8 h-8 rounded-lg flex items-center justify-center text-[#627382] hover:bg-[#F4F8FA] transition-all"
                                 >
@@ -267,7 +340,7 @@ const VitalsHistory = () => {
                         <div className="relative h-[200px] rounded-[40px] overflow-hidden bg-gradient-to-r from-[#0B3A4F] via-[#125A6C] to-[#1A7785] p-10 flex flex-col items-center justify-center text-center shadow-2xl transition-transform duration-500 hover:scale-[1.01]">
                             <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-32 -translate-y-32" />
                             <div className="absolute bottom-0 right-0 w-64 h-64 bg-black/10 rounded-full blur-3xl translate-x-32 translate-y-32" />
-                            
+
                             <h2 className="relative z-10 text-white/40 text-[10px] font-black uppercase tracking-[0.5em] mb-4">Built for Modern Care</h2>
                             <h3 className="relative z-10 text-white text-[42px] font-black tracking-tight leading-tight flex items-center gap-3">
                                 VaidyaGo <span className="w-px h-10 bg-white/20" /> <span className="opacity-80">Your Health, Digitally Refined.</span>
@@ -276,7 +349,7 @@ const VitalsHistory = () => {
                     </div>
                 </main>
             </div>
-            
+
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }

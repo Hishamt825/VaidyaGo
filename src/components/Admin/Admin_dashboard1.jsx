@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DasyWilliam from "./DasyWilliam";
 import Profile from "./Profile";
 
@@ -7,6 +8,10 @@ import { AnimatePresence, motion } from "framer-motion";
 // import plus from "../../assets/plus.png";
 import ap from "../../assets/ap.png";
 import admin1 from "../../assets/admin1.png";
+import add2 from "../../assets/add2.png";
+import doImg from "../../assets/do.png";
+import active1 from "../../assets/active1.png";
+import person4 from "../../assets/person4.png";
 import {
     AreaChart,
     Area,
@@ -48,6 +53,7 @@ const weeklyData = [
     { day: "Sun", value: 28 },
 ];
 const Admin_dashboard1 = () => {
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
     const menuRef = useRef(null);
@@ -68,88 +74,33 @@ const Admin_dashboard1 = () => {
     const [attachedFile, setAttachedFile] = useState(null);
     const [showRejectedStatusModal, setShowRejectedStatusModal] = useState(false);
     const fileInputRef = useRef(null);
-    
+
     const [doctors, setDoctors] = useState([
-        {
-            id: 1,
-            name: "Dr. Sumaiya Javed",
-            subTitle: "Cardiologist",
-            phone: "1234567890",
-            experience: "5 years",
-            email: "sumaiya@gmail.com",
-            status: "pending",
-            image: "/assets/admin.png",
-            fullImage: "/assets/de.png",
-            speciality: "Cardiologist",
-            documents: ["Adhaar Card", "Experience letter", "Doctor license"]
-        },
-        {
-            id: 2,
-            name: "Dr. Sumaiya Javed",
-            subTitle: "Cardiologist",
-            phone: "1234567890",
-            experience: "5 years",
-            email: "sumaiya@gmail.com",
-            status: "pending",
-            image: "/assets/admin.png",
-            fullImage: "/assets/de.png",
-            speciality: "Cardiologist",
-            documents: ["Adhaar Card", "Experience letter", "Doctor license"]
-        },
-        {
-            id: 3,
-            name: "Dr. Sumaiya Javed",
-            subTitle: "Cardiologist",
-            phone: "1234567890",
-            experience: "5 years",
-            email: "sumaiya@gmail.com",
-            status: "pending",
-            image: "/assets/admin.png",
-            fullImage: "/assets/de.png",
-            speciality: "Cardiologist",
-            documents: ["Adhaar Card", "Experience letter", "Doctor license"]
-        },
-        {
-            id: 4,
-            name: "Dr. Sumaiya Javed",
-            subTitle: "Cardiologist",
-            phone: "1234567890",
-            experience: "5 years",
-            email: "sumaiya@gmail.com",
-            status: "pending",
-            image: "/assets/admin.png",
-            fullImage: "/assets/de.png",
-            speciality: "Cardiologist",
-            documents: ["Adhaar Card", "Experience letter", "Doctor license"]
-        },
-        {
-            id: 5,
-            name: "Dr. Sumaiya Javed",
-            subTitle: "Cardiologist",
-            phone: "1234567890",
-            experience: "5 years",
-            email: "sumaiya@gmail.com",
-            status: "pending",
-            image: "/assets/active.png",
-            fullImage: "/assets/active.png",
-            speciality: "Cardiologist",
-            documents: ["Adhaar Card", "Experience letter", "Doctor license"]
-        },
+        { id: 1, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
+        { id: 2, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
+        { id: 3, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
+        { id: 4, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
+        { id: 5, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/active.png", fullImage: "/assets/active.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
+        { id: 6, name: "Dr. Vivek Sharma", subTitle: "Cardiologist", phone: "1234567890", experience: "8 years", email: "vivek@gmail.com", status: "pending", image: person4, fullImage: person4, speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
+        { id: 7, name: "Dr. Anjali Gupta", specialty: "PEDIATRICIAN", phone: "1234567890", experience: "4 years", email: "anjali@gmail.com", status: "pending", image: person4, fullImage: person4, speciality: "PEDIATRICIAN", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
+        { id: 8, name: "Dr. Rahul Singh", specialty: "ORTHOPEDIC", phone: "1234567890", experience: "10 years", email: "rahul@gmail.com", status: "pending", image: person4, fullImage: person4, speciality: "ORTHOPEDIC", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
+        { id: 9, name: "Dr. Sneha Paul", specialty: "ONCOLOGIST", phone: "1234567890", experience: "6 years", email: "sneha@gmail.com", status: "pending", image: person4, fullImage: person4, speciality: "ONCOLOGIST", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
     ]);
 
     // Logic to restore doctor status
     const handleRestoreDoctor = (doctorId) => {
-        setDoctors(prev => prev.map(doc => 
+        setDoctors(prev => prev.map(doc =>
             doc.id === doctorId ? { ...doc, status: "pending" } : doc
         ));
         setShowRejectedStatusModal(false);
         setSelectedDoctorForReject(null);
+        navigate('/reject_doctor');
     };
 
     // Logic to confirm rejection and update status
     const handleRejectSubmit = () => {
         if (selectedDoctorForReject) {
-            setDoctors(prev => prev.map(doc => 
+            setDoctors(prev => prev.map(doc =>
                 doc.id === selectedDoctorForReject.id ? { ...doc, status: "rejected" } : doc
             ));
         }
@@ -158,12 +109,14 @@ const Admin_dashboard1 = () => {
     };
 
     const upcomingDays = [
-        { name: "Wed", date: "2nd" },
-        { name: "Thu", date: "3rd" },
-        { name: "Friday", date: "August 4th 2023", isFull: true },
-        { name: "Sat", date: "5th" },
-        { name: "Sun", date: "6th" }
+        { name: "Wed", date: "2nd", fullDay: "Wednesday", fullDate: "August 2nd 2023" },
+        { name: "Thu", date: "3rd", fullDay: "Thursday", fullDate: "August 3rd 2023" },
+        { name: "Friday", date: "4th", fullDay: "Friday", fullDate: "August 4th 2023" },
+        { name: "Sat", date: "5th", fullDay: "Saturday", fullDate: "August 5th 2023" },
+        { name: "Sun", date: "6th", fullDay: "Sunday", fullDate: "August 6th 2023" }
     ];
+
+    // Adjusted initial index to match Friday (index 2)
 
     const handlePrevMonth = () => {
         if (month === 0) {
@@ -205,7 +158,7 @@ const Admin_dashboard1 = () => {
     const firstDay = new Date(year, month, 1).getDay();
 
     return (
-        <div className="flex h-screen bg-[#F7F9FB] overflow-hidden">
+        <div className="flex h-screen bg-white overflow-hidden">
 
             {/* ================= SIDEBAR ================= */}
             <AdminSidebar
@@ -326,7 +279,8 @@ const Admin_dashboard1 = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="bg-[#F5EFD6] shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[20px] p-3 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
+                                onClick={() => navigate('/Appointment2')}
+                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <div>
                                     <div className="flex items-center gap-2 mt-[-10px]">
@@ -352,7 +306,7 @@ const Admin_dashboard1 = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="bg-[#EFD4E6] shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[20px] p-3 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
+                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <div>
                                     <div className="flex items-center gap-2 mt-[-10px]">
@@ -378,7 +332,7 @@ const Admin_dashboard1 = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="bg-[#D6EEF2] shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[20px] p-3 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
+                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <div>
                                     <div className="flex items-center gap-2 mt-[-10px]">
@@ -404,13 +358,14 @@ const Admin_dashboard1 = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="bg-[#D6EEF2] shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[20px] p-3 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
+                                onClick={() => navigate('/admin-doctor')}
+                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Total Doctors</h3>
 
-                                <div className="flex items-center  flex-1 mt-1 px-0">
-                                    <img src="/assets/do.png" className="h-[150px] object-contain -mb-2.5 -ml-6" />
-                                    <h2 className="text-[48px] font-normal text-black leading-none mr-18">100</h2>
+                                <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
+                                    <img src={doImg} className="h-[150px] object-contain -ml-3 mb-[-13px]" />
+                                    <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">100</h2>
                                 </div>
                             </motion.div>
 
@@ -419,14 +374,15 @@ const Admin_dashboard1 = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[20px] p-3 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
+                                onClick={() => navigate('/admin-doctor?view=active')}
+                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
 
                                 <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Active Doctors</h3>
 
-                                <div className="flex items-center justify-between flex-1 mt-1 px-0">
-                                    <img src="/assets/active.png" className="h-[130px] object-contain -ml-4" />
-                                    <h2 className="text-[48px] font-normal text-black leading-none ">50</h2>
+                                <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
+                                    <img src={active1} className="h-[140px] object-contain -ml-3 mb-[-13px]" />
+                                    <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">50</h2>
                                 </div>
                             </motion.div>
 
@@ -435,12 +391,13 @@ const Admin_dashboard1 = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[20px] p-3 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:shadow-xl cursor-pointer"
+                                onClick={() => navigate('/Adddoctor')}
+                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Add Doctors</h3>
 
-                                <div className="flex justify-center items-center flex-1">
-                                    <img src="/assets/add.png" className="h-[130px] object-contain" />
+                                <div className="flex justify-center items-end flex-1">
+                                    <img src={add2} className="h-[140px] object-contain" />
                                 </div>
                             </motion.div>
 
@@ -448,7 +405,7 @@ const Admin_dashboard1 = () => {
                     </div>
 
                     {/* CALENDAR */}
-                    <div className="col-span-1 lg:col-span-4 bg-white border border-black rounded-[20px] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex flex-col min-h-[400px]">
+                    <div className="col-span-1 lg:col-span-4 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 flex flex-col min-h-[400px] overflow-hidden">
                         <div className="flex justify-between items-center mb-4 px-2">
                             <button onClick={handlePrevMonth} className="text-[#399CAA] hover:text-[#104e5f] transition-colors p-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-[18px] h-[18px]">
@@ -571,7 +528,7 @@ const Admin_dashboard1 = () => {
                         {/* BALANCE SECTION */}
                         <div className="w-full overflow-hidden">
                             <h3 className="text-[24px] font-bold text-gray-800 mb-2 px-1">Balance</h3>
-                            <div className="bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[4px] p-2 min-h-[200px] relative overflow-hidden">
+                            <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 min-h-[200px] relative overflow-hidden">
                                 <div className="flex justify-between items-start h-full">
 
                                     {/* Left Text */}
@@ -602,7 +559,7 @@ const Admin_dashboard1 = () => {
 
                     {/* RIGHT COLUMN: UPCOMING APPOINTMENT (35%) */}
                     <div className="col-span-12 lg:col-span-5">
-                        <div className="bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[18px] p-4 flex flex-col h-full min-h-[420px]">
+                        <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 flex flex-col h-full min-h-[420px] overflow-hidden">
 
                             {/* HEADER */}
                             <div className="flex justify-between items-center">
@@ -640,23 +597,27 @@ const Admin_dashboard1 = () => {
                                     </svg>
                                 </button>
 
-                                <div className="flex-1 flex justify-around items-center text-[14px]">
-                                    {upcomingDays.map((day, index) => (
-                                        <div
-                                            key={index}
-                                            onClick={() => setActiveDayIndex(index)}
-                                            className={`cursor-pointer transition-all duration-300 ${index === activeDayIndex
-                                                ? 'px-3 py-1.5 rounded-md bg-[#7DB1BC] shadow-sm'
-                                                : 'opacity-60 hover:opacity-100'}`}
-                                        >
-                                            <p className={`font-semibold ${index === activeDayIndex ? 'text-black text-[12px]' : ''}`}>
-                                                {day.name}
-                                            </p>
-                                            <p className={`${index === activeDayIndex ? 'text-[12px] text-black' : ''}`}>
-                                                {day.date}
-                                            </p>
-                                        </div>
-                                    ))}
+                                <div className="flex-1 flex justify-around items-center h-[60px]">
+                                    {upcomingDays.map((day, index) => {
+                                        const isActive = index === activeDayIndex;
+                                        return (
+                                            <div
+                                                key={index}
+                                                onClick={() => setActiveDayIndex(index)}
+                                                className={`cursor-pointer transition-all duration-300 flex flex-col items-center justify-center
+                                                    ${isActive
+                                                        ? 'px-4 py-2 rounded-lg bg-[#7DB1BC] shadow-md min-w-[150px]'
+                                                        : 'opacity-50 hover:opacity-100 px-2'}`}
+                                            >
+                                                <p className={`font-bold transition-all ${isActive ? 'text-black text-[15px]' : 'text-gray-500 text-[14px]'}`}>
+                                                    {isActive ? day.fullDay : day.name}
+                                                </p>
+                                                <p className={`transition-all ${isActive ? 'text-[12px] text-black font-semibold' : 'text-gray-400 text-[13px]'}`}>
+                                                    {isActive ? day.fullDate : day.date}
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
 
                                 <button
@@ -675,12 +636,8 @@ const Admin_dashboard1 = () => {
 
                                 {[1, 2, 3, 4].map(i => (
                                     <div key={i}
-                                        className="flex items-center justify-between 
-        px-3 py-2
-        rounded-[5px]
-        bordershadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/20 
-        relative overflow-hidden
-        h-[64px]">
+                                        className="flex items-center justify-between px-3 py-2 rounded-[12px] shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 relative overflow-hidden h-[64px]"
+                                    >
 
                                         {/* RIGHT DARK GRADIENT */}
                                         <div className="absolute inset-0 
@@ -740,7 +697,10 @@ const Admin_dashboard1 = () => {
 
                             {/* VIEW MORE */}
                             <div className="text-right mt-4">
-                                <button className="text-[14px] font-semibold text-[#19718A]">
+                                <button
+                                    onClick={() => navigate('/Appointment2')}
+                                    className="text-[14px] font-semibold text-[#19718A]"
+                                >
                                     View More
                                 </button>
                             </div>
@@ -754,7 +714,7 @@ const Admin_dashboard1 = () => {
                             Approval Section
                         </h3>
 
-                        <div className="bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-[20px] p-4 overflow-x-auto">
+                        <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 overflow-x-auto">
                             {!showFullApproval ? (
                                 <div className="min-w-[800px]">
                                     {/* HEADER */}
@@ -762,94 +722,94 @@ const Admin_dashboard1 = () => {
                                         <div>Doctor Name</div>
                                         <div>Phone Number</div>
                                         <div className="text-center">Experience</div>
-                                        <div className="text-center">Action</div>
                                         <div className="text-center">Status</div>
+                                        <div className="text-center">Action</div>
                                     </div>
 
                                     <div className="space-y-2">
-                                <div className="space-y-3">
-                                    <AnimatePresence>
-                                        {doctors.map((doctor) => (
-                                            <motion.div
-                                                key={doctor.id}
-                                                layout
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, scale: 0.95 }}
-                                                className="grid grid-cols-[2.2fr_1.3fr_1fr_1fr_0.9fr] items-center px-4 py-3 border border-gray-200 rounded-[14px] hover:bg-gray-50 transition-all"
-                                            >
-                                                {/* DOCTOR */}
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-11 h-11 rounded-full overflow-hidden border">
-                                                        <img
-                                                            src={doctor.image}
-                                                            className="w-full h-full object-cover"
-                                                            alt=""
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-bold text-[16px] text-gray-800 leading-tight">
-                                                            {doctor.name}
-                                                        </p>
-                                                        <p className="text-[12px] text-gray-500">
-                                                            {doctor.speciality}
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                        <div className="space-y-3">
+                                            <AnimatePresence>
+                                                {doctors.map((doctor) => (
+                                                    <motion.div
+                                                        key={doctor.id}
+                                                        layout
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, scale: 0.95 }}
+                                                        className="grid grid-cols-[2.2fr_1.3fr_1fr_1fr_0.9fr] items-center px-4 py-3 border-[1.2px] border-gray-300 rounded-[16px] hover:bg-gray-50 transition-all shadow-sm"
+                                                    >
+                                                        {/* DOCTOR */}
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-11 h-11 rounded-full overflow-hidden border">
+                                                                <img
+                                                                    src={doctor.image}
+                                                                    className="w-full h-full object-cover"
+                                                                    alt=""
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-bold text-[16px] text-gray-800 leading-tight">
+                                                                    {doctor.name}
+                                                                </p>
+                                                                <p className="text-[12px] text-gray-500">
+                                                                    {doctor.speciality}
+                                                                </p>
+                                                            </div>
+                                                        </div>
 
-                                                {/* PHONE */}
-                                                <div className="text-[14px] font-semibold text-gray-700">
-                                                    {doctor.phone}
-                                                </div>
+                                                        {/* PHONE */}
+                                                        <div className="text-[14px] font-semibold text-gray-700">
+                                                            {doctor.phone}
+                                                        </div>
 
-                                                {/* EXPERIENCE */}
-                                                <div className="text-[14px] font-semibold text-gray-700 text-center">
-                                                    {doctor.experience}
-                                                </div>
+                                                        {/* EXPERIENCE */}
+                                                        <div className="text-[14px] font-semibold text-gray-700 text-center">
+                                                            {doctor.experience}
+                                                        </div>
 
-                                                {/* ACTION */}
-                                                <div className="flex justify-center">
-                                                    {doctor.status === "active" ? (
-                                                        <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#22C55E] text-white">
-                                                            Active
-                                                        </span>
-                                                    ) : doctor.status === "rejected" ? (
-                                                        <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#EF4444] text-white">
-                                                            Rejected
-                                                        </span>
-                                                    ) : (
-                                                        <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#3B82F6] text-white">
-                                                            Pending
-                                                        </span>
-                                                    )}
-                                                </div>
+                                                        {/* STATUS */}
+                                                        <div className="flex justify-center">
+                                                            {doctor.status === "active" ? (
+                                                                <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#22C55E] text-white">
+                                                                    Active
+                                                                </span>
+                                                            ) : doctor.status === "rejected" ? (
+                                                                <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#EF4444] text-white">
+                                                                    Rejected
+                                                                </span>
+                                                            ) : (
+                                                                <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#3B82F6] text-white">
+                                                                    Pending
+                                                                </span>
+                                                            )}
+                                                        </div>
 
-                                                {/* STATUS */}
-                                                <div className="flex justify-center gap-2">
-                                                    <button className="w-[38px] h-[38px] bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
-                                                        <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                                                            <polyline points="20 6 9 17 4 12" />
-                                                        </svg>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedDoctorForReject(doctor);
-                                                            setShowRejectConfirm(true);
-                                                        }}
-                                                        className="w-[38px] h-[38px] bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
-                                                        <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                            <polyline points="3 6 5 6 21 6" />
-                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                                            <line x1="9" y1="11" x2="9" y2="17" />
-                                                            <line x1="12" y1="11" x2="12" y2="17" />
-                                                            <line x1="15" y1="11" x2="15" y2="17" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </motion.div>
-                                        ))}
-                                    </AnimatePresence>
-                                </div>
+                                                        {/* ACTION */}
+                                                        <div className="flex justify-center gap-2">
+                                                            <button className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                                <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+                                                                    <polyline points="20 6 9 17 4 12" />
+                                                                </svg>
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedDoctorForReject(doctor);
+                                                                    setShowRejectConfirm(true);
+                                                                }}
+                                                                className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                                <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <polyline points="3 6 5 6 21 6" />
+                                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                                    <line x1="9" y1="11" x2="9" y2="17" />
+                                                                    <line x1="12" y1="11" x2="12" y2="17" />
+                                                                    <line x1="15" y1="11" x2="15" y2="17" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </motion.div>
+                                                ))}
+                                            </AnimatePresence>
+                                        </div>
                                     </div>
                                     {/* VIEW MORE */}
                                     <div className="text-right mt-4">
@@ -872,8 +832,8 @@ const Admin_dashboard1 = () => {
 
                                     {/* LIST ITEMS */}
                                     <div className="space-y-4">
-                                        {doctors_list.map((doctor) => (
-                                            <div key={doctor.id} className={`bg-white rounded-lg border-[0.5px] border-[#A8BDC7] transition-all duration-300 ${expandedApprovalId === doctor.id ? 'shadow-md ring-1 ring-[#19718A]/10' : 'shadow-sm'}`}>
+                                        {doctors.map((doctor) => (
+                                            <div key={doctor.id} className={`bg-white rounded-[16px] border-[1.2px] border-gray-300 transition-all duration-300 ${expandedApprovalId === doctor.id ? 'shadow-md ring-1 ring-[#19718A]/10' : 'shadow-sm'}`}>
 
                                                 {/* MAIN ROW */}
                                                 <div className="grid grid-cols-[0.5fr_2.2fr_1.3fr_1.2fr_1.1fr_1fr] items-center px-4 py-3 cursor-pointer hover:bg-gray-50/30"
@@ -914,7 +874,7 @@ const Admin_dashboard1 = () => {
 
                                                     {/* Action */}
                                                     <div className="flex justify-center gap-3">
-                                                        <button className="w-[38px] h-[38px] bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                        <button className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
                                                             <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
                                                                 <polyline points="20 6 9 17 4 12" />
                                                             </svg>
@@ -925,7 +885,7 @@ const Admin_dashboard1 = () => {
                                                                 setSelectedDoctorForReject(doctor);
                                                                 setShowRejectConfirm(true);
                                                             }}
-                                                            className="w-[38px] h-[38px] bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                            className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
                                                             <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                                 <polyline points="3 6 5 6 21 6" />
                                                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -994,7 +954,7 @@ const Admin_dashboard1 = () => {
                                     {/* VIEW LESS */}
                                     <div className="text-right mt-4">
                                         <button onClick={() => setShowFullApproval(false)} className="text-[14px] font-bold text-gray-400 hover:text-[#19718A] transition-colors">
-                                            View Less
+                                            View More
                                         </button>
                                     </div>
                                 </div>
@@ -1012,7 +972,7 @@ const Admin_dashboard1 = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
 
                             {/* LEFT BIG GRAPH */}
-                            <div className="col-span-1 lg:col-span-7 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-xl p-4 md:p-6 shadow-sm">
+                            <div className="col-span-1 lg:col-span-7 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 md:p-6 overflow-hidden">
                                 <div className="flex justify-between items-center mb-6">
                                     <p className="text-[18px]  font-bold text-gray-700 tracking-tight">
                                         Patients by Gender
@@ -1022,7 +982,7 @@ const Admin_dashboard1 = () => {
                                             <div className="flex items-center gap-2"><span className="w-3.5 h-3.5 rounded-full bg-[#2A8496]"></span>Male</div>
                                             <div className="flex items-center gap-2"><span className="w-3.5 h-3.5 rounded-full bg-[#0B1A42]"></span>Female</div>
                                         </div>
-                                        <button className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5 text-[14px] text-gray-600 font-medium bg-[#F9FAFB] hover:bg-gray-100 shadow-sm">
+                                        <button className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-1.5 text-[14px] text-gray-600 font-medium bg-[#F9FAFB] hover:bg-gray-100 shadow-sm">
                                             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                             weekly
                                             <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -1081,7 +1041,7 @@ const Admin_dashboard1 = () => {
                             <div className="col-span-1 lg:col-span-3 flex flex-col gap-6">
 
                                 {/* MALE */}
-                                <div className="bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-xl pt-5 shadow-sm overflow-hidden flex flex-col h-[200px] relative">
+                                <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] pt-5 overflow-hidden flex flex-col h-[200px] relative">
                                     <div className="flex justify-between items-start px-5 pb-2">
                                         <div className="flex items-center gap-2">
                                             <span className="w-3.5 h-3.5 rounded-full bg-[#2A8496]"></span>
@@ -1112,7 +1072,7 @@ const Admin_dashboard1 = () => {
                                 </div>
 
                                 {/* FEMALE */}
-                                <div className="bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 rounded-xl pt-5 shadow-sm overflow-hidden flex flex-col h-[200px] relative">
+                                <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] pt-5 overflow-hidden flex flex-col h-[200px] relative">
                                     <div className="flex justify-between items-start px-5 pb-2">
                                         <div className="flex items-center gap-2">
                                             <span className="w-3.5 h-3.5 rounded-full bg-[#0B1A42]"></span>
@@ -1153,7 +1113,7 @@ const Admin_dashboard1 = () => {
                             Recent Activity
                         </h3>
 
-                        <div className="bg-white shadow-[0_2px_6px_rgba(0,0,0,0.12)] border-[0.3px] border-black/50 shadow-md rounded-[20px] p-4 overflow-x-auto">
+                        <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 overflow-x-auto">
                             <div className="min-w-[800px]">
                                 {/* HEADER */}
                                 <div className="grid grid-cols-[1.2fr_1.4fr_1.6fr_1fr_0.7fr] text-[14px] font-bold text-gray-500 px-4 py-2 mb-2">
@@ -1171,7 +1131,7 @@ const Admin_dashboard1 = () => {
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: i * 0.1 }}
-                                            className="grid grid-cols-[1.2fr_1.4fr_1.6fr_1fr_0.7fr] items-center px-4 py-3 border border-gray-200 rounded-[14px] hover:bg-gray-50 transition-all"
+                                            className="grid grid-cols-[1.2fr_1.4fr_1.6fr_1fr_0.7fr] items-center px-4 py-3 border-[1.2px] border-gray-300 rounded-[16px] hover:bg-gray-50 transition-all shadow-sm"
                                         >
                                             {/* DATE */}
                                             <div className="text-[15px] font-semibold text-gray-800">
@@ -1197,7 +1157,7 @@ const Admin_dashboard1 = () => {
 
                                             {/* ACTION */}
                                             <div className="flex justify-center">
-                                                <button className="w-9 h-9 bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:scale-105 transition">
+                                                <button className="w-9 h-9 bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:scale-105 transition">
                                                     <svg className="w-5 h-5 text-[#19718A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
@@ -1359,7 +1319,7 @@ const Admin_dashboard1 = () => {
                                         </div>
 
                                         {attachedFile && (
-                                            <div className="flex items-center justify-between bg-gray-100 rounded-lg px-4 py-2 w-fit gap-4 border border-gray-200 shadow-sm animate-in fade-in slide-in-from-top-1">
+                                            <div className="flex items-center justify-between bg-gray-100 rounded-lg px-4 py-2 w-fit gap-4 border border-gray-300 shadow-sm animate-in fade-in slide-in-from-top-1">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-8 rounded bg-white overflow-hidden shadow-sm border border-gray-100">
                                                         {attachedFile.url.startsWith('blob:') ? (
@@ -1452,8 +1412,8 @@ const Admin_dashboard1 = () => {
                                         <div className="space-y-3">
                                             <h3 className="text-[18px] font-bold text-gray-800">Reason for Rejection</h3>
 
-                                            <div className="bg-gray-100/80 rounded-[12px] overflow-hidden border border-gray-200">
-                                                <div className="px-6 py-3 border-b border-gray-200 text-[18px] font-bold text-gray-700">
+                                            <div className="bg-gray-100/80 rounded-[12px] overflow-hidden border border-gray-300">
+                                                <div className="px-6 py-3 border-b border-gray-300 text-[18px] font-bold text-gray-700">
                                                     {rejectionReason}
                                                 </div>
                                                 <div className="p-6 text-[16px] text-gray-600 font-medium leading-relaxed">
@@ -1462,9 +1422,9 @@ const Admin_dashboard1 = () => {
                                             </div>
 
                                             {attachedFile && (
-                                                <div className="flex items-center justify-between bg-gray-100 rounded-lg p-3 border border-gray-200">
+                                                <div className="flex items-center justify-between bg-gray-100 rounded-lg p-3 border border-gray-300">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-12 h-10 bg-white rounded border border-gray-200 overflow-hidden flex items-center justify-center">
+                                                        <div className="w-12 h-10 bg-white rounded border border-gray-300 overflow-hidden flex items-center justify-center">
                                                             {attachedFile.url.startsWith('blob:') ? (
                                                                 <img src={attachedFile.url} className="w-full h-full object-cover" alt="" />
                                                             ) : (
@@ -1513,7 +1473,7 @@ const Admin_dashboard1 = () => {
 
                                     {/* Right Sidebar - Doctor Card */}
                                     <div className="space-y-4">
-                                        <div className="bg-white border border-gray-200 rounded-[20px] overflow-hidden shadow-sm">
+                                        <div className="bg-white border border-gray-300 rounded-[20px] overflow-hidden shadow-sm">
                                             {/* Doctor Card Top */}
                                             <div className="relative p-5 bg-gray-50/50 flex flex-col items-center">
                                                 <div className="w-20 h-20 rounded-[16px] overflow-hidden shadow-md border-2 border-white">

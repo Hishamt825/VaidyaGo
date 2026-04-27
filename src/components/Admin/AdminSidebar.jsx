@@ -4,15 +4,15 @@ import activeImg from "../../assets/active.png";
 import pendingImg from "../../assets/pending.png";
 import rejectedImg from "../../assets/rejected.png";
 
-const AdminSidebar = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOpen }) => {
+const AdminSidebar = ({ active = "Dashboard", activeSub: activeSubProp = "Active Doctors", setActive, isMobileOpen, setIsMobileOpen, startSubmenuOpen }) => {
   const navigate = useNavigate();
-  const [activeSub, setActiveSub] = useState("Active Doctors");
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+  const [activeSub, setActiveSub] = useState(activeSubProp);
+  const [isSubmenuOpen, setIsSubmenuOpen] = useState(startSubmenuOpen !== undefined ? startSubmenuOpen : active === "Doctors");
 
   const menu = [
     { name: "Dashboard", icon: "/assets/a.png", path: "/Admin_dashboard1" },
     { name: "Doctors", icon: "/assets/doc.png", path: "/admin-doctor", hasSubmenu: true },
-    { name: "Appointments", icon: "/assets/app.png", path: "/App_Dashboard?adminMode=true" },
+    { name: "Appointments", icon: "/assets/app.png", path: "/Appointment2" },
   ];
   const logo = "/assets/name.png";
 
@@ -30,7 +30,7 @@ const AdminSidebar = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobi
 
       <div className={`
         fixed lg:static inset-y-0 left-0 z-[50]
-        w-[260px] h-screen bg-[#F7F9FB] font-sans flex flex-col
+        w-[260px] h-screen bg-white font-sans flex flex-col
         transition-transform duration-300 ease-in-out
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
@@ -89,7 +89,7 @@ const AdminSidebar = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobi
                   >
                     <span>{item.name}</span>
                     {item.hasSubmenu && isActive && (
-                      <div 
+                      <div
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsSubmenuOpen(!isSubmenuOpen);
@@ -106,9 +106,9 @@ const AdminSidebar = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobi
 
                 {/* Doctors Submenu dropdown */}
                 {isActive && item.hasSubmenu && isSubmenuOpen && (
-                  <div className="relative w-full bg-white border-[#166E83] flex flex-col pt-3 pb-4 h-[165px] z-0">
-                    {/* Master vertical line */}
-                    <div className="absolute left-[80px] top-0 bottom-0 w-[1.5px] bg-[#166E83]"></div>
+                  <div className="relative w-full bg-white border-[#166E83] flex flex-col pt-3 pb-4 z-0 h-[165px]">
+                    {/* Master vertical line that stops at the last item */}
+                    <div className="absolute left-[60px] top-[-15px] bottom-[30px] w-[1.5px] bg-[#166E83]"></div>
 
                     <div className="flex flex-col gap-[14px] w-full z-10 relative">
                       {[
@@ -118,9 +118,9 @@ const AdminSidebar = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobi
                       ].map((sub, i) => {
                         const isSubActive = activeSub === sub.name;
                         return (
-                          <div key={i} className="flex items-center relative pl-[80px] h-[30px]">
+                          <div key={i} className="flex items-center relative pl-[60px] h-[32px]">
                             {/* Horizontal branch line */}
-                            <div className="w-[16px] h-[1.5px] bg-[#166E83]"></div>
+                            <div className="w-[14px] h-[1.5px] bg-[#166E83] shrink-0"></div>
 
                             {/* The Pill */}
                             <div
@@ -131,19 +131,20 @@ const AdminSidebar = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobi
                                 } else if (sub.name === "Pending Doctors") {
                                   navigate("/admin-doctor?view=pending");
                                 } else if (sub.name === "Rejected Doctors") {
-                                  navigate("/reject_doctor");
+                                  navigate("/Reject");
                                 }
                               }}
-                              className={`border-[1.5px] border-[#166E83] rounded-full pl-[3px] pr-[16px] py-[3px] flex items-center gap-[8px] bg-white cursor-pointer hover:bg-teal-50 ml-0 transition-all duration-300 ${isSubActive ? "shadow-[0_4px_12px_rgba(22,110,131,0.35)]" : "shadow-none"}`}
+                              className={`border-[1.8px] border-[#166E83] rounded-full pl-[4px] pr-[16px] py-[3.5px] flex items-center gap-[10px] bg-white cursor-pointer hover:bg-teal-50 ml-0 transition-all duration-300 w-[185px] ${isSubActive ? "shadow-[0_4px_12px_rgba(22,110,131,0.35)]" : "shadow-none"}`}
                             >
-                              <div className={`w-[24px] h-[24px] rounded-full flex items-center justify-center transition-all duration-300 ${isSubActive ? "bg-[#166E83]" : "bg-transparent border-[1.5px] border-[#166E83]"}`}>
+                              <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center transition-all duration-300 shrink-0 ${isSubActive ? "bg-[#166E83]" : "bg-transparent border-[1.5px] border-[#166E83]"}`}>
                                 <img
                                   src={sub.icon}
                                   alt={sub.name}
-                                  className={`w-[14px] h-[14px] object-contain transition-all duration-300 ${isSubActive ? "invert brightness-0 saturate-200" : ""}`}
+                                  className={`w-[14px] h-[14px] object-contain transition-all duration-300 ${isSubActive ? "invert brightness-0 saturate-200" : "brightness-0 opacity-80"}`}
+                                  style={!isSubActive ? { filter: 'invert(32%) sepia(87%) saturate(464%) hue-rotate(145deg) brightness(91%) contrast(92%)' } : {}}
                                 />
                               </div>
-                              <span className="font-medium text-[#166E83] text-[14px] whitespace-nowrap leading-none mt-[1px]">{sub.name}</span>
+                              <span className="font-bold text-[#166E83] text-[14px] whitespace-nowrap leading-none mt-[1px]">{sub.name}</span>
                             </div>
                           </div>
                         )
