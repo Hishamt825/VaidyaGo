@@ -17,7 +17,7 @@ const DeviceTile = ({ name, subtitle, icon, isConnected }) => (
     </div>
 );
 
-const Adddevice = ({ isOpen, onClose }) => {
+const Adddevice = ({ isOpen, onClose, onSearch }) => {
     if (!isOpen) return null;
 
     return (
@@ -98,7 +98,10 @@ const Adddevice = ({ isOpen, onClose }) => {
                         >
                             Cancel
                         </button>
-                        <button className="flex-1 md:flex-none bg-gradient-to-r from-[#0B1F4D] to-[#1A7785] text-white px-7 py-2.5 rounded-full font-bold text-[13px] shadow-lg hover:shadow-cyan-500/20 transition-all">
+                        <button 
+                            onClick={onSearch}
+                            className="flex-1 md:flex-none bg-gradient-to-r from-[#0B1F4D] to-[#1A7785] text-white px-7 py-2.5 rounded-full font-bold text-[13px] shadow-lg hover:shadow-cyan-500/20 transition-all"
+                        >
                             Search Devices
                         </button>
                     </div>

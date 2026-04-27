@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../../assets/logo_1.svg';
 import img1 from '../../../assets/Ellipse_139.svg';
+import AdminSidebar from '../../../components/Admin/AdminSidebar';
+import DasyWilliam from '../../../components/Admin/DasyWilliam';
+import { AnimatePresence } from 'framer-motion';
 
 
 const navItems = [
@@ -45,6 +48,11 @@ const Appointment2 = () => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('appointment');
   const activeIndex = navItems.findIndex(item => item.id === activeNav);
+  const [active, setActive] = useState("Appointments");
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
+  const menuRef = useRef(null);
 
   const [selectAll, setSelectAll] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -90,16 +98,29 @@ const Appointment2 = () => {
   }, [activeTab]);
 
   // Mock data arrays matching the screenshot
-  const appointments = Array.from({ length: 15 }).map((_, index) => ({
-    id: index,
-    name: 'Saumya tiwari',
-    gender: 'Female',
-    age: 21,
-    date: '14 feb 26',
-    time: '2:00-3:30 am',
-    status: 'Confirmed',
-    img: img1,
-  }));
+  // Mock data arrays matching the screenshot
+  const appointments = [
+    { id: 0, name: 'Saumya tiwari', gender: 'Female', age: 21, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
+    { id: 1, name: 'Anjali Sharma', gender: 'Female', age: 24, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1 },
+    { id: 2, name: 'Vivek Kumar', gender: 'Male', age: 29, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1 },
+    { id: 3, name: 'Sneha Paul', gender: 'Female', age: 22, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
+    { id: 4, name: 'Rahul Singh', gender: 'Male', age: 31, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1 },
+    { id: 5, name: 'Priya Mehra', gender: 'Female', age: 26, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
+    { id: 6, name: 'Rajesh Khanna', gender: 'Male', age: 45, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1 },
+    { id: 7, name: 'Karan Johar', gender: 'Male', age: 38, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
+    { id: 8, name: 'Zoya Akhtar', gender: 'Female', age: 35, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1 },
+    { id: 9, name: 'Amitabh B.', gender: 'Male', age: 70, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
+    { id: 10, name: 'Deepika P.', gender: 'Female', age: 32, date: '15 feb 26', time: '10:00-11:00 am', status: 'Confirmed', img: img1 },
+    { id: 11, name: 'Ranveer S.', gender: 'Male', age: 34, date: '15 feb 26', time: '11:30-12:30 pm', status: 'Pending', img: img1 },
+    { id: 12, name: 'Alia Bhatt', gender: 'Female', age: 28, date: '15 feb 26', time: '1:00-2:00 pm', status: 'Cancelled', img: img1 },
+    { id: 13, name: 'Shah Rukh', gender: 'Male', age: 55, date: '16 feb 26', time: '9:00-10:00 am', status: 'Confirmed', img: img1 },
+    { id: 14, name: 'Salman Khan', gender: 'Male', age: 54, date: '16 feb 26', time: '4:00-5:00 pm', status: 'Pending', img: img1 },
+  ];
+
+  const filteredAppointments = appointments.filter(appt => {
+    if (activeTab === 'ALL') return true;
+    return appt.status.toUpperCase() === activeTab;
+  });
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
@@ -176,164 +197,104 @@ const Appointment2 = () => {
   }, [isDragging]);
 
   return (
-    <div className="flex h-screen w-full bg-white font-sans text-sm overflow-hidden text-gray-700">
+    <div className="flex h-screen w-full bg-white font-sans text-[15px] overflow-hidden text-gray-700">
 
       {/* Sidebar */}
-      <aside className="w-[200px] flex-shrink-0 flex flex-col bg-[#f4f7fa] shadow-[2px_0_5px_rgba(0,0,0,0.02)] z-10">
-        {/* Logo Area (Top Section of the Right Line) */}
-        <div className="h-[74px] flex items-center mt-2 relative z-20 w-full pl-[24px]">
-          <div className="w-[152px] h-full flex items-center justify-center border-r-[1.5px] border-[#398499] border-t-[1.5px] bg-white rounded-tr-[18px] relative">
-            <img src={logoUrl} alt="VADYAGO Logo" className="h-[36px] w-auto object-contain mr-[6px] mt-[4px]" />
-          </div>
-        </div>
-
-        {/* Navigation Wrapper with Animated Highlight */}
-        <div className="relative w-full shrink-0">
-          
-          {/* Main Left Pill Outline */}
-          <div className="absolute left-[24px] top-[10px] h-[200px] w-[42px] border-[1.5px] border-[#398499] rounded-full pointer-events-none z-0"></div>
-
-          {/* Animated Active Background String */}
-          <div 
-            className="absolute left-[22px] right-[14px] h-[50px] bg-[#147b93] rounded-l-full rounded-r-[16px] shadow-[0_2px_8px_rgba(20,123,147,0.4)] z-10 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-            style={{ transform: `translateY(${activeIndex * 50 + 10}px)` }} // 10px top padding
-          >
-            {/* Darker Circle inside active bg */}
-            <div className="absolute left-[2px] top-[2px] w-[46px] h-[46px] bg-[#0c596d] rounded-full shadow-[inset_1px_2px_4px_rgba(0,0,0,0.2)]"></div>
-            {/* White Arrow on the right */}
-            <div className="absolute right-[12px] top-1/2 -translate-y-1/2 text-white">
-              <svg className="w-[18px] h-[18px] opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Nav Items Mapping */}
-          <nav className="flex flex-col relative z-20 w-full pl-[24px] pr-[24px] py-[10px]">
-            {navItems.map((item, idx) => {
-              const isActive = activeNav === item.id;
-              const isImmediatelyAbove = idx === activeIndex - 1;
-              const isImmediatelyBelow = idx === activeIndex + 1;
-
-              return (
-                <button 
-                  key={item.id} 
-                  onClick={() => setActiveNav(item.id)}
-                  className="flex items-center h-[50px] w-full group focus:outline-none focus:ring-0 bg-transparent"
-                >
-                  {/* Icon Area - transparent overlaying the animated circle */}
-                  <div className={`w-[42px] h-[42px] flex items-center justify-center shrink-0 transition-colors duration-200 relative z-20 ${isActive ? 'text-white' : 'text-[#398499]'}`}>
-                     {item.icon}
-                  </div>
-                  
-                  {/* Subtraction and Lines Geometry Container */}
-                  <div 
-                    className={`flex-1 h-full flex items-center pl-[12px] transition-all duration-300 relative z-20
-                      ${!isActive ? 'bg-white border-r-[1.5px] border-[#398499]' : ''}
-                      ${isImmediatelyAbove ? 'border-b-[1.5px] rounded-br-[18px]' : ''}
-                      ${isImmediatelyBelow ? 'border-t-[1.5px] rounded-tr-[18px]' : ''}
-                    `}
-                  >
-                     <span className={`text-[13.5px] font-semibold tracking-wide transition-colors duration-200 relative z-20 ${isActive ? 'text-white' : 'text-[#398499]'}`}>
-                       {item.label}
-                     </span>
-                  </div>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Bottom Filler to extend the side length forever */}
-        <div className="flex-1 w-full pl-[24px] relative z-20">
-           <div className="w-[152px] h-full bg-white border-r-[1.5px] border-[#398499]"></div>
-        </div>
-      </aside>
+      <AdminSidebar 
+        active={active} 
+        setActive={setActive} 
+        isMobileOpen={isMobileSidebarOpen} 
+        setIsMobileOpen={setIsMobileSidebarOpen} 
+      />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col bg-white overflow-hidden">
 
         {/* Top Header */}
-        <header className="h-[74px] flex flex-row items-center justify-between px-8 shrink-0 bg-white">
-          
-          <div className="flex items-center flex-1 max-w-[700px] gap-[12px]">
-            {/* Hamburger */}
-            <button className="w-[38px] h-[38px] border-[1.5px] border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col items-start justify-center pl-[9px] gap-[3px] bg-white hover:bg-gray-50 transition-colors shrink-0">
-              <span className="w-[17px] h-[2px] bg-[#4880b9] rounded-full"></span>
-              <span className="w-[13px] h-[2px] bg-[#89b3d0] rounded-full"></span>
-              <span className="w-[17px] h-[2px] bg-[#4880b9] rounded-full"></span>
-              <span className="w-[13px] h-[2px] bg-[#89b3d0] rounded-full"></span>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-8 pt-6 mb-6 gap-4">
+          <div className="flex items-center gap-4 w-full md:max-w-[700px]">
+
+            {/* HAMBURGER MENU (Visible only on mobile) */}
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-lg bg-white border border-gray-100 shadow-sm"
+            >
+              <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
 
-            {/* Search Bar */}
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-[16px] flex items-center pointer-events-none">
-                <svg className="w-[16px] h-[16px] text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-              </div>
-              <input 
-                type="text" 
-                placeholder="Search" 
-                className="w-full pl-[40px] pr-4 py-[9px] bg-white border border-gray-600 rounded-full text-[13.5px] text-gray-700 outline-none focus:border-[#468e9f]"
+            <div className="relative w-16 h-12 rounded-xl bg-white border border-gray-400 shadow-[0_8px_30px_rgba(0,0,0,0.08)] overflow-hidden flex items-center justify-center">
+              <img src="/assets/m.png" className="w-10 relative z-10" />
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/60 via-transparent to-white/40 pointer-events-none z-20"></div>
+              <div className="absolute inset-0 rounded-xl border border-white/40 pointer-events-none z-20"></div>
+            </div>
+
+            <div className="flex items-center w-full bg-white border-[0.3px] border-black/50 rounded-full px-4 md:px-10 py-2 md:py-3 shadow-[0_2px_6px_rgba(0,0,0,0.12)]">
+              <img src="/assets/sea.png" className="w-5 h-5 md:w-6 md:h-6 mr-2 opacity-70" />
+              <input
+                type="text"
+                placeholder="Search"
+                className="w-full bg-transparent outline-none text-[16px] text-black placeholder-black opacity-80"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-[10px]">
-            {/* Settings Icon */}
-            <button 
-              onClick={() => navigate('/Dsetting')}
-              className="w-[38px] h-[38px] bg-white border border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-center justify-center text-black hover:bg-gray-50 transition-colors"
-            >
-               <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-               </svg>
-            </button>
-
-            {/* Notification Icon */}
-            <button className="relative w-[38px] h-[38px] bg-white border border-gray-600 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-center justify-center text-[#112330] hover:bg-gray-50 transition-colors">
-              <svg className="w-[19px] h-[19px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <div className="absolute top-[4px] right-[5px] bg-[#6c2da8] text-white text-[9px] font-bold w-[14px] h-[14px] flex items-center justify-center rounded-full border-none shadow-sm leading-none">
-                1
+          <div className="flex items-center justify-between w-full md:w-auto gap-4">
+            <div className="flex items-center gap-3">
+              <img src="/assets/sett.png" className="w-18 h-14 opacity-80" />
+              <div className="w-14 h-10 bg-white border-black/50 rounded-md shadow-[0_10px_20px_rgba(10,0,0,0.2)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition">
+                <img src="/assets/im.png" className="w-10 h-8 opacity-80" />
               </div>
-            </button>
 
-            {/* Make Appointment Button */}
-            <button className="bg-[#94b8c0] hover:bg-[#85abb2] text-[#1c3947] font-semibold text-[13.5px] py-0 h-[38px] px-[12px] rounded-[6px] flex items-center gap-[6px] transition-colors shadow-sm ml-1">
-              <div className="w-[18px] h-[18px] bg-white rounded-full flex items-center justify-center shrink-0">
-                 <svg className="w-[12px] h-[12px] text-[#94b8c0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m-8-8h16" />
-                 </svg>
+              {/* Make Appointment Button */}
+              <button className="bg-[#94b8c0] hover:bg-[#85abb2] text-[#1c3947] font-semibold text-[13.5px] py-0 h-[44px] px-[16px] rounded-xl flex items-center gap-[8px] transition-colors shadow-sm ml-2">
+                <div className="w-[22px] h-[22px] bg-white rounded-full flex items-center justify-center shrink-0">
+                  <svg className="w-[14px] h-[14px] text-[#94b8c0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M12 4v16m-8-8h16" />
+                  </svg>
+                </div>
+                <span className="whitespace-nowrap">Make Appointment</span>
+              </button>
+            </div>
+
+            <div className="relative" ref={menuRef}>
+              <div
+                onClick={() => setOpen(!open)}
+                className="flex items-center gap-4 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1 cursor-pointer hover:bg-gray-50 transition-all"
+              >
+                <span className="text-[18px] font-semibold text-gray-700">Dasy William</span>
+                <img src="/assets/ph.png" className="w-11 h-11 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.12)] object-cover" />
               </div>
-              Make Appointment
-            </button>
+              <AnimatePresence>
+                {open && !openProfile && (
+                  <DasyWilliam setOpenProfile={setOpenProfile} />
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </header>
+        </div>
 
         {/* Toolbar (Date & View tabs) */}
         <div className="px-8 py-3 shrink-0 w-full flex flex-col mt-2">
           
             {/* Top Date Nav */}
             <div className="flex items-center gap-[10px] mb-5 pl-1">
-               <button onClick={handlePrevDay} className="w-[28px] h-[28px] rounded-full bg-[#e2e8f0] flex items-center justify-center text-gray-500 hover:bg-gray-300 transition-colors">
-                 <svg className="w-4 h-4 ml-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
+               <button onClick={handlePrevDay} className="w-[32px] h-[32px] rounded-full bg-[#e2e8f0] flex items-center justify-center text-gray-500 hover:bg-gray-300 transition-colors">
+                 <svg className="w-5 h-5 ml-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
                </button>
-               <span className="font-[600] text-[15px] text-[#555] tracking-wide relative top-[1px] min-w-[95px] text-center">{formattedDate}</span>
-               <button onClick={handleNextDay} className="w-[28px] h-[28px] rounded-full bg-[#e2e8f0] flex items-center justify-center text-gray-500 hover:bg-gray-300 transition-colors">
-                 <svg className="w-4 h-4 mr-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
+               <span className="font-bold text-[18px] text-[#333] tracking-tight relative top-[1px] min-w-[130px] text-center">{formattedDate}</span>
+               <button onClick={handleNextDay} className="w-[32px] h-[32px] rounded-full bg-[#e2e8f0] flex items-center justify-center text-gray-500 hover:bg-gray-300 transition-colors">
+                 <svg className="w-5 h-5 mr-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/></svg>
                </button>
             </div>
 
             {/* Tabs Row */}
-            <div className="bg-white border border-gray-600 rounded-full h-[46px] flex items-center px-[5px] justify-between shadow-[0_2px_10px_rgba(0,0,0,0.03)] w-full">
+            <div className="bg-white border border-gray-600 rounded-full h-[52px] flex items-center px-[5px] justify-between shadow-[0_2px_10px_rgba(0,0,0,0.03)] w-full">
                <div className="relative flex items-center h-full gap-[24px] px-[8px]">
                   {/* Animated Background */}
                   <div 
-                    className="absolute h-[34px] bg-[#339eb3] rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0"
+                    className="absolute h-[40px] bg-[#339eb3] rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0"
                     style={{ left: tabStyle.left, width: tabStyle.width }}
                   ></div>
                   
@@ -344,7 +305,7 @@ const Appointment2 = () => {
                         key={tab}
                         ref={el => tabsRef.current[idx] = el}
                         onClick={() => setActiveTab(tab)}
-                        className={`relative z-10 font-[600] text-[13px] px-[20px] py-[6px] tracking-wider transition-colors uppercase whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-600 hover:text-gray-800'}`}
+                        className={`relative z-10 font-bold text-[15px] px-[24px] py-[8px] tracking-wide transition-colors uppercase whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-600 hover:text-gray-800'}`}
                       >
                          {tab}
                       </button>
@@ -354,7 +315,7 @@ const Appointment2 = () => {
                <div className="flex items-center gap-[16px] pr-[16px]">
                   {/* Grid Icon (Inactive) */}
                   <button className="text-gray-500 hover:text-gray-700 transition-colors">
-                     <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                     <svg className="w-[24px] h-[24px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2.5" />
                         <line x1="3" y1="9" x2="21" y2="9" />
                         <line x1="3" y1="15" x2="21" y2="15" />
@@ -363,7 +324,7 @@ const Appointment2 = () => {
                   </button>
                   {/* List Icon (Active, Teal) */}
                   <button className="text-[#1a899f] transition-colors">
-                     <svg className="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                     <svg className="w-[24px] h-[24px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2.5" />
                         <line x1="3" y1="9" x2="21" y2="9" />
                         <line x1="3" y1="15" x2="21" y2="15" />
@@ -381,10 +342,10 @@ const Appointment2 = () => {
           <div className="w-full border border-gray-600 rounded-[10px] overflow-hidden flex flex-col pt-1">
 
             {/* Table Header */}
-            <div className="grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-4 py-3 border-b border-gray-600 text-[9px] font-extrabold text-black tracking-wide uppercase">
+            <div className="grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-4 py-4 border-b border-gray-600 text-[15px] font-bold text-black tracking-wide uppercase">
               <div className="w-4" /> {/* Checkbox placeholder space */}
-              <div>Patient Name</div>
-              <div>Gender</div>
+              <div className="text-left">Patient Name</div>
+              <div className="text-center">Gender</div>
               <div className="text-center">Age</div>
               <div className="text-center">Date</div>
               <div className="text-center">Time</div>
@@ -394,35 +355,39 @@ const Appointment2 = () => {
 
             {/* Table Body */}
             <div className="flex flex-col p-2 gap-[3px] bg-white">
-              {appointments.map((appt, idx) => {
+              {filteredAppointments.map((appt, idx) => {
                 const isSelected = selectedRows.includes(appt.id);
                 // First row looks like it is selected with black box, others are white boxes
-                const isFirstRow = idx === 0 && selectedRows.length === 0; // mimic initial screenshot look if nothing touched
+                const isFirstRow = idx === 0 && selectedRows.length === 0 && activeTab === 'ALL'; // mimic initial screenshot look if nothing touched
                 const checkActive = isSelected || isFirstRow;
 
                 return (
-                  <div key={idx} className={`grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-2 py-[7px] min-h-[46px] text-[11px] font-semibold text-gray-800 rounded shadow-sm border border-transparent hover:border-[#bae6fd] bg-[#f2f8f9]`}>
+                  <div key={idx} className={`grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-2 py-[10px] min-h-[52px] text-[15px] font-semibold text-gray-800 rounded shadow-sm border border-transparent hover:border-[#bae6fd] bg-[#f2f8f9]`}>
 
                     {/* Checkbox */}
                     <div className="flex items-center justify-center pl-1">
                       <button
                         onClick={() => handleSelectRow(appt.id)}
-                        className={`w-3.5 h-3.5 rounded-[2px] border ${checkActive ? 'bg-black border-black text-white' : 'bg-white border-gray-600'} flex items-center justify-center focus:outline-none`}
+                        className={`w-4 h-4 rounded-[2px] border ${checkActive ? 'bg-black border-black text-white' : 'bg-white border-gray-600'} flex items-center justify-center focus:outline-none`}
                       >
                         {(checkActive) && (
-                          <svg className="w-[9px] h-[9px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" /></svg>
+                          <svg className="w-[10px] h-[10px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" /></svg>
                         )}
                       </button>
                     </div>
 
                     {/* Content */}
                     <div>{appt.name}</div>
-                    <div>{appt.gender}</div>
+                    <div className="text-center">{appt.gender}</div>
                     <div className="text-center">{appt.age}</div>
                     <div className="text-center">{appt.date}</div>
                     <div className="text-center">{appt.time}</div>
 
-                    <div className="text-center font-bold text-[#16a34a]">
+                    <div className={`text-center font-bold ${
+                      appt.status === 'Confirmed' ? 'text-[#16a34a]' : 
+                      appt.status === 'Pending' ? 'text-orange-500' : 
+                      'text-red-500'
+                    }`}>
                       {appt.status}
                     </div>
 

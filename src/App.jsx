@@ -69,6 +69,12 @@ import Lisinopril from './components/Patient/Medication/Lisinopril';
 import Metformin_detail from './components/Patient/Medication/Metformin_detail';
 import Atorvastatin from './components/Patient/Medication/Atorvastatin';
 import Amoxicillin from './components/Patient/Medication/Amoxicillin';
+import Appointment2 from './component/Day1/Doctor/Appointment2';
+import Dsetting from './component/Day1/Doctor/Dsetting';
+import Dslot from './component/Day1/Doctor/Dslot';
+import Editprofile from './component/Day1/Doctor/Editprofile';
+import Appointmentb from './component/Day1/Doctor/Appointmentb';
+import Reject from './components/Admin/Reject';
 
 
 
@@ -141,6 +147,13 @@ const App = () => {
       <Route path="/Metformin" element={<Metformin_detail />} />
       <Route path="/Atorvastatin" element={<Atorvastatin />} />
       <Route path="/Amoxicillin" element={<Amoxicillin />} />
+
+      <Route path="/Appointment2" element={<Appointment2 />} />
+      <Route path="/Dsetting" element={<Dsetting />} />
+      <Route path="/Dslot" element={<Dslot />} />
+      <Route path="/Editprofile" element={<Editprofile />} />
+      <Route path="/Appointmentb" element={<Appointmentb />} />
+      <Route path="/Reject" element={<Reject />} />
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 

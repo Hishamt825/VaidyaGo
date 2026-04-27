@@ -86,6 +86,15 @@ const Patient_dashboard1 = () => {
                     {/* Header Row */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between w-full gap-[16px]">
                         <div>
+                            <button 
+                                onClick={() => navigate('/Patient_dashboard')}
+                                className="flex items-center gap-2 text-[#6ED4D4] hover:text-white transition-colors text-[13px] font-bold uppercase tracking-widest mb-3 group"
+                            >
+                                <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                                </svg>
+                                Back to Dashboard
+                            </button>
                             <p className="text-[16px] font-medium text-white/70 tracking-[0.1em] uppercase mb-[6px]">Welcome back, Julian</p>
                             <h1 className="text-[24px] md:text-[30px] font-semibold text-white leading-tight tracking-[-0.01em]">Health Dashboard</h1>
                         </div>
@@ -230,7 +239,10 @@ const Patient_dashboard1 = () => {
                             {/* Quick Actions (2x2 Grid) */}
                             <div className="grid grid-cols-2 gap-[16px]">
                                 {/* 1 */}
-                                <div className="bg-white rounded-[24px] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-3 transition-transform hover:-translate-y-1 cursor-pointer min-h-[140px]">
+                                <div 
+                                    onClick={() => navigate('/Symptom')}
+                                    className="bg-white rounded-[24px] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-3 transition-transform hover:-translate-y-1 cursor-pointer min-h-[140px]"
+                                >
                                     <div className="w-[52px] h-[52px] rounded-full bg-[#E5F5F8] flex items-center justify-center text-[#18758C] shadow-inner border border-[#d6eff2]">
                                         <svg className="w-[24px] h-[24px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
@@ -248,7 +260,10 @@ const Patient_dashboard1 = () => {
                                     <h3 className="text-[16px] font-medium text-[#0D1C2E] text-center tracking-widest uppercase leading-tight">Book<br/>Doctor</h3>
                                 </div>
                                 {/* 3 */}
-                                <div className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px]">
+                                <div 
+                                    onClick={() => navigate('/Record')}
+                                    className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px]"
+                                >
                                     <div className="w-[64px] h-[64px] rounded-full bg-[#E5F8ED] flex items-center justify-center text-[#1F8D58] shadow-inner border border-[#d3f4e2]">
                                         <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -257,7 +272,10 @@ const Patient_dashboard1 = () => {
                                     <h3 className="text-[16px] font-medium text-[#0D1C2E] text-center tracking-widest uppercase leading-tight">Upload<br/>RX</h3>
                                 </div>
                                 {/* 4 */}
-                                <div className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px]">
+                                <div 
+                                    onClick={() => navigate('/Record')}
+                                    className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px]"
+                                >
                                     <div className="w-[64px] h-[64px] rounded-full bg-[#FFF0E5] flex items-center justify-center text-[#CC691F] shadow-inner border border-[#ffe0cc]">
                                         <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />

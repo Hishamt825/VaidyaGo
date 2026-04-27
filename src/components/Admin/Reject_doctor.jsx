@@ -153,13 +153,15 @@ const Reject_doctor = () => {
     }
 
     return (
-        <div className="flex h-screen bg-[#E5E5E5] overflow-hidden">
+        <div className="flex h-screen bg-white overflow-hidden">
             {/* ================= SIDEBAR ================= */}
             <AdminSidebar
                 active={active}
+                activeSub="Rejected Doctors"
                 setActive={setActive}
                 isMobileOpen={isMobileSidebarOpen}
                 setIsMobileOpen={setIsMobileSidebarOpen}
+                startSubmenuOpen={false}
             />
 
             {/* ================= MAIN CONTENT ================= */}
