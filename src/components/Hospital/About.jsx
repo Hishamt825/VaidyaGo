@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import Finallogin from "../Login-hospital/Finallogin";
+import Signup1 from "../Signup-hospital/Signup1";
+import Forget from "../Login-hospital/Forget";
+import { ArrowRight, Activity } from "lucide-react";
 
 const Hero1 = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showForgetModal, setShowForgetModal] = useState(false);
   return (
     <div className="font-sans text-gray-800 overflow-x-hidden w-full">
 
@@ -20,17 +27,14 @@ const Hero1 = () => {
 
         {/* ---------------- NAVBAR ---------------- */}
         <section className="relative overflow-hidden ">
-          {/* Background Image */}
-
-
           {/* Navbar */}
-          <header className="relative flex items-center justify-between px-4 lg:px-8 py-1 bg-[#19718A] border-b border-white/30">
+          <header className="relative flex items-center justify-between px-8 py-2.5 bg-[#19718A] border-b border-white/30">
 
             {/* Empty Left Space (Balance Maintain Karne Ke Liye) */}
-            <div className="hidden lg:block w-[280px]"></div>
+            <div className="w-[280px]"></div>
 
             {/* CENTER NAVIGATION */}
-            <nav className="absolute left-[500px] text-[18px] -translate-x-1/2 hidden lg:flex items-center gap-[130px]">
+            <nav className="absolute left-[420px] xl:left-[460px] text-[18px] -translate-x-1/2 hidden lg:flex items-center gap-10 xl:gap-[60px]">
               {["Home", "About", "Our Service", "Doctor", "FAQ"].map((item) => (
                 <button
                   key={item}
@@ -47,9 +51,9 @@ const Hero1 = () => {
             </nav>
 
             {/* RIGHT SECTION (Icons + Contact) */}
-            <div className="flex items-center gap-4 lg:gap-8 justify-end w-full lg:w-auto">
+            <div className="flex items-center justify-end w-full lg:w-auto lg:mr-8 xl:mr-16">
 
-              <div className="hidden lg:flex items-center gap-8">
+              <div className="hidden lg:flex items-center gap-4 xl:gap-6">
                 <div className="w-px h-6 bg-white/40"></div>
 
                 <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
@@ -64,60 +68,92 @@ const Hero1 = () => {
 
                 <button
                   onClick={() => navigate("/ContactUs")}
-                  className="border-[1.2px] border-white text-white px-7 py-1.5 rounded-full font-bold transform transition-all duration-300 hover:scale-105 active:scale-95"
+                  className="border-[1.2px] border-white text-white px-5 py-1.5 rounded-full font-bold text-sm transform transition-all duration-300 hover:scale-105 active:scale-95"
                 >
                   Contact Us
                 </button>
+
+                {/* Authentication Buttons */}
+                <div className="flex items-center text-white/90 text-[14px] font-medium ml-6 xl:ml-10 bg-[#0C6173]/60 px-5 py-1.5 rounded-full border border-white/20 shadow-inner">
+                  <button
+                    onClick={() => setShowLoginModal(true)}
+                    className="hover:text-white hover:scale-105 transition-all duration-300"
+                  >
+                    Log in
+                  </button>
+                  <div className="w-[1.5px] h-3.5 bg-white/40 mx-4"></div>
+                  <button
+                    onClick={() => setShowSignupModal(true)}
+                    className="hover:text-white hover:scale-105 transition-all duration-300"
+                  >
+                    Sign up
+                  </button>
+                </div>
               </div>
 
               {/* Hamburger for mobile */}
-              <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-1.5 text-white hover:bg-white/10 rounded-md border border-white/30 transition-colors z-50 relative"
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="lg:hidden p-1.5 ml-1 text-white hover:bg-white/10 rounded-md border border-white/30 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {isMobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 6h18M3 18h18" />
-                  )}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M3 6h18M3 18h18" />
                 </svg>
               </button>
-
             </div>
 
           </header>
 
-          {/* MOBILE MENU DROPDOWN */}
+          {/* MOBILE MENU SIDEBAR (OVERLAP) */}
+          {/* Backdrop */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden w-full bg-[#19718A] flex flex-col items-center py-6 space-y-4 border-t border-white/20">
-              <button onClick={() => { navigate("/MainPage"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">Home</button>
-              <button onClick={() => { navigate("/About"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">About</button>
-              <button onClick={() => { navigate("/Service"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">Our Service</button>
-              <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">Doctor</button>
-              <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-[16px]">FAQ</button>
-              
-              <div className="flex gap-6 mt-2 pt-2 border-t border-white/10 w-1/2 justify-center">
-                <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
-                  <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
-                </button>
-                <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
-                  <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
-                </button>
-              </div>
-              
-              <button 
-                onClick={() => { navigate("/ContactUs"); setIsMobileMenuOpen(false); }} 
-                className="border-[1.2px] border-white text-white px-8 py-2 rounded-full font-bold transform transition-all duration-300 hover:scale-105 mt-2 text-[14px]"
-              >
-                Contact Us
-              </button>
-            </div>
+            <div
+              className="fixed inset-0 bg-black/50 z-[60] lg:hidden transition-opacity"
+              onClick={() => setIsMobileMenuOpen(false)}
+            ></div>
           )}
 
+          {/* Sidebar Drawer */}
+          <div
+            className={`fixed top-0 right-0 h-full w-[280px] bg-[#19718A] z-[70] transform transition-transform duration-300 ease-in-out lg:hidden flex flex-col py-6 px-6 shadow-2xl ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+          >
+            {/* Close Button Inside Drawer */}
+            <div className="flex justify-end mb-8 pb-4">
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-1.5 text-white hover:bg-white/10 rounded-md transition-colors border border-white/30"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
+            <div className="flex flex-col space-y-6 flex-1">
+              <button onClick={() => { navigate("/MainPage"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Home</button>
+              <button onClick={() => { navigate("/About"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">About</button>
+              <button onClick={() => { navigate("/Service"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Our Service</button>
+              <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Doctor</button>
+              <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">FAQ</button>
+            </div>
 
+            <div className="flex gap-6 mt-auto pt-6 border-t border-white/20 justify-center">
+              <button className="p-3 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
+              </button>
+              <button className="p-3 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+                <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
+              </button>
+            </div>
 
+            <button
+              onClick={() => { navigate("/ContactUs"); setIsMobileMenuOpen(false); }}
+              className="border-[1.2px] border-white text-white px-8 py-3 rounded-full font-bold transform transition-all duration-300 hover:scale-105 mt-6 text-[16px] w-full"
+            >
+              Contact Us
+            </button>
+          </div>
         </section>
 
         {/* ---------------- HERO SECTION ---------------- */}
@@ -224,7 +260,7 @@ const Hero1 = () => {
 
 
           <h2 className="text-[30px] font-bold tracking-[0.4em] text-gray-400 uppercase">
-            DEPARTMENT
+            DEPARTMENTS
           </h2>
 
 
@@ -232,155 +268,144 @@ const Hero1 = () => {
 
         {/* Icon Boxes */}
         <div className="flex flex-wrap justify-center items-center gap-6 md:gap-[100px]">
-          {/* Box 1 */}
-          <div className="w-28 h-28 flex justify-center items-center bg-white border-2 rounded-md shadow-md hover:shadow-lg transition-all border border-gray-200">
-            <img src="/assets/img.png" alt="lungs" className="w-30 h-30 p-2 object-contain" />
+          {/* Box 1 - Liver */}
+          <div className="w-28 h-28 flex justify-center items-center bg-white border rounded-md shadow-sm hover:shadow-md transition-all border-gray-300">
+            <img src="/assets/liver.png" alt="Liver" className="w-20 h-20 p-2 object-contain" />
           </div>
 
-          {/* Box 2 */}
-          <div className="w-28 h-28 flex justify-center items-center bg-white border-2 rounded-md shadow-md hover:shadow-lg transition-all border border-gray-200">
-            <img src="/assets/pic.png" alt="bone" className="w-30 h-30 object-contain p-2" />
+          {/* Box 2 - Joint */}
+          <div className="w-28 h-28 flex justify-center items-center bg-white border rounded-md shadow-sm hover:shadow-md transition-all border-gray-300">
+            <img src="/assets/ortho.png" alt="Joint" className="w-20 h-20 object-contain p-2" />
           </div>
 
-          {/* Box 3 */}
-          <div className="w-28 h-28 flex justify-center items-center bg-white border-2 rounded-md shadow-md hover:shadow-lg transition-all border border-gray-200">
-            <img src="/assets/pic1.png" alt="tooth" className="w-30 h-30 object-contain p-2" />
+          {/* Box 3 - Tooth */}
+          <div className="w-28 h-28 flex justify-center items-center bg-white border rounded-md shadow-sm hover:shadow-md transition-all border-gray-300">
+            <img src="/assets/pic1.png" alt="Tooth" className="w-20 h-20 object-contain p-2" />
           </div>
 
-          {/* Box 4 */}
-          <div className="w-28 h-28 flex justify-center items-center bg-white border-2 rounded-md shadow-md hover:shadow-lg transition-all border border-gray-200">
-            <img src="/assets/heart.png" alt="eye" className="w-30 h-30 object-contain p-2" />
+          {/* Box 4 - Heart */}
+          <div className="w-28 h-28 flex justify-center items-center bg-white border rounded-md shadow-sm hover:shadow-md transition-all border-gray-300">
+            <img src="/assets/Heart.png" alt="Heart" className="w-20 h-20 object-contain p-2" />
           </div>
 
-          {/* Box 5 */}
-          <div className="w-28 h-28 flex justify-center items-center bg-white border-2 rounded-md shadow-md hover:shadow-lg transition-all border border-gray-200">
-            <img src="/assets/renal.png" alt="stomach" className="w-30 h-30 object-contain p-2" />
+          {/* Box 5 - Kidney */}
+          <div className="w-28 h-28 flex justify-center items-center bg-white border rounded-md shadow-sm hover:shadow-md transition-all border-gray-300">
+            <img src="/assets/renal.png" alt="Kidney" className="w-20 h-20 object-contain p-2" />
           </div>
 
-          {/* Box 6 */}
-          <div className="w-28 h-28 flex justify-center items-center bg-white border-2 rounded-md shadow-md hover:shadow-lg transition-all border border-gray-200">
-            <img src="/assets/pic3.png" alt="knee" className="w-30 h-30 object-contain p-2" />
+          {/* Box 6 - Brain */}
+          <div className="w-28 h-28 flex justify-center items-center bg-white border rounded-md shadow-sm hover:shadow-md transition-all border-gray-300">
+            <img src="/assets/about.png" alt="Brain" className="w-20 h-20 object-contain p-2" />
           </div>
         </div>
       </section>
 
 
-      <section className="w-full bg-[#75AAB9] relative mt-20 md:mt-40 py-10 md:py-0 overflow-hidden">
-        <div className="w-full h-full flex flex-col lg:flex-row justify-between items-center px-4 lg:px-[0%]">
+      {/* ================= MODERN HEALTHCARE SERVICES SECTION ================= */}
+      <section className="w-full bg-[#F8FDFE] py-12 lg:py-16 relative overflow-hidden">
 
-          {/* LEFT SIDE TEXT */}
-          <div className="lg:w-1/2 lg:mb-[370px] text-black space-y-6 w-full text-center lg:text-left z-20">
-            <h1 className="text-[24px] md:text-[30px] lg:text-[20px] font-bold leading-snug ml-0 lg:ml-10">
-              World-Class Healthcare<br className="hidden md:block" />
-              Services for you and your<br className="hidden md:block" />
-              loved ones
-            </h1>
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#E1F1F3]/40 rounded-full blur-[120px] -z-10 -mr-40 -mt-40"></div>
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#E1F1F3]/30 rounded-full blur-[100px] -z-10 -ml-20 -mb-20"></div>
 
-            <button className="bg-white text-black px-10 py-2 rounded-full shadow-md hover:bg-gray-200 flex items-center justify-center gap-2 mx-auto lg:ml-10">
-              More Service
-              <img src="/assets/fr.png" alt="fr" className="h-10 w-10" />
-            </button>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
 
-          </div>
-
-          {/* RIGHT IMAGE + FLOATING CARDS */}
-          <div className="relative w-full mt-10 lg:mt-0 lg:ml-[500px] lg:w-1/2 flex flex-col lg:block justify-center items-center">
-
-            {/* IMAGE WRAPPER (Independent) */}
-            <div className="relative lg:ml-28 z-10">
-              <img
-                src="/assets/doc.png"
-                alt="doctor"
-                className="w-full max-w-[300px] md:max-w-[400px] h-auto lg:h-[600px] mx-auto object-cover"
-              />
+          <div className="flex flex-col lg:flex-row items-center justify-between mb-12 gap-10">
+            {/* Left Content */}
+            <div className="lg:w-1/2 space-y-5">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full text-[#19718A] font-bold text-[12px] tracking-wide uppercase">
+                <span className="w-2 h-2 bg-[#19718A] rounded-full"></span>
+                Our Services
+              </div>
+              <h2 className="text-[32px] md:text-[46px] font-bold text-[#0E4056] leading-[1.15] font-serif">
+                World-Class Healthcare <br className="hidden md:block" /> For You & Your Family
+              </h2>
+              <p className="text-gray-600 text-[16px] max-w-xl leading-relaxed">
+                Experience medical excellence with our state-of-the-art facilities and a dedicated team
+                committed to your well-being.
+              </p>
+              <button
+                onClick={() => navigate("/Service")}
+                className="bg-[#19718A] text-white px-8 py-3 rounded-full shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-3 font-bold text-[16px] group"
+              >
+                More Service
+                <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+              </button>
             </div>
 
-            {/* CARDS WRAPPER (Independent from image) */}
-            <div className="lg:absolute lg:top-0 lg:right-0 w-full lg:h-full lg:pointer-events-none mt-10 lg:mt-0 flex flex-col items-center gap-6 z-20">
-
-
-              {/* Top Right Card */}
-              <div className="relative lg:absolute lg:-top-[90px] lg:-left-[190px] bg-white p-6 shadow-xl w-full max-w-[300px] h-auto lg:h-[230px] rounded-md lg:hover:shadow-lg transition-all border-2 border-black/10 pointer-events-auto">
-                <div className="w-10 h-10 bg-[#75AAB9] flex items-center justify-center rounded-md ">
-                  <img
-                    src="/assets/red.png"
-                    alt="icon"
-                    className="w-7 h-7 object-contain "
-                  />
-                </div>
-                <h3 className="font-bold text-[20px] text-[#0e4056] mt-2">Radiology & imaging</h3>
-                <p className="text-gray-700 text-[14px] lg:text-[16px] mt-2">
-                  Radiology is a branch of medicine that uses medical
-                  imaging techniques, like X-rays, MRI, and
-                  ultrasound, to diagnose and treat diseases.
-                </p>
+            {/* Right Image Composition */}
+            <div className="lg:w-1/2 relative flex justify-center lg:justify-end">
+              <div className="relative z-10 rounded-[1.5rem] overflow-hidden shadow-lg">
+                <img
+                  src="/assets/more.png"
+                  alt="Healthcare Excellence"
+                  className="w-full max-w-[450px] h-auto object-cover transform hover:scale-105 transition-transform duration-1000"
+                />
               </div>
-
-              {/* Middle Right Card */}
-              <div className="relative lg:absolute lg:top-[290px] lg:right-[390px] bg-white p-6 rounded-md shadow-xl lg:shadow-lg lg:hover:shadow-xl transition-all border-2 border-black/10 w-full max-w-[300px] h-auto lg:h-[230px] pointer-events-auto">
-                <div className="w-10 h-10 bg-[#75AAB9] flex items-center justify-center rounded-md ">
-                  <img
-                    src="/assets/lab.png"
-                    alt="icon"
-                    className="w-7 h-7 object-contain "
-                  />
+              {/* Floating Stat Card */}
+              <div className="absolute -bottom-10 -left-10 bg-white p-8 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-20 hidden md:block border border-gray-50">
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                    <Activity className="text-[#19718A] w-7 h-7" />
+                  </div>
+                  <div>
+                    <p className="text-[28px] font-bold text-[#0E4056] leading-none">24/7</p>
+                    <p className="text-gray-500 font-medium">Emergency Care</p>
+                  </div>
                 </div>
-                <h3 className="font-bold text-[20px] text-[#0e4056] mt-2">Laboratory Services</h3>
-                <p className="text-gray-700 text-[14px] lg:text-[16px] mt-2">
-                  A "Laboratory Services 2 line" is not a standard,
-                  universally recognized term in the healthcare or
-                  scientific fields. It most likely refers to the services
-                  offered at a secondary-level clinical laboratory,
-                  such as a district hospital
-                </p>
               </div>
-
-              {/* Left Upper Card */}
-              <div className="relative lg:absolute lg:top-[100px] lg:-left-[650px] bg-white p-6 rounded-md shadow-xl lg:shadow-lg lg:hover:shadow-xl transition-all border-2 border-black/10 w-full max-w-[300px] h-auto lg:h-[230px] pointer-events-auto">
-                <div className="w-10 h-10 bg-[#75AAB9] flex items-center justify-center rounded-md ">
-                  <img
-                    src="/assets/lok.png"
-                    alt="icon"
-                    className="w-7 h-7 object-contain "
-                  />
-                </div>
-
-                <h3 className="font-bold text-[20px] text-[#0e4056] mt-2">Emergency services</h3>
-                <p className="text-gray-700 text-[14px] lg:text-[16px] mt-2">
-                  24/7 hospital emergency departments often highlight
-                  the constant care, heroism of staff, and the emotional
-                  nature of critical situations. These sayings can be
-                  inspiring, compassionate, or even humorous.
-                </p>
-              </div>
-
-              {/* Left Bottom Card */}
-              <div className="relative lg:absolute lg:-bottom-[90px] lg:-left-[700px] bg-white p-6 rounded-md shadow-xl lg:shadow-lg lg:hover:shadow-xl transition-all border-2 border-black/10 w-full max-w-[300px] h-auto lg:h-[230px] pointer-events-auto">
-                <div className="w-10 h-10 bg-[#75AAB9] flex items-center justify-center rounded-md ">
-                  <img
-                    src="/assets/phar.png"
-                    alt="icon"
-                    className="w-7 h-7 object-contain "
-                  />
-                </div>
-                <h3 className="font-bold text-[20px] text-[#0e4056] mt-2">Pharmacy</h3>
-                <p className="text-gray-700 text-sm mt-2">
-                  Staffed by pharmacists and technicians, it oversees
-                  drug procurement, inventory, and preparation,
-                  including specialized and sterile products for
-                  patient-specific needs.
-                </p>
-              </div>
-
-              {/* WAVE */}
-
             </div>
           </div>
 
+          {/* Service Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                title: "Radiology",
+                icon: "/assets/red.png",
+                color: "bg-blue-50",
+                text: "Precision imaging using X-rays, MRI, and ultrasound to diagnose complex conditions."
+              },
+              {
+                title: "Emergency",
+                icon: "/assets/lok.png",
+                color: "bg-red-50",
+                text: "Rapid-response critical care services available 24/7 for life-saving medical attention."
+              },
+              {
+                title: "Laboratory",
+                icon: "/assets/lab.png",
+                color: "bg-emerald-50",
+                text: "High-quality clinical testing providing precise results for accurate diagnosis and treatment."
+              },
+              {
+                title: "Pharmacy",
+                icon: "/assets/phar.png",
+                color: "bg-amber-50",
+                text: "Expert-led procurement and sterile preparation of essential medications for all patients."
+              }
+            ].map((service, idx) => (
+              <div
+                key={idx}
+                className="group bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_60px_rgba(25,113,138,0.1)] hover:-translate-y-3 transition-all duration-500 cursor-pointer"
+              >
+                <div className={`w-16 h-16 ${service.color} rounded-2xl flex items-center justify-center mb-8 group-hover:rotate-[10deg] transition-transform duration-500`}>
+                  <img src={service.icon} alt={service.title} className="w-8 h-8 object-contain" />
+                </div>
+                <h3 className="text-2xl font-bold text-[#0E4056] mb-4">{service.title}</h3>
+                <p className="text-gray-600 text-[15px] leading-relaxed mb-8">
+                  {service.text}
+                </p>
+                <div className="flex items-center text-[#19718A] font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
+                  Details <ArrowRight size={18} className="ml-2" />
+                </div>
+              </div>
+            ))}
+          </div>
 
         </div>
       </section>
-      <div className="flex items-center w-full mt-[40px]">
+      <div className="flex items-center w-full mt-[20px]">
         <div className="flex-1 h-[2px] bg-[#1c9bb2]"></div>
 
         <div className="-mx-1">
@@ -395,168 +420,128 @@ const Hero1 = () => {
 
 
 
-      {/* ABOUT US SECTION */}
-      <section className="p-6 md:p-20">
+      {/* ================= ABOUT US SECTION ================= */}
+      <section className="max-w-7xl mx-auto px-6 py-20 lg:py-32">
 
-
-
-
-        {/* HEADING */}
-        <h2 className="text-[30px] font-bold mb-6" style={{ color: "black", fontFamily: "Georgia, 'Times New Roman', serif" }}>
+        <h2 className="text-[32px] font-bold text-black mb-8 font-serif">
           About Us
         </h2>
 
-        <p className="text-black text-[16px] leading-[2.3] text-justify font-[Georgia] tracking-[0.3px]">
+        <p className="text-gray-800 text-[16px] leading-relaxed mb-24 max-w-6xl">
           <span className="font-bold">VAIDYAGO HEALTHCARE</span> is a leading integrated healthcare
-          delivery service provider in India. The healthcare verticals of the
-          company primarily comprise hospitals, diagnostics, and day care
-          specialty facilities. Currently, the company operates 33 healthcare
-          facilities (including JVs and O&M facilities) across 11 states. The
-          Company’s network comprises over 5,700 operational beds (including
-          O&M beds) and 400 diagnostics labs.
+          delivery service provider in India. The healthcare verticals primarily comprise hospitals, diagnostics,
+          and day care specialty facilities. Currently, the company operates 33 healthcare
+          facilities across 11 states with over 5,700 operational beds and 400 diagnostics labs.
         </p>
 
-        {/* VISION & MISSION CARDS WRAPPER */}
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-10 mt-20 lg:mt-[80px]">
+        {/* Vision & Mission Cards Wrapper */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 lg:gap-24 mt-10">
 
           {/* VISION CARD */}
-          <div className="relative bg-white border border-gray-300 rounded-xl p-8 w-full max-w-[400px] lg:w-[45%] h-auto md:h-[300px] shadow-sm hover:shadow-md transition">
-
+          <div className="relative bg-[#D1E9F1]/40 rounded-2xl p-10 pt-20 shadow-sm border border-blue-100/50">
             {/* TOP CIRCLE ICON */}
-            <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-white rounded-full p-3 shadow-md border-2 border-[#19718A]">
-              <img
-                src="/assets/eye.png"
-                alt="Vision Icon"
-                className="w-16 md:w-[100px] object-contain"
-              />
+            <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-32 h-32 bg-white rounded-full p-4 shadow-lg border border-gray-100 flex items-center justify-center">
+              <img src="/assets/eye.png" alt="Vision" className="w-20 h-20 object-contain" />
             </div>
-            <div>
-              <h3 className="text-[20px] font-bold text-[#0e4056] text-center mt-12 md:mt-20">Vision</h3>
-
-              <p className="text-black text-center mt-4 leading-[1.9]">
-                To create a world-class integrated healthcare delivery
-                system in India, entailing the finest medical skills
-                combined with compassionate patient care
-              </p>
-            </div>
+            <h3 className="text-center text-[28px] font-bold text-[#0E4056] mb-6">Vision</h3>
+            <p className="text-gray-700 text-lg leading-relaxed text-center">
+              To create a world-class integrated healthcare delivery system in India,
+              entailing the finest medical skills combined with compassionate patient care.
+            </p>
           </div>
 
-
           {/* MISSION CARD */}
-          <div className="relative bg-white border border-gray-300 rounded-xl p-8 w-full max-w-[400px] lg:w-[45%] h-auto md:h-[300px] shadow-sm hover:shadow-md transition mt-8 lg:mt-0">
-
+          <div className="relative bg-[#FADBD8]/40 rounded-2xl p-10 pt-20 shadow-sm border border-red-100/50">
             {/* TOP CIRCLE ICON */}
-            <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-white rounded-full p-3 shadow-md border-2 border-[#19718A]">
-              <img
-                src="/assets/goal.png"
-                alt="Mission Icon"
-                className="w-16 md:w-[100px] object-contain"
-              />
+            <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-32 h-32 bg-white rounded-full p-4 shadow-lg border border-gray-100 flex items-center justify-center">
+              <img src="/assets/goal.png" alt="Mission" className="w-20 h-20 object-contain" />
             </div>
-
-            <h3 className="text-[20px] font-bold text-[#0e4056] text-center mt-12 md:mt-20">Mission</h3>
-
-            <p className="text-black text-center mt-4 leading-[1.7] text-[16px]">
-              To be a globally respected healthcare organisation known for Clinical
-              Excellence and Distinctive Patient Care.
+            <h3 className="text-center text-[28px] font-bold text-[#0E4056] mb-6">Mission</h3>
+            <p className="text-gray-700 text-lg leading-relaxed text-center">
+              To be a globally respected healthcare organisation known for
+              Clinical Excellence and Distinctive Patient Care.
             </p>
           </div>
 
         </div>
-
-
       </section>
 
 
-      {/* KEY FEATURES SECTION */}
-      <section className="relative w-full max-w-[1400px] mx-auto px-[4%] lg:px-[6%] mt-[100px] mb-[150px]">
-        
-        {/* Background Wave SVG */}
-        <div className="absolute top-[10%] left-[0] w-[100%] h-[100%] -z-10 hidden lg:block opacity-80 pointer-events-none overflow-visible">
-          <svg viewBox="0 0 1500 800" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-[100%] -ml-[5%]" preserveAspectRatio="none">
-            {/* Soft, subtle, thin curved wave line passing beautifully behind cards */}
-            <path 
-              d="M -50 500 
-                 C 50 200, 150 200, 300 200 
-                 C 450 200, 350 600, 500 600 
-                 C 650 600, 600 250, 750 250 
-                 C 900 250, 850 550, 950 550 
-                 C 1050 550, 1100 150, 1200 150 
-                 C 1350 150, 1400 500, 1550 500" 
-              stroke="#B0DCE2" 
-              strokeWidth="1.5" 
-              strokeLinecap="round"
-            />
-          </svg>
+      {/* ================= KEY FEATURES SECTION ================= */}
+      <section className="relative w-full max-w-7xl mx-auto px-6 py-24 lg:py-32 overflow-visible">
+
+        {/* Background Decorative Element */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#E8F1F2]/30 blur-[100px] rounded-full -z-10"></div>
+
+        <div className="text-center mb-20">
+          <h2 className="text-[32px] md:text-[42px] font-bold text-[#0E4056] font-serif mb-4">
+            Smart Healthcare Features
+          </h2>
+          <div className="w-24 h-1 bg-[#19718A] mx-auto rounded-full"></div>
         </div>
 
-        <h2 className="text-[36px] md:text-[42px] font-bold text-center lg:text-left mb-[80px]" style={{ color: "#000", fontFamily: "Georgia, 'Times New Roman', serif" }}>
-          Key Features
-        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12 items-start">
 
-        {/* Staggered Grid Container */}
-        <div className="flex flex-col lg:flex-row justify-center lg:justify-between items-center lg:items-stretch gap-16 lg:gap-8 relative z-10 w-full">
-
-          {/* Column 1 - Left */}
-          <div className="flex flex-col gap-20 lg:w-[32%] lg:mt-0">
-            {/* AI Chat (Top Left) */}
-            <div className="group relative bg-[#ffffff]/90 backdrop-blur-2xl p-8 pt-10 rounded-[1.5rem] shadow-[0_15px_40px_rgba(25,113,138,0.15)] border border-[#E8F1F2] hover:-translate-y-2 transition-transform duration-500 w-full max-w-[360px] mx-auto z-20">
-              <div className="absolute -top-10 -right-6 w-[100px] h-[100px] bg-white rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.08)] border-[3px] border-[#F4F8F9] flex items-center justify-center">
-                <img src="/assets/ai1.png" alt="AI Chat" className="w-[50px] object-contain group-hover:scale-110 transition-transform duration-500" />
+          {/* Column 1 */}
+          <div className="flex flex-col gap-10">
+            {/* AI Chat */}
+            <div className="group bg-white p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_60px_rgba(25,113,138,0.15)] transition-all duration-500 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-[#F0F7F9] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#19718A] transition-colors">
+                <img src="/assets/ai1.png" alt="AI Chat" className="w-10 h-10 object-contain group-hover:invert group-hover:brightness-0 transition-all" />
               </div>
-              <h3 className="text-[22px] font-bold text-[#19718A] mb-4 mt-2 pr-12">AI chat</h3>
-              <p className="text-gray-600 text-[14px] leading-[1.8]">
-                An "AI chat bot" can refer to a chatbot for the LINE messaging app, which uses AI to interact with users, or it can be a technical term for a line of code in a chatbot program.
+              <h3 className="text-2xl font-bold text-[#19718A] mb-3">AI Chat Assistant</h3>
+              <p className="text-gray-600 leading-relaxed text-[15px]">
+                Instant support for health queries and seamless navigation through our hospital services using advanced AI.
               </p>
             </div>
 
-            {/* Book Appointment (Bottom Left) */}
-            <div className="group relative bg-[#ffffff]/90 backdrop-blur-2xl p-8 pt-10 rounded-[1.5rem] shadow-[0_15px_40px_rgba(25,113,138,0.15)] border border-[#E8F1F2] hover:-translate-y-2 transition-transform duration-500 w-full max-w-[360px] mx-auto lg:mt-32 z-20">
-              <div className="absolute -top-6 -left-10 w-[100px] h-[100px] bg-white rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.08)] border-[3px] border-[#F4F8F9] flex items-center justify-center">
-                <img src="/assets/book1.png" alt="Book Appointment" className="w-[50px] object-contain group-hover:scale-110 transition-transform duration-500" />
-              </div>
-              <h3 className="text-[22px] font-bold text-[#19718A] mb-4 pl-12 leading-tight">Book<br/>appointment</h3>
-              <p className="text-gray-600 text-[14px] leading-[1.8] mt-4">
-                To book an appointment, you must arrange a meeting with someone at a specific time, usually in a professional context.
-              </p>
-            </div>
-          </div>
-
-          {/* Column 2 - Middle */}
-          <div className="flex flex-col gap-20 lg:w-[32%] lg:mt-24">
-            {/* Prescription Upload (Middle Top) */}
-            <div className="group relative bg-[#ffffff]/90 backdrop-blur-2xl p-8 pt-10 rounded-[1.5rem] shadow-[0_15px_40px_rgba(25,113,138,0.15)] border border-[#E8F1F2] hover:-translate-y-2 transition-transform duration-500 w-full max-w-[360px] mx-auto z-20">
-              <div className="absolute -top-10 -left-6 w-[100px] h-[100px] bg-white rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.08)] border-[3px] border-[#F4F8F9] flex items-center justify-center">
-                <img src="/assets/pre1.png" alt="Prescription Upload" className="w-[50px] object-contain group-hover:scale-110 transition-transform duration-500" />
-              </div>
-              <h3 className="text-[22px] font-bold text-[#19718A] mb-4 pl-12 leading-tight">Prescription<br/>Upload</h3>
-              <p className="text-gray-600 text-[14px] leading-[1.8] mt-4">
-                "Prescription Upload" is not a specific universal service or phone number rather, it refers to the online platforms or phone-based services provided by pharmacies and diagnostic labs.
-              </p>
-            </div>
-
-            {/* Voice Interaction (Middle Bottom) */}
-            <div className="group relative bg-[#ffffff]/90 backdrop-blur-2xl p-8 pt-10 rounded-[1.5rem] shadow-[0_15px_40px_rgba(25,113,138,0.15)] border border-[#E8F1F2] hover:-translate-y-2 transition-transform duration-500 w-full max-w-[360px] mx-auto lg:mt-32 z-20">
-              <div className="absolute -top-10 -right-6 w-[100px] h-[100px] bg-white rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.08)] border-[3px] border-[#F4F8F9] flex items-center justify-center">
-                <img src="/assets/voice1.png" alt="Voice Interaction" className="w-[50px] object-contain group-hover:scale-110 transition-transform duration-500" />
-              </div>
-              <h3 className="text-[22px] font-bold text-[#19718A] mb-4 pr-12 leading-tight">Voice<br/>Interaction</h3>
-              <p className="text-gray-600 text-[14px] leading-[1.8] mt-4">
-                Voice Interaction is the act of communicating or interfacing with a system or device using spoken language. It involves users speaking commands or engaging in dialogue, and the system understanding.
-              </p>
-            </div>
-          </div>
-
-          {/* Column 3 - Right */}
-          <div className="flex flex-col gap-20 lg:w-[32%] lg:mt-64">
             {/* Medicine Reminder */}
-            <div className="group relative bg-[#ffffff]/90 backdrop-blur-2xl p-8 pt-10 rounded-[1.5rem] shadow-[0_15px_40px_rgba(25,113,138,0.15)] border border-[#E8F1F2] hover:-translate-y-2 transition-transform duration-500 w-full max-w-[360px] mx-auto z-20">
-              <div className="absolute -left-12 top-10 w-[100px] h-[100px] bg-white rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.08)] border-[3px] border-[#F4F8F9] flex items-center justify-center">
-                <img src="/assets/med1.png" alt="Medicine Reminder" className="w-[50px] object-contain group-hover:scale-110 transition-transform duration-500" />
+            <div className="group bg-white p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_60px_rgba(25,113,138,0.15)] transition-all duration-500 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-[#F0F7F9] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#19718A] transition-colors">
+                <img src="/assets/med1.png" alt="Medicine" className="w-10 h-10 object-contain group-hover:invert group-hover:brightness-0 transition-all" />
               </div>
-              <h3 className="text-[22px] font-bold text-[#19718A] mb-4 pl-10 leading-tight">Medicine<br/>Reminder</h3>
-              <p className="text-gray-600 text-[14px] leading-[1.8] mt-4">
-                The term "medicine reminder" typically refers to the use of technology, tools, or behavioral strategies to help people remember to take their medication on time.
+              <h3 className="text-2xl font-bold text-[#19718A] mb-3">Medicine Reminder</h3>
+              <p className="text-gray-600 leading-relaxed text-[15px]">
+                Smart medication tracking to ensure you never miss a dose, helping you stay on track with your recovery.
+              </p>
+            </div>
+          </div>
+
+          {/* Column 2 (Centered/Offset) */}
+          <div className="flex flex-col gap-10 lg:mt-20">
+            {/* Prescription Upload */}
+            <div className="group bg-[#19718A] p-8 rounded-3xl shadow-[0_20px_50px_rgba(25,113,138,0.3)] border border-[#19718A] hover:shadow-[0_30px_70px_rgba(25,113,138,0.4)] transition-all duration-500 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
+                <img src="/assets/pre1.png" alt="Prescription" className="w-10 h-10 object-contain invert brightness-0" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Prescription Upload</h3>
+              <p className="text-blue-50 leading-relaxed text-[15px]">
+                Quick and secure submission of your prescriptions for faster diagnostic processing and pharmacy services.
+              </p>
+            </div>
+
+            {/* Voice Interaction */}
+            <div className="group bg-white p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_60px_rgba(25,113,138,0.15)] transition-all duration-500 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-[#F0F7F9] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#19718A] transition-colors">
+                <img src="/assets/voice1.png" alt="Voice" className="w-10 h-10 object-contain group-hover:invert group-hover:brightness-0 transition-all" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#19718A] mb-3">Voice Interaction</h3>
+              <p className="text-gray-600 leading-relaxed text-[15px]">
+                Intuitive hands-free control and accessibility, allowing you to interact with our platform using simple voice commands.
+              </p>
+            </div>
+          </div>
+
+          {/* Column 3 */}
+          <div className="flex flex-col gap-10 lg:mt-0 lg:pt-40">
+            {/* Book Appointment */}
+            <div className="group bg-white p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_60px_rgba(25,113,138,0.15)] transition-all duration-500 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-[#F0F7F9] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#19718A] transition-colors">
+                <img src="/assets/book1.png" alt="Book" className="w-10 h-10 object-contain group-hover:invert group-hover:brightness-0 transition-all" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#19718A] mb-3">Book Appointment</h3>
+              <p className="text-gray-600 leading-relaxed text-[15px]">
+                Effortlessly schedule visits with our expert specialists, choosing the time and date that works best for you.
               </p>
             </div>
           </div>
@@ -579,7 +564,7 @@ const Hero1 = () => {
 
           {/* 1 — Canteen */}
           <div
-           className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
+            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
 hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:-translate-y1 hover:scale-[1.02]
 hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor-pointer">
             {/* IMAGE WITH HOVER SCALE */}
@@ -598,7 +583,7 @@ hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor
           </div>
 
           <div
-          className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
+            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
 hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:-translate-y-1 hover:scale-[1.02]
 hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor-pointer"
           >
@@ -616,7 +601,7 @@ hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor
           </div>
 
           <div
-        className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
+            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
 hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:-translate-y-1 hover:scale-[1.02]
 hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor-pointer">
             <div className="overflow-hidden rounded">
@@ -633,7 +618,7 @@ hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor
           </div>
 
           <div
-           className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
+            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
 hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:-translate-y-1 hover:scale-[1.02]
 hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor-pointer"
           >
@@ -772,6 +757,39 @@ hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor
         {/* === Bottom Line === */}
 
       </footer>
+      {/* Render Modals */}
+      {showLoginModal && (
+        <Finallogin
+          isModal={true}
+          onClose={() => setShowLoginModal(false)}
+          onSwitchToForget={() => {
+            setShowLoginModal(false);
+            setShowForgetModal(true);
+          }}
+        />
+      )}
+
+      {showSignupModal && (
+        <Signup1
+          isModal={true}
+          onClose={() => setShowSignupModal(false)}
+          onSwitchToLogin={() => {
+            setShowSignupModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showForgetModal && (
+        <Forget
+          isModal={true}
+          onClose={() => setShowForgetModal(false)}
+          onSwitchToLogin={() => {
+            setShowForgetModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -44,6 +44,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
           phone,
           password,
           confirm_password,
+          role,
         }),
       });
 
@@ -129,10 +130,29 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
         {/* FORM START */}
         <form onSubmit={handleSubmit} className="w-full space-y-2">
 
+          {/* User Type Dropdown */}
+          <div className="mb-2">
+            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
+              User Type
+            </label>
+            <div className="flex items-center rounded-md px-3 py-2.5 bg-white border border-[#19718A] shadow-[0_2px_8px_rgba(25,113,138,0.2)] focus-within:ring-1 focus-within:ring-[#19718A] transition-all">
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                onFocus={() => setActiveStep(1)}
+                className={`w-full text-sm bg-transparent outline-none ${role === "" ? "text-gray-400" : "text-black"}`}
+              >
+                <option value="" disabled>Select Role</option>
+                <option value="Patient">Patient</option>
+                <option value="Doctor">Doctor</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+          </div>
+
           {/* Username */}
           <div className="mb-2">
             <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              {/* <img src="/assets/user.svg" alt="User" className="w-6 h-6 mr-2" /> */}
               Username
             </label>
 
@@ -142,6 +162,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
                 placeholder="Enter Name"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                onFocus={() => setActiveStep(1)}
                 className="w-full text-sm bg-transparent outline-none"
               />
             </div>

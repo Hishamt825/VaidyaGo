@@ -65,6 +65,7 @@ import Record from './components/Patient/Record';
 import Reminder1 from './components/Patient/Reminder1';
 import Strengthening from './components/Patient/Exercise/Strengthening';
 import Guided from './components/Patient/Exercise/Guided';
+import Tilt from './components/Patient/Exercise/Tilt';
 import VitalsDetail from './components/Patient/Vitals/Detail';
 import VitalsHistory from './components/Patient/Vitals/Vitals_history';
 import View_request from './components/Patient/Medication/View_request';
@@ -147,6 +148,7 @@ const App = () => {
       <Route path="/Reminder1" element={<Reminder1 />} />
       <Route path="/Strengthening" element={<Strengthening />} />
       <Route path="/Guided" element={<Guided />} />
+      <Route path="/Tilt" element={<Tilt />} />
       <Route path="/VitalsDetail" element={<VitalsDetail />} />
       <Route path="/VitalsHistory" element={<VitalsHistory />} />
       <Route path="/View-request" element={<View_request />} />

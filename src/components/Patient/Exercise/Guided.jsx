@@ -4,6 +4,7 @@ import Sidebar from '../Patient_sidebar';
 import Profile from '../Profile';
 import Account from '../Account';
 import Notification from '../notification';
+import SessionCom from './Session_com';
 
 // Assets
 import phImg from '../../../assets/ph.png';
@@ -30,6 +31,7 @@ const Guided = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isSessionCompleteModalOpen, setIsSessionCompleteModalOpen] = useState(false);
 
     return (
         <div
@@ -46,8 +48,11 @@ const Guided = () => {
             <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                 {/* Header Sub-Navbar */}
                 <header className="h-[72px] flex items-center justify-between px-6 md:px-10 shrink-0 border-b border-white/5 z-20">
-                    <div className="flex-1 max-w-[280px]">
-                        <div className="relative group">
+                    <div className="flex items-center gap-4 flex-1 max-w-[340px]">
+                        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-all shadow-sm shrink-0">
+                            <svg className="w-5 h-5 pr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
+                        </button>
+                        <div className="relative group flex-1">
                             <input
                                 type="text"
                                 placeholder="Find exercises..."
@@ -149,7 +154,7 @@ const Guided = () => {
                                 </div>
 
                                 {/* Next Step */}
-                                <div className="bg-[#E9F3F6] rounded-[28px] p-6 flex items-center justify-between group cursor-pointer hover:bg-[#DCEBF0] transition-all border border-[#1A7785]/10">
+                                <div onClick={() => navigate('/Tilt')} className="bg-[#E9F3F6] rounded-[28px] p-6 flex items-center justify-between group cursor-pointer hover:bg-[#DCEBF0] transition-all border border-[#1A7785]/10">
                                     <div className="flex items-center gap-5">
                                         <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-all">
                                             <svg className="w-6 h-6 text-[#1A7785]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -200,7 +205,7 @@ const Guided = () => {
                                 </div>
 
                                 {/* Finish Button */}
-                                <button className="mt-2 bg-gradient-to-r from-[#1A7785] via-teal-600 to-[#1A7785] bg-[length:200%_auto] hover:bg-right text-white py-4 rounded-[28px] text-[15px] font-bold uppercase tracking-[0.2em] shadow-xl hover:translate-y-[-4px] transition-all duration-500 flex items-center justify-center gap-3">
+                                <button onClick={() => setIsSessionCompleteModalOpen(true)} className="mt-2 bg-gradient-to-r from-[#1A7785] via-teal-600 to-[#1A7785] bg-[length:200%_auto] hover:bg-right text-white py-4 rounded-[28px] text-[15px] font-bold uppercase tracking-[0.2em] shadow-xl hover:translate-y-[-4px] transition-all duration-500 flex items-center justify-center gap-3">
                                     <span>Finish & Save Session</span>
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 </button>
@@ -214,6 +219,7 @@ const Guided = () => {
             {activeModal === 'profile' && <Profile onClose={() => setActiveModal(null)} onAccountSettings={() => setActiveModal('account')} />}
             {activeModal === 'account' && <Account onClose={() => setActiveModal(null)} />}
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+            {isSessionCompleteModalOpen && <SessionCom onClose={() => setIsSessionCompleteModalOpen(false)} />}
         </div>
     );
 };
