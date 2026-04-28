@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NeckAlignment.css';
 import skullAnatomy from '../../../assets/skull_anatomy.png';
@@ -17,7 +17,9 @@ const Icon = ({ name, size = 20, className }) => {
     zoom: <React.Fragment><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" /></React.Fragment>,
     rotate: <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" />,
     alert: <React.Fragment><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></React.Fragment>,
-    check: <polyline points="20 6 9 17 4 12" />
+    check: <polyline points="20 6 9 17 4 12" />,
+    pulse: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
+    arrow: <polyline points="9 18 15 12 9 6" />
   };
 
   return (
@@ -37,8 +39,51 @@ const Icon = ({ name, size = 20, className }) => {
   );
 };
 
+const AssessmentPopup = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
+  if (!isOpen) return null;
+
+  return (
+    <div className="ap-overlay">
+      <div className="ap-card">
+        <div className="ap-header-gradient">
+          <div className="ap-icon-box">
+            <Icon name="pulse" size={32} className="ap-main-icon" />
+          </div>
+        </div>
+        
+        <div className="ap-body">
+          <div className="ap-time-badge">
+            <Icon name="records" size={14} />
+            <span>ESTIMATED TIME: 2 MINUTES</span>
+          </div>
+
+          <h2 className="ap-title">Start Your Posture Assessment</h2>
+          <p className="ap-text">
+            Complete this 2-minute self-assessment to identify potential cervical tension and receive a personalized rehabilitation plan.
+          </p>
+
+          <div className="ap-actions">
+            <button className="ap-btn-primary" onClick={() => navigate('/PostureAnalysis')}>
+              Begin Assessment <Icon name="arrow" size={18} />
+            </button>
+            <button className="ap-btn-secondary" onClick={onClose}>
+              Skip for Now
+            </button>
+          </div>
+
+          <div className="ap-encryption">
+             Your clinical data is secured with AES-256 encryption.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const NeckAlignment = ({ onClose }) => {
   const navigate = useNavigate();
+  const [showAssessment, setShowAssessment] = useState(false);
 
   const handleClose = () => {
     if (onClose) {
@@ -202,7 +247,7 @@ const NeckAlignment = ({ onClose }) => {
               <span>PATIENT PATH</span>
               <h3>How is your alignment today?</h3>
               <p>Complete our 2-minute posture self-assessment to identify potential upper cervical tension.</p>
-              <button className="na-start-btn">
+              <button className="na-start-btn" onClick={() => setShowAssessment(true)}>
                 Start Assessment <Icon name="check" size={16} />
               </button>
             </div>
@@ -216,6 +261,11 @@ const NeckAlignment = ({ onClose }) => {
           </footer>
         </div>
       </main>
+
+      <AssessmentPopup 
+        isOpen={showAssessment} 
+        onClose={() => setShowAssessment(false)} 
+      />
     </div>
   );
 };

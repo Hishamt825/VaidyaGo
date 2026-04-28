@@ -313,7 +313,7 @@ const Dseasonal = ({ onClose }) => {
             </div>
             <div className="ds-footer-btns">
               <button className="ds-btn-pdf">Save as PDF</button>
-              <button className="ds-btn-start">
+              <button className="ds-btn-start" onClick={() => navigate('/CarePlan')}>
                 Start My Care Plan
                 <Icon name="arrow-right" size={18} />
               </button>

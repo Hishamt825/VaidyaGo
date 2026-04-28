@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../../assets/Group (1).svg';
+import logo from '../../../assets/VADYAGO.png';
 import './Diagnostic.css';
 import Tthdiagnostic from './Tthdiagnostic';
 import Cervicogenic from './Cervicogenic';
@@ -102,12 +102,7 @@ const Diagnostic = () => {
       {/* Dynamic Sidebar */}
       <aside className="diagnostic-sidebar">
         <div className="sidebar-logo">
-          <div className="logo-container">
-            <div className="logo-icon-stack">
-              <img src={logo} alt="VaidyaGo Logo" />
-            </div>
-            <span className="logo-text">VaidyaGo</span>
-          </div>
+          <img src={logo} alt="VaidyaGo Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
         </div>
         
         <nav className="sidebar-menu">
@@ -143,11 +138,11 @@ const Diagnostic = () => {
             <Icon name="search" />
             <input type="text" placeholder="Search medications..." />
           </div>
-          <div className="top-actions">
-            <span>Language</span>
-            <Icon name="bell" />
-            <Icon name="settings" />
-            <div className="user-profile-mini">
+          <div className="header-icons">
+            <span className="lang-text">Language</span>
+            <div className="icon-wrapper"><Icon name="bell" /></div>
+            <div className="icon-wrapper"><Icon name="settings" /></div>
+            <div className="profile-img-wrapper">
               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
             </div>
           </div>
@@ -215,8 +210,8 @@ const Diagnostic = () => {
             </div>
 
             <div className="summary-card patient-card">
-              <div className="card-title">
-                <Icon name="check" />
+              <div className="card-subtitle">
+                <Icon name="overview" className="mini-card-icon" />
                 PATIENT SUMMARY
               </div>
               <div className="patient-vitals-list">
@@ -260,9 +255,9 @@ const Diagnostic = () => {
 
           {/* Right Potential Conditions Column */}
           <div className="conditions-section">
-            <h2>
-              Potential Conditions
-              <span style={{ fontSize: 12, color: '#a0aec0', cursor: 'pointer' }}>Sort by Confidence ▾</span>
+            <h2 className="conditions-section-title">
+              POTENTIAL CONDITIONS
+              <span className="sort-label">Sort by Confidence ▾</span>
             </h2>
             
             {conditions.map((c, i) => (
@@ -292,40 +287,39 @@ const Diagnostic = () => {
               </div>
             ))}
 
-            <h2 style={{ marginTop: 40, fontSize: 14 }}>Actionable Next Steps</h2>
+            <h2 className="conditions-section-title" style={{ marginTop: 40 }}>
+              ACTIONABLE NEXT STEPS
+            </h2>
             <div className="actionable-row">
               <div className="action-card">
-                <Icon name="video" />
+                <div className="action-icon-wrap video"><Icon name="video" /></div>
                 <h4>Book a Consultation</h4>
                 <p>Speak with a General Practitioner via telehealth in &lt; 15 mins.</p>
                 <span 
                   onClick={() => setShowConnect(true)} 
-                  className="connect-link-styled" 
-                  style={{ cursor: 'pointer', color: '#3182ce', fontWeight: 800, fontSize: 11 }}
+                  className="action-link"
                 >
                   Connect Now →
                 </span>
               </div>
               <div className="action-card">
-                <Icon name="pharmacy" />
+                <div className="action-icon-wrap pharmacy"><Icon name="pharmacy" /></div>
                 <h4>Find a Pharmacy</h4>
                 <p>Locate pharmacies nearby for immediate relief medications.</p>
                 <span 
                   onClick={() => setShowPharmacy(true)} 
-                  className="open-map-styled" 
-                  style={{ cursor: 'pointer', color: '#3182ce', fontWeight: 800, fontSize: 11 }}
+                  className="action-link"
                 >
                   Open Map →
                 </span>
               </div>
               <div className="action-card">
-                <Icon name="book" />
+                <div className="action-icon-wrap book"><Icon name="book" /></div>
                 <h4>Health Guide</h4>
                 <p>Deep dive into managed care strategies for these conditions.</p>
                 <span 
                   onClick={() => setShowGuide(true)} 
-                  className="read-more-styled" 
-                  style={{ cursor: 'pointer', color: '#3182ce', fontWeight: 800, fontSize: 11 }}
+                  className="action-link"
                 >
                   Read More →
                 </span>

@@ -1,0 +1,347 @@
+/* SymptomAuditPopup.css */
+.sap-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(13, 40, 51, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sap-modal {
+  background: white;
+  width: 540px;
+  max-width: 95%;
+  max-height: 85vh;
+  border-radius: 25px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  color: #1a4352;
+  font-family: 'Inter', sans-serif;
+  animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.sap-close-btn {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.sap-close-btn:hover {
+  color: #1a4352;
+}
+
+.sap-header {
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.sap-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.sap-patient-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.sap-patient-icon {
+  font-size: 16px;
+  color: #64748b;
+}
+
+.sap-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sap-value {
+  color: #1a4352;
+  font-weight: 700;
+}
+
+.sap-section {
+  margin-bottom: 25px;
+}
+
+.sap-scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-bottom: 20px;
+}
+
+.sap-scroll-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sap-scroll-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.sap-scroll-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.sap-section-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+/* Symptoms Grid */
+.sap-symptoms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.sap-symptom-card {
+  background: #f1f5f9;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sap-symptom-card:hover {
+  background: #e2e8f0;
+}
+
+.sap-symptom-card.active {
+  background: white;
+  border-color: #1fb1ae;
+  box-shadow: 0 4px 12px rgba(31, 177, 174, 0.1);
+}
+
+.sap-symptom-icon {
+  font-size: 22px;
+}
+
+.sap-symptom-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.other-card {
+  border: 2px dashed #cbd5e1;
+  background: transparent;
+}
+
+.other-card .sap-symptom-label {
+  color: #64748b;
+}
+
+/* Severity Slider */
+.sap-severity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sap-severity-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0b455c;
+  line-height: 1;
+}
+
+.sap-slider-container {
+  margin-top: 15px;
+}
+
+.sap-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  outline: none;
+}
+
+.sap-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #1fb1ae;
+  cursor: pointer;
+  border: 4px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.sap-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #cbd5e1;
+  letter-spacing: 0.5px;
+}
+
+/* Trigger Tags */
+.sap-triggers-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.sap-trigger-tag {
+  background: #e3faf9;
+  color: #1a4352;
+  padding: 8px 15px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sap-tag-close {
+  cursor: pointer;
+  color: #1fb1ae;
+  font-weight: 400;
+}
+
+.sap-add-trigger-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  padding: 8px 15px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.sap-add-trigger-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.plus-icon {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* Notes Area */
+.sap-notes-area {
+  width: 100%;
+  height: 90px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 15px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.sap-notes-area:focus {
+  background: white;
+  border-color: #1fb1ae;
+  box-shadow: 0 0 0 3px rgba(31, 177, 174, 0.05);
+}
+
+.sap-notes-area::placeholder {
+  color: #94a3b8;
+}
+
+/* Footer */
+.sap-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+  flex-shrink: 0;
+  padding-top: 15px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.sap-cancel-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sap-cancel-btn:hover {
+  color: #1a4352;
+}
+
+.sap-save-btn {
+  background: #1a4352;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 20px rgba(26, 67, 82, 0.2);
+  transition: all 0.2s;
+}
+
+.sap-save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(26, 67, 82, 0.3);
+}
+
+.save-icon {
+  width: 18px;
+  height: 18px;
+}

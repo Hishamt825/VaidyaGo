@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './Body.css';
 import frontalBody from '../../../assets/human-body-frontal-removebg-preview 1.svg';
 import patientPhoto from '../../../assets/Patient Photo.svg';
+import vadyagoLogo from '../../../assets/VADYAGO.png';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -192,12 +193,12 @@ const Body = () => {
   };
 
   const sidebarItems = [
-    { id: 'dashboard', icon: 'overview', label: 'Dashboard', active: true },
-    { id: 'symptom', icon: 'symptom', label: 'Symptom Checker' },
-    { id: 'vitals', icon: 'vitals', label: 'Vitals' },
-    { id: 'meds', icon: 'meds', label: 'Medications' },
-    { id: 'appointments', icon: 'appointments', label: 'Appointments' },
-    { id: 'messages', icon: 'messages', label: 'Messages' },
+    { id: 'dashboard', icon: 'overview', label: 'DASHBOARD', active: true },
+    { id: 'symptom', icon: 'symptom', label: 'SYMPTOM CHECKER' },
+    { id: 'vitals', icon: 'vitals', label: 'VITALS' },
+    { id: 'meds', icon: 'meds', label: 'MEDICATIONS' },
+    { id: 'appointments', icon: 'appointments', label: 'APPOINTMENTS' },
+    { id: 'messages', icon: 'messages', label: 'MESSAGES' },
     { id: 'reminder', icon: 'reminder', label: 'REMINDER' },
     { id: 'records', icon: 'records', label: 'MY RECORDS' },
   ];
@@ -227,13 +228,7 @@ const Body = () => {
       {/* Dynamic Sidebar - Match Diagnostic.jsx */}
       <aside className="body-sidebar">
         <div className="sidebar-logo">
-          <div className="logo-container">
-            <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
-               <path d="M20 5L32 12V28L20 35L8 28V12L20 5Z" stroke="#1db1c2" strokeWidth="4" />
-               <circle cx="20" cy="20" r="6" fill="#1db1c2" />
-            </svg>
-            <h2>Vaidya<span>Go</span></h2>
-          </div>
+          <img src={vadyagoLogo} alt="VaidyaGo Logo" className="vadyago-main-logo" />
         </div>
 
         <nav className="sidebar-menu">
