@@ -86,6 +86,29 @@ const AdminDoctor = () => {
     const [selectedDate, setSelectedDate] = useState(13);
     const [month, setMonth] = useState(0);
     const [year, setYear] = useState(2025);
+    const [isMonthOpen, setIsMonthOpen] = useState(false);
+    const [isYearOpen, setIsYearOpen] = useState(false);
+    const [activeDateIndex, setActiveDateIndex] = useState(17); // Default selection
+    const [dateStyle, setDateStyle] = useState({ left: 0, top: 0, width: 0, height: 0, opacity: 0 });
+    const dateRefs = useRef([]);
+    const monthsList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const yearsList = Array.from({ length: 26 }, (_, i) => 2005 + i);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            const activeEl = dateRefs.current[activeDateIndex];
+            if (activeEl) {
+                setDateStyle({
+                    left: activeEl.offsetLeft,
+                    top: activeEl.offsetTop,
+                    width: activeEl.offsetWidth,
+                    height: activeEl.offsetHeight,
+                    opacity: 1
+                });
+            }
+        }, 30);
+        return () => clearTimeout(timeoutId);
+    }, [activeDateIndex, month, year]);
 
     const handlePrevMonth = () => {
         if (month === 0) {
@@ -134,7 +157,7 @@ const AdminDoctor = () => {
     };
 
     return (
-        <div className="flex h-screen bg-[#F0F2F5] overflow-hidden">
+        <div className="flex h-screen bg-white overflow-hidden">
             <AdminSidebar 
                 active="Doctors" 
                 isMobileOpen={isMobileSidebarOpen}
@@ -143,7 +166,7 @@ const AdminDoctor = () => {
 
             <div className="flex-1 flex flex-col overflow-hidden pt-3 pr-2 pl-4">
                 {/* TOP BAR */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-4">
                     <div className="flex items-center gap-4 w-full md:max-w-[700px]">
 
                         {/* HAMBURGER MENU (Visible only on mobile) */}
@@ -231,24 +254,24 @@ const AdminDoctor = () => {
                     </div>
                 </div>
 
-                <main className="flex-1 overflow-y-auto p-8 pt-4 custom-scrollbar">
+                <main className="flex-1 overflow-y-auto pt-3 pr-2 pl-4 custom-scrollbar">
                     {/* TOP STATS CARDS */}
-                    <div className="flex justify-between items-center mb-0 px-2 mt-[-10px]">
-                        <h1 className="text-[26px] font-bold text-gray-800">Doctor Management</h1>
-                    </div>
 
                     {/* ================= TOP GRID ================= */}
-                    <div className="grid grid-cols-10 gap-6 mt-10">
+                    <div className="grid grid-cols-10 gap-6 mt-3">
                         {/* LEFT STATS SECTION */}
                         <div className="col-span-6 h-[400px]">
                             <div className="grid grid-cols-3 gap-4 h-full auto-rows-fr">
                                 {/* CARD 1: Total Doctors */}
-                                <div
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.1 }}
                                     onClick={() => {
                                         setActiveCard("TOTAL_DOCTORS");
                                         navigate('/admin-doctor');
                                     }}
-                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer overflow-hidden ${
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-lg overflow-hidden ${
                                         activeCard === "TOTAL_DOCTORS"
                                             ? "bg-white border-[2.5px] border-[#1F2E5C]"
                                             : "bg-white border-[1.2px] border-gray-300"
@@ -259,15 +282,18 @@ const AdminDoctor = () => {
                                         <img src={doImg} className="h-[140px] object-contain -ml-2 mb-[-12px]" />
                                         <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">100</h2>
                                     </div>
-                                </div>
+                                </motion.div>
 
                                 {/* CARD 2: Active Doctors */}
-                                <div
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2 }}
                                     onClick={() => {
                                         setActiveCard("ACTIVE");
                                         navigate('/admin-doctor?view=active');
                                     }}
-                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer overflow-hidden ${
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-lg overflow-hidden ${
                                         activeCard === "ACTIVE"
                                             ? "bg-white border-[2.5px] border-[#1F2E5C]"
                                             : "bg-white border-[1.2px] border-gray-300"
@@ -278,15 +304,18 @@ const AdminDoctor = () => {
                                         <img src={active1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
                                         <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">50</h2>
                                     </div>
-                                </div>
+                                </motion.div>
 
                                 {/* CARD 3: Pending Doctors */}
-                                <div
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3 }}
                                     onClick={() => {
                                         setActiveCard("PENDING");
                                         navigate('/admin-doctor?view=pending');
                                     }}
-                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer overflow-hidden ${
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-lg overflow-hidden ${
                                         activeCard === "PENDING"
                                             ? "bg-white border-[2.5px] border-[#1F2E5C]"
                                             : "bg-white border-[1.2px] border-gray-300"
@@ -297,15 +326,18 @@ const AdminDoctor = () => {
                                         <img src={pen1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
                                         <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">50</h2>
                                     </div>
-                                </div>
+                                </motion.div>
 
                                 {/* CARD 4: Rejected Doctors */}
-                                <div
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.4 }}
                                     onClick={() => {
                                         setActiveCard("REJECTED");
                                         navigate('/admin-doctor?view=rejected');
                                     }}
-                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer overflow-hidden ${
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-lg overflow-hidden ${
                                         activeCard === "REJECTED"
                                             ? "bg-white border-[2.5px] border-[#1F2E5C]"
                                             : "bg-white border-[1.2px] border-gray-300"
@@ -316,12 +348,15 @@ const AdminDoctor = () => {
                                         <img src={reject1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
                                         <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">100</h2>
                                     </div>
-                                </div>
+                                </motion.div>
 
                                 {/* CARD 5: Add Doctors */}
-                                <div
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.5 }}
                                     onClick={() => setActiveCard("ADD_DOCTORS")}
-                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer ${
+                                    className={`shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-[16px] p-4 h-full flex flex-col justify-between cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-lg ${
                                         activeCard === "ADD_DOCTORS"
                                             ? "bg-white border-[2.5px] border-[#1F2E5C]"
                                             : "bg-white border-[1.2px] border-gray-300"
@@ -331,76 +366,141 @@ const AdminDoctor = () => {
                                     <div className="flex justify-center items-end flex-1">
                                         <img src={add2} className="h-[140px] object-contain" />
                                     </div>
-                                </div>
+                                </motion.div>
                             </div>
                         </div>
 
                         {/* CALENDAR */}
-                        <div className="col-span-4 bg-white border border-black rounded-[20px] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex flex-col h-[400px]">
-                            <div className="flex justify-between items-center mb-4 px-2">
-                                <button onClick={handlePrevMonth} className="text-[#399CAA] hover:text-[#104e5f] transition-colors p-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-[18px] h-[18px]">
+                        <div className="col-span-4 bg-white border-[1.2px] border-gray-300 rounded-[16px] p-4 flex flex-col h-[400px] overflow-hidden">
+                            <div className="flex justify-between items-center mb-6 px-2">
+                                <button onClick={handlePrevMonth} className="text-[#399CAA] hover:text-[#104e5f] transition-all p-2 rounded-full hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                     </svg>
                                 </button>
-                                <div className="flex gap-4">
+                                
+                                <div className="flex gap-4 items-center relative">
+                                    {/* Month Selection */}
                                     <div className="relative">
-                                        <select value={month} onChange={(e) => setMonth(+e.target.value)}
-                                            className="appearance-none border border-gray-400 text-gray-500 rounded-full pl-6 pr-12 py-1 text-[16px] outline-none focus:border-gray-300 bg-transparent cursor-pointer hover:bg-gray-50 transition-colors">
-                                            {months.map((m, i) => (
-                                                <option key={i} value={i}>{m}</option>
-                                            ))}
-                                        </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                                            <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                        <div 
+                                            className="flex items-center gap-[6px] cursor-pointer group" 
+                                            onClick={() => { setIsMonthOpen(!isMonthOpen); setIsYearOpen(false); }}
+                                        >
+                                            <span className="font-bold text-[16px] text-gray-700 tracking-wide">{monthsList[month]}</span>
+                                            <svg className="w-[14px] h-[14px] text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                                         </div>
+                                        
+                                        {isMonthOpen && (
+                                            <div className="absolute top-full left-0 mt-2 w-[140px] bg-white border border-gray-100 rounded-xl shadow-xl z-[100] py-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                                {monthsList.map((m, i) => (
+                                                    <div 
+                                                        key={m}
+                                                        onClick={() => { setMonth(i); setIsMonthOpen(false); }}
+                                                        className={`px-4 py-2 text-[14px] cursor-pointer transition-colors ${month === i ? 'bg-[#7DB1BC]/10 text-[#399CAA] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
+                                                    >
+                                                        {m}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
+
+                                    {/* Year Selection */}
                                     <div className="relative">
-                                        <select value={year} onChange={(e) => setYear(+e.target.value)}
-                                            className="appearance-none border border-gray-500 text-gray-500 rounded-full pl-6 pr-12 py-1 text-[16px] outline-none focus:border-gray-500 bg-transparent cursor-pointer hover:bg-gray-50 transition-colors">
-                                            {[2024, 2025, 2026, 2027].map(y => (
-                                                <option key={y} value={y}>{y}</option>
-                                            ))}
-                                        </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                                            <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                        <div 
+                                            className="flex items-center gap-[6px] cursor-pointer group" 
+                                            onClick={() => { setIsYearOpen(!isYearOpen); setIsMonthOpen(false); }}
+                                        >
+                                            <span className="font-bold text-[16px] text-gray-700 tracking-wide">{year}</span>
+                                            <svg className="w-[14px] h-[14px] text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                                         </div>
+
+                                        {isYearOpen && (
+                                            <div className="absolute top-full left-0 mt-2 w-[100px] bg-white border border-gray-100 rounded-xl shadow-xl z-[100] py-2 max-h-[200px] overflow-y-auto custom-scrollbar">
+                                                {yearsList.map(y => (
+                                                    <div 
+                                                        key={y}
+                                                        onClick={() => { setYear(y); setIsYearOpen(false); }}
+                                                        className={`px-4 py-2 text-[14px] cursor-pointer transition-colors ${year === y ? 'bg-[#7DB1BC]/10 text-[#399CAA] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
+                                                    >
+                                                        {y}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                                <button onClick={handleNextMonth} className="text-[#3992A5] hover:text-[#104e5f] transition-colors p-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-[18px] h-[18px]">
+
+                                <button onClick={handleNextMonth} className="text-[#399CAA] hover:text-[#104e5f] transition-all p-2 rounded-full hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                     </svg>
                                 </button>
                             </div>
-                            <div className="grid grid-cols-7 gap-y-4 text-center mt- flex-1">
-                                {["S", "M", "T", "W", "Th", "F", "Sat"].map(d => (
-                                    <span key={d} className="text-[#399CAA] font-normal text-[18px] mb-1">{d}</span>
+
+                            <div className="grid grid-cols-7 mb-4">
+                                {['S', 'M', 'T', 'W', 'Th', 'F', 'Sat'].map(d => (
+                                    <div key={d} className="text-center text-[#32869e] font-bold text-[13px]">{d}</div>
                                 ))}
-                                {(() => {
-                                    const daysInPrevMonth = new Date(year, month, 0).getDate();
-                                    const prevDays = [...Array(firstDay)].map((_, i) => (
-                                        <span key={`prev-${i}`} className="flex items-center justify-center text-gray-400 text-[16px]">
-                                            {daysInPrevMonth - firstDay + i + 1}
-                                        </span>
-                                    ));
-                                    const currentDays = [...Array(daysInMonth)].map((_, i) => {
-                                        const date = i + 1;
-                                        const isSelected = date === selectedDate;
-                                        return (
-                                            <div key={`curr-${i}`} className="flex justify-center items-center">
-                                                <span
-                                                    onClick={() => setSelectedDate(date)}
-                                                    className={`flex items-center justify-center text-black w-[36px] h-[36px] rounded-full cursor-pointer text-[16px] transition-all
-                                                        ${isSelected ? 'bg-[#70A5AF] text-black font-bold shadow-md' : 'text-gray-500 hover:bg-gray-300'}
-                                                    `}>
-                                                    {date}
+                            </div>
+                            <div className="relative mt-1 flex-1">
+                                {/* Sliding Highlighter */}
+                                <div 
+                                    className="absolute bg-[#7DB1BC] rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0" 
+                                    style={{ 
+                                        left: dateStyle.left, 
+                                        top: dateStyle.top, 
+                                        width: dateStyle.width, 
+                                        height: dateStyle.height, 
+                                        opacity: dateStyle.opacity 
+                                    }} 
+                                />
+                                
+                                <div className="grid grid-cols-7 gap-y-[18px] text-[15px] font-bold text-gray-700 relative z-10">
+                                    {(() => {
+                                        const daysInPrevMonth = new Date(year, month, 0).getDate();
+                                        const prevDays = [...Array(firstDay)].map((_, i) => {
+                                            const d = daysInPrevMonth - firstDay + i + 1;
+                                            return (
+                                                <div key={`prev-${i}`} className="flex justify-center items-center">
+                                                    <span className="w-[32px] h-[32px] flex items-center justify-center rounded-full text-gray-300 font-medium">
+                                                        {d}
+                                                    </span>
+                                                </div>
+                                            );
+                                        });
+
+                                        const currentDays = [...Array(daysInMonth)].map((_, i) => {
+                                            const d = i + 1;
+                                            const totalIndex = firstDay + i;
+                                            return (
+                                                <div key={`curr-${i}`} className="flex justify-center items-center">
+                                                    <span 
+                                                        ref={el => dateRefs.current[totalIndex] = el}
+                                                        onClick={() => {
+                                                            setSelectedDate(d);
+                                                            setActiveDateIndex(totalIndex);
+                                                        }}
+                                                        className={`w-[32px] h-[32px] flex items-center justify-center rounded-full transition-colors cursor-pointer ${activeDateIndex === totalIndex ? 'text-white' : 'hover:bg-gray-100 text-gray-600'}`}
+                                                    >
+                                                        {d}
+                                                    </span>
+                                                </div>
+                                            );
+                                        });
+
+                                        const nextDaysCount = 42 - (prevDays.length + currentDays.length);
+                                        const nextDays = [...Array(nextDaysCount)].map((_, i) => (
+                                            <div key={`next-${i}`} className="flex justify-center items-center">
+                                                <span className="w-[32px] h-[32px] flex items-center justify-center rounded-full text-gray-300 font-medium">
+                                                    {i + 1}
                                                 </span>
                                             </div>
-                                        );
-                                    });
-                                    return [...prevDays, ...currentDays];
-                                })()}
+                                        ));
+
+                                        return [...prevDays, ...currentDays, ...nextDays];
+                                    })()}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -44,7 +44,7 @@ import Form3 from './components/Doctor/Form3';
 import Form4 from './components/Doctor/Form4';
 import Vertical from './components/Doctor/Vertical';
 import DoctorCard from './components/Doctor/DoctorCard';
-import App1_Dashboard from './components/Appoinment/App1_Dashboard';
+import Doctor_dashboard from './components/Doctor/Doctor_dashboard';
 import Recent_patient from './components/Appoinment/Recent_patient';
 import Settingpage from './components/Appoinment/Settingpage';
 import Reject_doctor from './components/Admin/Reject_doctor';
@@ -149,7 +149,7 @@ const App = () => {
       <Route path="/App_Dashboard" element={<App_Dashboard />} />
       <Route path="/Bot" element={<Bot />} />
       <Route path="/Addslot" element={<Addslot />} />
-      <Route path="/App1_Dashboard" element={<App1_Dashboard />} />
+      <Route path="/Doctor_dashboard" element={<Doctor_dashboard />} />
       <Route path="/Patients" element={<Recent_patient />} />
       <Route path="/Settingpage" element={<Settingpage />} />
       <Route path="/reject_doctor" element={<Reject_doctor />} />

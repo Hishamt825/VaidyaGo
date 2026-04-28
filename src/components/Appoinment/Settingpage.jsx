@@ -67,7 +67,7 @@ const Settingpage = () => {
       {/* Header */}
       <header className="settings-header">
         <div className="logo-wrapper">
-          <img src={logoUrl} alt="VaDyaGo Logo" onClick={() => navigate('/App1_Dashboard')} style={{cursor: 'pointer'}} />
+          <img src={logoUrl} alt="VaDyaGo Logo" onClick={() => navigate('/Doctor_dashboard')} style={{cursor: 'pointer'}} />
         </div>
         <div className="user-profile-header">
           <span className="profile-name-header">Adiba Khanam</span>

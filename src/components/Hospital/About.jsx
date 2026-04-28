@@ -11,7 +11,7 @@ const Hero1 = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
-  const [showForgetModal, setShowForgetModal] = useState(false);
+  const [activeFeature, setActiveFeature] = useState(2);
   return (
     <div className="font-sans text-gray-800 overflow-x-hidden w-full">
 
@@ -146,7 +146,6 @@ const Hero1 = () => {
                 <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
               </button>
             </div>
-
             <button
               onClick={() => { navigate("/ContactUs"); setIsMobileMenuOpen(false); }}
               className="border-[1.2px] border-white text-white px-8 py-3 rounded-full font-bold transform transition-all duration-300 hover:scale-105 mt-6 text-[16px] w-full"
@@ -199,8 +198,6 @@ const Hero1 = () => {
         </div>
       </section>
 
-      {/* ================= WHITE AREA BELOW HERO ================= */}
-      <div className="h-9 bg-white"></div>
 
       {/* ===================================================== */}
       {/*               WHITE BOX + FLOATING CARDS              */}
@@ -254,7 +251,7 @@ const Hero1 = () => {
 
 
       {/* Department Category Section */}
-      <section className="w-auto mx-auto mt-32 text-center">
+      <section className="w-auto mx-auto mt-40 text-center">
         {/* Top Bar with Buttons */}
         <div className="flex justify-center items-center mb-8">
 
@@ -405,7 +402,7 @@ const Hero1 = () => {
 
         </div>
       </section>
-      <div className="flex items-center w-full mt-[20px]">
+      <div className="flex items-center w-full mt-[10px]">
         <div className="flex-1 h-[2px] bg-[#1c9bb2]"></div>
 
         <div className="-mx-1">
@@ -421,13 +418,13 @@ const Hero1 = () => {
 
 
       {/* ================= ABOUT US SECTION ================= */}
-      <section className="max-w-7xl mx-auto px-6 py-20 lg:py-32">
+      <section className="max-w-7xl mx-auto px-6 py-12 lg:py-16">
 
         <h2 className="text-[32px] font-bold text-black mb-8 font-serif">
           About Us
         </h2>
 
-        <p className="text-gray-800 text-[16px] leading-relaxed mb-24 max-w-6xl">
+        <p className="text-gray-800 text-[16px] leading-relaxed mb-12 max-w-6xl">
           <span className="font-bold">VAIDYAGO HEALTHCARE</span> is a leading integrated healthcare
           delivery service provider in India. The healthcare verticals primarily comprise hospitals, diagnostics,
           and day care specialty facilities. Currently, the company operates 33 healthcare
@@ -468,88 +465,168 @@ const Hero1 = () => {
 
 
       {/* ================= KEY FEATURES SECTION ================= */}
-      <section className="relative w-full max-w-7xl mx-auto px-6 py-24 lg:py-32 overflow-visible">
+      <section className="relative w-full max-w-7xl mx-auto px-6 py-16 lg:py-24 overflow-visible">
+        
+        {/* Background Decorative Elements */}
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#E8F1F2]/40 rounded-full blur-[140px] -z-10"></div>
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#D1E9F1]/30 rounded-full blur-[120px] -z-10"></div>
 
-        {/* Background Decorative Element */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#E8F1F2]/30 blur-[100px] rounded-full -z-10"></div>
-
-        <div className="text-center mb-20">
-          <h2 className="text-[32px] md:text-[42px] font-bold text-[#0E4056] font-serif mb-4">
-            Smart Healthcare Features
-          </h2>
-          <div className="w-24 h-1 bg-[#19718A] mx-auto rounded-full"></div>
+        <div className="text-center mb-16 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-[36px] md:text-[48px] font-bold text-[#0E4056] font-serif mb-4 tracking-tight">
+              Smart Healthcare <span className="text-[#19718A]">Features</span>
+            </h2>
+            <p className="text-gray-500 max-w-2xl mx-auto text-[17px] leading-relaxed">
+              Experience the future of medicine with our integrated digital solutions designed for your comfort.
+            </p>
+            <div className="w-24 h-1.5 bg-gradient-to-r from-transparent via-[#19718A] to-transparent mx-auto mt-6 rounded-full opacity-30"></div>
+          </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12 items-start">
-
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 items-start">
+          
           {/* Column 1 */}
-          <div className="flex flex-col gap-10">
-            {/* AI Chat */}
-            <div className="group bg-white p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_60px_rgba(25,113,138,0.15)] transition-all duration-500 hover:-translate-y-2">
-              <div className="w-16 h-16 bg-[#F0F7F9] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#19718A] transition-colors">
-                <img src="/assets/ai1.png" alt="AI Chat" className="w-10 h-10 object-contain group-hover:invert group-hover:brightness-0 transition-all" />
+          <div className="flex flex-col gap-8">
+            {/* AI Chat (ID: 1) */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10 }}
+              onClick={() => setActiveFeature(1)}
+              className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
+                activeFeature === 1 
+                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
+                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
+              }`}
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+                activeFeature === 1 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+              }`}>
+                <img src="/assets/ai1.png" alt="AI Chat" className="w-10 h-10 object-contain invert brightness-0" />
               </div>
-              <h3 className="text-2xl font-bold text-[#19718A] mb-3">AI Chat Assistant</h3>
-              <p className="text-gray-600 leading-relaxed text-[15px]">
-                Instant support for health queries and seamless navigation through our hospital services using advanced AI.
+              <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 1 ? "text-white" : "text-[#0E4056]"}`}>AI Chat Assistant</h3>
+              <p className={`leading-relaxed text-[15.5px] ${activeFeature === 1 ? "text-blue-50/90" : "text-gray-600"}`}>
+                Instant support for health queries and seamless navigation through our services using cutting-edge AI.
               </p>
-            </div>
+            </motion.div>
 
-            {/* Medicine Reminder */}
-            <div className="group bg-white p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_60px_rgba(25,113,138,0.15)] transition-all duration-500 hover:-translate-y-2">
-              <div className="w-16 h-16 bg-[#F0F7F9] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#19718A] transition-colors">
-                <img src="/assets/med1.png" alt="Medicine" className="w-10 h-10 object-contain group-hover:invert group-hover:brightness-0 transition-all" />
+            {/* Medicine Reminder (ID: 2) */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10 }}
+              onClick={() => setActiveFeature(2)}
+              className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
+                activeFeature === 2 
+                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
+                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
+              }`}
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+                activeFeature === 2 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+              }`}>
+                <img src="/assets/med1.png" alt="Medicine" className="w-10 h-10 object-contain invert brightness-0" />
               </div>
-              <h3 className="text-2xl font-bold text-[#19718A] mb-3">Medicine Reminder</h3>
-              <p className="text-gray-600 leading-relaxed text-[15px]">
+              <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 2 ? "text-white" : "text-[#0E4056]"}`}>Medicine Reminder</h3>
+              <p className={`leading-relaxed text-[15.5px] ${activeFeature === 2 ? "text-blue-50/90" : "text-gray-600"}`}>
                 Smart medication tracking to ensure you never miss a dose, helping you stay on track with your recovery.
               </p>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Column 2 (Centered/Offset) */}
-          <div className="flex flex-col gap-10 lg:mt-20">
-            {/* Prescription Upload */}
-            <div className="group bg-[#19718A] p-8 rounded-3xl shadow-[0_20px_50px_rgba(25,113,138,0.3)] border border-[#19718A] hover:shadow-[0_30px_70px_rgba(25,113,138,0.4)] transition-all duration-500 hover:-translate-y-2">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
+          {/* Column 2 */}
+          <div className="flex flex-col gap-8 lg:mt-16">
+            {/* Prescription Upload (ID: 3) */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10 }}
+              onClick={() => setActiveFeature(3)}
+              className={`group relative p-9 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
+                activeFeature === 3 
+                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
+                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
+              }`}
+            >
+              <div className="absolute top-[-20%] right-[-10%] w-60 h-60 bg-white/10 rounded-full blur-3xl opacity-20"></div>
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+                activeFeature === 3 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+              }`}>
                 <img src="/assets/pre1.png" alt="Prescription" className="w-10 h-10 object-contain invert brightness-0" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Prescription Upload</h3>
-              <p className="text-blue-50 leading-relaxed text-[15px]">
+              <h3 className={`text-[26px] font-bold mb-4 ${activeFeature === 3 ? "text-white" : "text-[#0E4056]"}`}>Prescription Upload</h3>
+              <p className={`leading-relaxed text-[16px] ${activeFeature === 3 ? "text-blue-50/90" : "text-gray-600"}`}>
                 Quick and secure submission of your prescriptions for faster diagnostic processing and pharmacy services.
               </p>
-            </div>
+            </motion.div>
 
-            {/* Voice Interaction */}
-            <div className="group bg-white p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_60px_rgba(25,113,138,0.15)] transition-all duration-500 hover:-translate-y-2">
-              <div className="w-16 h-16 bg-[#F0F7F9] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#19718A] transition-colors">
-                <img src="/assets/voice1.png" alt="Voice" className="w-10 h-10 object-contain group-hover:invert group-hover:brightness-0 transition-all" />
+            {/* Voice Interaction (ID: 4) */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10 }}
+              onClick={() => setActiveFeature(4)}
+              className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
+                activeFeature === 4 
+                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
+                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
+              }`}
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+                activeFeature === 4 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+              }`}>
+                <img src="/assets/voice1.png" alt="Voice" className="w-10 h-10 object-contain invert brightness-0" />
               </div>
-              <h3 className="text-2xl font-bold text-[#19718A] mb-3">Voice Interaction</h3>
-              <p className="text-gray-600 leading-relaxed text-[15px]">
-                Intuitive hands-free control and accessibility, allowing you to interact with our platform using simple voice commands.
+              <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 4 ? "text-white" : "text-[#0E4056]"}`}>Voice Interaction</h3>
+              <p className={`leading-relaxed text-[15.5px] ${activeFeature === 4 ? "text-blue-50/90" : "text-gray-600"}`}>
+                Intuitive hands-free control and accessibility, allowing you to interact with our platform using voice commands.
               </p>
-            </div>
+            </motion.div>
           </div>
 
           {/* Column 3 */}
-          <div className="flex flex-col gap-10 lg:mt-0 lg:pt-40">
-            {/* Book Appointment */}
-            <div className="group bg-white p-8 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_60px_rgba(25,113,138,0.15)] transition-all duration-500 hover:-translate-y-2">
-              <div className="w-16 h-16 bg-[#F0F7F9] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#19718A] transition-colors">
-                <img src="/assets/book1.png" alt="Book" className="w-10 h-10 object-contain group-hover:invert group-hover:brightness-0 transition-all" />
+          <div className="flex flex-col gap-8 lg:mt-32">
+            {/* Book Appointment (ID: 5) */}
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10 }}
+              onClick={() => setActiveFeature(5)}
+              className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
+                activeFeature === 5 
+                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
+                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
+              }`}
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+                activeFeature === 5 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+              }`}>
+                <img src="/assets/book1.png" alt="Book" className="w-10 h-10 object-contain invert brightness-0" />
               </div>
-              <h3 className="text-2xl font-bold text-[#19718A] mb-3">Book Appointment</h3>
-              <p className="text-gray-600 leading-relaxed text-[15px]">
+              <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 5 ? "text-white" : "text-[#0E4056]"}`}>Book Appointment</h3>
+              <p className={`leading-relaxed text-[15.5px] ${activeFeature === 5 ? "text-blue-50/90" : "text-gray-600"}`}>
                 Effortlessly schedule visits with our expert specialists, choosing the time and date that works best for you.
               </p>
-            </div>
+            </motion.div>
           </div>
-
         </div>
       </section>
 
-      <section className="w-full px-[2%] mt-[50px]">
+      <section className="w-full px-[2%] mt-[20px] mb-32 relative z-10">
 
         {/* HEADING */}
         <h2
@@ -563,10 +640,13 @@ const Hero1 = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 place-items-center">
 
           {/* 1 — Canteen */}
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -5, scale: 1.02 }}
             className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
-hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:-translate-y1 hover:scale-[1.02]
-hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor-pointer">
+hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shadow-[0_0_12px_rgba(93,167,194,0.3)] cursor-pointer">
             {/* IMAGE WITH HOVER SCALE */}
             <div className="overflow-hidden rounded">
               <img
@@ -580,12 +660,16 @@ hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor
             <p className="text-center mt-3 font-semibold text-[#0e4056] text-[18px] transition-colors duration-300 group-hover:text-[#19718A]">
               Canteen
             </p>
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -5, scale: 1.02 }}
+            transition={{ delay: 0.1 }}
             className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
-hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:-translate-y-1 hover:scale-[1.02]
-hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor-pointer"
+hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shadow-[0_0_12px_rgba(93,167,194,0.3)] cursor-pointer"
           >
             <div className="overflow-hidden rounded">
               <img
@@ -598,12 +682,16 @@ hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor
             <p className="text-center mt-3 font-semibold text-[#0e4056] text-[18px] transition-colors duration-300 group-hover:text-[#19718A]">
               Deluxe Room
             </p>
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -5, scale: 1.02 }}
+            transition={{ delay: 0.2 }}
             className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
-hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:-translate-y-1 hover:scale-[1.02]
-hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor-pointer">
+hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shadow-[0_0_12px_rgba(93,167,194,0.3)] cursor-pointer">
             <div className="overflow-hidden rounded">
               <img
                 src="/assets/nur.png"
@@ -615,12 +703,16 @@ hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor
             <p className="text-center mt-3 font-semibold text-[#0e4056] text-[18px] transition-colors duration-300 group-hover:text-[#19718A]">
               Nursing Staff
             </p>
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -5, scale: 1.02 }}
+            transition={{ delay: 0.3 }}
             className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
-hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:-translate-y-1 hover:scale-[1.02]
-hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor-pointer"
+hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shadow-[0_0_12px_rgba(93,167,194,0.3)] cursor-pointer"
           >
             <div className="overflow-hidden rounded">
               <img
@@ -633,13 +725,12 @@ hover:shadow-[0_0_8px_rgba(93,167,194,0.3),0_0_16px_rgba(93,167,194,0.2)] cursor
             <p className="text-center mt-3 font-semibold text-[#0e4056] text-[20px] transition-colors duration-300 group-hover:text-[#19718A]">
               Free Food for Patients
             </p>
-          </div>
+          </motion.div>
 
         </div>
       </section>
 
 
-      <div className="h-9 bg-white"></div>
 
 
       {/* ===== Footer Section ===== */}
