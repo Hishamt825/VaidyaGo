@@ -19,9 +19,11 @@ import Logout from "../Login-hospital/Logout";
 const MainPage = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [expandedSpecialty, setExpandedSpecialty] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null);
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [showNewPassModal, setShowNewPassModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -282,172 +284,291 @@ const MainPage = () => {
 
 
       {/* ================= SPECIALITIES SECTION ================= */}
-      <section className="w-full md:w-10/12 mx-auto mt-16 mb-20 px-6">
+      <section className="w-full relative py-20 bg-white">
+        {/* Subtle background decoration */}
+        <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-[#F8FAFC] to-transparent"></div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
 
-          {[
-            { img: heart, title: "Cardiac Care", desc: "Heart Health Care" },
-            { img: dentist, title: "Dentistry", desc: "Dental Care Solutions" },
-            { img: gastro, title: "Gastroscience", desc: "Digestive Health Care" },
-            { img: brain, title: "Neuroscience", desc: "Brain & Nerve Care" },
-            { img: ortho, title: "Orthopedics", desc: "Bone & Joint Care" },
-            { img: liver, title: "Liver Care", desc: "Liver Transparent & Health Care" },
-            { img: renal, title: "Renal Care", desc: "Kidney Healthy Treatment" },
-            { img: gyno, title: "Gynaecology", desc: "Gynaecological Care Solution" },
-            { img: child, title: "Paediatric Care", desc: "Child Health Services" },
-          ]
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9F3F6] text-[#19718A] mb-4">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" /></svg>
+              <span className="text-[12px] font-bold uppercase tracking-widest">Departments</span>
+            </div>
+            <h2 className="text-[36px] md:text-[44px] font-extrabold text-[#0B2132] leading-tight mb-4 tracking-tight">
+              Our Medical <span className="text-[#19718A]">Specialities</span>
+            </h2>
+            <p className="text-gray-500 text-[16px] max-w-2xl mx-auto leading-relaxed">
+              Comprehensive care across a wide range of medical disciplines, delivered by our expert team of specialists.
+            </p>
+          </div>
 
-            .map((item, index) => (
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+            {[
+              { img: heart, title: "Cardiac Care", desc: "Advanced heart health and treatments", services: ["ECG & Angiography", "Heart Bypass Surgery", "Cardiac Rehabilitation"] },
+              { img: dentist, title: "Dentistry", desc: "Complete dental care solutions", services: ["Teeth Whitening", "Root Canal Therapy", "Dental Implants"] },
+              { img: gastro, title: "Gastroscience", desc: "Digestive and gastrointestinal health", services: ["Endoscopy", "Liver Disease Treatment", "Hernia Surgery"] },
+              { img: brain, title: "Neuroscience", desc: "Expert brain and nerve care", services: ["Brain Surgery", "Stroke Management", "Neurological Exams"] },
+              { img: ortho, title: "Orthopedics", desc: "Bone, joint, and spine treatments", services: ["Joint Replacement", "Spine Surgery", "Sports Injury Treatment"] },
+              { img: liver, title: "Liver Care", desc: "Liver transplant and health care", services: ["Liver Transplant", "Hepatitis Treatment", "Liver Biopsy"] },
+              { img: renal, title: "Renal Care", desc: "Comprehensive kidney treatments", services: ["Dialysis", "Kidney Stone Removal", "Nephrology Consultations"] },
+              { img: gyno, title: "Gynaecology", desc: "Women's health and maternity care", services: ["Pregnancy Care", "Women's Health Checkup", "Infertility Treatments"] },
+              { img: child, title: "Paediatric Care", desc: "Dedicated child health services", services: ["Vaccination", "Child Nutrition", "Pediatric Surgery"] },
+            ].map((item, index) => (
               <div
                 key={index}
-                className="group bg-white p-6 rounded-2xl shadow-md border border-transparent
-        hover:border-[#088395] transition-all duration-500
-        hover:-translate-y-2 hover:shadow-xl cursor-pointer w-full min-h-[110px]"
+                onClick={() => setExpandedSpecialty(expandedSpecialty === index ? null : index)}
+                className={`group relative bg-white rounded-[24px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border transition-all duration-500 cursor-pointer overflow-hidden ${expandedSpecialty === index
+                  ? "border-[#19718A] shadow-[0_12px_30px_-10px_rgba(25,113,138,0.2)] scale-[1.02] z-20"
+                  : "border-gray-100 hover:border-[#19718A]/30 hover:-translate-y-1.5 hover:shadow-[0_12px_30px_-10px_rgba(25,113,138,0.15)] z-10"
+                  }`}
               >
-                <div className="flex items-center gap-4">
+                {/* Decorative hover gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#19718A]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                  <div className="relative w-12 h-12">
+                <div className="p-6 relative flex items-center gap-5 z-10">
+                  <div className={`relative w-16 h-16 shrink-0 rounded-[18px] flex items-center justify-center shadow-sm transition-all duration-500 ${expandedSpecialty === index ? "bg-white border-[#19718A]/20" : "bg-[#F8FAFC] group-hover:bg-white border border-gray-50 group-hover:border-[#19718A]/10 group-hover:shadow-md"}`}>
                     <img
                       src={item.img}
                       alt={item.title}
-                      className="w-full h-full object-contain transition duration-500 group-hover:scale-110"
+                      className="w-8 h-8 object-contain transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-[#C8D9E2]/30 blur-md opacity-0 group-hover:opacity-100 transition duration-500 rounded-full"></div>
                   </div>
 
-                  <div>
-                    <h4 className="font-bold text-[20px] text-[#061953] group-hover:text-[#19718A] transition">
+                  <div className="flex-1 min-w-0">
+                    <h4 className={`font-extrabold text-[18px] mb-1 transition-colors truncate ${expandedSpecialty === index ? "text-[#19718A]" : "text-[#0B2132] group-hover:text-[#19718A]"}`}>
                       {item.title}
                     </h4>
-                    <p className="text-gray-600 text-[16px]">
+                    <p className="text-gray-500 text-[14px] leading-snug pr-4">
                       {item.desc}
                     </p>
                   </div>
 
+                  <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSpecialty === index ? "bg-[#19718A] text-white rotate-90" : "bg-gray-50 text-gray-400 group-hover:bg-[#19718A] group-hover:text-white group-hover:translate-x-1"}`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+                  </div>
                 </div>
+
+                {/* Dropdown Content Area */}
+                <div
+                  className={`relative z-10 overflow-hidden transition-all duration-500 ease-in-out ${expandedSpecialty === index ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0"}`}
+                >
+                  <div className="px-6 pb-6 pt-2 border-t border-gray-100 mx-6">
+                    <p className="text-[12px] font-bold text-[#19718A] uppercase tracking-widest mb-3">Key Services</p>
+                    <ul className="space-y-2.5 mb-5">
+                      {item.services.map((service, idx) => (
+                        <li key={idx} className="flex items-center gap-3 text-[14px] text-gray-600 font-medium">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#19718A]/50 shrink-0"></div>
+                          {service}
+                        </li>
+                      ))}
+                    </ul>
+                    <button className="w-full bg-[#E9F3F6] hover:bg-[#19718A] text-[#19718A] hover:text-white py-2.5 rounded-[12px] text-[13px] font-bold transition-colors">
+                      Book Appointment
+                    </button>
+                  </div>
+                </div>
+
               </div>
             ))}
+          </div>
+
+          <div className="flex justify-center mt-14">
+            <button className="bg-gradient-to-r from-[#19718A] to-[#0C6173] text-white px-10 py-4 rounded-full text-[15px] font-bold hover:shadow-[0_10px_30px_-10px_rgba(25,113,138,0.5)] transition-all duration-300 flex items-center gap-3 group">
+              View All Specialities
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+              </div>
+            </button>
+          </div>
 
         </div>
-
-        <div className="flex justify-center mt-12">
-          <button className="bg-[#19718A] text-white px-12 py-3 rounded-full font-medium 
-    transition duration-500 hover:bg-[#088395] hover:scale-105 shadow-md">
-            View All Specialities
-          </button>
-        </div>
-
       </section>
 
 
       {/* ==================== Diseases & Conditions Section ===================== */}
-      <section className="w-full max-w-7xl mx-auto px-6 md:px-12 mt-20 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
+      <section className="w-full relative py-20 mt-10 bg-gradient-to-br from-[#F8FAFC] to-[#E9F3F6] overflow-hidden">
+        {/* Decorative background circles */}
+        <div className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-[#19718A]/5 blur-[80px]"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[300px] h-[300px] rounded-full bg-[#19718A]/5 blur-[60px]"></div>
 
-          {/* LEFT SIDE IMAGE */}
-          <div className="w-full flex justify-center md:justify-start">
-            <img
-              src="/assets/side.png"
-              alt="Doctor Image"
-              className="w-full max-w-[380px] object-cover rounded-tl-[40px] rounded-tr-[40px] rounded-bl-[40px] rounded-br-[100px] shadow-lg"
-            />
-          </div>
+        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-          {/* RIGHT SIDE SEARCH AREA */}
-          <div className="flex flex-col">
-            <h2 className="text-[28px] md:text-[34px] font-bold text-black mb-1 leading-tight">
-              Search <span className="text-[#19718A]">Diseases</span> & <span className="text-[#19718A]">Conditions</span> of Patients
-            </h2>
-            <p className="text-gray-500 text-[15px] mb-8">
-              Find Diseases & conditions by first letter or full name
-            </p>
-
-            {/* A–Z Buttons */}
-            <div className="grid grid-cols-7 gap-y-4 gap-x-2 w-full max-w-[400px] mb-8">
-              {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
-                <button
-                  key={letter}
-                  className="w-10 h-10 md:w-[42px] md:h-[42px] rounded-full border-[1.5px] border-[#19718A] text-[#19718A] font-bold text-[18px] flex items-center justify-center hover:bg-[#19718A] hover:text-white transition-all mx-auto"
-                >
-                  {letter}
-                </button>
-              ))}
-            </div>
-
-            {/* Search Bar */}
-            <div className="w-full max-w-[450px]">
-              <p className="text-gray-500 text-[14px] mb-2 font-medium">Search dieases & conditions</p>
-              <div className="flex items-center w-full bg-white px-5 py-3 rounded-xl border border-[#A4C4CE] shadow-sm">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="w-full outline-none text-gray-700 bg-transparent text-[16px]"
+            {/* LEFT SIDE IMAGE */}
+            <div className="w-full flex justify-center lg:justify-start relative">
+              <div className="relative">
+                {/* Decorative Elements */}
+                <div className="absolute -inset-4 bg-gradient-to-tr from-[#19718A]/20 to-transparent rounded-[40px] transform -rotate-3 transition-transform duration-500 hover:rotate-0"></div>
+                <img
+                  src="/assets/side.png"
+                  alt="Doctor Image"
+                  className="relative z-10 w-full max-w-[420px] object-cover rounded-[32px] shadow-2xl transition-transform duration-500 hover:scale-[1.02]"
                 />
-                <button className="text-[#19718A] ml-2">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </button>
+
+                {/* Floating Badge */}
+                <div className="absolute -right-6 bottom-12 z-20 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce" style={{ animationDuration: '3s' }}>
+                  <div className="w-12 h-12 bg-[#E9F3F6] rounded-full flex items-center justify-center text-[#19718A]">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                  </div>
+                  <div>
+                    <p className="text-[#0B2132] text-[14px] font-bold">10,000+</p>
+                    <p className="text-gray-500 text-[11px] font-medium uppercase tracking-wider">Conditions</p>
+                  </div>
+                </div>
               </div>
             </div>
 
+            {/* RIGHT SIDE SEARCH AREA */}
+            <div className="flex flex-col">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#19718A]/10 text-[#19718A] w-fit mb-6">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
+                <span className="text-[12px] font-bold uppercase tracking-widest">Medical Directory</span>
+              </div>
+
+              <h2 className="text-[36px] md:text-[44px] font-extrabold text-[#0B2132] mb-4 leading-[1.15] tracking-tight">
+                Search <span className="text-[#19718A] relative inline-block">Diseases<svg className="absolute w-full h-3 -bottom-1 left-0 text-[#19718A]/20" fill="currentColor" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0,10 Q50,20 100,10 L100,20 L0,20 Z" /></svg></span> & <span className="text-[#19718A]">Conditions</span> of Patients
+              </h2>
+              <p className="text-gray-500 text-[16px] mb-10 leading-relaxed max-w-[500px]">
+                Find comprehensive information about diseases and conditions by their first letter or full medical name.
+              </p>
+
+              {/* A–Z Buttons */}
+              <div className="flex flex-wrap gap-2.5 mb-10 max-w-[500px]">
+                {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
+                  <button
+                    key={letter}
+                    className="w-[42px] h-[42px] rounded-[14px] bg-white shadow-sm border border-gray-100 text-[#0B2132] font-bold text-[16px] flex items-center justify-center hover:bg-[#19718A] hover:text-white hover:border-[#19718A] hover:-translate-y-1 hover:shadow-md transition-all duration-300"
+                  >
+                    {letter}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search Bar */}
+              <div className="w-full max-w-[500px]">
+                <p className="text-gray-400 text-[11px] uppercase tracking-widest font-bold mb-3">Or Search By Full Name</p>
+                <div className="flex items-center w-full bg-white p-2 rounded-full border-2 border-transparent shadow-md focus-within:border-[#19718A]/40 focus-within:ring-4 focus-within:ring-[#19718A]/10 transition-all duration-300">
+                  <input
+                    type="text"
+                    placeholder="E.g. Diabetes, Hypertension..."
+                    className="w-full outline-none text-gray-700 bg-transparent text-[16px] px-5 py-2 placeholder-gray-400"
+                  />
+                  <button className="bg-[#19718A] text-white px-8 py-3 rounded-full font-bold hover:bg-[#0C6173] transition-colors shadow-sm whitespace-nowrap">
+                    Search
+                  </button>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </section>
 
       {/* ==================== Why Choose Us Section ===================== */}
-      <section className="w-full max-w-7xl mx-auto px-6 md:px-12 py-20 mt-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-16">
+      <section className="w-full relative py-24 bg-white overflow-hidden mt-10">
+        {/* Background Decorative Pattern */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#F8FAFC] to-transparent z-0"></div>
+        <div className="absolute -left-[10%] top-[20%] w-[300px] h-[300px] bg-[#19718A]/5 rounded-full blur-[80px]"></div>
 
-          {/* LEFT CONTENT */}
-          <div className="md:w-1/2 flex flex-col">
-            <h2 className="text-[32px] md:text-[36px] font-bold text-black mb-4">
-              Why Choose Us
-            </h2>
+        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-24">
 
-            <p className="text-gray-500 leading-relaxed text-[15px] max-w-[500px] mb-8">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
+            {/* LEFT CONTENT */}
+            <div className="lg:w-1/2 flex flex-col z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9F3F6] text-[#19718A] w-fit mb-4">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                <span className="text-[12px] font-bold uppercase tracking-widest">Our Benefits</span>
+              </div>
 
-            {/* Points */}
-            <div className="flex flex-col gap-3 mb-8">
-              {["Browse Our Website", "Choose Services", "Send Message"].map((item, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="text-[#088395]">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <h2 className="text-[38px] md:text-[48px] font-extrabold text-[#0B2132] mb-6 leading-[1.15] tracking-tight">
+                Why You Should <br /> <span className="text-[#19718A]">Choose Us</span>
+              </h2>
+
+              <p className="text-gray-500 leading-relaxed text-[16px] max-w-[500px] mb-10">
+                Experience world-class healthcare with our dedicated team of professionals. We combine advanced medical technology with compassionate care to ensure the best outcomes for you and your family.
+              </p>
+
+              {/* Points as Interactive Cards */}
+              <div className="flex flex-col gap-4 mb-10">
+                {[
+                  { title: "Expert Medical Professionals", desc: "Top-certified doctors across various specialties.", icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+                  { title: "State-of-the-art Facilities", desc: "Equipped with the latest medical technology.", icon: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" },
+                  { title: "24/7 Patient Support", desc: "Round-the-clock emergency and care services.", icon: "M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" }
+                ].map((item, index) => (
+                  <div key={index} className="flex items-start gap-4 p-5 rounded-[20px] bg-white border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#19718A]/30 hover:-translate-y-1 transition-all duration-300 group cursor-default max-w-[500px]">
+                    <div className="w-12 h-12 shrink-0 rounded-xl bg-[#E9F3F6] text-[#19718A] flex items-center justify-center group-hover:bg-[#19718A] group-hover:text-white transition-colors duration-300 shadow-sm">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} />
+                      </svg>
+                    </div>
+                    <div>
+                      <span className="block text-[#0B2132] font-bold text-[17px] mb-1 group-hover:text-[#19718A] transition-colors">
+                        {item.title}
+                      </span>
+                      <span className="block text-gray-500 text-[14px]">
+                        {item.desc}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Button */}
+              <div>
+                <button className="bg-gradient-to-r from-[#19718A] to-[#0C6173] text-white px-8 py-4 rounded-full text-[15px] font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 group">
+                  Discover More About Us
+                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* RIGHT IMAGE */}
+            <div className="lg:w-1/2 relative flex justify-center lg:justify-end mt-12 lg:mt-0">
+
+              {/* Dot Pattern Background */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-[radial-gradient(#19718A_2px,transparent_2px)] bg-[size:16px_16px] opacity-20 z-0"></div>
+
+              <div className="relative z-10">
+                <img
+                  src="/assets/doc.svg"
+                  alt="Doctor checking patient"
+                  className="w-full max-w-[550px] h-auto md:h-[600px] object-cover rounded-tl-[60px] rounded-br-[60px] rounded-tr-[24px] rounded-bl-[24px] shadow-2xl border-8 border-white"
+                />
+
+                {/* Overlapping Floating Card */}
+                <div className="absolute -bottom-8 -left-4 md:-bottom-12 md:-left-16 bg-white p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-50 flex items-center gap-5 animate-pulse" style={{ animationDuration: '4s' }}>
+                  <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center text-green-500 shrink-0">
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                     </svg>
                   </div>
-                  <span className="text-black font-extrabold text-[13px]">
-                    {item}
-                  </span>
+                  <div>
+                    <div className="text-[#0B2132] font-black text-[24px] leading-none mb-1">98%</div>
+                    <div className="text-gray-500 text-[13px] font-bold uppercase tracking-widest leading-tight">Patient<br />Satisfaction</div>
+                  </div>
                 </div>
-              ))}
+
+                <div className="absolute top-4 -right-4 md:top-6 md:-right-12 bg-white px-5 py-4 rounded-[20px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-50 flex items-center gap-4">
+                  <div className="flex -space-x-3 shrink-0">
+                    <img src="/assets/person2.png" alt="user" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
+                    <img src="/assets/person3.png" alt="user" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
+                    <img src="/assets/person4.png" alt="user" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
+                  </div>
+                  <div>
+                    <div className="text-[#0B2132] font-bold text-[14px]">Trusted By</div>
+                    <div className="text-[#19718A] text-[12px] font-bold">50k+ Patients</div>
+                  </div>
+                </div>
+
+              </div>
             </div>
 
-            {/* Button */}
-            <div>
-              <button className="bg-[#088395] text-white px-8 py-3 rounded text-[15px] font-semibold hover:bg-[#066a78] transition duration-300 shadow-md">
-                Know More
-              </button>
-            </div>
           </div>
-
-          {/* RIGHT IMAGE */}
-          <div className="md:w-1/2 flex justify-center md:justify-end">
-            <img
-              src="/assets/doc.svg"
-              alt="Doctor checking patient"
-              className="w-full max-w-[550px] h-auto object-cover rounded-lg"
-
-            />
-          </div>
-
         </div>
       </section>
 
@@ -462,7 +583,7 @@ const MainPage = () => {
               {
                 name: "Robert Brown",
                 text: "A positive statement from a satisfied customer about their experience with a product or service.",
-                img: "/person2.png", // 👈 first image
+                img: "/assets/person2.png", // 👈 first image
                 color: "#19718A",
                 // font: "base",
               },
@@ -470,13 +591,13 @@ const MainPage = () => {
               {
                 name: "Sarah Lee",
                 text: "Excellent service! The staff was friendly, and the treatment was top-notch. Highly recommend!",
-                img: "/person3.png", // 👈 second image
+                img: "/assets/person3.png", // 👈 second image
                 color: "#399CAA",
               },
               {
                 name: "Jenny Wilson",
                 text: "Professional and caring team. I felt comfortable throughout my entire visit!",
-                img: "/person4.png", // 👈 third image
+                img: "/assets/person4.png", // 👈 third image
                 color: "#0F628E",
               },
 
@@ -559,7 +680,8 @@ const MainPage = () => {
 
                   {/* ==== Button ==== */}
                   <button
-                    className="mt-4 text-white px-12 py-1.5 rounded-full transition-all duration-300"
+                    onClick={() => setSelectedTestimonial(item)}
+                    className="mt-4 text-white px-12 py-1.5 rounded-full transition-all duration-300 hover:scale-105"
                     style={{
                       background: `linear-gradient(to right, ${item.color}, ${item.color}cc)`,
                       boxShadow: `0 0 15px ${item.color}80`,
@@ -723,6 +845,63 @@ const MainPage = () => {
           }}
         // Assuming we might need to handle OTP switch later, we can pass it if we make Otp.jsx a modal
         />
+      )}
+
+      {/* Testimonial Modal */}
+      {selectedTestimonial && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B2132]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div
+            className="bg-white rounded-[24px] max-w-lg w-full p-8 relative shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] transform transition-all animate-in zoom-in-95 duration-300"
+            style={{ borderTop: `6px solid ${selectedTestimonial.color}` }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedTestimonial(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-800 hover:bg-gray-100 p-2.5 rounded-full transition-all duration-300"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            {/* Content */}
+            <div className="flex flex-col items-center text-center mt-2">
+              <div className="relative">
+                <img
+                  src={selectedTestimonial.img}
+                  alt={selectedTestimonial.name}
+                  className="w-24 h-24 rounded-full border-4 shadow-lg mb-4 object-cover"
+                  style={{ borderColor: selectedTestimonial.color }}
+                />
+                <div
+                  className="absolute -bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center text-white border-2 border-white shadow-sm"
+                  style={{ backgroundColor: selectedTestimonial.color }}
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
+                </div>
+              </div>
+
+              <h3 className="text-[24px] font-extrabold text-[#0B2132] mb-1">{selectedTestimonial.name}</h3>
+              <p className="text-[13px] text-gray-500 mb-6 font-bold uppercase tracking-widest">Verified Patient</p>
+
+              <div className="relative px-8 py-6 bg-gray-50 rounded-[20px] w-full text-left border border-gray-100 shadow-inner">
+                <img src="/assets/comma.png" className="w-6 h-6 opacity-30 absolute top-6 left-6" alt="quote" />
+                <p className="text-gray-700 text-[16px] leading-relaxed italic pl-8 pr-2 relative z-10 font-medium">
+                  "{selectedTestimonial.text}"
+                </p>
+                <div className="flex text-yellow-400 text-[18px] tracking-wider mt-4 pl-8">
+                  ★★★★★
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedTestimonial(null)}
+                className="mt-8 w-full text-white font-bold text-[15px] py-3.5 rounded-[14px] transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                style={{ backgroundColor: selectedTestimonial.color }}
+              >
+                Close Profile
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
     </div>
