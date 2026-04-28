@@ -102,21 +102,21 @@ const Appointment2 = () => {
   // Mock data arrays matching the screenshot
   // Mock data arrays matching the screenshot
   const appointments = [
-    { id: 0, name: 'Saumya tiwari', gender: 'Female', age: 21, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
-    { id: 1, name: 'Anjali Sharma', gender: 'Female', age: 24, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1 },
-    { id: 2, name: 'Vivek Kumar', gender: 'Male', age: 29, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1 },
-    { id: 3, name: 'Sneha Paul', gender: 'Female', age: 22, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
-    { id: 4, name: 'Rahul Singh', gender: 'Male', age: 31, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1 },
-    { id: 5, name: 'Priya Mehra', gender: 'Female', age: 26, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
-    { id: 6, name: 'Rajesh Khanna', gender: 'Male', age: 45, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1 },
-    { id: 7, name: 'Karan Johar', gender: 'Male', age: 38, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
-    { id: 8, name: 'Zoya Akhtar', gender: 'Female', age: 35, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1 },
-    { id: 9, name: 'Amitabh B.', gender: 'Male', age: 70, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1 },
-    { id: 10, name: 'Deepika P.', gender: 'Female', age: 32, date: '15 feb 26', time: '10:00-11:00 am', status: 'Confirmed', img: img1 },
-    { id: 11, name: 'Ranveer S.', gender: 'Male', age: 34, date: '15 feb 26', time: '11:30-12:30 pm', status: 'Pending', img: img1 },
-    { id: 12, name: 'Alia Bhatt', gender: 'Female', age: 28, date: '15 feb 26', time: '1:00-2:00 pm', status: 'Cancelled', img: img1 },
-    { id: 13, name: 'Shah Rukh', gender: 'Male', age: 55, date: '16 feb 26', time: '9:00-10:00 am', status: 'Confirmed', img: img1 },
-    { id: 14, name: 'Salman Khan', gender: 'Male', age: 54, date: '16 feb 26', time: '4:00-5:00 pm', status: 'Pending', img: img1 },
+    { id: 0, name: 'Saumya tiwari', gender: 'Female', age: 21, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Hifza Javed' },
+    { id: 1, name: 'Anjali Sharma', gender: 'Female', age: 24, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Sumaiya' },
+    { id: 2, name: 'Vivek Kumar', gender: 'Male', age: 29, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1, doctor: 'Dr. Ahmad' },
+    { id: 3, name: 'Sneha Paul', gender: 'Female', age: 22, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Varun' },
+    { id: 4, name: 'Rahul Singh', gender: 'Male', age: 31, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Sidharth' },
+    { id: 5, name: 'Priya Mehra', gender: 'Female', age: 26, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Priya Mehra' },
+    { id: 6, name: 'Rajesh Khanna', gender: 'Male', age: 45, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1, doctor: 'Dr. Aman Verma' },
+    { id: 7, name: 'Karan Johar', gender: 'Male', age: 38, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Sneha' },
+    { id: 8, name: 'Zoya Akhtar', gender: 'Female', age: 35, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Rajesh' },
+    { id: 9, name: 'Amitabh B.', gender: 'Male', age: 70, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Karan' },
+    { id: 10, name: 'Deepika P.', gender: 'Female', age: 32, date: '15 feb 26', time: '10:00-11:00 am', status: 'Confirmed', img: img1, doctor: 'Dr. Zoya' },
+    { id: 11, name: 'Ranveer S.', gender: 'Male', age: 34, date: '15 feb 26', time: '11:30-12:30 pm', status: 'Pending', img: img1, doctor: 'Dr. Farhan' },
+    { id: 12, name: 'Alia Bhatt', gender: 'Female', age: 28, date: '15 feb 26', time: '1:00-2:00 pm', status: 'Cancelled', img: img1, doctor: 'Dr. Rohit' },
+    { id: 13, name: 'Shah Rukh', gender: 'Male', age: 55, date: '16 feb 26', time: '9:00-10:00 am', status: 'Confirmed', img: img1, doctor: 'Dr. Sanjay' },
+    { id: 14, name: 'Salman Khan', gender: 'Male', age: 54, date: '16 feb 26', time: '4:00-5:00 pm', status: 'Pending', img: img1, doctor: 'Dr. Aditya' },
   ];
 
   const filteredAppointments = appointments.filter(appt => {
@@ -349,9 +349,10 @@ const Appointment2 = () => {
           <div className="w-full border border-gray-600 rounded-[10px] overflow-hidden flex flex-col pt-1">
 
             {/* Table Header */}
-            <div className="grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-4 py-4 border-b border-gray-600 text-[15px] font-bold text-black tracking-wide uppercase">
+            <div className="grid grid-cols-[auto_1.2fr_1.2fr_0.8fr_0.8fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-4 py-4 border-b border-gray-600 text-[15px] font-bold text-black tracking-wide uppercase">
               <div className="w-4" /> {/* Checkbox placeholder space */}
               <div className="text-left">Patient Name</div>
+              <div className="text-left">Doctor</div>
               <div className="text-center">Gender</div>
               <div className="text-center">Age</div>
               <div className="text-center">Date</div>
@@ -369,7 +370,7 @@ const Appointment2 = () => {
                 const checkActive = isSelected || isFirstRow;
 
                 return (
-                  <div key={idx} className={`grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-2 py-[10px] min-h-[52px] text-[15px] font-semibold text-gray-800 rounded shadow-sm border border-transparent hover:border-[#bae6fd] bg-[#f2f8f9]`}>
+                  <div key={idx} className={`grid grid-cols-[auto_1.2fr_1.2fr_0.8fr_0.8fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-2 py-[10px] min-h-[52px] text-[15px] font-semibold text-gray-800 rounded shadow-sm border border-transparent hover:border-[#bae6fd] bg-[#f2f8f9]`}>
 
                     {/* Checkbox */}
                     <div className="flex items-center justify-center pl-1">
@@ -385,6 +386,7 @@ const Appointment2 = () => {
 
                     {/* Content */}
                     <div>{appt.name}</div>
+                    <div className="text-left text-[#339eb3]">{appt.doctor}</div>
                     <div className="text-center">{appt.gender}</div>
                     <div className="text-center">{appt.age}</div>
                     <div className="text-center">{appt.date}</div>

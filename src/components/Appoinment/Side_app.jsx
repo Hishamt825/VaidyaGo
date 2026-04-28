@@ -19,7 +19,7 @@ const Side_app = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOp
           <rect x="14" y="14" width="6" height="6" rx="1" strokeWidth="2" />
         </svg>
       ),
-      path: "/App1_Dashboard"
+      path: "/Doctor_dashboard"
     },
     {
       name: "Appointment",

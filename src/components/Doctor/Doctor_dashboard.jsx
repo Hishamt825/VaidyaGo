@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Area, AreaChart } from 'recharts';
 
 import logoUrl from '../../assets/v.png';
-import Side_app from './Side_app';
+import Side_app from '../Appoinment/Side_app';
 import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
@@ -71,7 +71,7 @@ const recentPatientsData = [
     { name: "Riya madeshiya", gender: "Female", weight: "50kg", disease: "Typhoid", date: "14 feb", heartRate: "70 bpm", bloodType: "AB", status: "OutPatient" },
 ];
 
-const App1_Dashboard = () => {
+const Doctor_dashboard = () => {
     const navigate = useNavigate();
     const [activeNav, setActiveNav] = useState('Dashboard');
     const [open, setOpen] = useState(false);
@@ -126,7 +126,7 @@ const App1_Dashboard = () => {
             }
         }, 30);
         return () => clearTimeout(timeoutId);
-    }, [activeDateIndex]);
+    }, [activeDateIndex, selectedMonth, selectedYear]);
 
     const handlePointerDown = (e) => {
         setIsDragging(true);
@@ -403,14 +403,55 @@ const App1_Dashboard = () => {
                                         <svg className="w-4 h-4 ml-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
                                     </button>
 
-                                    <div className="flex gap-4 items-center">
-                                        <div className="flex items-center gap-[6px] cursor-pointer group" onClick={() => setIsMonthOpen(!isMonthOpen)}>
-                                            <span className="font-[600] text-[15px] text-[#555] tracking-wide">{selectedMonth}</span>
-                                            <svg className="w-[12px] h-[12px] text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                                    <div className="flex gap-4 items-center relative">
+                                        {/* Month Selection */}
+                                        <div className="relative">
+                                            <div 
+                                                className="flex items-center gap-[6px] cursor-pointer group" 
+                                                onClick={() => { setIsMonthOpen(!isMonthOpen); setIsYearOpen(false); }}
+                                            >
+                                                <span className="font-[600] text-[15px] text-[#555] tracking-wide">{selectedMonth}</span>
+                                                <svg className="w-[12px] h-[12px] text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                                            </div>
+                                            
+                                            {isMonthOpen && (
+                                                <div className="absolute top-full left-0 mt-2 w-[140px] bg-white border border-gray-100 rounded-xl shadow-xl z-[100] py-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                                    {monthsList.map(m => (
+                                                        <div 
+                                                            key={m}
+                                                            onClick={() => { setSelectedMonth(m); setIsMonthOpen(false); }}
+                                                            className={`px-4 py-2 text-[14px] cursor-pointer transition-colors ${selectedMonth === m ? 'bg-blue-50 text-[#32869e] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
+                                                        >
+                                                            {m}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex items-center gap-[6px] cursor-pointer group" onClick={() => setIsYearOpen(!isYearOpen)}>
-                                            <span className="font-[600] text-[15px] text-[#555] tracking-wide">{selectedYear}</span>
-                                            <svg className="w-[12px] h-[12px] text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+
+                                        {/* Year Selection */}
+                                        <div className="relative">
+                                            <div 
+                                                className="flex items-center gap-[6px] cursor-pointer group" 
+                                                onClick={() => { setIsYearOpen(!isYearOpen); setIsMonthOpen(false); }}
+                                            >
+                                                <span className="font-[600] text-[15px] text-[#555] tracking-wide">{selectedYear}</span>
+                                                <svg className="w-[12px] h-[12px] text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                                            </div>
+
+                                            {isYearOpen && (
+                                                <div className="absolute top-full left-0 mt-2 w-[100px] bg-white border border-gray-100 rounded-xl shadow-xl z-[100] py-2 max-h-[200px] overflow-y-auto custom-scrollbar">
+                                                    {yearsList.map(y => (
+                                                        <div 
+                                                            key={y}
+                                                            onClick={() => { setSelectedYear(y); setIsYearOpen(false); }}
+                                                            className={`px-4 py-2 text-[14px] cursor-pointer transition-colors ${selectedYear === y ? 'bg-blue-50 text-[#32869e] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
+                                                        >
+                                                            {y}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -430,11 +471,49 @@ const App1_Dashboard = () => {
                                 <div className="relative mt-1">
                                     <div className="absolute bg-[#6fa7ba] rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0" style={{ left: dateStyle.left, top: dateStyle.top, width: dateStyle.width, height: dateStyle.height, opacity: dateStyle.opacity }} />
                                     <div className="grid grid-cols-7 gap-y-[18px] text-[11px] font-bold text-[#444444] relative z-10">
-                                        {calendarDays.map((d, i) => (
-                                            <div key={i} className="flex justify-center items-center">
-                                                <span ref={el => dateRefs.current[i] = el} onClick={() => setActiveDateIndex(i)} className={`w-[29px] h-[29px] flex items-center justify-center rounded-full transition-colors cursor-pointer ${i < 5 && activeDateIndex !== i ? 'text-gray-300 font-medium' : ''} ${activeDateIndex === i ? 'text-[#09151c]' : 'hover:bg-gray-100'}`}>{d}</span>
-                                            </div>
-                                        ))}
+                                        {(() => {
+                                            const daysInMonth = new Date(selectedYear, monthsList.indexOf(selectedMonth) + 1, 0).getDate();
+                                            const firstDay = new Date(selectedYear, monthsList.indexOf(selectedMonth), 1).getDay();
+                                            const daysInPrevMonth = new Date(selectedYear, monthsList.indexOf(selectedMonth), 0).getDate();
+
+                                            const prevDays = [...Array(firstDay)].map((_, i) => {
+                                                const d = daysInPrevMonth - firstDay + i + 1;
+                                                return (
+                                                    <div key={`prev-${i}`} className="flex justify-center items-center">
+                                                        <span className="w-[29px] h-[29px] flex items-center justify-center rounded-full text-gray-300 font-medium">
+                                                            {d}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            });
+
+                                            const currentDays = [...Array(daysInMonth)].map((_, i) => {
+                                                const d = i + 1;
+                                                const totalIndex = firstDay + i;
+                                                return (
+                                                    <div key={`curr-${i}`} className="flex justify-center items-center">
+                                                        <span 
+                                                            ref={el => dateRefs.current[totalIndex] = el}
+                                                            onClick={() => setActiveDateIndex(totalIndex)}
+                                                            className={`w-[29px] h-[29px] flex items-center justify-center rounded-full transition-colors cursor-pointer ${activeDateIndex === totalIndex ? 'text-white' : 'hover:bg-gray-100'}`}
+                                                        >
+                                                            {d}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            });
+
+                                            const nextDaysCount = 42 - (prevDays.length + currentDays.length);
+                                            const nextDays = [...Array(nextDaysCount)].map((_, i) => (
+                                                <div key={`next-${i}`} className="flex justify-center items-center">
+                                                    <span className="w-[29px] h-[29px] flex items-center justify-center rounded-full text-gray-200 font-medium">
+                                                        {i + 1}
+                                                    </span>
+                                                </div>
+                                            ));
+
+                                            return [...prevDays, ...currentDays, ...nextDays];
+                                        })()}
                                     </div>
                                 </div>
                             </div>
@@ -539,4 +618,4 @@ const App1_Dashboard = () => {
     );
 };
 
-export default App1_Dashboard;
+export default Doctor_dashboard;

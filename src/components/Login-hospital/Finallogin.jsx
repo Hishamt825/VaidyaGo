@@ -9,10 +9,11 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  // form states (same like signup)
-  const [username, setUsername] = useState("");
+  // form states (Updated for Email/Phone)
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // ================================
   //        HANDLE LOGIN API
@@ -20,6 +21,15 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
+
+    // Determine if input is email or phone
+    const isEmail = loginId.includes("@");
+    const payload = {
+      email: isEmail ? loginId : "",
+      phone: !isEmail ? loginId : "",
+      password: password
+    };
 
     try {
       const response = await fetch(
@@ -30,51 +40,64 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
             "Content-Type": "application/json",
             "Accept": "application/json"
           },
-          body: JSON.stringify({
-            email: username, // mapping username field to email backend field
-            password: password
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
       const data = await response.json();
-
-      console.log("Login response:", data);
-      console.log("Status code:", response.status);
+      console.log("LOGIN_DEBUG: Full API Response:", data);
 
       if (response.ok) {
-        if (!data.access && !data.token) {
-          setError("No token received");
+        // 🔍 EXTRACT ROLE (Try all common field names)
+        const rawRole = data.role || data.user_type || data.user?.role || data.user?.user_type;
+        
+        if (!rawRole) {
+          console.error("LOGIN_DEBUG: Role not found in response!");
+          setError("Account role not found. Please contact support.");
+          setIsLoading(false);
           return;
         }
 
-        // If backend returns "access" token
+        const userType = rawRole.toLowerCase();
+        console.log("LOGIN_DEBUG: Identified Role ->", userType);
+        
+        localStorage.setItem("user_type", userType);
+
         if (data.access) {
           localStorage.setItem("access", data.access);
           localStorage.setItem("refresh", data.refresh);
         }
-
-        // If backend returns just "token"
         if (data.token) {
           localStorage.setItem("access", data.token);
         }
 
-        // NO alert popup here, directly transition
+        // Close modal if open
         if (isModal && onClose) {
           onClose();
+        }
+
+        // 🚀 DYNAMIC REDIRECT based on stored data
+        if (userType === "admin") {
+          navigate("/Admin_dashboard1");
+        } else if (userType === "doctor") {
+          navigate("/Doctor_dashboard");
+        } else if (userType === "patient") {
+          navigate("/Patient_dashboard");
         } else {
-          // If not modal, redirect somewhere
-          navigate("/Admin_dashboard1"); 
+          setError(`Dashboard for role '${rawRole}' not found.`);
         }
 
       } else {
-        // display error from backend
-        setError(data.detail || data.error || "Invalid credentials");
+        // Handle specific errors (Invalid credentials / Unregistered user)
+        const errMsg = data.detail || data.error || data.message || "Invalid credentials. Please check your email/phone and password.";
+        setError(errMsg);
       }
 
     } catch (err) {
       console.error("Server error:", err);
-      setError("Server error occurred. Check console for details.");
+      setError("Unable to connect to the server. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -128,7 +151,7 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
           </div>
         )}
         <form onSubmit={handleLogin} className="w-full mt-3 space-y-3">
-          {/* Username */}
+          {/* Login ID (Email/Phone) */}
           <div>
             <label className="flex items-center text-[14px] font-medium text-[#111] mb-1.5">
               <svg
@@ -144,15 +167,15 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
-              Username
+              Email or Phone Number
             </label>
 
             <div className="rounded-md shadow-[0_2px_8px_rgba(25,113,138,0.2)]">
               <input
                 type="text"
-                placeholder="Enter Name"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter Email or Phone"
+                value={loginId}
+                onChange={(e) => setLoginId(e.target.value)}
                 className="w-full text-sm px-4 py-2.5 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
               />
             </div>
@@ -221,12 +244,20 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
 
           {/* LOGIN BUTTON */}
           <div className="flex justify-center mt-4 pt-1">
-            <div className="p-1 rounded-full border-[1.5px] border-gray-200 shadow-sm">
+            <div className={`p-1 rounded-full border-[1.5px] border-gray-200 shadow-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
               <button
                 type="submit"
+                disabled={isLoading}
                 className="w-[130px] h-[40px] rounded-full bg-[#89C8D9] text-[#0f3b4d] text-[16px] font-bold hover:bg-[#78b7c8] hover:shadow-md transition-all flex items-center justify-center shadow-[inset_0_-2px_4px_rgba(0,0,0,0.1)]"
               >
-                Login
+                {isLoading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-[#0f3b4d] border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm">Wait...</span>
+                  </div>
+                ) : (
+                  "Login"
+                )}
               </button>
             </div>
           </div>

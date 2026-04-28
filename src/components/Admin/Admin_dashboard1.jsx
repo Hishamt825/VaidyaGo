@@ -68,6 +68,10 @@ const Admin_dashboard1 = () => {
     const [selectedWeekDay, setSelectedWeekDay] = useState("Friday");
     const [activeDayIndex, setActiveDayIndex] = useState(2);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+    const [isMonthOpen, setIsMonthOpen] = useState(false);
+    const [isYearOpen, setIsYearOpen] = useState(false);
+    const monthsList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const yearsList = Array.from({ length: 26 }, (_, i) => 2005 + i);
     const [showRejectConfirm, setShowRejectConfirm] = useState(false);
     const [showReasonModal, setShowReasonModal] = useState(false);
     const [selectedDoctorForReject, setSelectedDoctorForReject] = useState(null);
@@ -138,6 +142,26 @@ const Admin_dashboard1 = () => {
             setMonth(month + 1);
         }
     };
+
+    const [activeDateIndex, setActiveDateIndex] = useState(17); // Default selection
+    const [dateStyle, setDateStyle] = useState({ left: 0, top: 0, width: 0, height: 0, opacity: 0 });
+    const dateRefs = useRef([]);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            const activeEl = dateRefs.current[activeDateIndex];
+            if (activeEl) {
+                setDateStyle({
+                    left: activeEl.offsetLeft,
+                    top: activeEl.offsetTop,
+                    width: activeEl.offsetWidth,
+                    height: activeEl.offsetHeight,
+                    opacity: 1
+                });
+            }
+        }, 30);
+        return () => clearTimeout(timeoutId);
+    }, [activeDateIndex, month, year]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -402,74 +426,134 @@ const Admin_dashboard1 = () => {
 
                     {/* CALENDAR */}
                     <div className="col-span-1 lg:col-span-4 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 flex flex-col min-h-[400px] overflow-hidden">
-                        <div className="flex justify-between items-center mb-4 px-2">
-                            <button onClick={handlePrevMonth} className="text-[#399CAA] hover:text-[#104e5f] transition-colors p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-[18px] h-[18px]">
+                        <div className="flex justify-between items-center mb-6 px-2">
+                            <button onClick={handlePrevMonth} className="text-[#399CAA] hover:text-[#104e5f] transition-all p-2 rounded-full hover:bg-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                 </svg>
                             </button>
-
-                            <div className="flex gap-4">
+                            
+                            <div className="flex gap-4 items-center relative">
+                                {/* Month Selection */}
                                 <div className="relative">
-                                    <select value={month} onChange={(e) => setMonth(+e.target.value)}
-                                        className="appearance-none border border-gray-400 text-gray-500 rounded-full pl-6 pr-12 py-1 text-[16px] outline-none focus:border-gray-300 bg-transparent cursor-pointer hover:bg-gray-50 transition-colors">
-                                        {months.map((m, i) => (
-                                            <option key={i} value={i}>{m}</option>
-                                        ))}
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                                        <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                    <div 
+                                        className="flex items-center gap-[6px] cursor-pointer group" 
+                                        onClick={() => { setIsMonthOpen(!isMonthOpen); setIsYearOpen(false); }}
+                                    >
+                                        <span className="font-bold text-[16px] text-gray-700 tracking-wide">{monthsList[month]}</span>
+                                        <svg className="w-[14px] h-[14px] text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                                     </div>
+                                    
+                                    {isMonthOpen && (
+                                        <div className="absolute top-full left-0 mt-2 w-[140px] bg-white border border-gray-100 rounded-xl shadow-xl z-[100] py-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                            {monthsList.map((m, i) => (
+                                                <div 
+                                                    key={m}
+                                                    onClick={() => { setMonth(i); setIsMonthOpen(false); }}
+                                                    className={`px-4 py-2 text-[14px] cursor-pointer transition-colors ${month === i ? 'bg-[#7DB1BC]/10 text-[#399CAA] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
+                                                >
+                                                    {m}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
+                                {/* Year Selection */}
                                 <div className="relative">
-                                    <select value={year} onChange={(e) => setYear(+e.target.value)}
-                                        className="appearance-none border border-gray-500 text-gray-500 rounded-full pl-6 pr-12 py-1 text-[16px] outline-none focus:border-gray-500 bg-transparent cursor-pointer hover:bg-gray-50 transition-colors">
-                                        {[2024, 2025, 2026, 2027].map(y => (
-                                            <option key={y} value={y}>{y}</option>
-                                        ))}
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                                        <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                    <div 
+                                        className="flex items-center gap-[6px] cursor-pointer group" 
+                                        onClick={() => { setIsYearOpen(!isYearOpen); setIsMonthOpen(false); }}
+                                    >
+                                        <span className="font-bold text-[16px] text-gray-700 tracking-wide">{year}</span>
+                                        <svg className="w-[14px] h-[14px] text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                                     </div>
+
+                                    {isYearOpen && (
+                                        <div className="absolute top-full left-0 mt-2 w-[100px] bg-white border border-gray-100 rounded-xl shadow-xl z-[100] py-2 max-h-[200px] overflow-y-auto custom-scrollbar">
+                                            {yearsList.map(y => (
+                                                <div 
+                                                    key={y}
+                                                    onClick={() => { setYear(y); setIsYearOpen(false); }}
+                                                    className={`px-4 py-2 text-[14px] cursor-pointer transition-colors ${year === y ? 'bg-[#7DB1BC]/10 text-[#399CAA] font-bold' : 'text-gray-600 hover:bg-gray-50'}`}
+                                                >
+                                                    {y}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <button onClick={handleNextMonth} className="text-[#3992A5] hover:text-[#104e5f] transition-colors p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-[18px] h-[18px]">
+                            <button onClick={handleNextMonth} className="text-[#399CAA] hover:text-[#104e5f] transition-all p-2 rounded-full hover:bg-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                 </svg>
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-7 gap-y-4 text-center mt- flex-1">
-                            {["S", "M", "T", "W", "Th", "F", "Sat"].map(d => (
-                                <span key={d} className="text-[#399CAA] font-normal text-[16px] mb-1">{d}</span>
+                        <div className="grid grid-cols-7 mb-4">
+                            {['S', 'M', 'T', 'W', 'Th', 'F', 'Sat'].map(d => (
+                                <div key={d} className="text-center text-[#32869e] font-bold text-[13px]">{d}</div>
                             ))}
-                            {(() => {
-                                const daysInPrevMonth = new Date(year, month, 0).getDate();
-                                const prevDays = [...Array(firstDay)].map((_, i) => (
-                                    <span key={`prev-${i}`} className="flex items-center justify-center text-gray-400 text-[16px]">
-                                        {daysInPrevMonth - firstDay + i + 1}
-                                    </span>
-                                ));
-                                const currentDays = [...Array(daysInMonth)].map((_, i) => {
-                                    const date = i + 1;
-                                    const isSelected = date === selectedDate;
-                                    return (
-                                        <div key={`curr-${i}`} className="flex justify-center items-center">
-                                            <span
-                                                onClick={() => setSelectedDate(date)}
-                                                className={`flex items-center justify-center text-black w-[36px] h-[36px] rounded-full cursor-pointer text-[16px] transition-all
-                                                    ${isSelected ? 'bg-[#70A5AF] text-black font-bold shadow-md' : 'text-gray-500 hover:bg-gray-300'}
-                                                `}>
-                                                {date}
+                        </div>
+                        <div className="relative mt-1 flex-1">
+                            {/* Sliding Highlighter */}
+                            <div 
+                                className="absolute bg-[#7DB1BC] rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0" 
+                                style={{ 
+                                    left: dateStyle.left, 
+                                    top: dateStyle.top, 
+                                    width: dateStyle.width, 
+                                    height: dateStyle.height, 
+                                    opacity: dateStyle.opacity 
+                                }} 
+                            />
+                            
+                            <div className="grid grid-cols-7 gap-y-[18px] text-[15px] font-bold text-gray-700 relative z-10">
+                                {(() => {
+                                    const daysInPrevMonth = new Date(year, month, 0).getDate();
+                                    const prevDays = [...Array(firstDay)].map((_, i) => {
+                                        const d = daysInPrevMonth - firstDay + i + 1;
+                                        return (
+                                            <div key={`prev-${i}`} className="flex justify-center items-center">
+                                                <span className="w-[32px] h-[32px] flex items-center justify-center rounded-full text-gray-300 font-medium">
+                                                    {d}
+                                                </span>
+                                            </div>
+                                        );
+                                    });
+
+                                    const currentDays = [...Array(daysInMonth)].map((_, i) => {
+                                        const d = i + 1;
+                                        const totalIndex = firstDay + i;
+                                        return (
+                                            <div key={`curr-${i}`} className="flex justify-center items-center">
+                                                <span 
+                                                    ref={el => dateRefs.current[totalIndex] = el}
+                                                    onClick={() => {
+                                                        setSelectedDate(d);
+                                                        setActiveDateIndex(totalIndex);
+                                                    }}
+                                                    className={`w-[32px] h-[32px] flex items-center justify-center rounded-full transition-colors cursor-pointer ${activeDateIndex === totalIndex ? 'text-white' : 'hover:bg-gray-100 text-gray-600'}`}
+                                                >
+                                                    {d}
+                                                </span>
+                                            </div>
+                                        );
+                                    });
+                                    const nextDaysCount = 42 - (prevDays.length + currentDays.length);
+                                    const nextDays = [...Array(nextDaysCount)].map((_, i) => (
+                                        <div key={`next-${i}`} className="flex justify-center items-center">
+                                            <span className="w-[32px] h-[32px] flex items-center justify-center rounded-full text-gray-300 font-medium">
+                                                {i + 1}
                                             </span>
                                         </div>
-                                    );
-                                });
-                                return [...prevDays, ...currentDays];
-                            })()}
+                                    ));
+
+                                    return [...prevDays, ...currentDays, ...nextDays];
+                                })()}
+                            </div>
                         </div>
                     </div>
                 </div>

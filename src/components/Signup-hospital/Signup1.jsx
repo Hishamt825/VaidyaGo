@@ -7,13 +7,13 @@ import BASE_URL from "../../baseUrl";
 // import { FaUsersGear } from "react-icons/fa6";
 
 export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showconfirm_password, setShowconfirm_password] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
 
   // form values
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm_password, setconfirm_password] = useState("");
@@ -39,9 +39,8 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
           "Accept": "application/json",
         },
         body: JSON.stringify({
-          username,
           email,
-          phone,
+          phone: `91${phone}`, 
           password,
           confirm_password,
           role,
@@ -61,16 +60,22 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
 
       // ✅ Handle success
       if (response.status === 201) {
-        // 🔐 Token automatically save
         if (data?.token) {
           localStorage.setItem("token", data.token);
         }
 
+        // 🚀 Role-based Redirection (Execute for both Modal and Page)
+        const targetDashboard = 
+          role === "Patient" ? "/Patient_dashboard" :
+          role === "Admin" ? "/Admin_dashboard1" :
+          role === "Doctor" ? "/Doctor_dashboard" : 
+          "/Finallogin";
+
         if (isModal && onClose) {
-          onClose();
+          onClose(); // Close modal first
+          navigate(targetDashboard); // Then navigate
         } else {
-          // If not modal, maybe redirect somewhere
-          navigate("/Finallogin");
+          navigate(targetDashboard);
         }
       }
       // ✅ Handle validation errors
@@ -147,24 +152,6 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
                 <option value="Doctor">Doctor</option>
                 <option value="Admin">Admin</option>
               </select>
-            </div>
-          </div>
-
-          {/* Username */}
-          <div className="mb-2">
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              Username
-            </label>
-
-            <div className="flex items-center rounded-md px-3 py-2.5 bg-white border border-[#19718A] shadow-[0_2px_8px_rgba(25,113,138,0.2)] focus-within:ring-1 focus-within:ring-[#19718A] transition-all">
-              <input
-                type="text"
-                placeholder="Enter Name"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                onFocus={() => setActiveStep(1)}
-                className="w-full text-sm bg-transparent outline-none"
-              />
             </div>
           </div>
 
