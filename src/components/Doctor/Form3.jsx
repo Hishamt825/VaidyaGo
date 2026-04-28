@@ -152,6 +152,15 @@ const [activeStep, setActiveStep] = useState(3);
             body: JSON.stringify(payload)
           });
 
+          if (response.status === 404) {
+            // ID exist in local but not in DB -> Clear and retry as POST
+            localStorage.removeItem("hospital_info_id");
+            setHospitalInfoId(null);
+            setInitialData(null);
+            setLoading(false);
+            return handleSubmit(e);
+          }
+
           const data = await response.json().catch(() => ({}));
 
           if (!response.ok) {
@@ -195,8 +204,11 @@ const [activeStep, setActiveStep] = useState(3);
       setLoading(false);
     }
   };
+
+    const isSubForm = !!onNext;
+
     return (
-        <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 md:px-8">
+        <div className={`${isSubForm ? "" : "min-h-screen bg-[#F8FAFC] py-10 px-4 md:px-8"}`}>
             <div className="max-w-5xl mx-auto">
 
                 {/* Stepper / Vertical */}
@@ -254,15 +266,26 @@ const [activeStep, setActiveStep] = useState(3);
                             <div className="flex flex-col">
                                 <div>
                                     <label className="block text-[14px] font-semibold text-gray-800 mb-1.5">Employment Type</label>
-                                    <input
-                                        type="text"
-                                        name="employment_type"
-                                        value={formData.employment_type}
-                                        onChange={handleChange}
-                                        placeholder="Full Time / Part Time / Visiting"
-                                        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] outline-none focus:border-[#19718A]"
-                                        required
-                                    />
+                                    <div className="relative">
+                                        <select
+                                            name="employment_type"
+                                            value={formData.employment_type}
+                                            onChange={handleChange}
+                                            className="w-full bg-white border border-gray-400 rounded-md px-4 py-2.5 text-[16px] outline-none appearance-none focus:border-[#19718A] cursor-pointer text-gray-700"
+                                            required
+                                        >
+                                            <option value="" disabled>Select Type</option>
+                                            <option value="full_time">Full Time</option>
+                                            <option value="part_time">Part Time</option>
+                                            <option value="visiting">Visiting</option>
+                                        </select>
+                                        {/* Dropdown arrow */}
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

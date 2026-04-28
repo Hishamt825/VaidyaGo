@@ -81,9 +81,18 @@ const Symptom = () => {
 
       <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
-      <div className="flex-1 flex flex-col min-w-0 h-screen">
+      <div className={`flex-1 flex flex-col min-w-0 h-screen ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
         {/* Header Navbar */}
         <header className="h-[72px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+          {/* Hamburger for Mobile */}
+          <button 
+              onClick={() => setIsMobileOpen(true)}
+              className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+          >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+          </button>
           <div className="flex-1"></div>
 
           <div className="flex items-center gap-[32px] ml-auto">

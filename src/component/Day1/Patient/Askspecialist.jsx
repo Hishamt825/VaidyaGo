@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import './Askspecialist.css';
 
 // Importing images
@@ -170,6 +170,7 @@ const Icon = ({ name, className, size = 20 }) => {
 
 
 const Askspecialist = () => {
+  const navigate = useNavigate();
   const [activeSpec, setActiveSpec] = useState('Cardiology');
 
   const specialties = [
@@ -223,7 +224,10 @@ const Askspecialist = () => {
         </nav>
 
         <div className="ask-sidebar-bottom">
-           <button className="new-consult-btn">
+           <button 
+            onClick={() => navigate('/Consultation1')}
+            className="new-consult-btn"
+           >
              <Icon name="plus-circle" size={14} />
              <span>New Consultation</span>
            </button>

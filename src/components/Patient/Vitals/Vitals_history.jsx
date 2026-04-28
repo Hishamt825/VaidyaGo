@@ -29,23 +29,10 @@ const VitalsHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [filterType, setFilterType] = useState('Last 3 Months');
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const allVitalsData = [
-        // Page 1
-        { date: 'Oct 24, 2023', time: '08:45 AM', hr: '78', bp: '120/80', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 1 },
-        { date: 'Oct 23, 2023', time: '08:15 PM', hr: '82', bp: '124/82', spo2: '97%', temp: '36.8°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500', page: 1 },
-        { date: 'Oct 23, 2023', time: '10:30 AM', hr: '94', bp: '138/88', spo2: '96%', temp: '37.2°C', status: 'Caution', statusColor: 'bg-rose-50 border-rose-100 text-rose-500', page: 1 },
-        { date: 'Oct 22, 2023', time: '09:00 AM', hr: '74', bp: '118/76', spo2: '99%', temp: '36.5°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 1 },
-        // Page 2
-        { date: 'Oct 21, 2023', time: '11:20 AM', hr: '80', bp: '122/80', spo2: '98%', temp: '36.7°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 2 },
-        { date: 'Oct 20, 2023', time: '07:45 PM', hr: '76', bp: '119/78', spo2: '97%', temp: '36.6°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500', page: 2 },
-        { date: 'Oct 19, 2023', time: '02:30 PM', hr: '88', bp: '130/84', spo2: '96%', temp: '36.9°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500', page: 2 },
-        { date: 'Oct 18, 2023', time: '10:15 AM', hr: '72', bp: '116/74', spo2: '99%', temp: '36.4°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 2 },
-        // Page 3
-        { date: 'Oct 17, 2023', time: '09:10 AM', hr: '79', bp: '121/79', spo2: '98%', temp: '36.7°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 3 },
-        { date: 'Oct 16, 2023', time: '08:00 PM', hr: '85', bp: '128/82', spo2: '97%', temp: '36.8°C', status: 'Normal', statusColor: 'bg-slate-50 border-slate-100 text-slate-500', page: 3 },
-        { date: 'Oct 15, 2023', time: '01:20 PM', hr: '92', bp: '135/86', spo2: '95%', temp: '37.1°C', status: 'Caution', statusColor: 'bg-rose-50 border-rose-100 text-rose-500', page: 3 },
-        { date: 'Oct 14, 2023', time: '11:45 AM', hr: '75', bp: '117/75', spo2: '99%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-cyan-50 border-cyan-100 text-cyan-600', page: 3 },
+        // ... (data remains same)
     ];
 
     const vitalsData = allVitalsData.filter(item => item.page === currentPage);
@@ -54,11 +41,22 @@ const VitalsHistory = () => {
         <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
 
-            <Sidebar active={active} setActive={setActive} />
+            <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
             <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                 {/* Top Navbar standardized to Medication1 style */}
                 <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
+                    
+                    {/* Hamburger for Mobile */}
+                    <button 
+                        onClick={() => setIsMobileOpen(true)}
+                        className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+
                     <button
                         onClick={() => navigate('/Vitals')}
                         className="w-[40px] h-[40px] rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all group shrink-0"

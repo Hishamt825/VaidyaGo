@@ -18,6 +18,8 @@ export default function Vertical({ activeStep, setActiveStep }) {
   if (hospitalInfoId) maxAllowedStep = 4;
 
   const handleStepClick = (stepId) => {
+    // Allow navigation to any step that has been unlocked (maxAllowedStep)
+    // This allows going BACK to any step, and going FORWARD to steps already filled.
     if (stepId <= maxAllowedStep && stepId !== activeStep) {
       if (setActiveStep) {
         setActiveStep(stepId);

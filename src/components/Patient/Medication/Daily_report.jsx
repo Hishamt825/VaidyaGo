@@ -9,12 +9,12 @@ const Daily_report = ({ onClose }) => {
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
             {/* Backdrop Blur */}
             <div 
-                className="absolute inset-0 bg-[#0B1F4D]/40 backdrop-blur-md transition-opacity"
+                className="absolute inset-0 bg-[#0B1F4D]/40 backdrop-blur-md"
                 onClick={onClose}
             ></div>
 
             {/* Modal Content */}
-            <div className={`relative w-full max-w-[500px] bg-white rounded-[32px] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.25)] animate-in zoom-in-95 duration-200 ${isRefillOpen || isDownloadOpen ? 'blur-[8px] scale-[0.98] pointer-events-none' : ''}`}>
+            <div className={`relative w-full max-w-[500px] bg-white rounded-[32px] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.25)] ${isRefillOpen || isDownloadOpen ? 'blur-[8px] scale-[0.98] pointer-events-none' : ''}`}>
                 
                 {/* Header Gradient */}
                 <div className="bg-gradient-to-b from-[#0B1F4D] via-[#0B4A54] to-[#49AAB3] p-4 md:p-5 text-white relative">

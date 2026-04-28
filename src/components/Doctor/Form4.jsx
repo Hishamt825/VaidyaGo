@@ -215,8 +215,10 @@ const Form4 = ({ onNext }) => {
     (file) => file !== null
   );
 
+  const isSubForm = !!onNext;
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 md:px-8">
+    <div className={`${isSubForm ? "" : "min-h-screen bg-[#F8FAFC] py-10 px-4 md:px-8"}`}>
       <div className="max-w-6xl mx-auto flex flex-col">
 
         {/* Stepper */}

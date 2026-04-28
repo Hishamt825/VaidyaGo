@@ -11,20 +11,13 @@ const Breathing = ({ isOpen, onClose }) => {
             {isOpen && (
                 <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
                     {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                    <div
                         onClick={onClose}
                         className="absolute inset-0 bg-slate-900/30 backdrop-blur-xl"
                     />
 
                     {/* Modal Content */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    <div
                         className="relative w-full max-w-[580px] bg-white rounded-[40px] shadow-2xl overflow-hidden"
                     >
                         {/* Header Gradient */}
@@ -113,7 +106,7 @@ const Breathing = ({ isOpen, onClose }) => {
                                         <span className="text-[11px] font-bold text-[#627382] uppercase">%</span>
                                     </div>
                                     <div className="w-full h-1 bg-[#F0F4F5] rounded-full overflow-hidden">
-                                        <motion.div initial={{ width: 0 }} animate={{ width: "98%" }} transition={{ duration: 1, delay: 0.7 }} className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full" />
+                                        <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full w-[98%]" />
                                     </div>
                                 </motion.div>
 
@@ -141,7 +134,7 @@ const Breathing = ({ isOpen, onClose }) => {
                                 </motion.button>
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
             )}
         </AnimatePresence>

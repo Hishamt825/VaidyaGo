@@ -48,6 +48,7 @@ const MainPage = () => {
                 onClick={() => {
                   if (item === "Home") navigate("/MainPage");
                   else if (item === "Our Service") navigate("/Service");
+                  else if (item === "Doctor") navigate("/Makeapp");
                   else navigate(`/${item.replace(/\s+/g, "")}`);
                 }}
                 className={`relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300 ${item === "Home" ? "after:w-full" : "after:w-0 hover:after:w-full"}`}
@@ -141,7 +142,7 @@ const MainPage = () => {
             <button onClick={() => { navigate("/MainPage"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Home</button>
             <button onClick={() => { navigate("/About"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">About</button>
             <button onClick={() => { navigate("/Service"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Our Service</button>
-            <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Doctor</button>
+            <button onClick={() => { navigate("/Makeapp"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Doctor</button>
             <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">FAQ</button>
           </div>
 
@@ -322,7 +323,7 @@ const MainPage = () => {
                 onClick={() => setExpandedSpecialty(expandedSpecialty === index ? null : index)}
                 className={`group relative bg-white rounded-[24px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border transition-all duration-500 cursor-pointer overflow-hidden ${expandedSpecialty === index
                   ? "border-[#19718A] shadow-[0_12px_30px_-10px_rgba(25,113,138,0.2)] scale-[1.02] z-20"
-                  : "border-gray-100 hover:border-[#19718A]/30 hover:-translate-y-1.5 hover:shadow-[0_12px_30px_-10px_rgba(25,113,138,0.15)] z-10"
+                  : "border-gray-300 hover:border-[#19718A]/30 hover:-translate-y-1.5 hover:shadow-[0_12px_30px_-10px_rgba(25,113,138,0.15)] z-10"
                   }`}
               >
                 {/* Decorative hover gradient */}
@@ -440,7 +441,7 @@ const MainPage = () => {
                 {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
                   <button
                     key={letter}
-                    className="w-[42px] h-[42px] rounded-[14px] bg-white shadow-sm border border-gray-100 text-[#0B2132] font-bold text-[16px] flex items-center justify-center hover:bg-[#19718A] hover:text-white hover:border-[#19718A] hover:-translate-y-1 hover:shadow-md transition-all duration-300"
+                    className="w-[42px] h-[42px] rounded-[14px] bg-white shadow-sm border border-gray-300 text-[#0B2132] font-bold text-[16px] flex items-center justify-center hover:bg-[#19718A] hover:text-white hover:border-[#19718A] hover:-translate-y-1 hover:shadow-md transition-all duration-300"
                   >
                     {letter}
                   </button>
@@ -498,7 +499,7 @@ const MainPage = () => {
                   { title: "State-of-the-art Facilities", desc: "Equipped with the latest medical technology.", icon: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" },
                   { title: "24/7 Patient Support", desc: "Round-the-clock emergency and care services.", icon: "M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" }
                 ].map((item, index) => (
-                  <div key={index} className="flex items-start gap-4 p-5 rounded-[20px] bg-white border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#19718A]/30 hover:-translate-y-1 transition-all duration-300 group cursor-default max-w-[500px]">
+                  <div key={index} className="flex items-start gap-4 p-5 rounded-[20px] bg-white border border-gray-300 shadow-sm hover:shadow-lg hover:border-[#19718A]/30 hover:-translate-y-1 transition-all duration-300 group cursor-default max-w-[500px]">
                     <div className="w-12 h-12 shrink-0 rounded-xl bg-[#E9F3F6] text-[#19718A] flex items-center justify-center group-hover:bg-[#19718A] group-hover:text-white transition-colors duration-300 shadow-sm">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} />
@@ -518,7 +519,10 @@ const MainPage = () => {
 
               {/* Button */}
               <div>
-                <button className="bg-gradient-to-r from-[#19718A] to-[#0C6173] text-white px-8 py-4 rounded-full text-[15px] font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 group">
+                <button
+                  onClick={() => navigate("/About")}
+                  className="bg-gradient-to-r from-[#19718A] to-[#0C6173] text-white px-8 py-4 rounded-full text-[15px] font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 group"
+                >
                   Discover More About Us
                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -573,8 +577,12 @@ const MainPage = () => {
       </section>
 
 
-      <section className=" py-12 mt-3">
+      <section className="py-8">
         <div className="max-w-7xl mx-auto text-center px-2">
+          {/* Section Heading */}
+          <h2 className="text-[32px] md:text-[44px] font-bold text-[#0B2132] mb-12 font-serif">
+            Top Three <span className="text-[#19718A]">Testimonials</span>
+          </h2>
 
           {/* ==== 3 Boxes in a Row ==== */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">

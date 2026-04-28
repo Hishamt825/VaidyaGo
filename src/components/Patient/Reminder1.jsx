@@ -61,9 +61,19 @@ const Reminder1 = () => {
 
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
-            <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
                 {/* Top Navbar */}
                 <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px]">
+                    
+                    {/* Hamburger for Mobile */}
+                    <button 
+                        onClick={() => setIsMobileOpen(true)}
+                        className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
                     <div className="flex-1 max-w-[280px]">
                         <div className="relative group">
                             <input
@@ -193,33 +203,28 @@ const Reminder1 = () => {
                         </div>
 
                         {/* Upcoming Dose Side Panel */}
-                        <div className="bg-[#0B1423] rounded-[32px] p-[22px] text-white shadow-[0_24px_60px_rgba(0,0,0,0.2)] flex flex-col">
-                            <div className="flex items-center gap-[10px] mb-[20px]">
-                                <div className="w-[34px] h-[34px] rounded-lg bg-[#1A7785] flex items-center justify-center text-white">
-                                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
+                        <div className="bg-[#0B1423] rounded-[28px] p-[16px] text-white shadow-[0_24px_60px_rgba(0,0,0,0.2)] flex flex-col">
+                            <div className="flex items-center justify-between mb-[14px]">
+                                <div className="flex items-center gap-[8px]">
+                                    <div className="w-[28px] h-[28px] rounded-lg bg-[#1A7785] flex items-center justify-center text-white shrink-0">
+                                        <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <h2 className="text-[11px] font-normal tracking-[0.2em] uppercase text-white/30">Upcoming Dose</h2>
                                 </div>
-                                <h2 className="text-[12px] font-normal tracking-tight uppercase tracking-[0.2em] text-white/30">Upcoming Dose</h2>
-                            </div>
- 
-                             <div className="flex flex-col items-center justify-center mb-[14px] py-1">
-                                <span className="text-[44px] font-bold leading-none mb-[2px] tracking-tight">42:15</span>
-                                <span className="text-[12px] font-light text-white/20 uppercase tracking-[0.2em]">Minutes remaining</span>
-                            </div>
- 
-                            <div className="bg-white/5 rounded-[20px] p-[16px] mb-[20px] border border-white/5">
-                                <p className="text-white/20 text-[9px] font-light uppercase tracking-widest mb-[4px]">Next medicine</p>
-                                <h3 className="text-[17px] font-normal mb-[2px]">Lisinopril • 10mg</h3>
-                                <div className="flex items-center gap-[6px] text-[#A4EFEF]/60">
-                                    <svg className="w-[12px] h-[12px]" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                                    </svg>
-                                    <span className="text-[12px] font-light">01:00 PM (Today)</span>
+                                <div className="text-right flex flex-col">
+                                    <span className="text-[20px] font-bold leading-none tracking-tight text-white">42:25</span>
+                                    <span className="text-[8px] font-light text-white/20 uppercase tracking-[0.1em]">Min. left</span>
                                 </div>
                             </div>
  
-                            <button className="w-full bg-[#1A7785] hover:bg-[#208a99] text-[#0B1423] py-[14px] rounded-[16px] font-medium text-[13px] uppercase tracking-widest transition-all shadow-lg hover:shadow-[#1A7785]/20">
+                            <div className="bg-white/5 rounded-[16px] p-[12px] mb-[16px] border border-white/5 text-center">
+                                <p className="text-white/20 text-[9px] font-light uppercase tracking-widest mb-[2px]">Next medicine</p>
+                                <h3 className="text-[15px] font-normal">Lisinopril • 10mg</h3>
+                            </div>
+ 
+                            <button className="w-full bg-[#1A7785] hover:bg-[#208a99] text-[#0B1423] py-[12px] rounded-[14px] font-medium text-[12px] uppercase tracking-widest transition-all shadow-lg active:scale-95">
                                 I'm taking it now
                             </button>
                         </div>
