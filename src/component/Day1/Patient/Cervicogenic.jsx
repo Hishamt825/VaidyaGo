@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './Cervicogenic.css';
 import SaveSuccessPopup from './SaveSuccessPopup';
 import NeckAlignment from './NeckAlignment';
+import MuscleTension from './MuscleTension';
 
 const Icon = ({ name, className, size = 20 }) => {
   const icons = {
@@ -75,7 +76,7 @@ const Cervicogenic = ({ onClose }) => {
                   <label>NECK ALIGNMENT & MOVEMENT</label>
                   <p>We found some stiffness where your head meets your neck (the C1-C2 area). This is likely causing the sensitivity you feel near the base of your skull.</p>
                 </div>
-                <div className="new-cg-subcard">
+                <div className="new-cg-subcard clickable" onClick={() => navigate('/MUSCLETENSION')}>
                   <label>MUSCLE TENSION</label>
                   <p>The muscles at the top of your neck and shoulders are very tight. This tension is directly contributing to the headaches you've been having.</p>
                 </div>
@@ -96,7 +97,7 @@ const Cervicogenic = ({ onClose }) => {
             </section>
 
             {/* Recovery Focus Section */}
-            <section className="new-cg-card recovery-focus">
+            <section className="new-cg-card recovery-focus clickable" onClick={() => navigate('/SteadyAscent')}>
               <h2 className="new-cg-section-title">Your Recovery Focus</h2>
               
               <div className="focus-item">

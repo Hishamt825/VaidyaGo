@@ -85,11 +85,15 @@ import Cervicogenic from './component/Day1/Patient/Cervicogenic';
 import Dseasonal from './component/Day1/Patient/Dseasonal';
 import Tthdiagnostic from './component/Day1/Patient/Tthdiagnostic';
 import NeckAlignment from './component/Day1/Patient/NeckAlignment';
+import MuscleTension from './component/Day1/Patient/MuscleTension';
+import LogTriggers from './component/Day1/Patient/LogTriggers';
 import Myrecord from './component/Day1/Patient/Myrecord';
 import Savechange from './component/Day1/Patient/Savechange';
-
-
-
+import PostureAnalysis from './component/Day1/Patient/PostureAnalysis';
+import SteadyAscent from './component/Day1/Patient/SteadyAscent';
+import CarePlan from './component/Day1/Patient/CarePlan';
+import Stabilization from './component/Day1/Patient/Stabilization';
+import Phase2D from './component/Day1/Patient/Phase2D';
 
 const App = () => {
   return (
@@ -180,8 +184,16 @@ const App = () => {
       <Route path="/Dseasonal" element={<Dseasonal />} />
       <Route path="/Tthdiagnostic" element={<Tthdiagnostic />} />
       <Route path="/NeckAlignment" element={<NeckAlignment />} />
+      <Route path="/MUSCLETENSION" element={<MuscleTension />} />
+      <Route path="/muscletension" element={<MuscleTension />} />
+      <Route path="/LogTriggers" element={<LogTriggers />} />
       <Route path="/Myrecord" element={<Myrecord />} />
       <Route path="/Savechange" element={<Savechange />} />
+      <Route path="/PostureAnalysis" element={<PostureAnalysis />} />
+      <Route path="/SteadyAscent" element={<SteadyAscent />} />
+      <Route path="/CarePlan" element={<CarePlan />} />
+      <Route path="/Stabilization" element={<Stabilization />} />
+      <Route path="/Phase2D" element={<Phase2D />} />
 
       
 

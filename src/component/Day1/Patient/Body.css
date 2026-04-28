@@ -32,8 +32,8 @@ body {
 /* Sidebar Styles - sync with Diagnostic */
 .body-sidebar {
   width: 250px;
-  background: linear-gradient(180deg, #134658 0%, #166070 50%, #198797 100%);
-  padding: 35px 15px;
+  background: #134658;
+  padding: 25px 15px;
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -43,10 +43,12 @@ body {
   z-index: 100;
 }
 
-.sidebar-logo { padding: 0 0 50px 10px; }
-.logo-container { display: flex; align-items: center; gap: 15px; }
-.logo-container h2 { font-size: 28px; font-weight: 700; color: #ffffff; margin: 0; letter-spacing: -0.5px; }
-.logo-container h2 span { color: rgba(255, 255, 255, 0.8); }
+.sidebar-logo { padding: 10px 0 50px 10px; display: flex; align-items: center; }
+.vadyago-main-logo {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+}
 
 .sidebar-menu { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 
@@ -57,13 +59,14 @@ body {
   padding: 12px 18px;
   color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 20px;
   transition: all 0.25s ease;
   cursor: pointer;
   border: 1px solid transparent;
   white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
 .menu-icon-wrapper {
@@ -77,7 +80,11 @@ body {
 
 .menu-item svg { width: 100%; height: 100%; stroke-width: 2.2; }
 .menu-item:hover { background: rgba(255, 255, 255, 0.08); }
-.menu-item.active { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); }
+.menu-item.active { 
+  background: rgba(0, 0, 0, 0.2); 
+  color: #fff; 
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+}
 
 .sidebar-footer { padding-top: 20px; display: flex; justify-content: center; }
 
