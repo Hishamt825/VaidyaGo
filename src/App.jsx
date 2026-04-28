@@ -98,21 +98,14 @@ import MuscleTension from './component/Day1/Patient/MuscleTension';
 import LogTriggers from './component/Day1/Patient/LogTriggers';
 import Myrecord from './component/Day1/Patient/Myrecord';
 import Savechange from './component/Day1/Patient/Savechange';
-<<<<<<< HEAD
-
 import Appointment2 from './component/Day1/Doctor/Appointment2';
 import Appointmentb from './component/Day1/Doctor/Appointmentb';
 import Reject from './components/Admin/Reject';
-import Consultation1 from './component/Day1/Consultation/Consultation1';
-
-
-=======
 import PostureAnalysis from './component/Day1/Patient/PostureAnalysis';
 import SteadyAscent from './component/Day1/Patient/SteadyAscent';
 import CarePlan from './component/Day1/Patient/CarePlan';
 import Stabilization from './component/Day1/Patient/Stabilization';
 import Phase2D from './component/Day1/Patient/Phase2D';
->>>>>>> frontend
 
 const App = () => {
   return (
@@ -197,7 +190,7 @@ const App = () => {
       <Route path="/Reject" element={<Reject />} />
       <Route path="/Consultation1" element={<Consultation1 />} />
 
-      <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
+      <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => { }} isMobileOpen={false} setIsMobileOpen={() => { }} /></div>} />
 
       <Route path="/Consultation1" element={<Consultation1 />} />
       <Route path="/Appointment_Day1" element={<Appointment_Day1 />} />

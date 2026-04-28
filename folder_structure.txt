@@ -1,0 +1,638 @@
+├── .gitignore
+├── eslint.config.js
+├── folder_structure.txt
+├── index.html
+├── login-page
+├── package-lock.json
+├── package.json
+├── pagination_refined.txt
+├── postcss.config.js
+├── public
+│   ├── assets
+│   │   ├── a.png
+│   │   ├── active.png
+│   │   ├── ad.png
+│   │   ├── admin.png
+│   │   ├── ai.png
+│   │   ├── ai1.png
+│   │   ├── ap.png
+│   │   ├── app.png
+│   │   ├── arr.png
+│   │   ├── arrow.svg
+│   │   ├── b.svg
+│   │   ├── banner.png
+│   │   ├── bar1.svg
+│   │   ├── bbg.png
+│   │   ├── bbg1.svg
+│   │   ├── Bell.png
+│   │   ├── bg.png
+│   │   ├── bg1.png
+│   │   ├── bg1.svg
+│   │   ├── black.svg
+│   │   ├── bon.png
+│   │   ├── book.png
+│   │   ├── book.svg
+│   │   ├── book1.png
+│   │   ├── bottom.svg
+│   │   ├── brain.png
+│   │   ├── but.png
+│   │   ├── cake.svg
+│   │   ├── cake1.svg
+│   │   ├── call.png
+│   │   ├── call1.png
+│   │   ├── canteen.png
+│   │   ├── cardi.png
+│   │   ├── ce.png
+│   │   ├── child.png
+│   │   ├── circle.png
+│   │   ├── cl.png
+│   │   ├── coin.png
+│   │   ├── coin.svg
+│   │   ├── comma.png
+│   │   ├── comma1.png
+│   │   ├── contact.png
+│   │   ├── Credit card.png
+│   │   ├── d.png
+│   │   ├── das.png
+│   │   ├── de.png
+│   │   ├── del.png
+│   │   ├── del.svg
+│   │   ├── delete.png
+│   │   ├── dental.png
+│   │   ├── Dentist.png
+│   │   ├── dermato.png
+│   │   ├── des.svg
+│   │   ├── do.png
+│   │   ├── doc.png
+│   │   ├── doc.svg
+│   │   ├── doc2.png
+│   │   ├── doc3.svg
+│   │   ├── doctor.png
+│   │   ├── Edit.png
+│   │   ├── eye.png
+│   │   ├── Eyeoff.svg
+│   │   ├── feed.svg
+│   │   ├── food.svg
+│   │   ├── fr.png
+│   │   ├── Frame.png
+│   │   ├── Frame.svg
+│   │   ├── Frame1.png
+│   │   ├── frame1.svg
+│   │   ├── frame2.svg
+│   │   ├── Frame3.png
+│   │   ├── frame3.svg
+│   │   ├── free.png
+│   │   ├── gastro.png
+│   │   ├── goal.png
+│   │   ├── google.png
+│   │   ├── graph.png
+│   │   ├── Group.png
+│   │   ├── gyno.png
+│   │   ├── Heart.png
+│   │   ├── heart.svg
+│   │   ├── help.png
+│   │   ├── hero.svg
+│   │   ├── hero2.jpg
+│   │   ├── hero2.png
+│   │   ├── herobg.jpg
+│   │   ├── home.jpg
+│   │   ├── i.png
+│   │   ├── icon.png
+│   │   ├── im.png
+│   │   ├── image 7.png
+│   │   ├── image 8.png
+│   │   ├── img.jpg
+│   │   ├── img.png
+│   │   ├── imgup.png
+│   │   ├── insta.png
+│   │   ├── knee.png
+│   │   ├── lab.png
+│   │   ├── Lady.svg
+│   │   ├── light.png
+│   │   ├── liver.png
+│   │   ├── lo.png
+│   │   ├── lo.svg
+│   │   ├── loc.svg
+│   │   ├── location.png
+│   │   ├── location_on.svg
+│   │   ├── lock.png
+│   │   ├── Lock.svg
+│   │   ├── log.png
+│   │   ├── login.jpg
+│   │   ├── login.svg
+│   │   ├── logo.png
+│   │   ├── lok.png
+│   │   ├── m.png
+│   │   ├── mail.png
+│   │   ├── mail.svg
+│   │   ├── make.svg
+│   │   ├── makeapp.svg
+│   │   ├── makeman.png
+│   │   ├── man.svg
+│   │   ├── mana.svg
+│   │   ├── manager.png
+│   │   ├── Manager.svg
+│   │   ├── map.png
+│   │   ├── map1.png
+│   │   ├── me.png
+│   │   ├── med.png
+│   │   ├── med1.png
+│   │   ├── menu.svg
+│   │   ├── mission.png
+│   │   ├── name.png
+│   │   ├── neuro.png
+│   │   ├── new.png
+│   │   ├── new1.svg
+│   │   ├── nur.png
+│   │   ├── oncology.png
+│   │   ├── ortho.png
+│   │   ├── pack.png
+│   │   ├── pay.svg
+│   │   ├── pe.png
+│   │   ├── pen.png
+│   │   ├── pers.png
+│   │   ├── person.svg
+│   │   ├── person2.png
+│   │   ├── person3.png
+│   │   ├── person4.png
+│   │   ├── ph.png
+│   │   ├── phar.png
+│   │   ├── phone.png
+│   │   ├── pic.png
+│   │   ├── pic1.png
+│   │   ├── pic3.png
+│   │   ├── pizza.svg
+│   │   ├── plus.png
+│   │   ├── pre.png
+│   │   ├── pre1.png
+│   │   ├── psy.png
+│   │   ├── re.png
+│   │   ├── rec.png
+│   │   ├── Rectangle.svg
+│   │   ├── red.png
+│   │   ├── reject.png
+│   │   ├── renal.png
+│   │   ├── res.png
+│   │   ├── right.png
+│   │   ├── sand.svg
+│   │   ├── Se1.png
+│   │   ├── sea.png
+│   │   ├── search.svg
+│   │   ├── service.png
+│   │   ├── sett.png
+│   │   ├── settt.png
+│   │   ├── shake.svg
+│   │   ├── side.png
+│   │   ├── side.svg
+│   │   ├── sig.svg
+│   │   ├── stomach.png
+│   │   ├── Subtract.png
+│   │   ├── tab.png
+│   │   ├── tab1.png
+│   │   ├── Theme.png
+│   │   ├── ti.png
+│   │   ├── tick.png
+│   │   ├── tooth.png
+│   │   ├── union.svg
+│   │   ├── update.png
+│   │   ├── user.svg
+│   │   ├── v.png
+│   │   ├── VADYAGO.png
+│   │   ├── Vector (1).png
+│   │   ├── Vector (2).png
+│   │   ├── Vector.png
+│   │   ├── Vector.svg
+│   │   ├── Vector1.svg
+│   │   ├── voice.png
+│   │   ├── voice1.png
+│   │   ├── walk.svg
+│   │   ├── what.png
+│   │   ├── white.png
+│   │   └── you.png
+│   ├── favicon.svg
+│   └── icons.svg
+├── README.md
+├── refactor.js
+├── snippet.txt
+├── src
+│   ├── .github
+│   │   └── workflows
+│   │       └── deploy-frontend.yml
+│   ├── App.css
+│   ├── App.jsx
+│   ├── assets
+│   │   ├── Abdominal CT.svg
+│   │   ├── active.png
+│   │   ├── ad.png
+│   │   ├── add.png
+│   │   ├── admin1.png
+│   │   ├── admin_rej.png
+│   │   ├── ai.png
+│   │   ├── ai1.png
+│   │   ├── alena.png
+│   │   ├── amit.png
+│   │   ├── anatomical_head.png
+│   │   ├── anjali.png
+│   │   ├── ap.png
+│   │   ├── app.png
+│   │   ├── appointment.svg
+│   │   ├── arr.png
+│   │   ├── arrow.svg
+│   │   ├── avatr1.svg
+│   │   ├── avatr2.svg
+│   │   ├── avatr3.svg
+│   │   ├── avatr4.svg
+│   │   ├── avatr5.svg
+│   │   ├── avatr6.svg
+│   │   ├── avatr7.svg
+│   │   ├── avatr8.svg
+│   │   ├── b.svg
+│   │   ├── banner.png
+│   │   ├── bar1.svg
+│   │   ├── bbg.png
+│   │   ├── bbg1.svg
+│   │   ├── Bell.png
+│   │   ├── bg.png
+│   │   ├── bg1.png
+│   │   ├── bg1.svg
+│   │   ├── black.svg
+│   │   ├── bon.png
+│   │   ├── book.png
+│   │   ├── book.svg
+│   │   ├── book1.png
+│   │   ├── bottom.svg
+│   │   ├── brain.png
+│   │   ├── brust.png
+│   │   ├── but.png
+│   │   ├── cake.svg
+│   │   ├── cake1.svg
+│   │   ├── call.png
+│   │   ├── call1.png
+│   │   ├── canteen.png
+│   │   ├── cardi.png
+│   │   ├── ce.png
+│   │   ├── chest_xray.png
+│   │   ├── child.png
+│   │   ├── circle.png
+│   │   ├── cl.png
+│   │   ├── coin.png
+│   │   ├── coin.svg
+│   │   ├── comma.png
+│   │   ├── comma1.png
+│   │   ├── consultations.svg
+│   │   ├── contact.png
+│   │   ├── Container.svg
+│   │   ├── Credit card.png
+│   │   ├── ct.png
+│   │   ├── d.png
+│   │   ├── da.svg
+│   │   ├── das.png
+│   │   ├── de.png
+│   │   ├── del.png
+│   │   ├── del.svg
+│   │   ├── delete.png
+│   │   ├── dental.png
+│   │   ├── Dentist.png
+│   │   ├── dermato.png
+│   │   ├── des.svg
+│   │   ├── do.png
+│   │   ├── doc.png
+│   │   ├── doc.svg
+│   │   ├── doc2.png
+│   │   ├── doc3.svg
+│   │   ├── doctor.png
+│   │   ├── Done.png
+│   │   ├── dr_arjan_singh.png
+│   │   ├── dr_sarah_jenkins.png
+│   │   ├── Edit.png
+│   │   ├── Ellipse 134.svg
+│   │   ├── Ellipse 211.svg
+│   │   ├── Ellipse.svg
+│   │   ├── Ellipse_139.svg
+│   │   ├── Ellipse_139_1.svg
+│   │   ├── Ellipse_139_2.svg
+│   │   ├── emergency.svg
+│   │   ├── eye.png
+│   │   ├── Eyeoff.svg
+│   │   ├── feed.svg
+│   │   ├── food.svg
+│   │   ├── fr.png
+│   │   ├── Frame 226.svg
+│   │   ├── Frame.png
+│   │   ├── Frame.svg
+│   │   ├── Frame1.png
+│   │   ├── frame1.svg
+│   │   ├── frame2.svg
+│   │   ├── Frame3.png
+│   │   ├── frame3.svg
+│   │   ├── free.png
+│   │   ├── fruit.png
+│   │   ├── gastro.png
+│   │   ├── girl.png
+│   │   ├── goal.png
+│   │   ├── google.png
+│   │   ├── graph.png
+│   │   ├── Group (1).svg
+│   │   ├── Group.png
+│   │   ├── guided.png
+│   │   ├── gyno.png
+│   │   ├── Heart.png
+│   │   ├── help.png
+│   │   ├── hero.png
+│   │   ├── hero.svg
+│   │   ├── hero2.jpg
+│   │   ├── hero2.png
+│   │   ├── herobg.jpg
+│   │   ├── home.jpg
+│   │   ├── human-body-frontal-removebg-preview 1.svg
+│   │   ├── human.png
+│   │   ├── human1.png
+│   │   ├── human_body.png
+│   │   ├── i.png
+│   │   ├── icon.png
+│   │   ├── im.png
+│   │   ├── image 7.png
+│   │   ├── image 8.png
+│   │   ├── image_105.svg
+│   │   ├── image_49.svg
+│   │   ├── image_76.svg
+│   │   ├── img.jpg
+│   │   ├── img.png
+│   │   ├── income.svg
+│   │   ├── index-B6qa8lN1.css
+│   │   ├── index-Bdf-0wNi.js
+│   │   ├── insta.png
+│   │   ├── knee.png
+│   │   ├── lab.png
+│   │   ├── Lady.svg
+│   │   ├── light.png
+│   │   ├── liver.png
+│   │   ├── lo.png
+│   │   ├── lo.svg
+│   │   ├── loc.svg
+│   │   ├── location.png
+│   │   ├── location_on.svg
+│   │   ├── lock.png
+│   │   ├── Lock.svg
+│   │   ├── log.png
+│   │   ├── login.jpg
+│   │   ├── login.svg
+│   │   ├── logo.png
+│   │   ├── logo_1.svg
+│   │   ├── lok.png
+│   │   ├── m.png
+│   │   ├── mail.png
+│   │   ├── mail.svg
+│   │   ├── makeman.png
+│   │   ├── man.svg
+│   │   ├── mana.svg
+│   │   ├── manager.png
+│   │   ├── Manager.svg
+│   │   ├── map.png
+│   │   ├── map1.png
+│   │   ├── marcus.png
+│   │   ├── me.png
+│   │   ├── med.png
+│   │   ├── med1.png
+│   │   ├── medication_tip.png
+│   │   ├── menu.svg
+│   │   ├── mission.png
+│   │   ├── mri.png
+│   │   ├── mri_scan.png
+│   │   ├── muscular-back.png
+│   │   ├── name.png
+│   │   ├── neuro.png
+│   │   ├── new.png
+│   │   ├── new1.svg
+│   │   ├── nur.png
+│   │   ├── oncology.png
+│   │   ├── ortho.png
+│   │   ├── p.svg
+│   │   ├── pack.png
+│   │   ├── pat.png
+│   │   ├── Patient Photo.svg
+│   │   ├── pay.svg
+│   │   ├── pe.png
+│   │   ├── pen.png
+│   │   ├── pending.png
+│   │   ├── pers.png
+│   │   ├── person.svg
+│   │   ├── person2.png
+│   │   ├── person4.png
+│   │   ├── ph.png
+│   │   ├── phar.png
+│   │   ├── phone.png
+│   │   ├── pic.png
+│   │   ├── pic1.png
+│   │   ├── pic3.png
+│   │   ├── pizza.svg
+│   │   ├── plus.png
+│   │   ├── posture.png
+│   │   ├── pre.png
+│   │   ├── pre1.png
+│   │   ├── priya.png
+│   │   ├── prone.png
+│   │   ├── psy.png
+│   │   ├── react.svg
+│   │   ├── rec.png
+│   │   ├── Rectangle.svg
+│   │   ├── red.png
+│   │   ├── regimen_abstract_bg.png
+│   │   ├── rejected.png
+│   │   ├── renal.png
+│   │   ├── res.png
+│   │   ├── right.png
+│   │   ├── sand.svg
+│   │   ├── scap.png
+│   │   ├── Se1.png
+│   │   ├── sea.png
+│   │   ├── search.svg
+│   │   ├── sett.png
+│   │   ├── settt.png
+│   │   ├── shake.svg
+│   │   ├── side.png
+│   │   ├── side.svg
+│   │   ├── sig.svg
+│   │   ├── stairs.png
+│   │   ├── stairs3.png
+│   │   ├── stomach.png
+│   │   ├── Subtract.png
+│   │   ├── tab.png
+│   │   ├── tab1.png
+│   │   ├── Theme.png
+│   │   ├── ti.png
+│   │   ├── tick.png
+│   │   ├── tooth.png
+│   │   ├── total_patients.svg
+│   │   ├── union.svg
+│   │   ├── update.png
+│   │   ├── user.svg
+│   │   ├── v.png
+│   │   ├── VADYAGO.png
+│   │   ├── vadyago_pat.png
+│   │   ├── Vector (1).png
+│   │   ├── Vector (2).png
+│   │   ├── Vector.png
+│   │   ├── Vector.svg
+│   │   ├── Vector1.svg
+│   │   ├── vidf_profile_removebg_preview_1.svg
+│   │   ├── vid_profile_removebg_preview_1.svg
+│   │   ├── Visual.png
+│   │   ├── vite.svg
+│   │   ├── voice.png
+│   │   ├── voice1.png
+│   │   ├── vrobo_removebg_preview_1.svg
+│   │   ├── walk.png
+│   │   ├── walk.svg
+│   │   ├── walk1.png
+│   │   ├── walk2.png
+│   │   ├── walk3.png
+│   │   ├── walk4.png
+│   │   ├── walk5.png
+│   │   ├── wellness_vitals.png
+│   │   ├── what.png
+│   │   ├── white.png
+│   │   └── you.png
+│   ├── baseUrl.js
+│   ├── component
+│   │   └── Day1
+│   │       ├── Consultation
+│   │       │   ├── Consultation1.css
+│   │       │   └── Consultation1.jsx
+│   │       ├── Doctor
+│   │       │   ├── Appointment.jsx
+│   │       │   ├── Appointment2.jsx
+│   │       │   ├── Appointmentb.jsx
+│   │       │   ├── Bot.jsx
+│   │       │   ├── Dsetting.css
+│   │       │   ├── Dsetting.jsx
+│   │       │   ├── Dslot.jsx
+│   │       │   ├── Editprofile.css
+│   │       │   ├── Editprofile.jsx
+│   │       │   ├── Service.jsx
+│   │       │   └── Sidebar.jsx
+│   │       ├── Hisham.jsx
+│   │       └── Patient
+│   │           ├── Askspecialist.css
+│   │           ├── Askspecialist.jsx
+│   │           ├── Body.css
+│   │           ├── Body.jsx
+│   │           ├── Diagnostic.css
+│   │           ├── Diagnostic.jsx
+│   │           ├── Diagnosticinput.css
+│   │           ├── Diagnosticinput.jsx
+│   │           ├── Dseasonal.css
+│   │           ├── Dseasonal.jsx
+│   │           ├── Myrecord.css
+│   │           ├── Myrecord.jsx
+│   │           ├── Savechange.css
+│   │           ├── Savechange.jsx
+│   │           ├── Tthdiagnostic.css
+│   │           └── Tthdiagnostic.jsx
+│   ├── components
+│   │   ├── Admin
+│   │   │   ├── Adddoctor.jsx
+│   │   │   ├── admin-doctor.jsx
+│   │   │   ├── admin-signup.jsx
+│   │   │   ├── AdminLoginPage.jsx
+│   │   │   ├── AdminSidebar.jsx
+│   │   │   ├── Admin_dashboard1.jsx
+│   │   │   ├── DasyWilliam.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   ├── Reject_doctor.jsx
+│   │   │   └── VerticalProgress1.jsx
+│   │   ├── Appoinment
+│   │   │   ├── Addslot.jsx
+│   │   │   ├── App1_Dashboard.jsx
+│   │   │   ├── App_Dashboard.jsx
+│   │   │   ├── Bot.jsx
+│   │   │   ├── Dsetting.css
+│   │   │   ├── Recent_patient.jsx
+│   │   │   ├── Settingpage.jsx
+│   │   │   └── Side_app.jsx
+│   │   ├── Doctor
+│   │   │   ├── DoctorCard.jsx
+│   │   │   ├── Form1.jsx
+│   │   │   ├── Form2.jsx
+│   │   │   ├── Form3.jsx
+│   │   │   ├── Form4.jsx
+│   │   │   └── Vertical.jsx
+│   │   ├── Hospital
+│   │   │   ├── About.jsx
+│   │   │   ├── ContactUs.jsx
+│   │   │   ├── MainPage.jsx
+│   │   │   ├── Makeapp.jsx
+│   │   │   ├── Section3.jsx
+│   │   │   └── Service.jsx
+│   │   ├── Login-hospital
+│   │   │   ├── Finallogin.jsx
+│   │   │   └── ProtectedRoute.jsx
+│   │   ├── Patient
+│   │   │   ├── Account.jsx
+│   │   │   ├── AllLabReportsModal.jsx
+│   │   │   ├── Appointment.jsx
+│   │   │   ├── Disease.jsx
+│   │   │   ├── Exercise
+│   │   │   │   ├── Guided.jsx
+│   │   │   │   ├── Selectexercise.jsx
+│   │   │   │   └── Strengthening.jsx
+│   │   │   ├── Medication
+│   │   │   │   ├── Add_past.jsx
+│   │   │   │   ├── Amoxicillin.jsx
+│   │   │   │   ├── Atorvastatin.jsx
+│   │   │   │   ├── Cancel.jsx
+│   │   │   │   ├── Daily_report.jsx
+│   │   │   │   ├── Download.jsx
+│   │   │   │   ├── History.jsx
+│   │   │   │   ├── Lisinopril.jsx
+│   │   │   │   ├── Logs.jsx
+│   │   │   │   ├── Medication1.jsx
+│   │   │   │   ├── Message.jsx
+│   │   │   │   ├── Metformin.jsx
+│   │   │   │   ├── Metformin_detail.jsx
+│   │   │   │   ├── New_request.jsx
+│   │   │   │   ├── Order.jsx
+│   │   │   │   ├── Past_medication.jsx
+│   │   │   │   ├── Progress.jsx
+│   │   │   │   ├── Refill.jsx
+│   │   │   │   ├── Refill_request.jsx
+│   │   │   │   ├── Reminder.jsx
+│   │   │   │   ├── Request_refill.jsx
+│   │   │   │   ├── Schedule.jsx
+│   │   │   │   ├── Tomorrow.jsx
+│   │   │   │   ├── Update_logs.jsx
+│   │   │   │   └── View_request.jsx
+│   │   │   ├── Message.jsx
+│   │   │   ├── notification.jsx
+│   │   │   ├── Patient_dashboard.jsx
+│   │   │   ├── Patient_dashboard1.jsx
+│   │   │   ├── Patient_sidebar.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── Record.jsx
+│   │   │   ├── Reminder.jsx
+│   │   │   ├── Reminder1.jsx
+│   │   │   ├── Setting.jsx
+│   │   │   ├── Symptom.css
+│   │   │   ├── Symptom.jsx
+│   │   │   └── Vitals
+│   │   │       ├── Adddevice.jsx
+│   │   │       ├── Breathing.jsx
+│   │   │       ├── Detail.jsx
+│   │   │       ├── Genrate.jsx
+│   │   │       ├── Health_report.jsx
+│   │   │       ├── Heart.jsx
+│   │   │       ├── Pressure_heart.jsx
+│   │   │       ├── Pressure_report.jsx
+│   │   │       ├── Vitals.jsx
+│   │   │       └── Vitals_history.jsx
+│   │   ├── Signup-hospital
+│   │   │   ├── Signup1.jsx
+│   │   │   └── VerticalProgressBar.jsx
+│   │   └── Style
+│   │       └── Login.css
+│   ├── index.css
+│   ├── index.js
+│   └── main.jsx
+├── tailwind.config.js
+└── vite.config.js
