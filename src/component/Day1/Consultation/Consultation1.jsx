@@ -2,6 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import './Consultation1.css';
 import logo from '../../../assets/logo_1.svg';
 import profilePic from '../../../assets/Ellipse 134.svg';
+import Sidebar from '../../../components/Patient/Patient_sidebar';
+import Profile from '../../../components/Patient/Profile';
+import Account from '../../../components/Patient/Account';
+import Notification from '../../../components/Patient/notification';
+import { useNavigate } from 'react-router-dom';
+import phImg from '../../../assets/ph.png';
 
 const CustomCalendar = ({ onSelect, initialDate }) => {
   const [currentDate, setCurrentDate] = useState(initialDate || new Date());
@@ -32,12 +38,10 @@ const CustomCalendar = ({ onSelect, initialDate }) => {
   const totalDays = getDaysInMonth(currentDate.getMonth(), currentDate.getFullYear());
   const firstDay = getFirstDayOfMonth(currentDate.getMonth(), currentDate.getFullYear());
 
-  // Padding for previous month
   for (let i = 0; i < firstDay; i++) {
     days.push(<div key={`prev-${i}`} className="calendar-day empty"></div>);
   }
 
-  // Current month days
   for (let i = 1; i <= totalDays; i++) {
     const isSelected = initialDate && i === initialDate.getDate() && currentDate.getMonth() === initialDate.getMonth() && currentDate.getFullYear() === initialDate.getFullYear();
     days.push(
@@ -149,6 +153,11 @@ const MedicalIcon = ({ type }) => {
 };
 
 const Consultation1 = () => {
+  const navigate = useNavigate();
+  const [active, setActive] = useState('Home');
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [selectedSpeciality, setSelectedSpeciality] = useState("");
   const [activeCardId, setActiveCardId] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -187,15 +196,6 @@ const Consultation1 = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const navItems = [
-    { title: 'Home', active: true },
-    { title: 'Find Doctors', active: false },
-    { title: 'Lab test', active: false },
-    { title: 'Health Record', active: false },
-    { title: 'Diet Chart', active: false },
-    { title: 'Medicines', active: false },
-  ];
-
   const specialities = [
     { id: 1, title: 'Cardic Care', subtitle: 'Heart Health care', iconColor: '#ffdede', type: 'cardiac', color: '#ff4d4d' },
     { id: 2, title: 'Paediatric Care', subtitle: 'Child Health Services', iconColor: '#e0f2fe', type: 'paediatric', color: '#3b82f6' },
@@ -223,109 +223,163 @@ const Consultation1 = () => {
     { id: 24, title: 'Dentist', subtitle: 'Treat Teeth', iconColor: '#ecfeff', type: 'dentist', color: '#0891b2' }
   ];
 
-  return (
-    <div className="consultation-container">
-      {/* Header */}
-      <header className="header">
-        <div className="logo">
-          <img src={logo} alt="VADYAGo" style={{ height: '40px' }} />
-        </div>
+    return (
+    <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+         style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
+      
+      {/* Sidebar remains accessible */}
+      <Sidebar 
+        active={active} 
+        setActive={setActive} 
+        isMobileOpen={isMobileOpen} 
+        setIsMobileOpen={setIsMobileOpen} 
+      />
+
+      {/* Main Content Area */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden transition-all duration-300 ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
         
-        <nav className="nav-links">
-          {navItems.map((item, index) => (
-            <a 
-              key={index} 
-              href={`#${item.title.toLowerCase().replace(' ', '-')}`}
-              className={item.active ? 'active' : ''}
-            >
-              {item.title}
-            </a>
-          ))}
-        </nav>
-
-        <div className="user-profile">
-          <span className="user-name">Daisy William</span>
-          <img 
-            src={profilePic} 
-            alt="Daisy William" 
-            className="user-avatar"
-          />
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="main-content">
-        <div className="breadcrumb">
-          <span style={{ color: '#1db1c2', fontSize: '18px' }}>›</span>
-        </div>
-
-        {/* Specialities Grid */}
-        <div className="specialities-grid">
-          {specialities.map((speciality) => (
-            <div 
-              key={speciality.id} 
-              className={`speciality-card ${activeCardId === speciality.id ? 'selected' : ''}`}
-              onClick={() => {
-                setActiveCardId(speciality.id);
-                setSelectedSpeciality(speciality.title);
-              }}
-            >
-              <div 
-                className="speciality-icon" 
-                style={{ backgroundColor: speciality.iconColor, color: speciality.color }}
-              >
-                <MedicalIcon type={speciality.type} />
-              </div>
-              <div className="speciality-info">
-                <h3>{speciality.title}</h3>
-                <p>{speciality.subtitle}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Search Section */}
-        <section className="find-doctor-section">
-          <h2 className="find-doctor-title">Find Doctor in 3 Steps</h2>
+        {/* Top Navbar */}
+        <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
           
-          <div className="search-controls">
-            <CustomDropdown 
-              options={specialities.map(s => s.title)} 
-              placeholder="Select Speciality" 
-              value={selectedSpeciality} 
-              onSelect={setSelectedSpeciality} 
-            />
+          {/* Hamburger for Mobile */}
+          <button 
+              onClick={() => setIsMobileOpen(true)}
+              className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+          >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+          </button>
+          <div className="flex-1 max-w-[280px]">
+            <div className="relative group">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+              />
+              <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
 
-            <div className="input-group date-picker-group" ref={calendarRef}>
-              <div className="dropdown-select" onClick={() => setShowCalendar(!showCalendar)}>
-                <span className={!selectedDate ? 'placeholder' : ''}>
-                  {selectedDate ? selectedDate.toLocaleDateString('en-GB') : 'Select Date'}
-                </span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          <div className="flex items-center gap-[32px] ml-auto">
+            <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+            <div className="flex items-center gap-[20px]">
+              <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
+                <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#E85B5A] rounded-full" />
+              </button>
+              <button onClick={() => navigate('/Setting')} className="text-white hover:text-[#6ED4D4] transition-colors">
+                <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+              <div 
+                onClick={() => setActiveModal('profile')} 
+                className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform"
+              >
+                <img src={profilePic} alt="User" className="w-full h-full object-cover" />
               </div>
-              {showCalendar && (
-                <CustomCalendar 
-                  initialDate={selectedDate || new Date()} 
-                  onSelect={(date) => {
-                    setSelectedDate(date);
-                    setShowCalendar(false);
-                  }} 
-                />
-              )}
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto no-scrollbar pb-[64px]">
+          {/* Welcome Title */}
+          <div className="px-[24px] md:px-[48px] pt-[12px] pb-[20px] shrink-0 w-full max-w-[1440px] mx-auto">
+            <h1 className="text-[30px] font-semibold text-white tracking-tight leading-none mb-2">
+              Book a Consultation
+            </h1>
+            <p className="text-white/60 text-[15px] font-medium">Select a speciality to find the right clinician for you.</p>
+          </div>
+
+          <div className="px-[24px] md:px-[48px] pb-[60px] w-full max-w-[1440px] mx-auto">
+            {/* Specialities Grid */}
+            <div className="specialities-grid mb-12">
+              {specialities.map((speciality) => (
+                <div 
+                  key={speciality.id} 
+                  className={`speciality-card ${activeCardId === speciality.id ? 'selected' : ''}`}
+                  onClick={() => {
+                    setActiveCardId(speciality.id);
+                    setSelectedSpeciality(speciality.title);
+                    navigate('/Consultation_info', { state: { specialityName: speciality.title } });
+                  }}
+                >
+                  <div 
+                    className="speciality-icon" 
+                    style={{ backgroundColor: speciality.iconColor, color: speciality.color }}
+                  >
+                    <MedicalIcon type={speciality.type} />
+                  </div>
+                  <div className="speciality-info">
+                    <h3>{speciality.title}</h3>
+                    <p>{speciality.subtitle}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <CustomDropdown 
-              options={locations} 
-              placeholder="Select Location" 
-              value={selectedLocation} 
-              onSelect={setSelectedLocation}
-              iconType="location"
-            />
+            {/* Search Section */}
+            <section className="find-doctor-section">
+              <h2 className="find-doctor-title">Find Doctor in 3 Steps</h2>
+              
+              <div className="search-controls">
+                <CustomDropdown 
+                  options={specialities.map(s => s.title)} 
+                  placeholder="Select Speciality" 
+                  value={selectedSpeciality} 
+                  onSelect={setSelectedSpeciality} 
+                />
 
-            <button className="book-btn">BOOK NOW</button>
+                <div className="input-group date-picker-group" ref={calendarRef}>
+                  <div className="dropdown-select" onClick={() => setShowCalendar(!showCalendar)}>
+                    <span className={!selectedDate ? 'placeholder' : ''}>
+                      {selectedDate ? selectedDate.toLocaleDateString('en-GB') : 'Select Date'}
+                    </span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                  </div>
+                  {showCalendar && (
+                    <CustomCalendar 
+                      initialDate={selectedDate || new Date()} 
+                      onSelect={(date) => {
+                        setSelectedDate(date);
+                        setShowCalendar(false);
+                      }} 
+                    />
+                  )}
+                </div>
+
+                <CustomDropdown 
+                  options={locations} 
+                  placeholder="Select Location" 
+                  value={selectedLocation} 
+                  onSelect={setSelectedLocation}
+                  iconType="location"
+                />
+
+                <button className="book-btn">BOOK NOW</button>
+              </div>
+            </section>
           </div>
-        </section>
-      </main>
+        </main>
+      </div>
+
+      {/* Modals */}
+      {activeModal === 'profile' && (
+          <Profile 
+              onClose={() => setActiveModal(null)} 
+              onAccountSettings={() => setActiveModal('account')} 
+          />
+      )}
+      {activeModal === 'account' && (
+          <Account onClose={() => setActiveModal(null)} />
+      )}
+      {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
     </div>
   );
 };

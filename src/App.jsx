@@ -59,7 +59,7 @@ import Vitals from './components/Patient/Vitals/Vitals';
 import Reminder from './components/Patient/Reminder';
 import Medication1 from './components/Patient/Medication/Medication1';
 import Setting from './components/Patient/Setting';
-import Appointment from './components/Patient/Appointment';
+import Appointment from './components/Patient/Appointment/Appointment';
 import Message from './components/Patient/Message';
 import Record from './components/Patient/Record';
 import Reminder1 from './components/Patient/Reminder1';
@@ -74,6 +74,7 @@ import Lisinopril from './components/Patient/Medication/Lisinopril';
 import Metformin_detail from './components/Patient/Medication/Metformin_detail';
 import Atorvastatin from './components/Patient/Medication/Atorvastatin';
 import Amoxicillin from './components/Patient/Medication/Amoxicillin';
+import Clinic from './components/Patient/Appointment/Clinic';
 import Appointment2 from './component/Day1/Doctor/Appointment2';
 import Dsetting from './component/Day1/Doctor/Dsetting';
 import Dslot from './component/Day1/Doctor/Dslot';
@@ -81,6 +82,7 @@ import Editprofile from './component/Day1/Doctor/Editprofile';
 import Appointmentb from './component/Day1/Doctor/Appointmentb';
 import Reject from './components/Admin/Reject';
 import Consultation1 from './component/Day1/Consultation/Consultation1';
+import Consultation_info from './component/Day1/Consultation/Consultation_info';
 
 
 
@@ -143,6 +145,8 @@ const App = () => {
       <Route path="/Reminder" element={<Reminder />} />
       <Route path="/Setting" element={<Setting />} />
       <Route path="/Appointment" element={<Appointment />} />
+      <Route path="/Appoinment" element={<Appointment />} />
+      <Route path="/Clinic" element={<Clinic />} />
       <Route path="/Message" element={<Message />} />
       <Route path="/Record" element={<Record />} />
       <Route path="/Reminder1" element={<Reminder1 />} />
@@ -166,6 +170,7 @@ const App = () => {
       <Route path="/Appointmentb" element={<Appointmentb />} />
       <Route path="/Reject" element={<Reject />} />
       <Route path="/Consultation1" element={<Consultation1 />} />
+      <Route path="/Consultation_info" element={<Consultation_info />} />
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => {}} isMobileOpen={false} setIsMobileOpen={() => {}} /></div>} />
 

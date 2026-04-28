@@ -163,7 +163,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                 {/* Consultation CTA */}
                 <div className="px-5 py-4">
                     <button
-                        onClick={() => navigate('/Symptom')}
+                        onClick={() => navigate('/Consultation1')}
                         className="w-full flex items-center justify-center gap-2 bg-white hover:bg-white/90
                                    text-[#16879B] text-[14px] font-bold py-3 rounded-full
                                    transition-all duration-300 shadow-xl active:scale-[0.98]"

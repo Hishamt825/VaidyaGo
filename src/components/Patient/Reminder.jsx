@@ -55,6 +55,7 @@ const InputField = ({ label, placeholder, type = "text", value, onChange }) => (
 ───────────────────────────────────────────── */
 
 const Reminder = () => {
+    const navigate = useNavigate();
     const [active, setActive] = useState('Reminder');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
@@ -85,10 +86,25 @@ const Reminder = () => {
             />
 
             {/* Main Area */}
-            <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
                 
                 {/* Header Navbar */}
-                <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+                <header className="h-[76px] flex items-center px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20 gap-[16px]">
+                    {/* Hamburger for Mobile */}
+                    <button 
+                        onClick={() => setIsMobileOpen(true)}
+                        className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                    <button 
+                        onClick={() => navigate('/Reminder1')}
+                        className="w-[36px] h-[36px] rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all active:scale-90"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
                     <div className="flex-1 max-w-[280px]">
                         <div className="relative group">
                             <input
@@ -127,7 +143,7 @@ const Reminder = () => {
                     {/* Page Title & Breadcrumbs */}
                     <div className="mb-[32px]">
                         <div className="flex items-center gap-[8px] text-white/60 font-medium text-[16px] uppercase tracking-[0.2em] mb-[12px]">
-                            <span>Medications</span>
+                            <span className="hover:text-white cursor-pointer" onClick={() => navigate(-1)}>Medications</span>
                             <svg className="w-[12px] h-[12px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"/></svg>
                             <span className="text-white">Add Reminder</span>
                         </div>

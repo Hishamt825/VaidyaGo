@@ -23,10 +23,8 @@ const RoutineCard = ({ icon, title, description, badge, onClick }) => (
 
 const Selectexercise = ({ onClose }) => {
     const navigate = useNavigate();
-    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        setIsVisible(true);
         // Prevent scrolling on body when modal is open
         document.body.style.overflow = 'hidden';
         return () => {
@@ -35,20 +33,19 @@ const Selectexercise = ({ onClose }) => {
     }, []);
 
     const handleClose = () => {
-        setIsVisible(false);
-        setTimeout(onClose, 300);
+        onClose();
     };
 
     return (
-        <div className={`fixed inset-0 z-[1000] flex items-center justify-center p-4 transition-all duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
             {/* Backdrop with Blur */}
             <div 
-                className="absolute inset-0 bg-[#0B1423]/40 backdrop-blur-md transition-all duration-700"
+                className="absolute inset-0 bg-[#0B1423]/40 backdrop-blur-md"
                 onClick={handleClose} 
             />
 
             {/* Modal Content */}
-            <div className={`relative bg-white w-full max-w-[720px] rounded-[40px] shadow-2xl overflow-hidden transition-all duration-500 transform ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
+            <div className="relative bg-white w-full max-w-[720px] rounded-[40px] shadow-2xl overflow-hidden transform">
                 
                 {/* Close Button */}
                 <button 

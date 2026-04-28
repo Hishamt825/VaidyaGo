@@ -35,14 +35,22 @@ const Medication1 = () => {
         <div className="relative h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
              style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
             
-            {/* Main Content Wrapper - This gets blurred */}
-            <div className={`flex h-full w-full transition-all duration-300 ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen || isScheduleOpen || isNewRequestOpen || isMorningScheduleOpen || isPastMedicationOpen || isRefillOpen || isRefillRequestOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
-            
-            <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+            <div className="flex h-full w-full">
+                <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
-            <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-                {/* Top Navbar */}
-                <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1">
+                <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen || isScheduleOpen || isNewRequestOpen || isMorningScheduleOpen || isPastMedicationOpen || isRefillOpen || isRefillRequestOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+                    {/* Top Navbar */}
+                    <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1">
+                        
+                        {/* Hamburger for Mobile */}
+                        <button 
+                            onClick={() => setIsMobileOpen(true)}
+                            className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                            </svg>
+                        </button>
 
                     <div className="flex-1 max-w-[280px]">
                         <div className="relative group">
@@ -440,6 +448,8 @@ const Medication1 = () => {
                 </main>
             </div>
         </div>
+
+        {/* Modals - Outside the blurred content */}
 
         {/* Modals - Outside the blurred content */}
         {activeModal === 'profile' && (

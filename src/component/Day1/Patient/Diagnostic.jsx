@@ -107,7 +107,10 @@ const Diagnostic = () => {
         </nav>
         
         <div className="sidebar-footer">
-          <button className="new-consultation-btn">
+          <button 
+            onClick={() => navigate('/Consultation1')}
+            className="new-consultation-btn"
+          >
             <div className="plus-circle-blue">
                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                  <circle cx="12" cy="12" r="10" />

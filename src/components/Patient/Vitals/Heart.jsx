@@ -28,10 +28,10 @@ const Heart = ({ isOpen, onClose }) => {
 
     return (
         <div
-            className="fixed inset-0 z-[120] flex items-center justify-center p-4 backdrop-blur-xl bg-slate-900/40 animate-in fade-in duration-300"
+            className="fixed inset-0 z-[120] flex items-center justify-center p-4 backdrop-blur-xl bg-slate-900/40"
             onClick={(e) => e.target === e.currentTarget && onClose()}
         >
-            <div className="bg-white w-full max-w-[480px] rounded-[32px] shadow-2xl relative overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+            <div className="bg-white w-full max-w-[480px] rounded-[32px] shadow-2xl relative overflow-hidden flex flex-col">
 
                 {/* Header Section */}
                 <div className="relative h-[160px] bg-gradient-to-br from-[#0B1F4D] via-[#124d55] to-[#1A7785] p-8 flex flex-col justify-end overflow-hidden">

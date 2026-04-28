@@ -199,6 +199,15 @@ const Form2 = ({ onNext }) => {
           }
         );
         
+        if (response.status === 404) {
+           // ID exist in local but not in DB -> Clear and retry as POST
+           localStorage.removeItem("professional_info_id");
+           setProfessionalInfoId(null);
+           setInitialData(null);
+           setLoading(false);
+           return handleSubmit(e);
+        }
+
         if (response.ok) {
           responseData = await response.json();
           alert("Form Updated Successfully ");
@@ -262,9 +271,10 @@ const Form2 = ({ onNext }) => {
     }
   };
 
+  const isSubForm = !!onNext;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 md:px-8">
+    <div className={`${isSubForm ? "" : "min-h-screen bg-[#F8FAFC] py-10 px-4 md:px-8"}`}>
       <div className="max-w-5xl mx-auto">
         <div className="mb-8 w-full">
           <Vertical activeStep={activeStep} setActiveStep={handleStepChange} />

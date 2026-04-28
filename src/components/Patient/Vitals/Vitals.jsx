@@ -91,9 +91,8 @@ const Vitals = () => {
             className="relative h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
         >
-            {/* Wrapper for blurring everything including sidebar */}
-            <div className={`flex h-full w-full transition-all duration-500 ${isAnyModalOpen ? 'blur-md pointer-events-none' : ''}`}>
-                {/* Sidebar */}
+            <div className="flex h-full w-full">
+                {/* Sidebar remains accessible even when content is blurred */}
                 <Sidebar
                     active={active}
                     setActive={setActive}
@@ -101,24 +100,34 @@ const Vitals = () => {
                     setIsMobileOpen={setIsMobileOpen}
                 />
 
-                {/* Main Area */}
-                <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-
+                {/* Wrapper for blurring main content area */}
+                <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isAnyModalOpen ? 'blur-md pointer-events-none' : ''}`}>
+                    
                     {/* Header Navbar */}
                     <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
+                        
+                        {/* Hamburger for Mobile */}
+                        <button 
+                            onClick={() => setIsMobileOpen(true)}
+                            className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                            </svg>
+                        </button>
 
-                        <div className="flex-1 max-w-[280px]">
-                            <div className="relative group">
-                                <input
-                                    type="text"
-                                    placeholder="Search..."
-                                    className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
-                                />
-                                <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
+                    <div className="flex-1 max-w-[280px]">
+                        <div className="relative group">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+                            />
+                            <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
                         </div>
+                    </div>
 
                         <div className="flex items-center gap-[32px] ml-auto">
                             <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>

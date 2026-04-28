@@ -49,6 +49,13 @@ useEffect(() => {
         }
       );
 
+      if (response.status === 404) {
+        console.warn("Doctor ID not found on server, clearing local storage.");
+        localStorage.removeItem("doctor_id");
+        setDoctorId(null);
+        return;
+      }
+
       if (!response.ok) throw new Error("Failed to fetch data");
 
       const data = await response.json();
@@ -105,7 +112,7 @@ const handleImageChange = (e) => {
 
 
 const handleSubmit = async (e) => {
-  e.preventDefault();
+  if (e) e.preventDefault();
   setLoading(true);
   setErrorMsg("");
 
@@ -114,6 +121,7 @@ const handleSubmit = async (e) => {
 
     if (!token) {
       setErrorMsg("Please login first");
+      setLoading(false);
       return;
     }
 
@@ -161,6 +169,7 @@ const handleSubmit = async (e) => {
         alert("Form Submitted Successfully!!");
       } else {
         setErrorMsg(postData?.detail || "POST Failed");
+        setLoading(false);
         return;
       }
     }
@@ -181,10 +190,21 @@ const handleSubmit = async (e) => {
         }
       );
 
+      if (patchResponse.status === 404) {
+        // ID exist in local but not in DB -> Clear and retry as POST
+        localStorage.removeItem("doctor_id");
+        setDoctorId(null);
+        setInitialData(null);
+        setLoading(false);
+        // Call handleSubmit again to perform POST
+        return handleSubmit();
+      }
+
       const patchData = await patchResponse.json();
 
       if (!patchResponse.ok) {
         setErrorMsg(patchData?.detail || "PATCH Failed");
+        setLoading(false);
         return;
       }
 
@@ -228,8 +248,11 @@ const handleSubmit = async (e) => {
     setLoading(false);
   }
 };
+
+const isSubForm = !!onNext;
+
 return (
-    <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 md:px-8">
+    <div className={`${isSubForm ? "" : "min-h-screen bg-[#F8FAFC] py-10 px-4 md:px-8"}`}>
       <div className="max-w-5xl mx-auto">
 
         {/* Stepper / Vertical */}
@@ -237,11 +260,15 @@ return (
           <Vertical
             activeStep={activeStep}
             setActiveStep={(step) => {
-              setActiveStep(step);
-              if (step === 1) navigate("/Form1");
-              if (step === 2) navigate("/Form2");
-              if (step === 3) navigate("/Form3");
-              if (step === 4) navigate("/Form4");
+              if (onNext) {
+                onNext(step);
+              } else {
+                setActiveStep(step);
+                if (step === 1) navigate("/Form1");
+                if (step === 2) navigate("/Form2");
+                if (step === 3) navigate("/Form3");
+                if (step === 4) navigate("/Form4");
+              }
             }}
           />
         </div>
