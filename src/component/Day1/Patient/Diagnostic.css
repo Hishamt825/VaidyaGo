@@ -19,7 +19,7 @@
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background-color: var(--bg-main);
+  background: linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%);
   color: var(--text-white);
 }
 
@@ -131,12 +131,15 @@
 /* Header Styles */
 .diagnostic-main {
   flex: 1;
-  padding: 15px 30px;
   display: flex;
   flex-direction: column;
   background: radial-gradient(circle at top right, #1a3b4a, #0d2833);
   overflow-y: auto;
   height: 100vh;
+}
+
+.diagnostic-content {
+  padding: 15px 30px;
 }
 
 .top-header {
