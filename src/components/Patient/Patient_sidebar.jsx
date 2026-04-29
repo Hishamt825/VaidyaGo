@@ -128,7 +128,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                 onClick={() => {
                                     setActive(item.name);
                                     setIsMobileOpen(false);
-                                    if (item.name === 'Symptom Checker') navigate('/Symptom');
+                                    if (item.name === 'Symptom Checker') navigate('/Body');
                                     else if (item.name === 'Dashboard') navigate('/Patient_dashboard');
                                     else if (item.name === 'Vitals') navigate('/Vitals');
                                     else if (item.name === 'Appointments') navigate('/Appointment');

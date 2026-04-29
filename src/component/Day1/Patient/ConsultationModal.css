@@ -1,0 +1,303 @@
+.consult-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.consult-modal-container {
+  background: white;
+  width: 540px;
+  max-width: 95%;
+  height: 740px;
+  max-height: 95vh;
+  border-radius: 32px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.25);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.consult-header {
+  padding: 30px 40px;
+  background: linear-gradient(135deg, #0B1F4D 0%, #1a6e78 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.doc-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.doc-avatar-wrap {
+  position: relative;
+}
+
+.doc-avatar-wrap img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  object-cover: cover;
+}
+
+.verified-check {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #1a6e78;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0B1F4D;
+}
+
+.doc-meta h1 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.doc-meta strong {
+  display: block;
+  font-size: 13px;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+.doc-meta span {
+  font-size: 10px;
+  opacity: 0.5;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.consult-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.consult-scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 40px;
+}
+
+.consult-scroll-body::-webkit-scrollbar { width: 5px; }
+.consult-scroll-body::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+.consult-section {
+  margin-bottom: 30px;
+}
+
+.consult-section label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: #0B1F4D;
+  margin-bottom: 15px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.month-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #1a6e78;
+}
+
+.days-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+.day-card {
+  flex: 1;
+  min-width: 60px;
+  height: 70px;
+  background: #f1f5f9;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.day-card.active {
+  background: #f0f9fa;
+  border-color: #1a6e78;
+}
+
+.day-name { font-size: 10px; font-weight: 700; color: #94a3b8; margin-bottom: 4px; }
+.day-card.active .day-name { color: #1a6e78; }
+.day-date { font-size: 16px; font-weight: 800; color: #0B1F4D; }
+
+/* Time Slots */
+.time-group {
+  margin-bottom: 20px;
+}
+
+.group-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  color: #94a3b8;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.times-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.time-pill {
+  background: #f1f5f9;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #0B1F4D;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-pill.active {
+  background: #0B1F4D;
+  color: white;
+  box-shadow: 0 8px 15px rgba(11, 31, 77, 0.2);
+}
+
+/* Consultation Type */
+.type-toggle {
+  background: #f1f5f9;
+  padding: 6px;
+  border-radius: 50px;
+  display: flex;
+  gap: 6px;
+}
+
+.type-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.type-btn.active {
+  background: white;
+  color: #1a6e78;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Summary Box */
+.summary-box {
+  background: #f0f9fa;
+  border-radius: 24px;
+  padding: 20px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.summary-left { display: flex; align-items: center; gap: 15px; }
+.summary-icon {
+  width: 44px;
+  height: 44px;
+  background: #bef3f3;
+  color: #1a6e78;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-details strong { display: block; font-size: 14px; color: #0B1F4D; }
+.summary-details span { font-size: 11px; color: #64748b; font-weight: 500; }
+
+.summary-right { text-align: right; }
+.summary-right label { font-size: 9px; font-weight: 800; color: #94a3b8; margin-bottom: 2px; }
+.summary-right strong { font-size: 18px; font-weight: 900; color: #0B1F4D; }
+
+/* Footer */
+.consult-footer {
+  padding: 30px 40px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-confirm-schedule {
+  width: 100%;
+  background: linear-gradient(to right, #1a6e78, #50b0b0);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(26, 110, 120, 0.3);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.btn-confirm-schedule:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(26, 110, 120, 0.4); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-cancel-consult { background: none; border: none; color: #64748b; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+.vaidya-logo { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: #cbd5e1; }

@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NeckAlignment.css';
 import skullAnatomy from '../../../assets/skull_anatomy.png';
+import patientPhoto from '../../../assets/Patient Photo.svg';
+import Sidebar from '../../../components/Patient/Patient_sidebar';
+import Profile from '../../../components/Patient/Profile';
+import Account from '../../../components/Patient/Account';
+import Notification from '../../../components/Patient/notification';
 
 const Icon = ({ name, size = 20, className }) => {
   const icons = {
@@ -84,6 +89,10 @@ const AssessmentPopup = ({ isOpen, onClose }) => {
 const NeckAlignment = ({ onClose }) => {
   const navigate = useNavigate();
   const [showAssessment, setShowAssessment] = useState(false);
+  const [active, setActive] = useState('Symptom Checker');
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const handleClose = () => {
     if (onClose) {
@@ -94,72 +103,66 @@ const NeckAlignment = ({ onClose }) => {
   };
 
   return (
-    <div className="na-overlay">
-      <aside className="na-sidebar">
-        <div className="na-brand">
-          <div className="na-brand-logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
-          </div>
-          <div className="na-brand-text">
-            <h4>The Sanctuary</h4>
-            <span>Patient Portal</span>
-          </div>
-        </div>
+    <div 
+      className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
+    >
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
-        <nav className="na-nav">
-          <div className="na-nav-item">
-            <Icon name="dashboard" size={18} />
-            <span>Health Dashboard</span>
-          </div>
-          <div className="na-nav-item active">
-            <Icon name="anatomical" size={18} />
-            <span>Anatomical Guides</span>
-          </div>
-          <div className="na-nav-item">
-            <Icon name="insights" size={18} />
-            <span>Clinical Insights</span>
-          </div>
-          <div className="na-nav-item">
-            <Icon name="records" size={18} />
-            <span>Medical Records</span>
-          </div>
-          <div className="na-nav-item">
-            <Icon name="journal" size={18} />
-            <span>Wellness Journal</span>
-          </div>
-        </nav>
-
-        <button className="na-emergency-btn">Emergency Contact</button>
-
-        <div className="na-sidebar-footer">
-          <div className="na-footer-link">Privacy</div>
-          <div className="na-footer-link">Support</div>
-        </div>
-      </aside>
-
-      <main className="na-main">
-        <header className="na-topbar">
-          <div className="na-search">
-            <Icon name="search" size={18} className="na-search-icon" />
-            <input type="text" placeholder="Search anatomy or symptoms..." />
-          </div>
-          <div className="na-user-area">
-            <div className="na-top-icons">
-              <Icon name="bell" size={20} />
-              <Icon name="settings" size={20} />
-            </div>
-            <div className="na-user-profile">
-              <div className="na-user-info">
-                <strong>VaidyaGo</strong>
-                <span>CLINICAL CARE</span>
-              </div>
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
-            </div>
-            <button className="na-close-main" onClick={handleClose}>
-              <Icon name="close" size={24} />
+      {/* ── Main Area ── */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isNotificationOpen || showAssessment || activeModal ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+        {/* Top Navbar */}
+        <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+            {/* Hamburger for Mobile */}
+            <button 
+                onClick={() => setIsMobileOpen(true)}
+                className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
             </button>
-          </div>
+            <div className="flex-1 max-w-[280px]">
+                <div className="relative group">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+                    />
+                    <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-[32px] ml-auto">
+                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <div className="flex items-center gap-[20px]">
+                    <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#E85B5A] rounded-full" />
+                    </button>
+                    <button onClick={() => navigate('/Setting')} className="text-white hover:text-[#6ED4D4] transition-colors">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                    <div onClick={() => setActiveModal('profile')} className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform">
+                        <img src={patientPhoto} alt="User" className="w-full h-full object-cover" />
+                    </div>
+                </div>
+            </div>
         </header>
+
+        <main className="flex-1 overflow-y-auto pb-[64px]">
 
         <div className="na-content">
           <div className="na-breadcrumb">
@@ -261,11 +264,22 @@ const NeckAlignment = ({ onClose }) => {
           </footer>
         </div>
       </main>
+      </div>
 
       <AssessmentPopup 
         isOpen={showAssessment} 
         onClose={() => setShowAssessment(false)} 
       />
+      {activeModal === 'profile' && (
+        <Profile
+          onClose={() => setActiveModal(null)}
+          onAccountSettings={() => setActiveModal('account')}
+        />
+      )}
+      {activeModal === 'account' && (
+        <Account onClose={() => setActiveModal(null)} />
+      )}
+      {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
     </div>
   );
 };

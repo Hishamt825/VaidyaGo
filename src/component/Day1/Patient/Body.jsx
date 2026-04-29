@@ -4,6 +4,9 @@ import './Body.css';
 import frontalBody from '../../../assets/human-body-frontal-removebg-preview 1.svg';
 import patientPhoto from '../../../assets/Patient Photo.svg';
 import Sidebar from '../../../components/Patient/Patient_sidebar';
+import Profile from '../../../components/Patient/Profile';
+import Account from '../../../components/Patient/Account';
+import Notification from '../../../components/Patient/notification';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -219,8 +222,10 @@ const Body = () => {
   }, [activeRegion]);
 
   return (
-    <div className="body-layout">
-      {/* Dynamic Sidebar - Match Diagnostic.jsx */}
+    <div 
+      className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
+    >
       <Sidebar
         active={active}
         setActive={setActive}
@@ -228,9 +233,19 @@ const Body = () => {
         setIsMobileOpen={setIsMobileOpen}
       />
 
-      {/* Main Content */}
-      <main className="body-main">
+      {/* ── Main Area ── */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+        {/* Top Navbar */}
         <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+            {/* Hamburger for Mobile */}
+            <button 
+                onClick={() => setIsMobileOpen(true)}
+                className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
             <div className="flex-1 max-w-[280px]">
                 <div className="relative group">
                     <input
@@ -265,6 +280,8 @@ const Body = () => {
                 </div>
             </div>
         </header>
+
+        <main className="flex-1 overflow-y-auto pb-[64px]">
 
         <div className="welcome-text-container">
            <h1>Welcome to VaidyaGo</h1>
@@ -361,6 +378,7 @@ const Body = () => {
           </div>
         </div>
       </main>
+      </div>
 
       {/* Right Diagnostics Panel */}
       <div className="diagnostics-panel-wrapper">
@@ -418,6 +436,11 @@ const Body = () => {
           <Icon name="target" className="target-icon" />
         </div>
       </div>
+      {activeModal === 'profile' && (
+        <Profile onClose={() => setActiveModal(null)} onAccountSettings={() => setActiveModal('account')} />
+      )}
+      {activeModal === 'account' && <Account onClose={() => setActiveModal(null)} />}
+      {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
     </div>
   );
 };

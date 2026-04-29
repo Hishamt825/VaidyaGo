@@ -1,0 +1,237 @@
+.report-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.report-modal-container {
+  background: white;
+  width: 480px;
+  max-width: 95%;
+  border-radius: 32px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.25);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.report-modal-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.report-modal-container::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+.report-modal-close {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.report-modal-close:hover { color: #0B1F4D; }
+
+.hipaa-badge {
+  background: #f0fdfa;
+  color: #1a6e78;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.report-modal-header h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0B1F4D;
+  margin-bottom: 8px;
+}
+
+.report-modal-header p {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.report-section {
+  margin-bottom: 24px;
+}
+
+.section-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.param-card {
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.param-card.wide {
+  grid-column: span 2;
+}
+
+.param-card:hover { background: #f1f5f9; }
+
+.param-card.active {
+  background: #f0f9fa;
+  border-color: #50b0b0;
+}
+
+.param-icon {
+  width: 40px;
+  height: 40px;
+  background: #e2e8f0;
+  color: #0B1F4D;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.param-card.active .param-icon {
+  background: #1a6e78;
+  color: white;
+}
+
+.param-info strong { display: block; font-size: 13px; color: #0B1F4D; }
+.param-info span { font-size: 10px; color: #64748b; font-weight: 500; line-height: 1.3; }
+
+.param-check {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #cbd5e1;
+  border-radius: 50%;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.param-card.active .param-check {
+  border-color: #1a6e78;
+  background: #1a6e78;
+  position: relative;
+}
+
+.param-card.active .param-check::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%) rotate(45deg);
+  width: 5px;
+  height: 10px;
+  border-bottom: 2px solid white;
+  border-right: 2px solid white;
+}
+
+/* Format Toggle */
+.format-toggle {
+  display: flex;
+  gap: 15px;
+}
+
+.format-btn {
+  flex: 1;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.format-btn.active {
+  border-color: #1a6e78;
+  color: #1a6e78;
+  background: #f0f9fa;
+}
+
+/* Footer */
+.report-modal-footer {
+  background: #f0f9fa;
+  margin: 0 -30px -30px;
+  padding: 25px 30px;
+  border-radius: 0 0 32px 32px;
+  text-align: center;
+}
+
+.btn-generate-report {
+  width: 100%;
+  background: linear-gradient(to right, #1a6e78, #50b0b0);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 18px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(26, 110, 120, 0.3);
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.btn-generate-report:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(26, 110, 120, 0.4);
+}
+
+.disclaimer {
+  font-size: 10px;
+  color: #64748b;
+  line-height: 1.6;
+  max-width: 90%;
+  margin: 0 auto;
+}

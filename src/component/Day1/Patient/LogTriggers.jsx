@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../../assets/VADYAGO.png';
 import './LogTriggers.css';
+import patientPhoto from '../../../assets/Patient Photo.svg';
+import Sidebar from '../../../components/Patient/Patient_sidebar';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -69,6 +70,9 @@ const Icon = ({ name, className }) => {
 
 const LogTriggers = () => {
   const navigate = useNavigate();
+  const [active, setActive] = React.useState('Symptom Checker');
+  const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
   const [showTechNeckModal, setShowTechNeckModal] = React.useState(false);
   const [showStressModal, setShowStressModal] = React.useState(false);
   const [showSleepModal, setShowSleepModal] = React.useState(false);
@@ -76,7 +80,6 @@ const LogTriggers = () => {
   const [showStreakModal, setShowStreakModal] = React.useState(false);
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
   const [showDurationPicker, setShowDurationPicker] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState('dashboard');
   const [selectedDuration, setSelectedDuration] = React.useState('30 - 60 mins');
   const [selectedSleepQuality, setSelectedSleepQuality] = React.useState('Moderate');
   const [selectedActivity, setSelectedActivity] = React.useState('Sitting at Desk');
@@ -90,16 +93,6 @@ const LogTriggers = () => {
     '4+ hours'
   ];
 
-  const menuItems = [
-    { id: 'dashboard', icon: 'overview', label: 'Dashboard', active: true },
-    { id: 'symptom', icon: 'symptom', label: 'Symptom Checker' },
-    { id: 'vitals', icon: 'vitals', label: 'Vitals' },
-    { id: 'meds', icon: 'meds', label: 'Medications' },
-    { id: 'appointments', icon: 'appointments', label: 'Appointments' },
-    { id: 'messages', icon: 'messages', label: 'Messages' },
-    { id: 'reminder', icon: 'reminder', label: 'REMINDER' },
-    { id: 'records', icon: 'records', label: 'MY RECORDS' },
-  ];
 
   const triggers = [
     { id: 'tech', label: 'Tech Neck', desc: 'Strain from prolonged screen use and poor device ergonomics.', icon: 'tech' },
@@ -111,53 +104,66 @@ const LogTriggers = () => {
   const effects = ['Sharp Pain', 'Dull Ache', 'Stiffness', 'Numbness'];
 
   return (
-    <div className="lt-standalone-page">
-      {/* Sidebar */}
-      <aside className="lt-sidebar">
-        <div className="sidebar-logo">
-          <img src={logo} alt="VaidyaGo Logo" style={{ height: '42px', width: 'auto' }} />
-        </div>
-        <nav className="sidebar-menu">
-          {menuItems.map(item => (
-            <div 
-              key={item.id} 
-              className={`menu-item ${activeTab === item.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(item.id)}
-            >
-              <div className="menu-icon-wrapper">
-                <Icon name={item.icon} />
-              </div>
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </nav>
-        <div className="sidebar-footer">
-          <button className="new-consultation-btn">
-             <div className="plus-circle-blue">+</div>
-             <span>New Consultation</span>
-          </button>
-        </div>
-      </aside>
+    <div 
+      className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
+    >
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
-      {/* Main Content */}
-      <main className="lt-main">
-        <header className="lt-header">
-          <div className="search-bar">
-            <Icon name="search" />
-            <input type="text" placeholder="Search..." />
-          </div>
-          <div className="top-actions">
-            <button className="lt-back-btn" onClick={() => navigate(-1)}>
-               <Icon name="chevron" className="rotate-180" />
-               Back
+      {/* ── Main Area ── */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isNotificationOpen || showTechNeckModal || showStressModal || showSleepModal || showPostureModal || showStreakModal || showSuccessModal ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+        {/* Top Navbar */}
+        <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+            {/* Hamburger for Mobile */}
+            <button 
+                onClick={() => setIsMobileOpen(true)}
+                className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
             </button>
-            <Icon name="bell" />
-            <Icon name="settings" />
-            <div className="user-profile-mini">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
+            <div className="flex-1 max-w-[280px]">
+                <div className="relative group">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+                    />
+                    <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
             </div>
-          </div>
+
+            <div className="flex items-center gap-[32px] ml-auto">
+                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <div className="flex items-center gap-[20px]">
+                    <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#E85B5A] rounded-full" />
+                    </button>
+                    <button onClick={() => navigate('/Setting')} className="text-white hover:text-[#6ED4D4] transition-colors">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                    <div className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform">
+                        <img src={patientPhoto} alt="User" className="w-full h-full object-cover" />
+                    </div>
+                </div>
+            </div>
         </header>
+
+        <main className="flex-1 overflow-y-auto pb-[64px]">
 
         <div className="lt-content-grid">
           {/* Left Column */}
@@ -297,6 +303,7 @@ const LogTriggers = () => {
           </div>
         </div>
       </main>
+      </div>
 
       {/* Tech Neck Trigger Modal */}
       {showTechNeckModal && (

@@ -1304,3 +1304,89 @@
   background: #f8fafc;
   border-color: #cbd5e1;
 }
+.p2-maintenance-btn {
+  background: linear-gradient(to right, #0B1F4D, #1a6e78) !important;
+  margin-top: 20px;
+}
+
+.p2-milestone-progress-box {
+  background: #f0f9fa;
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.p2-progress-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.p2-days-count strong {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0B1F4D;
+}
+
+.p2-days-count span {
+  font-size: 16px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.p2-achieved-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a6e78;
+}
+
+.p2-progress-bar-full {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.p2-fill-100 {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #6ED4D4, #1a6e78);
+  border-radius: 10px;
+}
+
+.p2-mini {
+  padding: 12px !important;
+}
+
+.p2-mini label {
+  font-size: 9px !important;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.p2-mini strong {
+  font-size: 14px !important;
+  color: #0B1F4D;
+}
+
+.p2-footer {
+  border-top: 1px solid #f1f5f9;
+  padding: 15px !important;
+  background: #f8fafc;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+.p2-footer span {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.p2-milestone {
+  width: 500px !important;
+}

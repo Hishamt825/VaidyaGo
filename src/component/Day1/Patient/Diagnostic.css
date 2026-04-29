@@ -1,26 +1,82 @@
-/* Diagnostic.css */
+/* Diagnostic.css - Updated to match Body.jsx structure */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   --sidebar-active: #2b5b6d;
   --bg-main: #0d2833;
+  --bg-dark: #071921;
   --card-bg-white: #ffffff;
-  --card-bg-dark: #1a304e;
+  --card-bg-dark: #0f172a; /* Deep navy for Input Summary */
+  --card-bg-header: #ffffff; /* White for header card */
   --text-white: #ffffff;
-  --text-dark: #333333;
+  --text-primary: #1a304e;
+  --text-secondary: #5a6a7d;
   --accent-teal: #1db1c2;
   --accent-blue: #2c5282;
-  --match-85: #48bb78;
-  --match-62: #ed8936;
-  --match-48: #e53e3e;
+  --match-85: #1db1c2;
+  --match-62: #1db1c2;
+  --match-48: #1db1c2;
 }
 
-.diagnostic-layout {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  background: linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%);
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
   color: var(--text-white);
+}
+
+.body-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%);
+}
+
+/* Main Content area - matching Body.css */
+.diagnostic-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100vh;
+  position: relative;
+  z-index: 10;
+}
+
+/* Content Container */
+.diagnostic-content { 
+  padding: 24px 40px; 
+  max-width: 1200px; 
+  margin: 0 auto; 
+  width: 100%;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Custom Scrollbar - matching page color */
+.diagnostic-main::-webkit-scrollbar {
+  width: 12px;
+}
+
+.diagnostic-main::-webkit-scrollbar-track {
+  background: #071921; /* Dark teal background matching page */
+}
+
+.diagnostic-main::-webkit-scrollbar-thumb {
+  background-color: #1a3c4d; /* Slightly lighter teal for visibility */
+  border-radius: 20px;
+  border: 3px solid #071921;
+}
+
+.diagnostic-main::-webkit-scrollbar-thumb:hover {
+  background-color: #2b5b6d; /* Darker on hover */
+}
+
+/* For Firefox */
+.diagnostic-main {
+  scrollbar-width: thin;
+  scrollbar-color: #1a3c4d #071921;
 }
 
 /* Sidebar Styles */
@@ -131,16 +187,15 @@
 /* Header Styles */
 .diagnostic-main {
   flex: 1;
+  padding: 0 40px;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at top right, #1a3b4a, #0d2833);
+  background: transparent;
   overflow-y: auto;
   height: 100vh;
 }
 
-.diagnostic-content {
-  padding: 15px 30px;
-}
+
 
 .top-header {
   display: flex;
@@ -268,13 +323,14 @@
 
 /* Results Section Header */
 .results-header-card {
-  background: white;
-  border-radius: 35px;
-  padding: 40px;
-  color: #1a4352;
+  background: var(--card-bg-header);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 32px 40px;
+  color: var(--text-primary);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .results-header-card::after {
@@ -307,17 +363,18 @@
 .results-header-card h1 {
   margin: 0;
   font-size: 38px;
-  color: #1a4352;
-  font-weight: 800;
-  margin-bottom: 12px;
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .results-header-card p {
   margin: 0;
-  font-size: 15px;
-  color: #718096;
+  font-size: 16px;
+  color: var(--text-secondary);
   max-width: 650px;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .analysis-ref {
@@ -345,9 +402,9 @@
 /* Content Grid */
 .content-grid {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 25px;
-  margin-top: 20px;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  margin-top: 24px;
 }
 
 /* Left Column Updates */
@@ -358,10 +415,10 @@
 }
 
 .summary-card {
-  background: #f7fafc;
+  background: #ffffff;
   border-radius: 20px;
-  padding: 18px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   border: 1px solid rgba(255,255,255,0.1);
 }
 
@@ -374,10 +431,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   color: #ffffff;
-  margin-bottom: 25px;
+  margin-bottom: 24px;
 }
 
 .card-title svg {
@@ -452,15 +509,15 @@
 }
 
 .edit-link {
-  color: #64ffda;
+  color: #16879B;
   text-decoration: none;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 /* Patient Card */
 .patient-card {
-  background: #f0f4f8;
+  background: #ffffff;
 }
 
 .patient-vitals-list {
@@ -546,11 +603,11 @@
 
 .conditions-section-title {
   font-size: 13px;
-  font-weight: 800;
-  color: #a0aec0;
+  font-weight: 700;
+  color: #718096;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 25px;
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -564,14 +621,14 @@
 }
 
 .condition-card {
-  background: white;
-  border-radius: 35px;
-  padding: 30px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px 32px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  transition: transform 0.3s;
-  cursor: pointer;
-  border: 1px solid rgba(0,0,0,0.02);
+  color: var(--text-primary);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .condition-card:hover {
@@ -588,16 +645,16 @@
 
 .title-area h3 {
   margin: 0;
-  font-size: 24px;
-  color: #1a4352;
+  font-size: 22px;
+  color: var(--text-primary);
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .title-area p {
   margin: 0;
-  font-size: 12px;
-  color: #718096;
+  font-size: 14px;
+  color: var(--text-secondary);
   line-height: 1.5;
   max-width: 550px;
 }
@@ -707,8 +764,8 @@
 }
 
 .condition-card p {
-  font-size: 12px;
-  color: #4a5568;
+  font-size: 14px;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -732,10 +789,12 @@
 }
 
 .action-card {
-  background: white;
-  border-radius: 20px;
-  padding: 22px;
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 32px 24px;
   display: flex;
+  color: var(--text-primary);
   flex-direction: column;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   transition: transform 0.3s;
@@ -793,18 +852,18 @@
 
 /* Map Section Refined */
 .bottom-map {
-  margin-top: 25px;
-  background: linear-gradient(90deg, #53adb8 0%, #2f7e8a 100%);
-  background-image: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png'), 
-                    linear-gradient(90deg, #53adb8 0%, #2f7e8a 100%);
-  height: 110px;
-  border-radius: 18px;
+  margin-top: 32px;
+  background: #0f172a;
+  background-image: url('https://www.transparenttextures.com/patterns/world-map.png');
+  background-size: cover;
+  height: 140px;
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .map-pins {

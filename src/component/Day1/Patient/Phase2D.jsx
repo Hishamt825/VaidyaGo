@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../../assets/VADYAGO.png';
 import './Phase2D.css';
+import Sidebar from '../../../components/Patient/Patient_sidebar';
+import patientPhoto from '../../../assets/Patient Photo.svg';
 import ImmunotherapyDosePopup from './ImmunotherapyDosePopup';
-import AllergenAvoidancePopup from './AllergenAvoidancePopup';
-import ProtocolProgressPopup from './ProtocolProgressPopup';
+import AllergenUpdateModal from './AllergenUpdateModal';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -70,6 +70,10 @@ const Phase2D = () => {
   const [showDosePopup, setShowDosePopup] = React.useState(false);
   const [showAllergenPopup, setShowAllergenPopup] = React.useState(false);
   const [showProtocolPopup, setShowProtocolPopup] = React.useState(false);
+  const [active, setActive] = React.useState('Symptom Checker');
+  const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const [activeModal, setActiveModal] = React.useState(null);
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
 
   const menuItems = [
     { id: 'dashboard', icon: 'overview', label: 'Dashboard' },
@@ -83,46 +87,66 @@ const Phase2D = () => {
   ];
 
   return (
-    <div className="phase2-layout">
-      {/* Sidebar - Shared with Diagnostic.jsx */}
-      <aside className="diagnostic-sidebar">
-        <div className="sidebar-logo">
-          <img src={logo} alt="VaidyaGo Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
-        </div>
-        <nav className="sidebar-menu">
-          {menuItems.map(item => (
-            <div key={item.id} className={`menu-item ${item.active ? 'active' : ''}`} onClick={() => item.id === 'dashboard' && navigate('/Diagnostic')}>
-              <div className="menu-icon-wrapper">
-                <Icon name={item.icon} />
-              </div>
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </nav>
-        <div className="sidebar-footer">
-          <button className="new-consultation-btn">
-             <div className="plus-circle-blue">+</div>
-             <span>New Consultation</span>
-          </button>
-        </div>
-      </aside>
+    <div 
+      className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
+    >
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
-      {/* Main Content Area */}
-      <main className="diagnostic-main">
-        {/* Header - Shared with Diagnostic.jsx */}
-        <header className="top-header">
-          <div className="search-bar">
-            <Icon name="search" />
-            <input type="text" placeholder="Search insights..." />
-          </div>
-          <div className="top-actions">
-            <Icon name="bell" />
-            <Icon name="settings" />
-            <div className="user-profile-mini">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
+      {/* ── Main Area ── */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isNotificationOpen || showDosePopup || showAllergenPopup || showProtocolPopup || activeModal ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+        {/* Top Navbar */}
+        <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+            {/* Hamburger for Mobile */}
+            <button 
+                onClick={() => setIsMobileOpen(true)}
+                className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+            <div className="flex-1 max-w-[280px]">
+                <div className="relative group">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+                    />
+                    <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
             </div>
-          </div>
+
+            <div className="flex items-center gap-[32px] ml-auto">
+                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <div className="flex items-center gap-[20px]">
+                    <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#E85B5A] rounded-full" />
+                    </button>
+                    <button onClick={() => navigate('/Setting')} className="text-white hover:text-[#6ED4D4] transition-colors">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                    <div onClick={() => setActiveModal('profile')} className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform">
+                        <img src={patientPhoto} alt="User" className="w-full h-full object-cover" />
+                    </div>
+                </div>
+            </div>
         </header>
+
+        <main className="flex-1 overflow-y-auto pb-[64px]">
 
         {/* Phase Header */}
         <section className="phase-hero-alt">
@@ -180,7 +204,7 @@ const Phase2D = () => {
                     <label className="review-milestone">CLINICAL MILESTONE</label>
                     <h2 className="review-title">Monthly Progress Review</h2>
                     <p className="review-desc">Detailed clinical touchpoint to assess immunological response and adjust dosage curves.</p>
-                    <button className="btn-schedule-visit">Schedule Clinical Visit</button>
+                    <button className="btn-schedule-visit" onClick={() => navigate('/MonthlyReview')}>Schedule Clinical Visit</button>
                  </div>
                  <div className="review-illustration-wrap">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Doctor" alt="Clinician" className="doctor-img" />
@@ -268,10 +292,77 @@ const Phase2D = () => {
            </div>
         </div>
       </main>
+      </div>
 
       {showDosePopup && <ImmunotherapyDosePopup onClose={() => setShowDosePopup(false)} />}
-      {showAllergenPopup && <AllergenAvoidancePopup onClose={() => setShowAllergenPopup(false)} />}
-      {showProtocolPopup && <ProtocolProgressPopup onClose={() => setShowProtocolPopup(false)} />}
+      {showAllergenPopup && <AllergenUpdateModal isOpen={true} onClose={() => setShowAllergenPopup(false)} onSave={() => setShowAllergenPopup(false)} />}
+      {showProtocolPopup && (
+        <div className="progress-popup-overlay" onClick={() => setShowProtocolPopup(false)}>
+          <div className="milestone-modal p2-milestone" onClick={(e) => e.stopPropagation()}>
+            <div className="milestone-content">
+               <div className="milestone-success-icon">
+                 <div className="icon-inner">
+                    <Icon name="check" />
+                 </div>
+                 <div className="sparkle s1">✨</div>
+                 <div className="sparkle s2">⭐</div>
+                 <div className="sparkle s3">🎉</div>
+               </div>
+
+               <h1 className="milestone-title-main">Phase 2 Milestone Reached!</h1>
+               <p className="milestone-desc">
+                 Congratulations <strong>Alex</strong>, you have completed <strong>180 days</strong> of your protocol. Your immune response has stabilized, marking the end of your desensitization journey.
+               </p>
+
+               <div className="p2-milestone-progress-box">
+                  <div className="p2-progress-text">
+                     <div className="p2-days-count">
+                        <strong>180</strong> <span>/ 180 Days</span>
+                     </div>
+                     <div className="p2-achieved-label">100% Milestone Achieved</div>
+                  </div>
+                  <div className="p2-progress-bar-full">
+                     <div className="p2-fill-100"></div>
+                  </div>
+               </div>
+
+               <div className="milestone-stats-row p2-stats">
+                 <div className="m-stat-card p2-mini">
+                    <div className="m-stat-info">
+                       <label>CONSISTENCY</label>
+                       <strong>96%</strong>
+                    </div>
+                 </div>
+                 <div className="m-stat-card p2-mini">
+                    <div className="m-stat-info">
+                       <label>STABILITY</label>
+                       <strong>Optimal</strong>
+                    </div>
+                 </div>
+                 <div className="m-stat-card p2-mini">
+                    <div className="m-stat-info">
+                       <label>IMMUNITY</label>
+                       <strong>Verified</strong>
+                    </div>
+                 </div>
+               </div>
+
+               <button 
+                 className="begin-phase-btn p2-maintenance-btn"
+                 onClick={() => navigate('/Phase3D')}
+               >
+                 Begin Phase 3: Maintenance
+               </button>
+            </div>
+            
+            <div className="milestone-footer p2-footer">
+               <div className="footer-brand">
+                  <span>Desensitization Stage Complete • Reference ID: VR-109-180D</span>
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

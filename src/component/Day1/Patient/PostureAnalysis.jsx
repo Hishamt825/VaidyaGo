@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import vadyagoLogo from '../../../assets/VADYAGO.png';
+import patientPhoto from '../../../assets/Patient Photo.svg';
 import './PostureAnalysis.css';
+import Sidebar from '../../../components/Patient/Patient_sidebar';
+import Profile from '../../../components/Patient/Profile';
+import Account from '../../../components/Patient/Account';
+import Notification from '../../../components/Patient/notification';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -45,7 +49,6 @@ const Icon = ({ name, className }) => {
     camera: <React.Fragment><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></React.Fragment>,
     sun: <React.Fragment><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></React.Fragment>,
     distance: <path d="M21 21H3M21 3H3M12 3v18" />,
-    check: <polyline points="20 6 9 17 4 12" />,
     latency: <path d="M5 12h14M12 5l7 7-7 7" />,
     engine: <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />,
     security: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
@@ -78,61 +81,72 @@ const Icon = ({ name, className }) => {
 
 const PostureAnalysis = () => {
   const navigate = useNavigate();
-
-  const sidebarItems = [
-    { id: 'dashboard', icon: 'overview', label: 'DASHBOARD', active: true },
-    { id: 'symptom', icon: 'symptom', label: 'SYMPTOM CHECKER' },
-    { id: 'vitals', icon: 'vitals', label: 'VITALS' },
-    { id: 'meds', icon: 'meds', label: 'MEDICATIONS' },
-    { id: 'appointments', icon: 'appointments', label: 'APPOINTMENTS' },
-    { id: 'messages', icon: 'messages', label: 'MESSAGES' },
-    { id: 'reminder', icon: 'reminder', label: 'REMINDER' },
-    { id: 'records', icon: 'records', label: 'MY RECORDS' },
-  ];
+  const [active, setActive] = useState('Symptom Checker');
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   return (
-    <div className="pa-layout">
-      {/* Sidebar - Matching Body.jsx */}
-      <aside className="pa-sidebar">
-        <div className="sidebar-logo">
-          <img src={vadyagoLogo} alt="VaidyaGo Logo" className="vadyago-main-logo" />
-        </div>
-        <nav className="sidebar-menu">
-          {sidebarItems.map(item => (
-            <div key={item.id} className={`menu-item ${item.active ? 'active' : ''}`}>
-              <div className="menu-icon-wrapper">
-                <Icon name={item.icon} />
-              </div>
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </nav>
-        <div className="sidebar-footer">
-          <button className="new-consultation-btn">
-            <div className="plus-circle-blue">
-               <Icon name="plusCircle" />
-            </div>
-            <span>New Consultation</span>
-          </button>
-        </div>
-      </aside>
+    <div 
+      className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
+    >
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
-      {/* Main Content */}
-      <main className="pa-main">
-        <header className="pa-header">
-           <div className="pa-search">
-             <Icon name="search" className="pa-search-icon" />
-             <input type="text" placeholder="Search medications..." />
-           </div>
-           <div className="pa-header-actions">
-             <span className="lang-text">Language</span>
-             <div className="icon-wrapper"><Icon name="bell" /></div>
-             <div className="icon-wrapper"><Icon name="settings" /></div>
-             <div className="profile-img-wrapper">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" />
-             </div>
-           </div>
+      {/* ── Main Area ── */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isNotificationOpen || activeModal ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+        {/* Top Navbar */}
+        <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+            {/* Hamburger for Mobile */}
+            <button 
+                onClick={() => setIsMobileOpen(true)}
+                className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+            <div className="flex-1 max-w-[280px]">
+                <div className="relative group">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+                    />
+                    <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-[32px] ml-auto">
+                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <div className="flex items-center gap-[20px]">
+                    <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#E85B5A] rounded-full" />
+                    </button>
+                    <button onClick={() => navigate('/Setting')} className="text-white hover:text-[#6ED4D4] transition-colors">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                    <div onClick={() => setActiveModal('profile')} className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform">
+                        <img src={patientPhoto} alt="User" className="w-full h-full object-cover" />
+                    </div>
+                </div>
+            </div>
         </header>
+
+        <main className="flex-1 overflow-y-auto pb-[64px]">
 
         <div className="pa-content">
           <div className="pa-top-bar">
@@ -277,6 +291,12 @@ const PostureAnalysis = () => {
           </div>
         </div>
       </main>
+      </div>
+      {activeModal === 'profile' && (
+        <Profile onClose={() => setActiveModal(null)} onAccountSettings={() => setActiveModal('account')} />
+      )}
+      {activeModal === 'account' && <Account onClose={() => setActiveModal(null)} />}
+      {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
     </div>
   );
 };

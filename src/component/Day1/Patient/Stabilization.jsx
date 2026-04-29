@@ -1,7 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../../assets/VADYAGO.png';
+import patientPhoto from '../../../assets/Patient Photo.svg';
 import './Stabilization.css';
+import Sidebar from '../../../components/Patient/Patient_sidebar';
+import Profile from '../../../components/Patient/Profile';
+import Account from '../../../components/Patient/Account';
+import Notification from '../../../components/Patient/notification';
 import SymptomAuditPopup from './SymptomAuditPopup';
 import BaselineTestingPopup from './BaselineTestingPopup';
 import MedicationDosePopup from './MedicationDosePopup';
@@ -45,7 +49,13 @@ const Icon = ({ name, className }) => {
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
       </React.Fragment>
     ),
-    check: <polyline points="20 6 9 17 4 12" />
+    check: <polyline points="20 6 9 17 4 12" />,
+    lock: (
+      <React.Fragment>
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </React.Fragment>
+    )
   };
 
   return (
@@ -70,69 +80,77 @@ const Stabilization = () => {
   const [showSymptomAudit, setShowSymptomAudit] = React.useState(false);
   const [showBaselineDetails, setShowBaselineDetails] = React.useState(false);
   const [showMedicationDose, setShowMedicationDose] = React.useState(false);
-
-  const menuItems = [
-    { id: 'dashboard', icon: 'overview', label: 'Dashboard' },
-    { id: 'symptom', icon: 'symptom', label: 'Symptom Checker' },
-    { id: 'vitals', icon: 'vitals', label: 'Vitals' },
-    { id: 'meds', icon: 'meds', label: 'Medications' },
-    { id: 'appointments', icon: 'appointments', label: 'Appointments' },
-    { id: 'messages', icon: 'messages', label: 'Messages' },
-    { id: 'careplan', icon: 'overview', label: 'Care Plan', active: true },
-    { id: 'records', icon: 'records', label: 'MY RECORDS' },
-  ];
+  const [showProgressDetails, setShowProgressDetails] = React.useState(false);
+  const [showMilestonePopup, setShowMilestonePopup] = React.useState(false);
+  const [showPhase2Overview, setShowPhase2Overview] = React.useState(false);
+  const [active, setActive] = React.useState('Symptom Checker');
+  const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const [activeModal, setActiveModal] = React.useState(null);
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
 
   return (
-    <div className="stab-layout">
-      {/* Dynamic Sidebar - Shared with Diagnostic.jsx */}
-      <aside className="diagnostic-sidebar">
-        <div className="sidebar-logo">
-          <img src={logo} alt="VaidyaGo Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
-        </div>
-        
-        <nav className="sidebar-menu">
-          {menuItems.map(item => (
-            <div key={item.id} className={`menu-item ${item.active ? 'active' : ''}`} onClick={() => item.id === 'dashboard' && navigate('/Diagnostic')}>
-              <div className="menu-icon-wrapper">
-                <Icon name={item.icon} />
-              </div>
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </nav>
-        
-        <div className="sidebar-footer">
-          <button className="new-consultation-btn">
-            <div className="plus-circle-blue">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                 <circle cx="12" cy="12" r="10" />
-                 <line x1="12" y1="8" x2="12" y2="16" />
-                 <line x1="8" y1="12" x2="16" y2="12" />
-               </svg>
-            </div>
-            <span>New Consultation</span>
-          </button>
-        </div>
-      </aside>
+    <div 
+      className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
+    >
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
-      {/* Main Content Area */}
-      <main className="diagnostic-main">
-        {/* Header - Shared with Diagnostic.jsx */}
-        <header className="top-header">
-          <div className="search-bar">
-            <Icon name="search" />
-            <input type="text" placeholder="Search medications..." />
-          </div>
-          <div className="top-actions">
-            <span>Language</span>
-            <Icon name="bell" />
-            <Icon name="settings" />
-            <div className="user-profile-mini">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
+      {/* ── Main Area ── */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+        {/* Top Navbar */}
+        <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+            
+            {/* Hamburger for Mobile */}
+            <button 
+                onClick={() => setIsMobileOpen(true)}
+                className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+            <div className="flex-1 max-w-[280px]">
+                <div className="relative group">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+                    />
+                    <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
             </div>
-          </div>
+
+            <div className="flex items-center gap-[32px] ml-auto">
+                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <div className="flex items-center gap-[20px]">
+                    <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#E85B5A] rounded-full" />
+                    </button>
+                    <button onClick={() => navigate('/Setting')} className="text-white hover:text-[#6ED4D4] transition-colors">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                    <div onClick={() => setActiveModal('profile')} className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform">
+                        <img src={patientPhoto} alt="User" className="w-full h-full object-cover" />
+                    </div>
+                </div>
+            </div>
         </header>
 
+        <main className="flex-1 overflow-y-auto pb-[64px]">
+        <div className="stab-page-content">
         {/* Phase Header */}
         <section className="phase-hero-section">
            <div className="phase-header-info">
@@ -145,7 +163,7 @@ const Stabilization = () => {
              <p>Focus on acute symptom control and establishing a baseline of comfort.</p>
            </div>
            
-           <div className="progress-card">
+           <div className="progress-card" onClick={() => setShowProgressDetails(true)} style={{ cursor: 'pointer' }}>
               <div className="progress-header">
                  <label>CURRENT PROGRESS</label>
                  <span>3%</span>
@@ -252,7 +270,84 @@ const Stabilization = () => {
               </div>
            </div>
         </div>
+        </div>
       </main>
+      </div>
+
+      {showProgressDetails && (
+        <div className="progress-popup-overlay" onClick={() => setShowProgressDetails(false)}>
+          <div className="progress-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="progress-modal-header">
+              <div className="header-info">
+                <h3>Current Clinical Progress</h3>
+                <span>Patient Recovery Tracking • 180-Day Protocol</span>
+              </div>
+              <button className="close-x" onClick={() => setShowProgressDetails(false)}>×</button>
+            </div>
+
+            <div className="progress-modal-hero">
+              <div className="progress-circle-wrap">
+                <svg viewBox="0 0 100 100" className="circular-progress">
+                   <circle className="bg" cx="50" cy="50" r="45" />
+                   <circle className="fg" cx="50" cy="50" r="45" style={{ strokeDasharray: '283', strokeDashoffset: 'calc(283 - (283 * 3) / 100)' }} />
+                   <text x="50" y="50" className="pct">3%</text>
+                </svg>
+              </div>
+              <div className="hero-text">
+                <label>OVERALL COMPLETION</label>
+                <h2>Day 1 of 28</h2>
+                <span>Phase 1: Stabilization Journey</span>
+              </div>
+            </div>
+
+            <div className="progress-modal-body">
+              <div className="section-label">RECOVERY PHASES</div>
+              
+              <div className="phase-item active" onClick={() => setShowMilestonePopup(true)} style={{ cursor: 'pointer' }}>
+                <div className="phase-status-icon"><Icon name="check" /></div>
+                <div className="phase-details">
+                  <h4>Phase 1: Stabilization</h4>
+                  <p>Day 1/28 — Initial physiological balancing</p>
+                </div>
+                <span className="phase-badge active">ACTIVE</span>
+              </div>
+
+              <div className="phase-item upcoming">
+                <div className="phase-status-icon empty"></div>
+                <div className="phase-details">
+                  <h4>Phase 2: Desensitization</h4>
+                </div>
+                <span className="phase-badge upcoming">UPCOMING</span>
+              </div>
+
+              <div className="phase-item locked">
+                <div className="phase-status-icon lock"><Icon name="lock" /></div>
+                <div className="phase-details">
+                  <h4>Phase 3: Maintenance</h4>
+                </div>
+                <span className="phase-badge locked">LOCKED</span>
+              </div>
+
+              <div className="milestones-box">
+                 <div className="milestone-title">
+                   <Icon name="overview" /> ACTIVE MILESTONES (PHASE 1)
+                 </div>
+                 <div className="milestone-grid">
+                   <div className="m-item active"><span className="m-dot"></span> Symptom Baseline</div>
+                   <div className="m-item active"><span className="m-dot"></span> Medication Initiation</div>
+                   <div className="m-item"><span className="m-dot"></span> Metabolic Panel</div>
+                   <div className="m-item"><span className="m-dot"></span> Stability Check</div>
+                 </div>
+              </div>
+            </div>
+
+            <div className="progress-modal-footer">
+              <button className="roadmap-link">View Full Roadmap →</button>
+              <button className="close-btn-main" onClick={() => setShowProgressDetails(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showSymptomAudit && (
         <SymptomAuditPopup onClose={() => setShowSymptomAudit(false)} />
@@ -265,6 +360,139 @@ const Stabilization = () => {
       {showMedicationDose && (
         <MedicationDosePopup onClose={() => setShowMedicationDose(false)} />
       )}
+      {showMilestonePopup && (
+        <div className="progress-popup-overlay" onClick={() => setShowMilestonePopup(false)}>
+          <div className="milestone-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="milestone-content">
+               <div className="milestone-success-icon">
+                 <div className="icon-inner">
+                    <Icon name="check" />
+                 </div>
+                 <div className="sparkle s1">✨</div>
+                 <div className="sparkle s2">⭐</div>
+                 <div className="sparkle s3">🎉</div>
+               </div>
+
+               <div className="milestone-top-tag">PHASE 1: STABILIZATION COMPLETE</div>
+               <h1 className="milestone-title-main">Stabilization Milestone Reached!</h1>
+               <p className="milestone-desc">
+                 Exceptional progress, <strong>Alex Rivera</strong>. You've established the foundation required for the next stage of your clinical journey.
+               </p>
+
+               <div className="milestone-stats-row">
+                 <div className="m-stat-card">
+                    <div className="m-stat-icon"><Icon name="appointments" /></div>
+                    <div className="m-stat-info">
+                       <label>CONSISTENCY</label>
+                       <strong>28 Days</strong>
+                       <span>Daily symptom logging</span>
+                    </div>
+                 </div>
+                 <div className="m-stat-card">
+                    <div className="m-stat-icon teal"><Icon name="overview" /></div>
+                    <div className="m-stat-info">
+                       <label>EQUILIBRIUM</label>
+                       <strong>Stability</strong>
+                       <span>Core metrics achieved</span>
+                    </div>
+                 </div>
+               </div>
+
+               <div className="verification-area">
+                  <div className="wave-bg"></div>
+                  <div className="verify-line"></div>
+                  <div className="verify-label">FOUNDATION VERIFIED 100%</div>
+               </div>
+
+               <button className="begin-phase-btn" onClick={() => setShowPhase2Overview(true)}>
+                 Begin Phase 2: Desensitization
+               </button>
+            </div>
+            
+            <div className="milestone-footer">
+               <div className="footer-brand">
+                  <Icon name="records" />
+                  <span>The Clinical Sanctuary</span>
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showPhase2Overview && (
+        <div className="progress-popup-overlay" onClick={() => setShowPhase2Overview(false)}>
+          <div className="phase2-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="phase2-modal-header">
+               <div className="logo-text">VaidyaGo</div>
+               <button className="phase2-close" onClick={() => setShowPhase2Overview(false)}>×</button>
+            </div>
+            
+            <div className="phase2-modal-content">
+               <div className="phase2-badge">PHASE 2 INITIATION</div>
+               <h1 className="phase2-title">Phase 2: Desensitization Overview</h1>
+               <p className="phase2-subtitle">Transitioning from stabilization to building long-term environmental and clinical resilience.</p>
+
+               <div className="phase2-grid">
+                  <div className="phase2-left-col">
+                     <div className="overview-item-card">
+                        <div className="item-icon"><Icon name="meds" /></div>
+                        <div className="item-info">
+                           <strong>Immunotherapy Escalation</strong>
+                           <span>Gradually increasing exposure to build immunity.</span>
+                        </div>
+                     </div>
+                     <div className="overview-item-card">
+                        <div className="item-icon"><Icon name="symptom" /></div>
+                        <div className="item-info">
+                           <strong>Environmental Resilience</strong>
+                           <span>Advanced trigger tracking and management.</span>
+                        </div>
+                     </div>
+                     <div className="overview-item-card">
+                        <div className="item-icon"><Icon name="records" /></div>
+                        <div className="item-info">
+                           <strong>Clinical Oversight</strong>
+                           <span>Bi-weekly specialist reviews.</span>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="phase2-right-col">
+                     <div className="duration-info">
+                        <label>DURATION</label>
+                        <h2>Months 2 - 4</h2>
+                     </div>
+
+                     <div className="quote-box-mini">
+                        <div className="quote-icon-large">“</div>
+                        <p>Phase 2 is the most critical part of your sanctuary journey. Consistency here yields lifelong results.</p>
+                        <div className="expert-mini-profile">
+                           <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Elena" alt="Dr Sterling" />
+                           <div className="expert-mini-text">
+                              <strong>Dr. Sterling</strong>
+                              <span>LEAD IMMUNOLOGIST</span>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <button className="activate-phase-btn" onClick={() => navigate('/Phase2D')}>
+                  Activate Phase 2
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {activeModal === 'profile' && (
+        <Profile
+          onClose={() => setActiveModal(null)}
+          onAccountSettings={() => setActiveModal('account')}
+        />
+      )}
+      {activeModal === 'account' && (
+        <Account onClose={() => setActiveModal(null)} />
+      )}
+      {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
     </div>
   );
 };

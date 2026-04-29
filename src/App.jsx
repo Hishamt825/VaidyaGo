@@ -76,18 +76,14 @@ import Lisinopril from './components/Patient/Medication/Lisinopril';
 import Metformin_detail from './components/Patient/Medication/Metformin_detail';
 import Atorvastatin from './components/Patient/Medication/Atorvastatin';
 import Amoxicillin from './components/Patient/Medication/Amoxicillin';
-<<<<<<< HEAD
-
+import Clinic from './components/Patient/Appointment/Clinic';
 import Hisham from './component/Day1/Hisham';
 import Consultation1 from './component/Day1/Consultation/Consultation1';
+import Consultation_info from './component/Day1/Consultation/Consultation_info';
 import Appointment_Day1 from './component/Day1/Doctor/Appointment';
 import Appointment2_Day1 from './component/Day1/Doctor/Appointment2';
 import Appointmentb_Day1 from './component/Day1/Doctor/Appointmentb';
 import Bot_Day1 from './component/Day1/Doctor/Bot';
-=======
-import Clinic from './components/Patient/Appointment/Clinic';
-import Appointment2 from './component/Day1/Doctor/Appointment2';
->>>>>>> adiba
 import Dsetting from './component/Day1/Doctor/Dsetting';
 import Dslot from './component/Day1/Doctor/Dslot';
 import Editprofile from './component/Day1/Doctor/Editprofile';
@@ -108,18 +104,15 @@ import Savechange from './component/Day1/Patient/Savechange';
 import Appointment2 from './component/Day1/Doctor/Appointment2';
 import Appointmentb from './component/Day1/Doctor/Appointmentb';
 import Reject from './components/Admin/Reject';
-<<<<<<< HEAD
 import PostureAnalysis from './component/Day1/Patient/PostureAnalysis';
 import SteadyAscent from './component/Day1/Patient/SteadyAscent';
 import CarePlan from './component/Day1/Patient/CarePlan';
 import Stabilization from './component/Day1/Patient/Stabilization';
 import Phase2D from './component/Day1/Patient/Phase2D';
-=======
-import Consultation1 from './component/Day1/Consultation/Consultation1';
-import Consultation_info from './component/Day1/Consultation/Consultation_info';
-
-
->>>>>>> adiba
+import Phase3D from './component/Day1/Patient/Phase3D';
+import MaintenanceLog from './component/Day1/Patient/MaintenanceLog';
+import RecoveryJourney from './component/Day1/Patient/RecoveryJourney';
+import MonthlyReview from './component/Day1/Patient/MonthlyReview';
 
 const App = () => {
   return (
@@ -236,6 +229,10 @@ const App = () => {
       <Route path="/CarePlan" element={<CarePlan />} />
       <Route path="/Stabilization" element={<Stabilization />} />
       <Route path="/Phase2D" element={<Phase2D />} />
+      <Route path="/Phase3D" element={<Phase3D />} />
+      <Route path="/MaintenanceLog" element={<MaintenanceLog />} />
+      <Route path="/RecoveryJourney" element={<RecoveryJourney />} />
+      <Route path="/MonthlyReview" element={<MonthlyReview />} />
 
     </Routes>
 

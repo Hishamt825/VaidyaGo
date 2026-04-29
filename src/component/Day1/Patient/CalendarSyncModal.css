@@ -1,0 +1,193 @@
+.sync-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  animation: fadeIn 0.3s ease;
+}
+
+.sync-modal-container {
+  background: white;
+  width: 440px;
+  max-width: 95%;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.25);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sync-header {
+  padding: 40px 40px 20px;
+  text-align: center;
+}
+
+.sync-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0B1F4D;
+  margin-bottom: 12px;
+}
+
+.sync-header p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+.sync-user-profile {
+  background: #f0f9fa;
+  margin: 10px 30px 25px;
+  padding: 15px 20px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-img-wrap {
+  position: relative;
+  width: 50px;
+  height: 50px;
+}
+
+.profile-img-wrap img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.status-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background: #1a6e78;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+.profile-meta h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0B1F4D;
+  margin-bottom: 2px;
+}
+
+.profile-meta p {
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a6e78;
+  letter-spacing: 0.5px;
+}
+
+.calendar-options-list {
+  padding: 0 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 35px;
+}
+
+.calendar-option {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 20px;
+  border-radius: 16px;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-option:hover {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.calendar-option.active {
+  background: white;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+}
+
+.cal-icon-box {
+  width: 40px;
+  height: 40px;
+  background: #f0f9fa;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0B1F4D;
+}
+
+.calendar-option span {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.sync-modal-actions {
+  padding: 0 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.btn-confirm-sync {
+  width: 100%;
+  background: linear-gradient(to right, #0B1F4D, #1a6e78);
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(11, 31, 77, 0.2);
+  transition: all 0.3s ease;
+}
+
+.btn-confirm-sync:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(11, 31, 77, 0.3);
+}
+
+.btn-maybe-later {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.btn-maybe-later:hover { color: #0B1F4D; }
+
+.sync-footer {
+  background: #f1f5f9;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #94a3b8;
+}
+
+.sync-footer span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}

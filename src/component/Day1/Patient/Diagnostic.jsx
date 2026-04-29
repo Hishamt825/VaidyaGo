@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import phImg from '../../../assets/ph.png';
+import patientPhoto from '../../../assets/Patient Photo.svg';
 import './Diagnostic.css';
 import Sidebar from '../../../components/Patient/Patient_sidebar';
 import Profile from '../../../components/Patient/Profile';
@@ -55,7 +55,12 @@ const Icon = ({ name, className }) => {
     video: <React.Fragment><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></React.Fragment>,
     pharmacy: <path d="M12 2v20M5 12h14" />,
     book: <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V5A2.5 2.5 0 0 1 6.5 2.5H20M20 2.5v19.5" />,
-    check: <polyline points="20 6 9 17 4 12" />
+    check: <polyline points="20 6 9 17 4 12" />,
+    info: <React.Fragment><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></React.Fragment>,
+    pulse: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
+    stethoscope: <path d="M4.8 2.3A.3.3 0 1 0 5 2a.3.3 0 0 0-.2.3Z M3 21h10 M5 3v2 M19 3v2 M12 21a7 7 0 0 0 7-7v-4a3 3 0 0 0-3-3h-8a3 3 0 0 0-3 3v4a7 7 0 0 0 7 7Z" />,
+    clipboard: <React.Fragment><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></React.Fragment>,
+    upload: <React.Fragment><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></React.Fragment>
   };
 
   return (
@@ -81,7 +86,7 @@ const Diagnostic = () => {
   const [showTTH, setShowTTH] = useState(false);
   const [showCervicogenic, setShowCervicogenic] = useState(false);
   const [showDseasonal, setShowDseasonal] = useState(false);
-  const [active, setActive] = useState('Dashboard');
+  const [active, setActive] = useState('Symptom Checker');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -95,54 +100,31 @@ const Diagnostic = () => {
   ];
 
   return (
-    <div className={`diagnostic-layout-wrapper ${isPopupOpen ? 'popup-active' : ''}`}>
-      <div className={`diagnostic-layout ${isPopupOpen ? 'content-blur' : ''}`}>
-<<<<<<< HEAD
-      {/* Dynamic Sidebar */}
-      <aside className="diagnostic-sidebar">
-        <div className="sidebar-logo">
-          <img src={logo} alt="VaidyaGo Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
-        </div>
-        
-        <nav className="sidebar-menu">
-          {menuItems.map(item => (
-            <a key={item.id} href={`#${item.id}`} className={`menu-item ${item.active ? 'active' : ''}`}>
-              <div className="menu-icon-wrapper">
-                <Icon name={item.icon} />
-              </div>
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </nav>
-        
-        <div className="sidebar-footer">
-          <button 
-            onClick={() => navigate('/Consultation1')}
-            className="new-consultation-btn"
-          >
-            <div className="plus-circle-blue">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                 <circle cx="12" cy="12" r="10" />
-                 <line x1="12" y1="8" x2="12" y2="16" />
-                 <line x1="8" y1="12" x2="16" y2="12" />
-               </svg>
-            </div>
-            <span>New Consultation</span>
-          </button>
-        </div>
-      </aside>
-=======
+    <>
+    <div 
+      className={`flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden ${isPopupOpen ? 'popup-active' : ''}`}
+      style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
+    >
       <Sidebar
         active={active}
         setActive={setActive}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
       />
->>>>>>> frontend
 
-      {/* Main Content Area */}
-      <main className="diagnostic-main">
+      {/* ── Main Area ── */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+        {/* Top Navbar */}
         <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+            {/* Hamburger for Mobile */}
+            <button 
+                onClick={() => setIsMobileOpen(true)}
+                className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
             <div className="flex-1 max-w-[280px]">
                 <div className="relative group">
                     <input
@@ -171,10 +153,14 @@ const Diagnostic = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </button>
-                    <div onClick={() => setActiveModal('profile')} className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform"><img src={phImg} alt="User" className="w-full h-full object-cover" /></div>
+                    <div onClick={() => setActiveModal('profile')} className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform">
+                        <img src={patientPhoto} alt="User" className="w-full h-full object-cover" />
+                    </div>
                 </div>
             </div>
         </header>
+
+        <main className="flex-1 overflow-y-auto pb-[64px]">
 
         <div className="diagnostic-content">
         {/* Diagnostic Hero Section */}
@@ -197,7 +183,7 @@ const Diagnostic = () => {
           <div className="summary-column">
             <div className="summary-card dark info-card">
               <div className="card-title">
-                <Icon name="overview" />
+                <Icon name="clipboard" />
                 Input Summary
               </div>
               
@@ -240,22 +226,22 @@ const Diagnostic = () => {
 
             <div className="summary-card patient-card">
               <div className="card-subtitle">
-                <Icon name="overview" className="mini-card-icon" />
+                <Icon name="stethoscope" className="mini-card-icon" />
                 PATIENT SUMMARY
               </div>
               <div className="patient-vitals-list">
                 <div className="patient-vital-row">
-                  <div className="v-icon-wrap"><Icon name="vitals" /></div>
+                  <div className="v-icon-wrap"><Icon name="pulse" /></div>
                   <span className="v-label">Temperature</span>
                   <span className="v-value">98.6°F</span>
                 </div>
                 <div className="patient-vital-row">
-                  <div className="v-icon-wrap heart"><Icon name="vitals" /></div>
+                  <div className="v-icon-wrap heart"><Icon name="pulse" /></div>
                   <span className="v-label">Heart Rate</span>
                   <span className="v-value">72 BPM</span>
                 </div>
                 <div className="patient-vital-row">
-                  <div className="v-icon-wrap lung"><Icon name="vitals" /></div>
+                  <div className="v-icon-wrap lung"><Icon name="pulse" /></div>
                   <span className="v-label">SPO2</span>
                   <span className="v-value">98%</span>
                 </div>
@@ -310,13 +296,13 @@ const Diagnostic = () => {
                   </div>
                 </div>
                 <div className="condition-footer">
-                  <span className="clinical-data"><Icon name="overview" className="mini-icon" /> Clinical Data</span>
+                  <span className="clinical-data"><Icon name="info" className="mini-icon" /> Clinical Data</span>
                   <span className="arrow">›</span>
                 </div>
               </div>
             ))}
 
-            <h2 className="conditions-section-title" style={{ marginTop: 40 }}>
+            <h2 className="conditions-section-title" style={{ marginTop: 32 }}>
               ACTIONABLE NEXT STEPS
             </h2>
             <div className="actionable-row">
@@ -370,6 +356,7 @@ const Diagnostic = () => {
         </div>
         </div>
       </main>
+      </div>
     </div>
 
     {showConnect && (
@@ -403,8 +390,8 @@ const Diagnostic = () => {
       <Account onClose={() => setActiveModal(null)} />
     )}
     {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
-  </div>
-);
+    </>
+  );
 };
 
 export default Diagnostic;

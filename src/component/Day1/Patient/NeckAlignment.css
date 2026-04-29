@@ -8,7 +8,7 @@
   width: 100vw;
   height: 100vh;
   z-index: 3000;
-  background: white;
+  background: radial-gradient(circle at top right, #1a3c4d 0%, #071921 100%);
   display: flex;
   font-family: 'Plus Jakarta Sans', sans-serif;
   animation: fadeIn 0.4s ease-out;
@@ -111,7 +111,7 @@
 /* Main Content */
 .na-main {
   flex: 1;
-  background: #f8fafc;
+  background: transparent;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
