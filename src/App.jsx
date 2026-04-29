@@ -48,7 +48,9 @@ import Doctor_dashboard from './components/Doctor/Doctor_dashboard';
 import Recent_patient from './components/Appoinment/Recent_patient';
 import Settingpage from './components/Appoinment/Settingpage';
 import Reject_doctor from './components/Admin/Reject_doctor';
-import Disease from './components/Patient/Disease';
+import Disease from './components/Hospital/Disease';
+import FAQ from './components/Hospital/FAQ';
+import Gallery from './components/Hospital/Gallery';
 import Patient_dashboard from './components/Patient/Patient_dashboard';
 import Patient_dashboard1 from './components/Patient/Patient_dashboard1';
 import Symptom from './components/Patient/Symptom';
@@ -133,6 +135,8 @@ const App = () => {
       <Route path="/Settingpage" element={<Settingpage />} />
       <Route path="/reject_doctor" element={<Reject_doctor />} />
       <Route path="/Disease" element={<Disease />} />
+      <Route path="/FAQ" element={<FAQ />} />
+      <Route path="/Gallery" element={<Gallery />} />
       <Route path="/Patient_dashboard" element={<Patient_dashboard />} />
       <Route path="/Patient_dashboard1" element={<Patient_dashboard1 />} />
       <Route path="/Symptom" element={<Symptom />} />

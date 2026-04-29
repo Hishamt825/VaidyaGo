@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
-import { ArrowRight, Activity } from "lucide-react";
+import { ArrowRight, Activity, X } from "lucide-react";
 
 const Hero1 = () => {
   const navigate = useNavigate();
@@ -12,7 +12,31 @@ const Hero1 = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
-  const [activeFeature, setActiveFeature] = useState(2);
+  const [activeFeature, setActiveFeature] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
+
+  const serviceDetails = {
+    Radiology: {
+      description: "Our Radiology department is equipped with the latest diagnostic imaging technology, including high-resolution MRI, CT Scans, Ultrasound, and digital X-rays.",
+      features: ["3.0 Tesla MRI", "128-Slice CT Scan", "Digital Mammography", "Interventional Radiology"],
+      image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"
+    },
+    Emergency: {
+      description: "Our Emergency department provides 24/7 rapid-response critical care with a dedicated team of trauma specialists and advanced life-support ambulances.",
+      features: ["24/7 Level 1 Trauma Center", "Mobile ICU Ambulances", "Cardiac Emergency Care", "Rapid Triage System"],
+      image: "https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?auto=format&fit=crop&q=80&w=800"
+    },
+    Laboratory: {
+      description: "The VaidyaGo Pathology Lab offers a comprehensive range of clinical tests with automated processing for high accuracy and fast turnaround times.",
+      features: ["Automated Bio-Chemistry", "Molecular Diagnostics", "Hematology & Immunology", "Home Sample Collection"],
+      image: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=800"
+    },
+    Pharmacy: {
+      description: "Our fully-stocked pharmacy ensures the availability of high-quality, authentic medications and sterile preparations for all specialized treatments.",
+      features: ["Authentic Medications", "24/7 Availability", "Cold-Chain Maintenance", "Pharmacist Consultation"],
+      image: "https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&q=80&w=800"
+    }
+  };
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -390,7 +414,8 @@ const Hero1 = () => {
             ].map((service, idx) => (
               <div
                 key={idx}
-                className="group bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_60px_rgba(25,113,138,0.1)] hover:-translate-y-3 transition-all duration-500 cursor-pointer"
+                className="group bg-white p-10 rounded-[2.5rem] border border-gray-300 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_60px_rgba(25,113,138,0.1)] hover:-translate-y-3 transition-all duration-500 cursor-pointer"
+                onClick={() => setSelectedService(service.title)}
               >
                 <div className={`w-16 h-16 ${service.color} rounded-2xl flex items-center justify-center mb-8 group-hover:rotate-[10deg] transition-transform duration-500`}>
                   <img src={service.icon} alt={service.title} className="w-8 h-8 object-contain" />
@@ -399,7 +424,10 @@ const Hero1 = () => {
                 <p className="text-gray-600 text-[15px] leading-relaxed mb-8">
                   {service.text}
                 </p>
-                <div className="flex items-center text-[#19718A] font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all">
+                <div 
+                  className="flex items-center text-[#19718A] font-bold text-sm uppercase tracking-wider group-hover:gap-2 transition-all"
+                  onClick={(e) => { e.stopPropagation(); setSelectedService(service.title); }}
+                >
                   Details <ArrowRight size={18} className="ml-2" />
                 </div>
               </div>
@@ -471,13 +499,13 @@ const Hero1 = () => {
 
 
       {/* ================= KEY FEATURES SECTION ================= */}
-      <section className="relative w-full max-w-7xl mx-auto px-6 py-16 lg:py-24 overflow-visible">
-        
+      <section className="relative w-full max-w-7xl mx-auto px-6 py-8 lg:py-12 overflow-visible">
+
         {/* Background Decorative Elements */}
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#E8F1F2]/40 rounded-full blur-[140px] -z-10"></div>
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#D1E9F1]/30 rounded-full blur-[120px] -z-10"></div>
 
-        <div className="text-center mb-16 relative">
+        <div className="text-center mb-10 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -494,141 +522,133 @@ const Hero1 = () => {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
           
-          {/* Column 1 */}
-          <div className="flex flex-col gap-8">
-            {/* AI Chat (ID: 1) */}
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10 }}
-              onClick={() => setActiveFeature(1)}
-              className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
-                activeFeature === 1 
-                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
-                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
-              }`}
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-                activeFeature === 1 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-              }`}>
-                <img src="/assets/ai1.png" alt="AI Chat" className="w-10 h-10 object-contain invert brightness-0" />
-              </div>
-              <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 1 ? "text-white" : "text-[#0E4056]"}`}>AI Chat Assistant</h3>
-              <p className={`leading-relaxed text-[15.5px] ${activeFeature === 1 ? "text-blue-50/90" : "text-gray-600"}`}>
-                Instant support for health queries and seamless navigation through our services using cutting-edge AI.
-              </p>
-            </motion.div>
+          {/* AI Chat (ID: 1) */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveFeature(1)}
+            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
+              activeFeature === 1 
+              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
+              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
+            }`}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+              activeFeature === 1 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+            }`}>
+              <img src="/assets/ai1.png" alt="AI Chat" className="w-10 h-10 object-contain invert brightness-0" />
+            </div>
+            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 1 ? "text-white" : "text-[#0E4056]"}`}>AI Chat Assistant</h3>
+            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 1 ? "text-blue-50/90" : "text-gray-600"}`}>
+              Instant support for health queries and seamless navigation through our services using cutting-edge AI.
+            </p>
+          </motion.div>
 
-            {/* Medicine Reminder (ID: 2) */}
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10 }}
-              onClick={() => setActiveFeature(2)}
-              className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
-                activeFeature === 2 
-                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
-                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
-              }`}
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-                activeFeature === 2 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-              }`}>
-                <img src="/assets/med1.png" alt="Medicine" className="w-10 h-10 object-contain invert brightness-0" />
-              </div>
-              <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 2 ? "text-white" : "text-[#0E4056]"}`}>Medicine Reminder</h3>
-              <p className={`leading-relaxed text-[15.5px] ${activeFeature === 2 ? "text-blue-50/90" : "text-gray-600"}`}>
-                Smart medication tracking to ensure you never miss a dose, helping you stay on track with your recovery.
-              </p>
-            </motion.div>
-          </div>
+          {/* Medicine Reminder (ID: 2) */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveFeature(2)}
+            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
+              activeFeature === 2 
+              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
+              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
+            }`}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+              activeFeature === 2 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+            }`}>
+              <img src="/assets/med1.png" alt="Medicine" className="w-10 h-10 object-contain invert brightness-0" />
+            </div>
+            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 2 ? "text-white" : "text-[#0E4056]"}`}>Medicine Reminder</h3>
+            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 2 ? "text-blue-50/90" : "text-gray-600"}`}>
+              Smart medication tracking to ensure you never miss a dose, helping you stay on track with your recovery.
+            </p>
+          </motion.div>
 
-          {/* Column 2 */}
-          <div className="flex flex-col gap-8 lg:mt-16">
-            {/* Prescription Upload (ID: 3) */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10 }}
-              onClick={() => setActiveFeature(3)}
-              className={`group relative p-9 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
-                activeFeature === 3 
-                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
-                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
-              }`}
-            >
-              <div className="absolute top-[-20%] right-[-10%] w-60 h-60 bg-white/10 rounded-full blur-3xl opacity-20"></div>
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-                activeFeature === 3 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-              }`}>
-                <img src="/assets/pre1.png" alt="Prescription" className="w-10 h-10 object-contain invert brightness-0" />
-              </div>
-              <h3 className={`text-[26px] font-bold mb-4 ${activeFeature === 3 ? "text-white" : "text-[#0E4056]"}`}>Prescription Upload</h3>
-              <p className={`leading-relaxed text-[16px] ${activeFeature === 3 ? "text-blue-50/90" : "text-gray-600"}`}>
-                Quick and secure submission of your prescriptions for faster diagnostic processing and pharmacy services.
-              </p>
-            </motion.div>
+          {/* Prescription Upload (ID: 3) */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveFeature(3)}
+            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
+              activeFeature === 3 
+              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
+              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
+            }`}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+              activeFeature === 3 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+            }`}>
+              <img src="/assets/pre1.png" alt="Prescription" className="w-10 h-10 object-contain invert brightness-0" />
+            </div>
+            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 3 ? "text-white" : "text-[#0E4056]"}`}>Prescription Upload</h3>
+            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 3 ? "text-blue-50/90" : "text-gray-600"}`}>
+              Quick and secure submission of your prescriptions for faster diagnostic processing and pharmacy services.
+            </p>
+          </motion.div>
 
-            {/* Voice Interaction (ID: 4) */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10 }}
-              onClick={() => setActiveFeature(4)}
-              className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
-                activeFeature === 4 
-                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
-                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
-              }`}
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-                activeFeature === 4 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-              }`}>
-                <img src="/assets/voice1.png" alt="Voice" className="w-10 h-10 object-contain invert brightness-0" />
-              </div>
-              <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 4 ? "text-white" : "text-[#0E4056]"}`}>Voice Interaction</h3>
-              <p className={`leading-relaxed text-[15.5px] ${activeFeature === 4 ? "text-blue-50/90" : "text-gray-600"}`}>
-                Intuitive hands-free control and accessibility, allowing you to interact with our platform using voice commands.
-              </p>
-            </motion.div>
-          </div>
+          {/* Voice Interaction (ID: 4) */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveFeature(4)}
+            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
+              activeFeature === 4 
+              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
+              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
+            }`}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+              activeFeature === 4 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+            }`}>
+              <img src="/assets/voice1.png" alt="Voice" className="w-10 h-10 object-contain invert brightness-0" />
+            </div>
+            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 4 ? "text-white" : "text-[#0E4056]"}`}>Voice Interaction</h3>
+            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 4 ? "text-blue-50/90" : "text-gray-600"}`}>
+              Intuitive hands-free control and accessibility, allowing you to interact with our platform using voice commands.
+            </p>
+          </motion.div>
 
-          {/* Column 3 */}
-          <div className="flex flex-col gap-8 lg:mt-32">
-            {/* Book Appointment (ID: 5) */}
-            <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10 }}
-              onClick={() => setActiveFeature(5)}
-              className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border transition-all duration-500 overflow-hidden cursor-pointer ${
-                activeFeature === 5 
-                ? "bg-gradient-to-br from-[#19718A] to-[#0E4056] border-white/10 shadow-[0_30px_60px_rgba(25,113,138,0.3)]" 
-                : "bg-white/70 backdrop-blur-md border-white/60 hover:border-[#19718A]/30"
-              }`}
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-                activeFeature === 5 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-              }`}>
-                <img src="/assets/book1.png" alt="Book" className="w-10 h-10 object-contain invert brightness-0" />
-              </div>
-              <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 5 ? "text-white" : "text-[#0E4056]"}`}>Book Appointment</h3>
-              <p className={`leading-relaxed text-[15.5px] ${activeFeature === 5 ? "text-blue-50/90" : "text-gray-600"}`}>
-                Effortlessly schedule visits with our expert specialists, choosing the time and date that works best for you.
-              </p>
-            </motion.div>
-          </div>
+          {/* Book Appointment (ID: 5) */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveFeature(5)}
+            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
+              activeFeature === 5 
+              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
+              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
+            }`}
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
+              activeFeature === 5 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
+            }`}>
+              <img src="/assets/book1.png" alt="Book" className="w-10 h-10 object-contain invert brightness-0" />
+            </div>
+            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 5 ? "text-white" : "text-[#0E4056]"}`}>Book Appointment</h3>
+            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 5 ? "text-blue-50/90" : "text-gray-600"}`}>
+              Effortlessly schedule visits with our expert specialists, choosing the time and date that works best for you.
+            </p>
+          </motion.div>
+
         </div>
       </section>
 
@@ -886,6 +906,63 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
             setShowLoginModal(true);
           }}
         />
+      )}
+
+      {/* Service Details Modal */}
+      {selectedService && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+            onClick={() => setSelectedService(null)}
+          ></motion.div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="relative bg-white rounded-[2rem] w-full max-w-4xl overflow-hidden shadow-2xl z-[110]"
+          >
+            <button 
+              onClick={() => setSelectedService(null)}
+              className="absolute top-6 right-6 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6 text-gray-500" />
+            </button>
+            
+            <div className="flex flex-col md:flex-row h-full">
+              <div className="md:w-1/2 h-64 md:h-auto">
+                <img 
+                  src={serviceDetails[selectedService]?.image} 
+                  alt={selectedService} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                <h3 className="text-[32px] font-bold text-[#0E4056] mb-6 font-serif">{selectedService} Details</h3>
+                <p className="text-gray-600 text-lg leading-relaxed mb-8">
+                  {serviceDetails[selectedService]?.description}
+                </p>
+                <div className="space-y-4">
+                  <h4 className="font-bold text-[#19718A] uppercase tracking-wider text-sm">Key Features:</h4>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {serviceDetails[selectedService]?.features.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-3 text-gray-700">
+                        <div className="w-2 h-2 bg-[#19718A] rounded-full"></div>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <button 
+                  onClick={() => { setSelectedService(null); navigate("/Service"); }}
+                  className="mt-10 bg-[#19718A] text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all"
+                >
+                  View Full Services
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       )}
     </div>
   );

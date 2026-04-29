@@ -27,6 +27,7 @@ const MainPage = () => {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [showNewPassModal, setShowNewPassModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [diseaseSearch, setDiseaseSearch] = useState("");
   return (
     <div className="font-sans text-gray-800 overflow-x-hidden w-full">
       {/* Navbar */}
@@ -441,6 +442,7 @@ const MainPage = () => {
                 {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
                   <button
                     key={letter}
+                    onClick={() => navigate(`/Disease?letter=${letter}`)}
                     className="w-[42px] h-[42px] rounded-[14px] bg-white shadow-sm border border-gray-300 text-[#0B2132] font-bold text-[16px] flex items-center justify-center hover:bg-[#19718A] hover:text-white hover:border-[#19718A] hover:-translate-y-1 hover:shadow-md transition-all duration-300"
                   >
                     {letter}
@@ -454,10 +456,15 @@ const MainPage = () => {
                 <div className="flex items-center w-full bg-white p-2 rounded-full border-2 border-transparent shadow-md focus-within:border-[#19718A]/40 focus-within:ring-4 focus-within:ring-[#19718A]/10 transition-all duration-300">
                   <input
                     type="text"
+                    value={diseaseSearch}
+                    onChange={(e) => setDiseaseSearch(e.target.value)}
                     placeholder="E.g. Diabetes, Hypertension..."
                     className="w-full outline-none text-gray-700 bg-transparent text-[16px] px-5 py-2 placeholder-gray-400"
                   />
-                  <button className="bg-[#19718A] text-white px-8 py-3 rounded-full font-bold hover:bg-[#0C6173] transition-colors shadow-sm whitespace-nowrap">
+                  <button 
+                    onClick={() => navigate(`/Disease?letter=${diseaseSearch}`)}
+                    className="bg-[#19718A] text-white px-8 py-3 rounded-full font-bold hover:bg-[#0C6173] transition-colors shadow-sm whitespace-nowrap"
+                  >
                     Search
                   </button>
                 </div>
@@ -760,7 +767,12 @@ const MainPage = () => {
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
-                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Gallery</a>
+                <button
+                  onClick={() => navigate("/Gallery")}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  Gallery
+                </button>
               </li>
             </ul>
           </div>

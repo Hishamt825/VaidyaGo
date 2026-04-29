@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
@@ -21,6 +22,71 @@ const Service = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const servicesData = [
+    {
+      title: "Appointment",
+      icon: <CalendarClock size={34} strokeWidth={1.5} />,
+      text: "Schedule your visit with our expert doctors easily online.",
+      btnText: "BOOK NOW",
+      color: "#19718A"
+    },
+    {
+      title: "AI Symptom Checker",
+      icon: (
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M3 10H1 M3 14H1 M21 10H23 M21 14H23 M10 3V1 M14 3V1 M10 21V23 M14 21V23" stroke="currentColor" strokeWidth="1.5" />
+          <text x="50%" y="54%" dominantBaseline="central" textAnchor="middle" fill="currentColor" fontSize="8" fontWeight="bold">AI</text>
+        </svg>
+      ),
+      text: "Type your symptoms and get an instant AI-powered health assessment.",
+      btnText: "FIND DISEASE",
+      color: "#19718A"
+    },
+    {
+      title: "Prescription",
+      icon: <Folder size={34} strokeWidth={1.5} />,
+      text: "Upload your prescription for quick digital processing and records.",
+      btnText: "UPLOAD",
+      color: "#19718A"
+    },
+    {
+      title: "Find Locations",
+      icon: (
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 21.5c-4.2-4.5-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.8 7.5-8 12Z" />
+          <circle cx="12" cy="9" r="3.5" />
+        </svg>
+      ),
+      text: "Locate our nearest clinics and hospitals with ease.",
+      btnText: "LOCATION",
+      color: "#19718A"
+    },
+    {
+      title: "Emergency Care",
+      icon: <Activity size={34} strokeWidth={1.5} />,
+      text: "Immediate 24/7 emergency response for critical health situations.",
+      btnText: "CALL NOW",
+      color: "#19718A"
+    },
+    {
+      title: "Lab Tests",
+      icon: <Stethoscope size={34} strokeWidth={1.5} />,
+      text: "Book pathology and diagnostic tests with home sample collection.",
+      btnText: "BOOK LAB",
+      color: "#19718A"
+    }
+  ];
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1 >= servicesData.length * 2 ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? servicesData.length * 2 - 1 : prev - 1));
+  };
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800">
 
@@ -133,7 +199,7 @@ const Service = () => {
           <div className="flex flex-col space-y-6 flex-1">
             <button onClick={() => { navigate("/MainPage"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Home</button>
             <button onClick={() => { navigate("/About"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">About</button>
-            <button onClick onClick={() => { navigate("/Service"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Our Service</button>
+            <button onClick={() => { navigate("/Service"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Our Service</button>
             <button onClick={() => { navigate("/Makeapp"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Doctor</button>
             <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">FAQ</button>
           </div>
@@ -221,7 +287,7 @@ const Service = () => {
       {/* Features Section */}
       <section className="relative -mt-24 z-40">
         {/* White Card Container */}
-        <div className="max-w-6xl mx-auto bg-white rounded-t-[60px] shadow-lg px-10 py-10">
+        <div className="max-w-6xl ml-4 md:ml-10 lg:ml-16 bg-white rounded-t-[60px] shadow-lg px-10 py-10">
 
           {/* Wave Top Shape */}
           <div className="absolute top-0 left-0 w-full overflow-hidden leading-none rotate-180">
@@ -295,14 +361,14 @@ const Service = () => {
       </section>
 
       {/* ======================= OUR SERVICES CAROUSEL ======================= */}
-      <section className="py-20 relative overflow-hidden bg-white">
+      <section className="py-10 relative overflow-hidden bg-white">
 
         {/* Background Decorative Shapes */}
         <div className="absolute top-[10%] right-[10%] w-[450px] h-[450px] bg-[#E8F3F4] rounded-full opacity-60 mix-blend-multiply blur-2xl pointer-events-none"></div>
         <div className="absolute bottom-[0%] left-[5%] w-[350px] h-[350px] bg-[#E6EEF8] rounded-full opacity-50 mix-blend-multiply blur-2xl pointer-events-none"></div>
 
         {/* 4. TITLE */}
-        <div className="text-center mb-16 relative z-10">
+        <div className="text-center mb-8 relative z-10">
           <h2 className="text-[36px] md:text-[42px] font-[900] text-black tracking-tight mb-2">OUR SERVICES</h2>
           <p className="text-gray-600 text-[16px] font-medium max-w-xl mx-auto">we offer complete healthcare to individual with various health concern</p>
         </div>
@@ -311,81 +377,56 @@ const Service = () => {
         <div className="max-w-[1400px] mx-auto relative flex items-center justify-center z-20 px-4 md:px-12 xl:px-8">
 
           {/* Left Arrow */}
-          <button className="hidden lg:flex absolute left-0 xl:left-4 w-[50px] h-[50px] bg-white border-2 border-gray-800 rounded-full z-40 items-center justify-center text-gray-800 hover:bg-gray-100 transition-colors shadow-sm">
-            <ChevronLeft size={26} strokeWidth={2} />
+          <button 
+            onClick={prevSlide}
+            className="hidden lg:flex absolute left-0 xl:left-4 w-[55px] h-[55px] bg-white border-2 border-gray-800 rounded-full z-50 items-center justify-center text-gray-800 hover:bg-gray-800 hover:text-white hover:-translate-x-1 transition-all shadow-md active:scale-90"
+          >
+            <ChevronLeft size={28} strokeWidth={2} />
           </button>
 
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-6 xl:gap-8 w-full py-12">
-
-            {/* Card 1: Appointment */}
-            <div className="group bg-white rounded-[32px] p-8 flex flex-col items-center shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-gray-100 w-full lg:w-[260px] h-[370px] transform transition-all duration-300 hover:scale-[1.05] hover:-translate-y-2 hover:bg-gradient-to-b hover:from-[#7CBBC2] hover:to-[#6FA7AD] hover:border-transparent hover:shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-10 hover:z-40 mt-0 lg:mt-4">
-              <h3 className="font-extrabold text-[#1a2d30] text-[20px] mb-6 mt-2 transition-colors duration-300">Appointment</h3>
-              <div className="w-[72px] h-[72px] bg-[#19718A] rounded-full flex items-center justify-center text-white mb-6 shrink-0 shadow-md transition-colors duration-300">
-                <CalendarClock size={34} strokeWidth={1.5} />
-              </div>
-              <p className="text-[14px] text-gray-500 group-hover:text-[#1a2d30] leading-relaxed mb-6 text-center w-full flex-grow font-medium transition-colors duration-300">
-                An appointment is a phone number or an online service used to schedule a meeting or appointment.
-              </p>
-              <button className="bg-[#19718A] hover:bg-[#106272] group-hover:bg-[#106272] text-white text-[14px] font-bold py-[12px] px-8 rounded-full transition-colors w-max tracking-wide shadow-md duration-300">
-                BOOK NOW
-              </button>
-            </div>
-
-            {/* Card 2: AI symptom Checker */}
-            <div className="group bg-white rounded-[32px] p-8 flex flex-col items-center shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-gray-100 w-full lg:w-[280px] h-[390px] transform transition-all duration-300 hover:scale-[1.05] hover:-translate-y-2 hover:bg-gradient-to-b hover:from-[#7CBBC2] hover:to-[#6FA7AD] hover:border-transparent hover:shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-10 hover:z-40 relative lg:-mt-0">
-              <h3 className="font-extrabold text-[#1a2d30] text-[22px] leading-snug mb-6 mt-3 text-center transition-colors duration-300">AI symptom<br />Checker</h3>
-              <div className="w-[84px] h-[84px] bg-[#19718A] rounded-full flex items-center justify-center text-white mb-6 shadow-md relative shrink-0 transition-colors duration-300">
-                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                  <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M3 10H1 M3 14H1 M21 10H23 M21 14H23 M10 3V1 M14 3V1 M10 21V23 M14 21V23" stroke="currentColor" strokeWidth="1.5" />
-                  <text x="50%" y="54%" dominantBaseline="central" textAnchor="middle" fill="currentColor" fontSize="8" fontWeight="bold" fontFamily="sans-serif">AI</text>
-                </svg>
-              </div>
-              <p className="text-[14px] text-gray-500 group-hover:text-[#1a2d30] font-medium leading-relaxed mb-6 text-center w-full flex-grow transition-colors duration-300">
-                Type symptoms and check whats the problem is.
-              </p>
-              <button className="bg-[#19718A] hover:bg-[#106272] group-hover:bg-[#106272] text-white text-[15px] font-bold py-[12px] px-8 rounded-full shadow-md transition-colors duration-300 w-max tracking-wide">
-                find Dieases
-              </button>
-            </div>
-
-            {/* Card 3: Prescription */}
-            <div className="group bg-white rounded-[32px] p-8 flex flex-col items-center shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-gray-100 w-full lg:w-[260px] h-[370px] transform transition-all duration-300 hover:scale-[1.05] hover:-translate-y-2 hover:bg-gradient-to-b hover:from-[#7CBBC2] hover:to-[#6FA7AD] hover:border-transparent hover:shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-10 hover:z-40 mt-0 lg:mt-4">
-              <h3 className="font-extrabold text-[#1a2d30] text-[20px] mb-6 mt-2 transition-colors duration-300">prescription</h3>
-              <div className="w-[72px] h-[72px] bg-[#19718A] rounded-full flex items-center justify-center text-white mb-6 shrink-0 shadow-md transition-colors duration-300">
-                <Folder size={34} strokeWidth={1.5} />
-              </div>
-              <p className="text-[14px] text-gray-500 group-hover:text-[#1a2d30] leading-relaxed mb-6 text-center w-full flex-grow font-medium transition-colors duration-300">
-                Upload your prescription and check and know whats the problem is?
-              </p>
-              <button className="bg-[#19718A] hover:bg-[#106272] group-hover:bg-[#106272] text-white text-[14px] font-bold py-[12px] px-10 rounded-full transition-colors w-max tracking-wide shadow-md duration-300">
-                Upload
-              </button>
-            </div>
-
-            {/* Card 4: Find Locations */}
-            <div className="group bg-white rounded-[32px] p-8 flex flex-col items-center shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-gray-100 w-full lg:w-[260px] h-[370px] transform transition-all duration-300 hover:scale-[1.05] hover:-translate-y-2 hover:bg-gradient-to-b hover:from-[#7CBBC2] hover:to-[#6FA7AD] hover:border-transparent hover:shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-10 hover:z-40 mt-0 lg:mt-4">
-              <h3 className="font-extrabold text-[#1a2d30] text-[20px] mb-6 mt-2 transition-colors duration-300">Find Locations</h3>
-              <div className="w-[72px] h-[72px] bg-[#19718A] rounded-full flex items-center justify-center text-white mb-6 shrink-0 relative shadow-md transition-colors duration-300">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                  <path d="M12 21.5c-4.2-4.5-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.8 7.5-8 12Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                  <circle cx="12" cy="9" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M12 7.5v3m-1.5-1.5h3" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </div>
-              <p className="text-[14px] text-gray-500 group-hover:text-[#1a2d30] leading-relaxed mb-6 text-center w-full flex-grow font-medium transition-colors duration-300">
-                Location can refer to several things: a search term for icons of a map pin and text, a technical term for a single line of text in a recognized block.
-              </p>
-              <button className="bg-[#19718A] hover:bg-[#106272] group-hover:bg-[#106272] text-white text-[16px] font-bold py-[12px] px-8 rounded-full transition-colors w-max tracking-wide shadow-md duration-300">
-                Location
-              </button>
-            </div>
-
+          <div className="overflow-hidden w-full py-12 relative">
+            <motion.div 
+              animate={{ x: `-${currentSlide * 312}px` }}
+              transition={{ type: "spring", stiffness: 120, damping: 20 }}
+              className="flex items-center gap-8 w-max px-10"
+            >
+              {[...servicesData, ...servicesData, ...servicesData].map((service, index) => {
+                const isActive = index === currentSlide + 1; // Center-ish highlighting
+                return (
+                  <div 
+                    key={index}
+                    className={`group relative rounded-[32px] p-8 flex flex-col items-center shadow-[0_4px_20px_rgba(0,0,0,0.06)] border-2 transition-all duration-500 w-[280px] h-[380px] transform hover:scale-[1.05] hover:-translate-y-2 z-10 ${
+                      isActive 
+                      ? "bg-[#19718A] border-[#19718A] text-white shadow-[0_15px_40px_rgba(25,113,138,0.3)]" 
+                      : "bg-white border-gray-300 text-[#1a2d30] hover:bg-gray-50"
+                    }`}
+                  >
+                    <h3 className={`font-extrabold text-[20px] mb-6 mt-2 transition-colors duration-300 text-center ${isActive ? "text-white" : "text-[#1a2d30]"}`}>{service.title}</h3>
+                    <div className={`w-[72px] h-[72px] rounded-full flex items-center justify-center mb-6 shrink-0 shadow-md transition-all duration-300 ${isActive ? "bg-white/20 text-white" : "bg-[#19718A] text-white"}`}>
+                      {React.cloneElement(service.icon, { size: 34 })}
+                    </div>
+                    <p className={`text-[14px] leading-relaxed mb-6 text-center w-full flex-grow font-medium transition-colors duration-300 ${isActive ? "text-blue-50" : "text-gray-500"}`}>
+                      {service.text}
+                    </p>
+                    <button className={`text-[14px] font-bold py-[12px] px-8 rounded-full transition-all w-max tracking-wide shadow-md duration-300 ${
+                      isActive 
+                      ? "bg-white text-[#19718A] hover:scale-110" 
+                      : "bg-[#19718A] text-white hover:bg-[#106272]"
+                    }`}>
+                      {service.btnText}
+                    </button>
+                  </div>
+                );
+              })}
+            </motion.div>
           </div>
 
           {/* Right Arrow */}
-          <button className="hidden lg:flex absolute right-0 xl:right-4 w-[50px] h-[50px] bg-white border-2 border-gray-800 rounded-full z-40 items-center justify-center text-gray-800 hover:bg-gray-100 transition-colors shadow-sm">
-            <ChevronRight size={26} strokeWidth={2} />
+          <button 
+            onClick={nextSlide}
+            className="hidden lg:flex absolute right-0 xl:right-4 w-[55px] h-[55px] bg-white border-2 border-gray-800 rounded-full z-50 items-center justify-center text-gray-800 hover:bg-gray-800 hover:text-white hover:translate-x-1 transition-all shadow-md active:scale-90"
+          >
+            <ChevronRight size={28} strokeWidth={2} />
           </button>
         </div>
       </section>

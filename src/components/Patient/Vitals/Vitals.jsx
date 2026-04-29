@@ -11,7 +11,8 @@ import Connect from './Connect';
 import Heart from './Heart';
 import Pressure_heart from './Pressure_heart';
 import Breathing from './Breathing';
-import Genrate from './Genrate';
+import Export from './Export';
+import VitalsDown from './Vitals_down';
 import Health_report from './Health_report';
 
 
@@ -83,25 +84,26 @@ const Vitals = () => {
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
     const [isConnectOpen, setIsConnectOpen] = useState(false);
+    const [isVitalsDownOpen, setIsVitalsDownOpen] = useState(false);
 
-    const isAnyModalOpen = activeModal || isNotificationOpen || isAddDeviceOpen || isHeartModalOpen || isPressureModalOpen || isBreathingModalOpen || isGenerateModalOpen || isReportOpen || isConnectOpen;
+    const isAnyModalOpen = activeModal || isNotificationOpen || isAddDeviceOpen || isHeartModalOpen || isPressureModalOpen || isBreathingModalOpen || isGenerateModalOpen || isReportOpen || isConnectOpen || isVitalsDownOpen;
 
     return (
         <div
             className="relative h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
         >
-            <div className="flex h-full w-full">
-                {/* Sidebar remains accessible even when content is blurred */}
-                <Sidebar
-                    active={active}
-                    setActive={setActive}
-                    isMobileOpen={isMobileOpen}
-                    setIsMobileOpen={setIsMobileOpen}
-                />
+                {/* Wrapper for blurring entire screen including sidebar */}
+                <div className={`flex h-full w-full ${isAnyModalOpen ? 'blur-md pointer-events-none' : ''}`}>
+                    <Sidebar
+                        active={active}
+                        setActive={setActive}
+                        isMobileOpen={isMobileOpen}
+                        setIsMobileOpen={setIsMobileOpen}
+                    />
 
-                {/* Wrapper for blurring main content area */}
-                <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isAnyModalOpen ? 'blur-md pointer-events-none' : ''}`}>
+                    {/* Main content area */}
+                    <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                     
                     {/* Header Navbar */}
                     <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
@@ -453,10 +455,21 @@ const Vitals = () => {
                 onClose={() => setIsBreathingModalOpen(false)}
             />
 
-            <Genrate
+            <Export
                 isOpen={isGenerateModalOpen}
                 onClose={() => setIsGenerateModalOpen(false)}
-                onGenerate={() => setIsReportOpen(true)}
+                onGenerate={() => {
+                    setIsGenerateModalOpen(false);
+                    setIsVitalsDownOpen(true);
+                }}
+            />
+
+            <VitalsDown
+                isOpen={isVitalsDownOpen}
+                onClose={() => setIsVitalsDownOpen(false)}
+                onReturn={() => {
+                    setIsVitalsDownOpen(false);
+                }}
             />
 
             <Health_report
