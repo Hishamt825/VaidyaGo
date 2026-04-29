@@ -14,6 +14,7 @@ import Metformin from './Metformin';
 import Past_medication from './Past_medication';
 import Request_refill from './Request_refill';
 import Refill_request from './Refill_request';
+import Met_task from './Met_task';
 
 const Medication1 = () => {
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Medication1 = () => {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isDailyReportOpen, setIsDailyReportOpen] = useState(false);
     const [isUpdateLogsOpen, setIsUpdateLogsOpen] = useState(false);
-    const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+    const [isMetTaskOpen, setIsMetTaskOpen] = useState(false);
     const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
     const [isMorningScheduleOpen, setIsMorningScheduleOpen] = useState(false);
     const [scheduleType, setScheduleType] = useState('Morning');
@@ -38,7 +39,7 @@ const Medication1 = () => {
             <div className="flex h-full w-full">
                 <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
-                <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen || isScheduleOpen || isNewRequestOpen || isMorningScheduleOpen || isPastMedicationOpen || isRefillOpen || isRefillRequestOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+                <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isDailyReportOpen || isUpdateLogsOpen || activeModal || isNotificationOpen || isMetTaskOpen || isNewRequestOpen || isMorningScheduleOpen || isPastMedicationOpen || isRefillOpen || isRefillRequestOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
                     {/* Top Navbar */}
                     <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1">
                         
@@ -154,7 +155,7 @@ const Medication1 = () => {
                                     <h2 className="text-[18px] font-[900] text-[#0D1C2E]">Today's Schedule</h2>
                                     <span className="text-[10px] font-medium text-[#627382] uppercase tracking-[0.2em] bg-[#EAEFF2] px-3 py-1 rounded-full">Mon, Oct 23</span>
                                     <button 
-                                        onClick={() => setIsScheduleOpen(true)}
+                                        onClick={() => setIsMetTaskOpen(true)}
                                         className="flex items-center gap-1.5 bg-[#1A7785] hover:bg-[#125863] text-white px-3 py-1.5 rounded-full text-[11px] font-bold transition-all shadow-sm"
                                     >
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
@@ -236,9 +237,9 @@ const Medication1 = () => {
                                     <h2 className="text-[18px] font-medium text-white">Active Prescriptions</h2>
                                     <button 
                                         onClick={() => setIsNewRequestOpen(true)}
-                                        className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3.5 py-2 rounded-full text-[14px] font-medium border border-white/10 transition-all"
+                                        className="flex items-center gap-1.5 bg-[#1A7785] hover:bg-[#125863] text-white px-3.5 py-2 rounded-full text-[14px] font-bold transition-all shadow-lg shadow-[#1A7785]/20"
                                     >
-                                        <svg className="w-[12px] h-[12px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
+                                        <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
                                         New Request
                                     </button>
                                 </div>
@@ -474,10 +475,8 @@ const Medication1 = () => {
                      <Update_logs onClose={() => setIsUpdateLogsOpen(false)} />
                 </div>
             )}
-            {isScheduleOpen && (
-                <div className="fixed inset-0 z-[200]">
-                     <Schedule onClose={() => setIsScheduleOpen(false)} />
-                </div>
+            {isMetTaskOpen && (
+                <Met_task isOpen={isMetTaskOpen} onClose={() => setIsMetTaskOpen(false)} />
             )}
             {isNewRequestOpen && (
                 <div className="fixed inset-0 z-[200]">

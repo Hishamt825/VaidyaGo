@@ -119,7 +119,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                 </div>
 
                 {/* Nav Items */}
-                <nav className="flex-1 flex flex-col gap-1 px-4">
+                <nav className="flex-1 flex flex-col gap-1 px-4 overflow-y-auto custom-scrollbar">
                     {MENU.map((item) => {
                         const isActive = active === item.name;
                         return (
@@ -128,8 +128,17 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                 onClick={() => {
                                     setActive(item.name);
                                     setIsMobileOpen(false);
+<<<<<<< HEAD
                                     if (item.name === 'Symptom Checker') navigate('/Body');
                                     else if (item.name === 'Dashboard') navigate('/Patient_dashboard');
+=======
+                                    if (item.name === 'Symptom Checker') navigate('/Symptom');
+                                    else if (item.name === 'Dashboard') {
+                                        const uploaded = localStorage.getItem('prescriptionUploaded');
+                                        if (uploaded === 'true') navigate('/Patient_dashboard1');
+                                        else navigate('/Patient_dashboard');
+                                    }
+>>>>>>> adiba
                                     else if (item.name === 'Vitals') navigate('/Vitals');
                                     else if (item.name === 'Appointments') navigate('/Appointment');
                                     else if (item.name === 'Medications') navigate('/Medication');

@@ -1,27 +1,41 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logoUrl from '../../assets/vadyago_pat.png';
 import phImg from '../../assets/ph.png';
 import Sidebar from './Patient_sidebar';
 import Profile from './Profile';
 import Account from './Account';
 import Notification from './notification';
-
-
+import Patient_sym from './Patient_sym';
+import Book from './Book';
+import Upload from './Upload';
+import Patient_record from './Patient_record';
 
 const Patient_dashboard1 = () => {
     const [active, setActive] = useState('Dashboard');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    
+
     // Modal states
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isSymptomOpen, setIsSymptomOpen] = useState(false);
+    const [isBookOpen, setIsBookOpen] = useState(false);
+    const [isUploadOpen, setIsUploadOpen] = useState(false);
+    const [isRecordOpen, setIsRecordOpen] = useState(false);
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state?.reopenBook) {
+            setIsBookOpen(true);
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
 
     return (
         <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
-             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
+            style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
             <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
@@ -38,7 +52,12 @@ const Patient_dashboard1 = () => {
                                 Dashboard
                                 <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#6ED4D4] rounded-t-sm" />
                             </span>
-                            <span className="text-white/60 hover:text-white cursor-pointer transition-colors h-full flex items-center">Reports</span>
+                            <span 
+                                onClick={() => setIsRecordOpen(true)}
+                                className="text-white/60 hover:text-white cursor-pointer transition-colors h-full flex items-center"
+                            >
+                                Reports
+                            </span>
                         </div>
                     </div>
 
@@ -71,7 +90,7 @@ const Patient_dashboard1 = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </button>
-                            <div 
+                            <div
                                 onClick={() => setActiveModal('profile')}
                                 className="w-[36px] h-[36px] rounded-full font-medium overflow-hidden border-[2px] border-[#6ED4D4] shadow-sm cursor-pointer hover:scale-110 transition-transform"
                             >
@@ -82,12 +101,15 @@ const Patient_dashboard1 = () => {
                 </header>
 
                 <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 md:px-8 flex flex-col gap-4 overflow-y-auto pb-[64px]">
-                    
+
                     {/* Header Row */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between w-full gap-[16px]">
                         <div>
-                            <button 
-                                onClick={() => navigate('/Patient_dashboard')}
+                            <button
+                                onClick={() => {
+                                    localStorage.removeItem('prescriptionUploaded');
+                                    navigate('/Patient_dashboard');
+                                }}
                                 className="flex items-center gap-2 text-[#6ED4D4] hover:text-white transition-colors text-[13px] font-bold uppercase tracking-widest mb-3 group"
                             >
                                 <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,10 +136,10 @@ const Patient_dashboard1 = () => {
 
                     {/* Main Content Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-[24px] w-full items-start">
-                        
+
                         {/* LEFT COLUMN */}
                         <div className="flex flex-col gap-[24px]">
-                            
+
                             {/* AI Symptom Checker */}
                             <div className="bg-white rounded-[24px] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col relative overflow-hidden min-h-[340px]">
                                 <div className="flex items-center justify-between mb-4 z-10 relative">
@@ -126,7 +148,7 @@ const Patient_dashboard1 = () => {
                                         <span className="text-[16px] font-medium text-[#0B4A54]">AI Active</span>
                                     </div>
                                 </div>
-                                
+
                                 <div className="relative w-full h-[56px] bg-[#F2F7F9] rounded-full border border-[#Dcebf0] px-5 flex items-center justify-between mb-4 z-10 shadow-inner">
                                     <input type="text" placeholder="Describe how you're feeling today..." className="bg-transparent w-full outline-none text-[15px] font-medium text-[#0D1C2E] placeholder-[#8095A6]" />
                                     <div className="w-[44px] h-[44px] bg-[#1a5b6b] rounded-full shrink-0 flex items-center justify-center shadow-md cursor-pointer hover:bg-[#154a57] transition-colors ml-[12px]">
@@ -210,7 +232,7 @@ const Patient_dashboard1 = () => {
                                 <div className="flex flex-col relative pl-[40px]">
                                     {/* Line */}
                                     <div className="absolute left-[8.5px] top-[14px] bottom-[20px] w-[2px] bg-[#E1EDF0]" />
-                                    
+
                                     {/* Step 1 */}
                                     <div className="relative mb-[32px]">
                                         <div className="absolute left-[-40px] top-[4px] w-[18px] h-[18px] rounded-full border-[4px] border-[#136173] bg-white shadow-md z-10" />
@@ -235,48 +257,51 @@ const Patient_dashboard1 = () => {
 
                         {/* RIGHT COLUMN */}
                         <div className="flex flex-col gap-[24px]">
-                            
+
                             {/* Quick Actions (2x2 Grid) */}
                             <div className="grid grid-cols-2 gap-[16px]">
                                 {/* 1 */}
                                 <div 
-                                    onClick={() => navigate('/Symptom')}
-                                    className="bg-white rounded-[24px] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-3 transition-transform hover:-translate-y-1 cursor-pointer min-h-[140px]"
+                                    onClick={() => setIsSymptomOpen(true)}
+                                    className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px] group active:scale-95"
                                 >
-                                    <div className="w-[52px] h-[52px] rounded-full bg-[#E5F5F8] flex items-center justify-center text-[#18758C] shadow-inner border border-[#d6eff2]">
-                                        <svg className="w-[24px] h-[24px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                    <div className="w-[64px] h-[64px] rounded-full bg-[#EBF7F8] flex items-center justify-center text-[#1A7785] shadow-inner border border-[#e2f2f3] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
+                                        <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a2 2 0 00-1.96 1.414l-.722 2.166a2 2 0 01-2.615 1.231l-2.166-.722a2 2 0 00-2.422 1.022l-.722 1.444a2 2 0 01-3.637-1.121l.722-1.444a2 2 0 00-.12-2.166l-1.022-1.533a2 2 0 01.32-2.615l1.533-1.022a2 2 0 00.547-2.422l-.722-2.166a2 2 0 011.121-3.637l1.444.722a2 2 0 002.166-.12l1.533-1.022a2 2 0 012.615.32l1.022 1.533a2 2 0 002.422.547l2.166-.722a2 2 0 013.637 1.121l-.722 1.444a2 2 0 001.022 2.422l1.444.722a2 2 0 01.121 3.637l-1.444.722a2 2 0 00-.547 1.022z" />
                                         </svg>
                                     </div>
-                                    <h3 className="text-[16px] font-medium text-[#0D1C2E] text-center tracking-widest uppercase leading-tight">Symptom<br/>Check</h3>
+                                    <h3 className="text-[16px] font-medium text-[#0D1C2E] text-center tracking-widest uppercase leading-tight">Symptom<br />Check</h3>
                                 </div>
                                 {/* 2 */}
-                                <div className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px]">
-                                    <div className="w-[64px] h-[64px] rounded-full bg-[#EBF0FC] flex items-center justify-center text-[#3B66C5] shadow-inner border border-[#dfe7fc]">
+                                <div 
+                                    onClick={() => setIsBookOpen(true)}
+                                    className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px] group active:scale-95"
+                                >
+                                    <div className="w-[64px] h-[64px] rounded-full bg-[#EBF0FC] flex items-center justify-center text-[#3B66C5] shadow-inner border border-[#dfe7fc] group-hover:bg-[#3B66C5] group-hover:text-white transition-all">
                                         <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
                                     </div>
-                                    <h3 className="text-[16px] font-medium text-[#0D1C2E] text-center tracking-widest uppercase leading-tight">Book<br/>Doctor</h3>
+                                    <h3 className="text-[16px] font-medium text-[#0D1C2E] text-center tracking-widest uppercase leading-tight">Book<br />Doctor</h3>
                                 </div>
                                 {/* 3 */}
-                                <div 
-                                    onClick={() => navigate('/Record')}
-                                    className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px]"
+                                <div
+                                    onClick={() => setIsUploadOpen(true)}
+                                    className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px] group active:scale-95"
                                 >
-                                    <div className="w-[64px] h-[64px] rounded-full bg-[#E5F8ED] flex items-center justify-center text-[#1F8D58] shadow-inner border border-[#d3f4e2]">
+                                    <div className="w-[64px] h-[64px] rounded-full bg-[#E5F8ED] flex items-center justify-center text-[#1F8D58] shadow-inner border border-[#d3f4e2] group-hover:bg-[#1F8D58] group-hover:text-white transition-all">
                                         <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                     </div>
-                                    <h3 className="text-[16px] font-medium text-[#0D1C2E] text-center tracking-widest uppercase leading-tight">Upload<br/>RX</h3>
+                                    <h3 className="text-[16px] font-medium text-[#0D1C2E] text-center tracking-widest uppercase leading-tight">Upload<br />RX</h3>
                                 </div>
                                 {/* 4 */}
-                                <div 
-                                    onClick={() => navigate('/Record')}
-                                    className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px]"
+                                <div
+                                    onClick={() => setIsRecordOpen(true)}
+                                    className="bg-white rounded-[24px] p-[24px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center gap-[16px] transition-transform hover:-translate-y-1 cursor-pointer min-h-[160px] group active:scale-95"
                                 >
-                                    <div className="w-[64px] h-[64px] rounded-full bg-[#FFF0E5] flex items-center justify-center text-[#CC691F] shadow-inner border border-[#ffe0cc]">
+                                    <div className="w-[64px] h-[64px] rounded-full bg-[#FCF0EB] flex items-center justify-center text-[#C56C3B] shadow-inner border border-[#fcebe5] group-hover:bg-[#C56C3B] group-hover:text-white transition-all">
                                         <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                         </svg>
@@ -331,7 +356,7 @@ const Patient_dashboard1 = () => {
                             {/* Prescription Vault */}
                             <div className="bg-white rounded-[24px] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col">
                                 <h2 className="text-[18px] font-medium tracking-tight text-[#0D1C2E] mb-4">Prescription Vault</h2>
-                                
+
                                 {/* Upload Box */}
                                 <label className="border-[2px] border-dashed border-[#C5DCE0] bg-[#F9FCFE] rounded-[20px] p-6 flex flex-col items-center justify-center mb-4 cursor-pointer hover:bg-[#F2F8FA] hover:border-[#126478] transition-colors gap-2">
                                     <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={(e) => {
@@ -383,15 +408,19 @@ const Patient_dashboard1 = () => {
 
             {/* Modals */}
             {activeModal === 'profile' && (
-                <Profile 
-                    onClose={() => setActiveModal(null)} 
-                    onAccountSettings={() => setActiveModal('account')} 
+                <Profile
+                    onClose={() => setActiveModal(null)}
+                    onAccountSettings={() => setActiveModal('account')}
                 />
             )}
             {activeModal === 'account' && (
                 <Account onClose={() => setActiveModal(null)} />
             )}
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+            {isSymptomOpen && <Patient_sym onClose={() => setIsSymptomOpen(false)} />}
+            {isBookOpen && <Book onClose={() => setIsBookOpen(false)} />}
+            {isUploadOpen && <Upload onClose={() => setIsUploadOpen(false)} />}
+            {isRecordOpen && <Patient_record onClose={() => setIsRecordOpen(false)} />}
         </div>
     );
 };

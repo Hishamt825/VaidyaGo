@@ -4,6 +4,7 @@ import { Search, Bell, Phone, Calendar, Stethoscope, ChevronDown, CalendarClock,
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
+import Request from "./Request";
 
 const Makeapp = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Makeapp = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
   const [activeCard, setActiveCard] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
@@ -2534,13 +2536,16 @@ const Makeapp = () => {
 
       <div className="border-b border-gray-200 bg-[#F6F9FA] py-3 shadow-sm">
         <div className="max-w-[1280px] w-[90%] md:w-[85%] mx-auto flex justify-center items-center gap-4 text-[14px]">
-          <button className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]">
+          <button 
+            onClick={() => setShowRequestModal(true)}
+            className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]"
+          >
             <Phone size={16} className="text-[#64A3E3]" strokeWidth={2.5} />
             <span className="text-[#5190a0]">Request Callback</span>
           </button>
-          <button className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]">
-            <Calendar size={16} className="text-[#19718A]" strokeWidth={2.5} />
-            <span className="text-[#5190a0]">Make Appointment</span>
+          <button className="flex items-center gap-2 border border-[#19718A] bg-[#19718A] text-white rounded-full px-5 py-2 font-semibold transition-colors shadow-md text-[14px]">
+            <Calendar size={16} className="text-white" strokeWidth={2.5} />
+            <span className="text-white">Make Appointment</span>
           </button>
           <button className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]">
             <Stethoscope size={16} className="text-[#19718A]" strokeWidth={2.5} />
@@ -2771,7 +2776,7 @@ const Makeapp = () => {
               <li className="flex items-center gap-2 mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/MainPage")}
+                  onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors text-left"
                 >
                   Home
@@ -2781,7 +2786,7 @@ const Makeapp = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/About")}
+                  onClick={() => { navigate("/About"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors text-left"
                 >
                   About Us
@@ -2791,17 +2796,32 @@ const Makeapp = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Service")}
+                  onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors text-left"
                 >
                   Services
                 </button>
               </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <button
+                  onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  FAQ
+                </button>
+              </li>
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
-                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Gallery</a>
+                <button
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  Contact Us
+                </button>
               </li>
+
             </ul>
           </div>
 
@@ -2892,6 +2912,11 @@ const Makeapp = () => {
           }}
         />
       )}
+
+      <Request 
+        isOpen={showRequestModal} 
+        onClose={() => setShowRequestModal(false)} 
+      />
     </div>
 
   );

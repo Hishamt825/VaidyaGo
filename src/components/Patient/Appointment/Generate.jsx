@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Download, FileText, ArrowLeft } from 'lucide-react';
+import { Check, Download, FileText, ArrowLeft, X } from 'lucide-react';
 
 const Generate = ({ onClose }) => {
     return (

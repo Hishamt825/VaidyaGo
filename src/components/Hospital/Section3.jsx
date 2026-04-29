@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Section3 = [
   {
@@ -49,6 +50,7 @@ const Section3 = [
 ];
 
 const Specialities = () => {
+  const navigate = useNavigate();
   return (
     <div className="w-full px-6 py-12 bg-white flex flex-col items-center">
 
@@ -80,7 +82,10 @@ const Specialities = () => {
       </div>
 
       {/* Button */}
-      <button className="mt-10 bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition text-[16px]">
+      <button 
+        onClick={() => { navigate("/Hos_consultation"); window.scrollTo(0, 0); }}
+        className="mt-10 bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition text-[16px]"
+      >
         View All Specialities
       </button>
 

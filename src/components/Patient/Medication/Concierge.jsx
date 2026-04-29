@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import Chat from './Chat';
 import Request from './Request';
 import Review from './Review';
+import Confirme from './Confirme';
 
 const Concierge = ({ onClose }) => {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isRequestOpen, setIsRequestOpen] = useState(false);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+    const handleRequestConfirm = () => {
+        setIsRequestOpen(false);
+        setIsConfirmOpen(true);
+    };
 
     return (
         <>
@@ -121,8 +128,9 @@ const Concierge = ({ onClose }) => {
             </div>
         </div>
             {isChatOpen && <Chat onClose={() => setIsChatOpen(false)} />}
-            {isRequestOpen && <Request onClose={() => setIsRequestOpen(false)} />}
+            {isRequestOpen && <Request onClose={() => setIsRequestOpen(false)} onConfirm={handleRequestConfirm} />}
             {isReviewOpen && <Review onClose={() => setIsReviewOpen(false)} />}
+            {isConfirmOpen && <Confirme isOpen={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} />}
         </>
     );
 };

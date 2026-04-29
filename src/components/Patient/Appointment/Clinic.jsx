@@ -11,7 +11,10 @@ import {
   Download,
   Plus,
   Video as VideoIcon,
-  Check
+  Check,
+  User as ProfileIcon,
+  MessageSquare,
+  XCircle
 } from 'lucide-react';
 import Sidebar from '../Patient_sidebar';
 import Profile from '../Profile';
@@ -19,7 +22,7 @@ import Account from '../Account';
 import Notification from '../notification';
 import Manage from './Manage';
 import Pdf from './Pdf';
-import New_request from './New_request';
+import Clinic_request from './Clinic_request';
 
 // Assets
 import phImg from '../../../assets/ph.png';
@@ -32,8 +35,9 @@ const Clinic = () => {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isPdfOpen, setIsPdfOpen] = useState(false);
-    const [isRequestOpen, setIsRequestOpen] = useState(false);
+    const [isClinicRequestOpen, setIsClinicRequestOpen] = useState(false);
     const [calendarView, setCalendarView] = useState('Month');
+    const [activeDropdown, setActiveDropdown] = useState(null);
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -42,7 +46,7 @@ const Clinic = () => {
              style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
             
             {/* Main Content Wrapper - This gets blurred */}
-            <div className={`flex h-full w-full transition-all duration-300 ${activeModal || isNotificationOpen || isManageOpen || isPdfOpen || isRequestOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
+            <div className={`flex h-full w-full transition-all duration-300 ${activeModal || isNotificationOpen || isManageOpen || isPdfOpen || isClinicRequestOpen ? 'blur-[4px] scale-[0.98]' : ''}`}>
                 
                 <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
@@ -51,7 +55,7 @@ const Clinic = () => {
                     <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1">
                         <div className="flex items-center gap-4 flex-1 max-w-[340px]">
                             <button 
-                                onClick={() => navigate(-1)}
+                                onClick={() => navigate('/Appointment')}
                                 className="w-[40px] h-[40px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all border border-white/10 shrink-0"
                             >
                                 <ChevronLeft size={20} strokeWidth={3} />
@@ -113,7 +117,7 @@ const Clinic = () => {
                                     <Download size={18} /> Export PDF
                                 </button>
                                 <button 
-                                    onClick={() => navigate('/Consultation1')}
+                                    onClick={() => setIsClinicRequestOpen(true)}
                                     className="bg-gradient-to-r from-[#1A7785] to-[#49AAB3] text-white px-6 py-2.5 rounded-full font-bold text-[13px] hover:shadow-lg hover:shadow-[#1A7785]/20 transition-all uppercase tracking-widest flex items-center gap-2"
                                 >
                                     <Plus size={18} /> New Request
@@ -234,7 +238,10 @@ const Clinic = () => {
                                         >
                                             Manage Session
                                         </button>
-                                        <button className="w-14 h-14 bg-gray-50 text-gray-400 rounded-2xl flex items-center justify-center hover:bg-gray-100 transition-colors border border-gray-400">
+                                        <button 
+                                            onClick={() => navigate('/Vediocall', { state: { from: '/Clinic' } })}
+                                            className="w-14 h-14 bg-gray-50 text-gray-400 rounded-2xl flex items-center justify-center hover:bg-gray-100 transition-colors border border-gray-400 active:scale-95 transition-all"
+                                        >
                                             <VideoIcon size={24} />
                                         </button>
                                     </div>
@@ -243,19 +250,68 @@ const Clinic = () => {
                                 {/* Compact List */}
                                 <div className="space-y-3">
                                     {[
-                                        { name: 'Dr. Marcus Chen', specialty: 'Cardiology Follow-up', time: 'Oct 26 • 10:15 AM', img: 'https://i.pravatar.cc/150?u=marcus' },
-                                        { name: 'Physiotherapy Lab', specialty: 'Rehabilitation Unit', time: 'Oct 27 • 04:00 PM', img: 'https://i.pravatar.cc/150?u=lab' }
+                                        { id: 'marcus', name: 'Dr. Marcus Chen', specialty: 'Cardiology Follow-up', time: 'Oct 26 • 10:15 AM', img: 'https://i.pravatar.cc/150?u=marcus' },
+                                        { id: 'physio', name: 'Physiotherapy Lab', specialty: 'Rehabilitation Unit', time: 'Oct 27 • 04:00 PM', img: 'https://i.pravatar.cc/150?u=lab' }
                                     ].map((s, i) => (
-                                        <div key={i} className="bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex items-center gap-4 transition-all cursor-pointer group">
-                                            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm shrink-0">
-                                                <img src={s.img} alt={s.name} className="w-full h-full object-cover" />
+                                        <div key={i} className="relative">
+                                            <div 
+                                                onClick={() => setActiveDropdown(activeDropdown === s.id ? null : s.id)}
+                                                className={`bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex items-center gap-4 transition-all cursor-pointer group ${activeDropdown === s.id ? 'ring-2 ring-[#6ED4D4]/50 bg-white/30' : ''}`}
+                                            >
+                                                <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm shrink-0">
+                                                    <img src={s.img} alt={s.name} className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-white font-bold text-[15px] truncate">{s.name}</h4>
+                                                    <p className="text-white/60 text-[11px] font-medium uppercase tracking-tight truncate">{s.specialty}</p>
+                                                    <p className="text-[#93f2f2] text-[11px] font-bold mt-0.5">{s.time}</p>
+                                                </div>
+                                                <MoreVertical className={`transition-colors ${activeDropdown === s.id ? 'text-white' : 'text-white/40 group-hover:text-white'}`} size={18} />
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="text-white font-bold text-[15px] truncate">{s.name}</h4>
-                                                <p className="text-white/60 text-[11px] font-medium uppercase tracking-tight truncate">{s.specialty}</p>
-                                                <p className="text-[#93f2f2] text-[11px] font-bold mt-0.5">{s.time}</p>
-                                            </div>
-                                            <ChevronRight className="text-white/40 group-hover:text-white transition-colors" size={18} />
+
+                                            {activeDropdown === s.id && (
+                                                <div className="absolute right-0 top-[calc(100%+6px)] z-40 w-[240px] bg-white rounded-[24px] shadow-2xl border border-gray-100 py-2 animate-in slide-in-from-top-2 duration-200">
+                                                        <button 
+                                                            onClick={() => {
+                                                                setActiveDropdown(null);
+                                                                navigate('/view_profile', { state: { from: 'Clinic' } });
+                                                            }}
+                                                            className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group"
+                                                        >
+                                                            <div className="w-10 h-10 bg-[#F1F6F8] rounded-xl flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
+                                                                <ProfileIcon size={18} />
+                                                            </div>
+                                                            <span className="text-[14px] font-bold text-[#0D1C2E]">View Profile</span>
+                                                        </button>
+
+                                                        <div className="mx-4 border-t border-gray-100"></div>
+
+                                                        <button className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group">
+                                                            <div className="w-10 h-10 bg-[#F1F6F8] rounded-xl flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
+                                                                <Calendar size={18} />
+                                                            </div>
+                                                            <span className="text-[14px] font-bold text-[#0D1C2E]">Reschedule Session</span>
+                                                        </button>
+
+                                                        <div className="mx-4 border-t border-gray-100"></div>
+
+                                                        <button className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group">
+                                                            <div className="w-10 h-10 bg-[#F1F6F8] rounded-xl flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
+                                                                <MessageSquare size={18} />
+                                                            </div>
+                                                            <span className="text-[14px] font-bold text-[#0D1C2E]">Message Doctor</span>
+                                                        </button>
+
+                                                        <div className="mx-4 border-t border-gray-100"></div>
+
+                                                        <button className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group">
+                                                            <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
+                                                                <XCircle size={18} />
+                                                            </div>
+                                                            <span className="text-[14px] font-bold text-red-600">Cancel Appointment</span>
+                                                        </button>
+                                                    </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -294,7 +350,7 @@ const Clinic = () => {
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
             {isManageOpen && <Manage onClose={() => setIsManageOpen(false)} />}
             {isPdfOpen && <Pdf onClose={() => setIsPdfOpen(false)} />}
-            {isRequestOpen && <New_request onClose={() => setIsRequestOpen(false)} />}
+            {isClinicRequestOpen && <Clinic_request isOpen={isClinicRequestOpen} onClose={() => setIsClinicRequestOpen(false)} />}
         </div>
     );
 };

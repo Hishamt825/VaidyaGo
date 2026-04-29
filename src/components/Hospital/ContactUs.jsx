@@ -375,13 +375,13 @@ const ContactUs = () => {
       </div>
 
       {/* ================= LOCATION SECTION ================= */}
-      <div className="max-w-4xl mx-auto px-4 mb-24">
+      <div className="max-w-7xl mx-auto px-4 mb-24">
         <h2 className="text-[20px] md:text-[22px] font-[800] text-black mb-4 uppercase tracking-wide">
           LOCATION
         </h2>
         <div className="relative border border-gray-200 rounded-[24px] overflow-hidden shadow-sm h-[380px]">
           <iframe
-            src="https://www.google.com/maps?q=Rheinstraße&output=embed"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d57002.327668612!2d83.33230635!3d26.757041749999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3991446a0c332127%3A0x81de3d9633298193!2sGorakhpur%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1714399000000!5m2!1sen!2sin"
             width="100%"
             height="100%"
             style={{ border: 0 }}
@@ -398,7 +398,7 @@ const ContactUs = () => {
               </svg>
             </button>
             <a
-              href="https://www.google.com/maps?q=Rheinstraße"
+              href="https://www.google.com/maps/place/Gorakhpur,+Uttar+Pradesh/@26.7570417,83.3323063,13z"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#19718A] text-white font-medium px-6 py-2.5 rounded-lg shadow-md hover:bg-[#08334A] transition-all text-[16px]"
@@ -438,7 +438,7 @@ const ContactUs = () => {
               <li className="flex items-center gap-2 mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/MainPage")}
+                  onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Home
@@ -448,7 +448,7 @@ const ContactUs = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/About")}
+                  onClick={() => { navigate("/About"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   About Us
@@ -458,17 +458,32 @@ const ContactUs = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Service")}
+                  onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Services
                 </button>
               </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <button
+                  onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  FAQ
+                </button>
+              </li>
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
-                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Gallery</a>
+                <button
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  Contact Us
+                </button>
               </li>
+
             </ul>
           </div>
 

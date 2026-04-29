@@ -7,6 +7,8 @@ import About from './components/Hospital/About';
 import ContactUs from './components/Hospital/ContactUs';
 import Section3 from './components/Hospital/Section3';
 import Service from './components/Hospital/Service';
+import Hos_consultation from './components/Hospital/Hos_consultation';
+import Hos2_consultation from './components/Hospital/Hos2_consultation';
 
 
 import Finallogin from './components/Login-hospital/Finallogin';
@@ -50,7 +52,7 @@ import Settingpage from './components/Appoinment/Settingpage';
 import Reject_doctor from './components/Admin/Reject_doctor';
 import Disease from './components/Hospital/Disease';
 import FAQ from './components/Hospital/FAQ';
-import Gallery from './components/Hospital/Gallery';
+
 import Patient_dashboard from './components/Patient/Patient_dashboard';
 import Patient_dashboard1 from './components/Patient/Patient_dashboard1';
 import Symptom from './components/Patient/Symptom';
@@ -62,7 +64,8 @@ import Reminder from './components/Patient/Reminder';
 import Medication1 from './components/Patient/Medication/Medication1';
 import Setting from './components/Patient/Setting';
 import Appointment from './components/Patient/Appointment/Appointment';
-import Message from './components/Patient/Message';
+import Message from './components/Patient/Message/message';
+import Vediocall from './components/Patient/Message/Vediocall';
 import Record from './components/Patient/Record';
 import Reminder1 from './components/Patient/Reminder1';
 import Strengthening from './components/Patient/Exercise/Strengthening';
@@ -76,14 +79,24 @@ import Lisinopril from './components/Patient/Medication/Lisinopril';
 import Metformin_detail from './components/Patient/Medication/Metformin_detail';
 import Atorvastatin from './components/Patient/Medication/Atorvastatin';
 import Amoxicillin from './components/Patient/Medication/Amoxicillin';
+<<<<<<< HEAD
 import Clinic from './components/Patient/Appointment/Clinic';
+=======
+>>>>>>> adiba
 import Hisham from './component/Day1/Hisham';
 import Consultation1 from './component/Day1/Consultation/Consultation1';
 import Consultation_info from './component/Day1/Consultation/Consultation_info';
 import Appointment_Day1 from './component/Day1/Doctor/Appointment';
+<<<<<<< HEAD
 import Appointment2_Day1 from './component/Day1/Doctor/Appointment2';
 import Appointmentb_Day1 from './component/Day1/Doctor/Appointmentb';
 import Bot_Day1 from './component/Day1/Doctor/Bot';
+=======
+import Appointment2 from './component/Day1/Doctor/Appointment2';
+import Appointmentb from './component/Day1/Doctor/Appointmentb';
+import Bot_Day1 from './component/Day1/Doctor/Bot';
+import Clinic from './components/Patient/Appointment/Clinic';
+>>>>>>> adiba
 import Dsetting from './component/Day1/Doctor/Dsetting';
 import Dslot from './component/Day1/Doctor/Dslot';
 import Editprofile from './component/Day1/Doctor/Editprofile';
@@ -101,18 +114,21 @@ import MuscleTension from './component/Day1/Patient/MuscleTension';
 import LogTriggers from './component/Day1/Patient/LogTriggers';
 import Myrecord from './component/Day1/Patient/Myrecord';
 import Savechange from './component/Day1/Patient/Savechange';
-import Appointment2 from './component/Day1/Doctor/Appointment2';
-import Appointmentb from './component/Day1/Doctor/Appointmentb';
 import Reject from './components/Admin/Reject';
 import PostureAnalysis from './component/Day1/Patient/PostureAnalysis';
 import SteadyAscent from './component/Day1/Patient/SteadyAscent';
 import CarePlan from './component/Day1/Patient/CarePlan';
 import Stabilization from './component/Day1/Patient/Stabilization';
 import Phase2D from './component/Day1/Patient/Phase2D';
+<<<<<<< HEAD
 import Phase3D from './component/Day1/Patient/Phase3D';
 import MaintenanceLog from './component/Day1/Patient/MaintenanceLog';
 import RecoveryJourney from './component/Day1/Patient/RecoveryJourney';
 import MonthlyReview from './component/Day1/Patient/MonthlyReview';
+=======
+import Consultation_info from './component/Day1/Consultation/Consultation_info';
+import ViewProfile from './component/Day1/Consultation/view_profile';
+>>>>>>> adiba
 
 const App = () => {
   return (
@@ -124,6 +140,9 @@ const App = () => {
       <Route path="/About" element={<About />} />
       <Route path="/ContactUs" element={<ContactUs />} />
       <Route path="/Section3" element={<Section3 />} />
+      <Route path="/Hos_consultation" element={<Hos_consultation />} />
+      <Route path="/Hos2_consultation" element={<Hos2_consultation />} />
+      <Route path="/Hos_consultation_info" element={<Hos2_consultation />} />
 
       <Route path="/Finallogin" element={<Finallogin />} />
       <Route path="/Forget" element={<Forget />} />
@@ -162,7 +181,7 @@ const App = () => {
       <Route path="/reject_doctor" element={<Reject_doctor />} />
       <Route path="/Disease" element={<Disease />} />
       <Route path="/FAQ" element={<FAQ />} />
-      <Route path="/Gallery" element={<Gallery />} />
+
       <Route path="/Patient_dashboard" element={<Patient_dashboard />} />
       <Route path="/Patient_dashboard1" element={<Patient_dashboard1 />} />
       <Route path="/Symptom" element={<Symptom />} />
@@ -178,6 +197,7 @@ const App = () => {
       <Route path="/Appoinment" element={<Appointment />} />
       <Route path="/Clinic" element={<Clinic />} />
       <Route path="/Message" element={<Message />} />
+      <Route path="/Vediocall" element={<Vediocall />} />
       <Route path="/Record" element={<Record />} />
       <Route path="/Reminder1" element={<Reminder1 />} />
       <Route path="/Strengthening" element={<Strengthening />} />
@@ -201,13 +221,11 @@ const App = () => {
       <Route path="/Reject" element={<Reject />} />
       <Route path="/Consultation1" element={<Consultation1 />} />
       <Route path="/Consultation_info" element={<Consultation_info />} />
+      <Route path="/view_profile" element={<ViewProfile />} />
 
       <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => { }} isMobileOpen={false} setIsMobileOpen={() => { }} /></div>} />
 
-      <Route path="/Consultation1" element={<Consultation1 />} />
       <Route path="/Appointment_Day1" element={<Appointment_Day1 />} />
-      <Route path="/Appointment2_Day1" element={<Appointment2_Day1 />} />
-      <Route path="/Appointmentb_Day1" element={<Appointmentb_Day1 />} />
       <Route path="/Bot_Day1" element={<Bot_Day1 />} />
       <Route path="/Service_Day1" element={<Service_Day1 />} />
       <Route path="/Sidebar_Day1" element={<Sidebar_Day1 />} />
@@ -220,7 +238,6 @@ const App = () => {
       <Route path="/Tthdiagnostic" element={<Tthdiagnostic />} />
       <Route path="/NeckAlignment" element={<NeckAlignment />} />
       <Route path="/MUSCLETENSION" element={<MuscleTension />} />
-      <Route path="/muscletension" element={<MuscleTension />} />
       <Route path="/LogTriggers" element={<LogTriggers />} />
       <Route path="/Myrecord" element={<Myrecord />} />
       <Route path="/Savechange" element={<Savechange />} />
