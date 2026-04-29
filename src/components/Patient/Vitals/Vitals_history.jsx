@@ -32,7 +32,14 @@ const VitalsHistory = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const allVitalsData = [
-        // ... (data remains same)
+        { date: 'Oct 24, 2023', time: '09:45 AM', hr: '78', bp: '120/80', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 1 },
+        { date: 'Oct 23, 2023', time: '08:15 PM', hr: '82', bp: '124/82', spo2: '97%', temp: '36.8°C', status: 'Normal', statusColor: 'bg-[#F4F8FA] text-[#627382] border-[#E9EFF2]', page: 1 },
+        { date: 'Oct 23, 2023', time: '10:30 AM', hr: '94', bp: '138/88', spo2: '96%', temp: '37.2°C', status: 'Caution', statusColor: 'bg-[#FFF5F5] text-[#E85B5A] border-[#FFE5E5]', page: 1 },
+        { date: 'Oct 22, 2023', time: '09:00 AM', hr: '74', bp: '118/76', spo2: '99%', temp: '36.5°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 1 },
+        { date: 'Oct 21, 2023', time: '04:20 PM', hr: '80', bp: '122/81', spo2: '98%', temp: '36.7°C', status: 'Normal', statusColor: 'bg-[#F4F8FA] text-[#627382] border-[#E9EFF2]', page: 2 },
+        { date: 'Oct 20, 2023', time: '11:15 AM', hr: '76', bp: '119/79', spo2: '97%', temp: '36.9°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 2 },
+        { date: 'Oct 19, 2023', time: '08:45 PM', hr: '88', bp: '130/85', spo2: '96%', temp: '37.0°C', status: 'Normal', statusColor: 'bg-[#F4F8FA] text-[#627382] border-[#E9EFF2]', page: 2 },
+        { date: 'Oct 18, 2023', time: '10:00 AM', hr: '72', bp: '115/75', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 2 },
     ];
 
     const vitalsData = allVitalsData.filter(item => item.page === currentPage);
@@ -229,7 +236,7 @@ const VitalsHistory = () => {
                         {/* Table Controls */}
                         <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-50">
                             <div className="flex items-center gap-2 bg-[#F4F8FA] p-1.5 rounded-2xl border border-[#E9EFF2]">
-                                {['All Vitals', 'Heart Rate', 'Blood Pressure', 'SpO2'].map(tab => (
+                                {['All Vitals', 'Heart Rate', 'Blood Pressure', 'SpO2', 'Temperature'].map(tab => (
                                     <button
                                         key={tab}
                                         onClick={() => setSelectedTab(tab)}
@@ -263,7 +270,9 @@ const VitalsHistory = () => {
                                         {(selectedTab === 'All Vitals' || selectedTab === 'SpO2') && (
                                             <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">SpO2</th>
                                         )}
-                                        <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Temperature</th>
+                                        {(selectedTab === 'All Vitals' || selectedTab === 'Temperature') && (
+                                            <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Temperature</th>
+                                        )}
                                         <th className="px-8 py-5 text-left text-[#627382] text-[10px] font-black uppercase tracking-[0.2em] opacity-60 whitespace-nowrap">Status</th>
                                     </tr>
                                 </thead>
@@ -290,7 +299,9 @@ const VitalsHistory = () => {
                                             {(selectedTab === 'All Vitals' || selectedTab === 'SpO2') && (
                                                 <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.spo2}</td>
                                             )}
-                                            <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.temp}</td>
+                                            {(selectedTab === 'All Vitals' || selectedTab === 'Temperature') && (
+                                                <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.temp}</td>
+                                            )}
                                             <td className="px-8 py-6">
                                                 <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border whitespace-nowrap ${row.statusColor}`}>
                                                     {row.status}
