@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Minus, Search, MessageCircle, Phone } from "lucide-react";
 import Finallogin from "../Login-hospital/Finallogin";
@@ -13,6 +13,20 @@ const FAQ = () => {
   const [showForgetModal, setShowForgetModal] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const heroImages = [
+    "/assets/faq_hero_1.png",
+    "/assets/faq_hero_3.png",
+    "/assets/faq_hero_4.png"
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const faqs = [
     {
@@ -192,11 +206,29 @@ const FAQ = () => {
 
       </section>
 
-      {/* Hero Header - Compact */}
-      <section className="w-full bg-[#19718A] py-12 md:py-16 text-center text-white">
-        <div className="max-w-4xl mx-auto px-6">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Frequently Asked Questions</h1>
-          <p className="text-blue-100 text-sm md:text-base max-w-xl mx-auto mb-8">
+      {/* Hero Header - With Carousel Background */}
+      <section className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden">
+        {/* Carousel Images */}
+        {heroImages.map((img, idx) => (
+          <div
+            key={idx}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentImageIndex === idx ? "opacity-100" : "opacity-0"}`}
+            style={{
+              backgroundImage: `url(${img})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center"
+            }}
+          />
+        ))}
+
+        {/* Teal Overlay */}
+        <div className="absolute inset-0 bg-[#19718A]/70"></div>
+
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight drop-shadow-md">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-blue-50 text-sm md:text-lg max-w-2xl mx-auto mb-8 font-medium drop-shadow-sm">
             Find quick answers to your questions about our hospital services and patient portal.
           </p>
 
@@ -210,7 +242,7 @@ const FAQ = () => {
               placeholder="Search for answers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-4 py-3 bg-white rounded-xl text-gray-900 shadow-sm outline-none text-sm"
+              className="block w-full pl-10 pr-4 py-4 bg-white rounded-xl text-gray-900 shadow-xl outline-none text-sm md:text-base font-medium"
             />
           </div>
         </div>
@@ -278,7 +310,7 @@ const FAQ = () => {
               <li className="flex items-center gap-2 mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/MainPage")}
+                  onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Home
@@ -288,7 +320,7 @@ const FAQ = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/About")}
+                  onClick={() => { navigate("/About"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   About Us
@@ -298,22 +330,33 @@ const FAQ = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Service")}
+                  onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Services
+                </button>
+              </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <button
+                  onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  FAQ
                 </button>
               </li>
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Gallery")}
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
-                  Gallery
+                  Contact Us
                 </button>
               </li>
+
+
             </ul>
           </div>
 

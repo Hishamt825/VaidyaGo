@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../Patient_sidebar';
 import phImg from '../../../assets/ph.png';
 import { ChevronRight, Download, Filter, Search, ChevronLeft, Activity, Heart, Wind, Thermometer } from 'lucide-react';
+import CSV from './CSV';
 
 const MetricCard = ({ icon, label, value, unit, change, color }) => (
     <div className="bg-white/80 backdrop-blur-md rounded-[24px] p-5 flex flex-col shadow-sm border border-white/40 flex-1 hover:shadow-md transition-all">
@@ -30,6 +31,7 @@ const VitalsHistory = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [filterType, setFilterType] = useState('Last 3 Months');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [isCSVOpen, setIsCSVOpen] = useState(false);
 
     const allVitalsData = [
         { date: 'Oct 24, 2023', time: '09:45 AM', hr: '78', bp: '120/80', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 1 },
@@ -187,7 +189,10 @@ const VitalsHistory = () => {
                                         </div>
                                     )}
                                 </div>
-                                <button className="flex items-center gap-2 bg-[#0B1F4D] text-white px-6 py-3.5 rounded-2xl shadow-xl hover:scale-105 transition-all font-bold text-[13px]">
+                                <button 
+                                    onClick={() => setIsCSVOpen(true)}
+                                    className="flex items-center gap-2 bg-[#0B1F4D] text-white px-6 py-3.5 rounded-2xl shadow-xl hover:scale-105 transition-all font-bold text-[13px]"
+                                >
                                     <Download size={16} />
                                     Export CSV
                                 </button>
@@ -358,6 +363,11 @@ const VitalsHistory = () => {
                     </div>
                 </main>
             </div>
+
+            <CSV 
+                isOpen={isCSVOpen} 
+                onClose={() => setIsCSVOpen(false)} 
+            />
 
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }

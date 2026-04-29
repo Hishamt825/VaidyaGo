@@ -8,6 +8,7 @@ import Timer from './Timer';
 import Scapular from './Scapular';
 import Prone from './Prone';
 import Discomfort from './Discomfort';
+import Progress from './Progress';
 
 // Assets
 import phImg from '../../../assets/ph.png';
@@ -21,7 +22,7 @@ const StatBadge = ({ icon, label, value, color }) => (
             {icon}
         </div>
         <div>
-            <p className="text-[#627382] text-[11px] font-bold uppercase tracking-widest leading-none mb-1">{label}</p>
+            <p className="text-[#0B2132]/60 text-[11px] font-bold uppercase tracking-widest leading-none mb-1">{label}</p>
             <p className="text-[#0B2132] text-[18px] font-black tracking-tight leading-none">{value}</p>
         </div>
     </div>
@@ -64,6 +65,7 @@ const Strengthening = () => {
     const [isScapularOpen, setIsScapularOpen] = useState(false);
     const [isProneOpen, setIsProneOpen] = useState(false);
     const [isDiscomfortOpen, setIsDiscomfortOpen] = useState(false);
+    const [isProgressOpen, setIsProgressOpen] = useState(false);
 
     return (
         <div
@@ -226,7 +228,10 @@ const Strengthening = () => {
                                     <TipCard title="No Strain" content="Avoid bracing your jaw. Keep your teeth slightly apart and tongue on the roof of your mouth." />
                                 </div>
 
-                                <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-50">
+                                <div 
+                                    onClick={() => setIsProgressOpen(true)}
+                                    className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors"
+                                >
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="text-[#0B2132] text-[16px] font-bold tracking-tight">Session Progress</h3>
                                         <span className="text-[#1A7785] text-[11px] font-black uppercase">40% Done</span>
@@ -345,6 +350,13 @@ const Strengthening = () => {
                 <Discomfort
                     isOpen={isDiscomfortOpen}
                     onClose={() => setIsDiscomfortOpen(false)}
+                />
+            )}
+
+            {isProgressOpen && (
+                <Progress
+                    isOpen={isProgressOpen}
+                    onClose={() => setIsProgressOpen(false)}
                 />
             )}
         </div>

@@ -4,6 +4,8 @@ import Sidebar from './Patient_sidebar';
 import Profile from './Profile';
 import Account from './Account';
 import Notification from './notification';
+import Metformin from './Medication/Metformin';
+import Refill from './Medication/Refill';
 import phImg from '../../assets/ph.png';
 
 const Reminder1 = () => {
@@ -11,6 +13,9 @@ const Reminder1 = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isMorningScheduleOpen, setIsMorningScheduleOpen] = useState(false);
+    const [isRefillSuccessOpen, setIsRefillSuccessOpen] = useState(false);
+    const [scheduleType, setScheduleType] = useState('Morning');
 
     const navigate = useNavigate();
 
@@ -61,7 +66,7 @@ const Reminder1 = () => {
 
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
-            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || isMorningScheduleOpen || isRefillSuccessOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
                 {/* Top Navbar */}
                 <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px]">
                     
@@ -144,7 +149,14 @@ const Reminder1 = () => {
                                 <div className="flex flex-col gap-[12px] flex-1">
                                     {slot.meds.length > 0 ? (
                                         slot.meds.map((med, mIdx) => (
-                                            <div key={mIdx} className="bg-white rounded-[20px] p-[16px] flex items-center justify-between shadow-sm border border-white/40">
+                                            <div 
+                                                key={mIdx} 
+                                                onClick={() => {
+                                                    setScheduleType(slot.time);
+                                                    setIsMorningScheduleOpen(true);
+                                                }}
+                                                className="bg-white rounded-[20px] p-[16px] flex items-center justify-between shadow-sm border border-white/40 cursor-pointer hover:bg-gray-50 transition-colors"
+                                            >
                                                 <div>
                                                     <h3 className="text-[16px] font-medium text-[#0D1C2E] mb-[2px]">{med.name}</h3>
                                                     <p className="text-[12px] text-[#627382] font-medium">{med.desc}</p>
@@ -185,7 +197,12 @@ const Reminder1 = () => {
                                         <h3 className="text-[16px] font-medium text-[#0D1C2E]">Amoxicillin</h3>
                                         <p className="text-[16px] font-medium text-[#E5484D]">3 pills left</p>
                                     </div>
-                                    <button className="bg-[#1a7785] hover:bg-[#125863] text-white px-[20px] py-[10px] rounded-full font-medium text-[16px] transition-all">Refill</button>
+                                    <button 
+                                        onClick={() => setIsRefillSuccessOpen(true)}
+                                        className="bg-[#1a7785] hover:bg-[#125863] text-white px-[20px] py-[10px] rounded-full font-medium text-[16px] transition-all"
+                                    >
+                                        Refill
+                                    </button>
                                 </div>
                                 <div className="bg-white rounded-[28px] p-[16px] flex items-center gap-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] border border-white">
                                     <div className="w-[64px] h-[64px] rounded-2xl bg-[#DFEEF0] flex items-center justify-center text-[#1A7785] shrink-0">
@@ -197,7 +214,12 @@ const Reminder1 = () => {
                                         <h3 className="text-[16px] font-medium text-[#0D1C2E]">Lisinopril</h3>
                                         <p className="text-[16px] font-medium text-[#627382]">7 pills left</p>
                                     </div>
-                                    <button className="bg-[#1a7785] hover:bg-[#125863] text-white px-[20px] py-[10px] rounded-full font-medium text-[16px] transition-all">Refill</button>
+                                    <button 
+                                        onClick={() => setIsRefillSuccessOpen(true)}
+                                        className="bg-[#1a7785] hover:bg-[#125863] text-white px-[20px] py-[10px] rounded-full font-medium text-[16px] transition-all"
+                                    >
+                                        Refill
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -281,6 +303,15 @@ const Reminder1 = () => {
                 <Account onClose={() => setActiveModal(null)} />
             )}
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+            
+            {isMorningScheduleOpen && (
+                <div className="fixed inset-0 z-[200]">
+                     <Metformin type={scheduleType} onClose={() => setIsMorningScheduleOpen(false)} />
+                </div>
+            )}
+            {isRefillSuccessOpen && (
+                <Refill onClose={() => setIsRefillSuccessOpen(false)} onReturn={() => setIsRefillSuccessOpen(false)} />
+            )}
         </div>
     );
 };

@@ -11,7 +11,9 @@ import {
     ArrowUpRight,
     MessageSquare,
     Plus,
-    BarChart3
+    BarChart3,
+    User as ProfileIcon,
+    XCircle
 } from 'lucide-react';
 import Sidebar from '../Patient_sidebar';
 import Profile from '../Profile';
@@ -110,7 +112,7 @@ const Appointment = () => {
                                 <p className="text-white/60 text-[14px] mt-1 uppercase tracking-wider font-medium">October 2023 Overview</p>
                             </div>
                             <button
-                                onClick={() => navigate('/Consultation1')}
+                                onClick={() => navigate('/Consultation1', { state: { from: 'Appointment' } })}
                                 className="bg-white text-[#0B1F4D] px-8 py-3 rounded-full font-bold text-[14px] hover:bg-white/90 transition-all shadow-lg uppercase tracking-wider"
                             >
                                 New Appointment
@@ -205,7 +207,10 @@ const Appointment = () => {
                                     <div className="bg-[#1a6e78] rounded-[32px] p-6 shadow-xl border border-white/10 flex flex-col gap-6">
                                         <div className="flex items-center justify-between">
                                             <span className="bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md">Confirmed Clinical</span>
-                                            <Video className="text-white/60 w-6 h-6" />
+                                            <Video 
+                                                onClick={() => navigate('/Vediocall', { state: { from: '/Appointment' } })} 
+                                                className="text-white/60 w-6 h-6 cursor-pointer hover:text-white transition-colors" 
+                                            />
                                         </div>
 
                                         <div className="flex items-center gap-4">
@@ -275,66 +280,59 @@ const Appointment = () => {
 
                                             {/* Dropdown Menu */}
                                             {activeDropdown === session.id && (
-                                                <>
-                                                    <div className="fixed inset-0 z-30" onClick={() => setActiveDropdown(null)}></div>
-                                                    <div className="absolute right-0 top-[calc(100%+6px)] z-40 w-[220px] bg-white rounded-[20px] shadow-2xl border border-gray-100 py-1.5 animate-in slide-in-from-top-2 duration-200 overflow-hidden">
-                                                        
-                                                        {/* Option 1: Profile or Assessment */}
-                                                        <button className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left group">
-                                                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#EBF7F8] group-hover:text-[#1A7785] transition-colors">
-                                                                {session.id === 'physio' ? (
-                                                                    <BarChart3 size={16} />
-                                                                ) : (
-                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                                    </svg>
-                                                                )}
-                                                            </div>
-                                                            <span className="text-[13px] font-bold text-[#0D1C2E]">
-                                                                {session.id === 'physio' ? 'View Full Assessment' : 'View Profile'}
-                                                            </span>
-                                                        </button>
-                                                        <div className="h-[1px] bg-gray-100 mx-4" />
-
-                                                        {/* Option 2: Reschedule (Common) */}
-                                                        <button 
-                                                            onClick={() => {
-                                                                setIsManageOpen(true);
+                                                <div className="absolute right-0 top-[calc(100%+6px)] z-40 w-[240px] bg-white rounded-[24px] shadow-2xl border border-gray-100 py-2 animate-in slide-in-from-top-2 duration-200">
+                                                    <button 
+                                                        onClick={() => {
+                                                            if (session.id !== 'physio') {
                                                                 setActiveDropdown(null);
-                                                            }}
-                                                            className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left group"
-                                                        >
-                                                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#EBF7F8] group-hover:text-[#1A7785] transition-colors">
-                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                                </svg>
-                                                            </div>
-                                                            <span className="text-[13px] font-bold text-[#0D1C2E]">Reschedule Session</span>
-                                                        </button>
-                                                        <div className="h-[1px] bg-gray-100 mx-4" />
+                                                                navigate('/view_profile', { state: { from: 'Appointment' } });
+                                                            }
+                                                        }}
+                                                        className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group"
+                                                    >
+                                                        <div className="w-10 h-10 bg-[#F1F6F8] rounded-xl flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
+                                                            {session.id === 'physio' ? <BarChart3 size={18} /> : <ProfileIcon size={18} />}
+                                                        </div>
+                                                        <span className="text-[14px] font-bold text-[#0D1C2E]">
+                                                            {session.id === 'physio' ? 'View Full Assessment' : 'View Profile'}
+                                                        </span>
+                                                    </button>
 
-                                                        {/* Option 3: Message */}
-                                                        <button className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left group">
-                                                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#EBF7F8] group-hover:text-[#1A7785] transition-colors">
-                                                                <MessageSquare size={16} />
-                                                            </div>
-                                                            <span className="text-[13px] font-bold text-[#0D1C2E]">
-                                                                {session.id === 'physio' ? 'Message Lab' : 'Message Doctor'}
-                                                            </span>
-                                                        </button>
-                                                        <div className="h-[1px] bg-gray-100 mx-4" />
+                                                    <div className="mx-4 border-t border-gray-100"></div>
 
-                                                        {/* Option 4: Cancel (Common) */}
-                                                        <button className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-red-50 transition-colors text-left group">
-                                                            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-100 transition-colors">
-                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                                </svg>
-                                                            </div>
-                                                            <span className="text-[13px] font-bold text-red-600">Cancel Appointment</span>
-                                                        </button>
-                                                    </div>
-                                                </>
+                                                    <button 
+                                                        onClick={() => {
+                                                            setIsManageOpen(true);
+                                                            setActiveDropdown(null);
+                                                        }}
+                                                        className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group"
+                                                    >
+                                                        <div className="w-10 h-10 bg-[#F1F6F8] rounded-xl flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
+                                                            <Calendar size={18} />
+                                                        </div>
+                                                        <span className="text-[14px] font-bold text-[#0D1C2E]">Reschedule Session</span>
+                                                    </button>
+
+                                                    <div className="mx-4 border-t border-gray-100"></div>
+
+                                                    <button className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group">
+                                                        <div className="w-10 h-10 bg-[#F1F6F8] rounded-xl flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
+                                                            <MessageSquare size={18} />
+                                                        </div>
+                                                        <span className="text-[14px] font-bold text-[#0D1C2E]">
+                                                            {session.id === 'physio' ? 'Message Lab' : 'Message Doctor'}
+                                                        </span>
+                                                    </button>
+
+                                                    <div className="mx-4 border-t border-gray-100"></div>
+
+                                                    <button className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group">
+                                                        <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
+                                                            <XCircle size={18} />
+                                                        </div>
+                                                        <span className="text-[14px] font-bold text-red-600">Cancel Appointment</span>
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                     ))}

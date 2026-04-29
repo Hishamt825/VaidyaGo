@@ -7,6 +7,7 @@ import Profile from './Profile';
 import Account from './Account';
 import Notification from './notification';
 import AllLabReportsModal from './AllLabReportsModal';
+import Share from './Share';
 
 // Specific radiology images as requested
 import brustImg from '../../assets/brust.png';
@@ -93,11 +94,12 @@ const TimelineEvent = ({ date, type, title, description, badge, badgeColor, show
 ───────────────────────────────────────────── */
 
 const Record = () => {
-    const [activeMenu, setActiveMenu] = useState('My Records');
+    const [activeMenu, setActiveMenu] = useState('My Record');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isAllReportsModalOpen, setIsAllReportsModalOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -114,7 +116,7 @@ const Record = () => {
             />
 
             {/* Content Area */}
-            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || isAllReportsModalOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || isAllReportsModalOpen || isShareModalOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
 
                 {/* Top Navbar */}
                 <header className="h-[72px] flex items-center justify-between px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
@@ -172,7 +174,10 @@ const Record = () => {
                                 <p className="text-white/70 text-[14px] font-medium">Manage and access your full clinical history securely.</p>
                             </div>
                             <div className="flex items-center gap-4">
-                                <button className="bg-white hover:bg-gray-50 text-[#0B1F4D] px-4 py-2 rounded-full font-medium text-[13px] shadow-lg flex items-center gap-2 transition-all hover:-translate-y-1">
+                                <button 
+                                    onClick={() => setIsShareModalOpen(true)}
+                                    className="bg-white hover:bg-gray-50 text-[#0B1F4D] px-4 py-2 rounded-full font-medium text-[13px] shadow-lg flex items-center gap-2 transition-all hover:-translate-y-1"
+                                >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                     Share
                                 </button>
@@ -380,6 +385,7 @@ const Record = () => {
             )}
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
             {isAllReportsModalOpen && <AllLabReportsModal onClose={() => setIsAllReportsModalOpen(false)} />}
+            {isShareModalOpen && <Share isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} />}
         </div>
     );
 };

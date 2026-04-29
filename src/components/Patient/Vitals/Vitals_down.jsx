@@ -1,9 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Check, FileText, X } from 'lucide-react';
 import phImg from '../../../assets/ph.png';
 
-const VitalsDown = ({ isOpen, onClose, onReturn }) => {
+const VitalsDown = ({ isOpen, onClose }) => {
+    const navigate = useNavigate();
+
     if (!isOpen) return null;
+
+    const handleReturn = () => {
+        onClose();
+        navigate('/Vitals');
+    };
 
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
@@ -68,8 +76,8 @@ const VitalsDown = ({ isOpen, onClose, onReturn }) => {
                         Download Now
                     </button>
                     <button 
-                        onClick={onReturn}
-                        className="text-[#1A7785] text-[14px] font-black hover:underline underline-offset-4"
+                        onClick={handleReturn}
+                        className="w-full text-[#1A7785] text-[16px] font-bold hover:underline underline-offset-4 transition-all"
                     >
                         Return to Dashboard
                     </button>
@@ -78,7 +86,7 @@ const VitalsDown = ({ isOpen, onClose, onReturn }) => {
                 {/* Close Button */}
                 <button 
                     onClick={onClose}
-                    className="absolute top-6 left-6 text-gray-300 hover:text-[#0D1C2E] transition-colors"
+                    className="absolute top-6 right-6 text-gray-300 hover:text-[#0D1C2E] transition-colors z-10"
                 >
                     <X size={20} />
                 </button>

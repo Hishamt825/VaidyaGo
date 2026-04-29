@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { X, ArrowLeft, ChevronLeft, ChevronRight, Sun, Sunrise, Moon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import pen1 from '../../../assets/pen1.png';
 
 const Info = ({ onClose, doctor }) => {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('Hospital Visit');
     const [selectedDate, setSelectedDate] = useState(1);
     const [selectedSlot, setSelectedSlot] = useState(null);
@@ -51,7 +53,12 @@ const Info = ({ onClose, doctor }) => {
                         <div className="flex-1">
                             <h3 className="text-white font-bold text-[17px] leading-tight">{doctor?.name || 'Dr. Sumaiya Javed'}</h3>
                             <p className="text-white/60 text-[13px] font-medium mb-1">10 years</p>
-                            <button className="text-[#6ED4D4] text-[13px] font-bold hover:underline">View Profile</button>
+                            <button 
+                                onClick={() => navigate('/view_profile')}
+                                className="text-[#6ED4D4] text-[13px] font-bold hover:underline"
+                            >
+                                View Profile
+                            </button>
                         </div>
                     </div>
 

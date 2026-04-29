@@ -76,7 +76,7 @@ const Detail = () => {
                 setIsMobileOpen={setIsMobileOpen} 
             />
 
-            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden transition-all duration-500 ${isAnyModalOpen ? 'blur-md pointer-events-none' : ''}`}>
+            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isAnyModalOpen ? 'blur-md pointer-events-none' : ''}`}>
                 
                 {/* Top Navbar standardized to Medication1 style */}
                 <header className="h-[72px] flex items-center gap-4 px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
