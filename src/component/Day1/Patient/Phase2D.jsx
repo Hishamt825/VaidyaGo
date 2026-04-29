@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../../../assets/VADYAGO.png';
 import './Phase2D.css';
 import ImmunotherapyDosePopup from './ImmunotherapyDosePopup';
+import AllergenAvoidancePopup from './AllergenAvoidancePopup';
+import ProtocolProgressPopup from './ProtocolProgressPopup';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -66,6 +68,8 @@ const Icon = ({ name, className }) => {
 const Phase2D = () => {
   const navigate = useNavigate();
   const [showDosePopup, setShowDosePopup] = React.useState(false);
+  const [showAllergenPopup, setShowAllergenPopup] = React.useState(false);
+  const [showProtocolPopup, setShowProtocolPopup] = React.useState(false);
 
   const menuItems = [
     { id: 'dashboard', icon: 'overview', label: 'Dashboard' },
@@ -166,7 +170,7 @@ const Phase2D = () => {
                     <p>Weekly environmental review and HEPA filter maintenance log for clinical oversight.</p>
                     <div className="p2-card-footer">
                        <span className="p2-card-tag">NEXT DUE: SAT</span>
-                       <button className="p2-btn-teal">Update Log</button>
+                       <button className="p2-btn-teal" onClick={() => setShowAllergenPopup(true)}>Update Log</button>
                     </div>
                  </div>
               </div>
@@ -214,7 +218,7 @@ const Phase2D = () => {
            {/* Right Column */}
            <div className="p2-side-col">
               {/* Protocol Progress */}
-              <div className="p2-side-card progress">
+              <div className="p2-side-card progress" onClick={() => setShowProtocolPopup(true)} style={{ cursor: 'pointer' }}>
                  <label>PROTOCOL PROGRESS</label>
                  <div className="p-days">
                     <span className="p-huge">30</span>
@@ -266,6 +270,8 @@ const Phase2D = () => {
       </main>
 
       {showDosePopup && <ImmunotherapyDosePopup onClose={() => setShowDosePopup(false)} />}
+      {showAllergenPopup && <AllergenAvoidancePopup onClose={() => setShowAllergenPopup(false)} />}
+      {showProtocolPopup && <ProtocolProgressPopup onClose={() => setShowProtocolPopup(false)} />}
     </div>
   );
 };

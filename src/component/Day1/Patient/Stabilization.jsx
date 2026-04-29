@@ -138,7 +138,7 @@ const Stabilization = () => {
            <div className="phase-header-info">
              <div className="phase-top-badge">
                <span className="active-phase">ACTIVE PHASE • WEEKS 1-4</span>
-               <span className="sep">•</span>
+               <span className="phase-dot"></span>
                <span className="protocol-name">Rhinitis Recovery Protocol</span>
              </div>
              <h1>Phase 1: Stabilization - Getting Started</h1>

@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../../assets/VADYAGO.png';
+import phImg from '../../../assets/ph.png';
 import './Diagnostic.css';
+import Sidebar from '../../../components/Patient/Patient_sidebar';
+import Profile from '../../../components/Patient/Profile';
+import Account from '../../../components/Patient/Account';
+import Notification from '../../../components/Patient/notification';
 import Tthdiagnostic from './Tthdiagnostic';
 import Cervicogenic from './Cervicogenic';
 import Dseasonal from './Dseasonal';
@@ -77,18 +81,12 @@ const Diagnostic = () => {
   const [showTTH, setShowTTH] = useState(false);
   const [showCervicogenic, setShowCervicogenic] = useState(false);
   const [showDseasonal, setShowDseasonal] = useState(false);
+  const [active, setActive] = useState('Dashboard');
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal;
-  const menuItems = [
-    { id: 'dashboard', icon: 'overview', label: 'Dashboard', active: true },
-    { id: 'symptom', icon: 'symptom', label: 'Symptom Checker' },
-    { id: 'vitals', icon: 'vitals', label: 'Vitals' },
-    { id: 'meds', icon: 'meds', label: 'Medications' },
-    { id: 'appointments', icon: 'appointments', label: 'Appointments' },
-    { id: 'messages', icon: 'messages', label: 'Messages' },
-    { id: 'reminder', icon: 'reminder', label: 'REMINDER' },
-    { id: 'records', icon: 'records', label: 'MY RECORDS' },
-  ];
 
   const conditions = [
     { title: 'Tension-Type Headache', match: 85, desc: 'Most common primary headache disorder, often characterized by a pressing or tightening sensation around the head of mild to moderate intensity.' },
@@ -99,55 +97,50 @@ const Diagnostic = () => {
   return (
     <div className={`diagnostic-layout-wrapper ${isPopupOpen ? 'popup-active' : ''}`}>
       <div className={`diagnostic-layout ${isPopupOpen ? 'content-blur' : ''}`}>
-      {/* Dynamic Sidebar */}
-      <aside className="diagnostic-sidebar">
-        <div className="sidebar-logo">
-          <img src={logo} alt="VaidyaGo Logo" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
-        </div>
-        
-        <nav className="sidebar-menu">
-          {menuItems.map(item => (
-            <a key={item.id} href={`#${item.id}`} className={`menu-item ${item.active ? 'active' : ''}`}>
-              <div className="menu-icon-wrapper">
-                <Icon name={item.icon} />
-              </div>
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </nav>
-        
-        <div className="sidebar-footer">
-          <button className="new-consultation-btn">
-            <div className="plus-circle-blue">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                 <circle cx="12" cy="12" r="10" />
-                 <line x1="12" y1="8" x2="12" y2="16" />
-                 <line x1="8" y1="12" x2="16" y2="12" />
-               </svg>
-            </div>
-            <span>New Consultation</span>
-          </button>
-        </div>
-      </aside>
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
       {/* Main Content Area */}
       <main className="diagnostic-main">
-        {/* Header */}
-        <header className="top-header">
-          <div className="search-bar">
-            <Icon name="search" />
-            <input type="text" placeholder="Search medications..." />
-          </div>
-          <div className="header-icons">
-            <span className="lang-text">Language</span>
-            <div className="icon-wrapper"><Icon name="bell" /></div>
-            <div className="icon-wrapper"><Icon name="settings" /></div>
-            <div className="profile-img-wrapper">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
+        <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+            <div className="flex-1 max-w-[280px]">
+                <div className="relative group">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+                    />
+                    <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
             </div>
-          </div>
+
+            <div className="flex items-center gap-[32px] ml-auto">
+                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <div className="flex items-center gap-[20px]">
+                    <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#E85B5A] rounded-full" />
+                    </button>
+                    <button onClick={() => navigate('/Setting')} className="text-white hover:text-[#6ED4D4] transition-colors">
+                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                    <div onClick={() => setActiveModal('profile')} className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform"><img src={phImg} alt="User" className="w-full h-full object-cover" /></div>
+                </div>
+            </div>
         </header>
 
+        <div className="diagnostic-content">
         {/* Diagnostic Hero Section */}
         <section className="results-header-card">
           <span className="phase-badge">Phase : Complete</span>
@@ -339,6 +332,7 @@ const Diagnostic = () => {
             </div>
           </div>
         </div>
+        </div>
       </main>
     </div>
 
@@ -363,6 +357,16 @@ const Diagnostic = () => {
     {showDseasonal && (
       <Dseasonal onClose={() => setShowDseasonal(false)} />
     )}
+    {activeModal === 'profile' && (
+      <Profile
+        onClose={() => setActiveModal(null)}
+        onAccountSettings={() => setActiveModal('account')}
+      />
+    )}
+    {activeModal === 'account' && (
+      <Account onClose={() => setActiveModal(null)} />
+    )}
+    {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
   </div>
 );
 };
