@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import BASE_URL from '../../../baseUrl';
+import apiFetch from '../../../api';
 
 const Schedule = ({ onClose, onScheduleAdded }) => {
     const [medicationName, setMedicationName] = useState('');
@@ -32,12 +33,8 @@ const Schedule = ({ onClose, onScheduleAdded }) => {
         };
 
         try {
-            const response = await fetch(`${BASE_URL}/today-schedule/add/`, {
+            const response = await apiFetch(`${BASE_URL}/today-schedule/add/`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
                 body: JSON.stringify(payload)
             });
 

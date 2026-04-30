@@ -81,6 +81,7 @@ import Metformin_detail from './components/Patient/Medication/Metformin_detail';
 import Atorvastatin from './components/Patient/Medication/Atorvastatin';
 import Amoxicillin from './components/Patient/Medication/Amoxicillin';
 import Schedule from './components/Patient/Medication/Schedule';
+import Request from './components/Patient/Medication/Request';
 import Clinic from './components/Patient/Appointment/Clinic';
 import Hisham from './component/Day1/Hisham';
 import Consultation1 from './component/Day1/Consultation/Consultation1';
@@ -203,6 +204,7 @@ const App = () => {
       <Route path="/Atorvastatin" element={<Atorvastatin />} />
       <Route path="/Amoxicillin" element={<Amoxicillin />} />
       <Route path="/Schedule" element={<Schedule />} />
+      <Route path="/Request" element={<Request />} />
 
       <Route path="/Appointment2" element={<Appointment2 />} />
       <Route path="/Dsetting" element={<Dsetting />} />
