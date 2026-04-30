@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './SymptomAuditPopup.css';
 
 const SymptomAuditPopup = ({ onClose }) => {
+  const navigate = useNavigate();
   const [selectedSymptoms, setSelectedSymptoms] = useState(['Nasal Congestion']);
   const [severity, setSeverity] = useState(7);
   const [triggers, setTriggers] = useState(['Dust', 'Pollen']);
@@ -142,7 +144,7 @@ const SymptomAuditPopup = ({ onClose }) => {
 
                <div className="w-full flex flex-col gap-[16px] mb-[32px]">
                   <button 
-                     onClick={onClose} 
+                     onClick={() => { onClose(); navigate('/ProgressReview'); }} 
                      className="w-full py-[16px] rounded-[16px] text-white font-[700] text-[15px] shadow-[0_10px_20px_rgba(26,110,120,0.2)] transition-transform hover:-translate-y-0.5"
                      style={{ background: 'linear-gradient(135deg, #0B1F4D 0%, #1a6e78 100%)' }}
                   >

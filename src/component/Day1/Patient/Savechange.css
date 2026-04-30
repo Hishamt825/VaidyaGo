@@ -149,12 +149,12 @@
 .checkmark-circle {
   width: 90px;
   height: 90px;
-  border: 4px solid #4fd1d9;
+  border: 4px solid #1a4b5a;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4fd1d9;
+  color: #1a4b5a;
   margin-bottom: 30px;
 }
 
@@ -173,13 +173,13 @@
 }
 
 .success-modal p span {
-  color: #3e8e9e;
+  color: #1a4b5a;
   font-weight: 600;
 }
 
 .done-btn {
   width: 100%;
-  background: #4fd1c5; /* Matching the image teal */
+  background: #1a4b5a;
   color: white;
   border: none;
   padding: 18px;
@@ -187,20 +187,20 @@
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(79, 209, 197, 0.3);
+  box-shadow: 0 10px 20px rgba(26, 75, 90, 0.25);
   transition: all 0.2s;
   margin-bottom: 15px;
 }
 
 .done-btn:hover {
-  background: #38b2ac;
+  background: #287e8e;
   transform: translateY(-2px);
 }
 
 .return-btn {
   width: 100%;
   background: #f1f5f9;
-  color: #4fd1c5;
+  color: #1a4b5a;
   border: none;
   padding: 16px;
   border-radius: 20px;

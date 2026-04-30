@@ -67,40 +67,8 @@ const Diagnosticinput = ({ onClose }) => {
   ]);
 
   return (
-    <div className="diagnostic-input-page">
-      {/* Blurred Background Elements to match image */}
-      <div className="bg-blur-container">
-        <aside className="bg-sidebar">
-          <div className="bg-logo">
-            <h3>Sanctuary Health</h3>
-            <p>Diagnostic Suite</p>
-          </div>
-          <nav className="bg-nav">
-            <div className="bg-nav-item"><Icon name="edit" /> Dashboard</div>
-            <div className="bg-nav-item"><Icon name="vitals" /> Patients</div>
-            <div className="bg-nav-item active"><Icon name="complaints" /> Diagnostics</div>
-            <div className="bg-nav-item"><Icon name="vitals" /> Analytics</div>
-          </nav>
-        </aside>
-        
-        <main className="bg-content">
-          <header className="bg-header">
-            <div className="bg-title">
-              <h1>Analysis Results</h1>
-              <p>Patient ID: PR-882103 | Date: April 18, 2026</p>
-            </div>
-            <div className="bg-profile">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Felix" />
-            </div>
-          </header>
-        </main>
-
-        <div className="bg-watermark">VaidyaGo</div>
-      </div>
-
-      {/* Actual Modal Overlay */}
-      <div className="diagnostic-input-overlay">
-        <div className="edit-summary-modal">
+    <div className="diagnostic-input-overlay">
+      <div className="edit-summary-modal">
         <button className="close-btn" onClick={onClose}>×</button>
         
         <header className="modal-header">
@@ -194,14 +162,13 @@ const Diagnosticinput = ({ onClose }) => {
             Draft Saved 12:45 PM
           </div>
           <div className="footer-actions">
-            <button className="cancel-btn" onClick={() => navigate(-1)}>Cancel</button>
+            <button className="cancel-btn" onClick={onClose}>Cancel</button>
             <button className="save-btn" onClick={() => navigate('/Savechange')}>Save Changes</button>
           </div>
         </footer>
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default Diagnosticinput;

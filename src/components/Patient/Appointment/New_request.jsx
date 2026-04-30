@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, Search, Stethoscope, ClipboardList, TestTube, ArrowRight } from 'lucide-react';
 
 const New_request = ({ onClose }) => {
+    const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState('General Consultation');
 
     const categories = [
@@ -97,7 +99,7 @@ const New_request = ({ onClose }) => {
                     {/* Footer Actions */}
                     <div className="flex flex-col items-center gap-4">
                         <button 
-                            onClick={onClose}
+                            onClick={() => { onClose(); navigate('/Consultation1'); }}
                             className="w-full bg-[#49AAB3] text-white py-4 rounded-xl font-bold text-[16px] shadow-lg shadow-[#49AAB3]/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 group"
                         >
                             Proceed to Specialist Search <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />

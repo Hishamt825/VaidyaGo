@@ -24,7 +24,8 @@ const Icon = ({ name, size = 20, className }) => {
     alert: <React.Fragment><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></React.Fragment>,
     check: <polyline points="20 6 9 17 4 12" />,
     pulse: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
-    arrow: <polyline points="9 18 15 12 9 6" />
+    arrow: <polyline points="9 18 15 12 9 6" />,
+    back: <path d="m15 18-6-6 6-6" />
   };
 
   return (
@@ -127,8 +128,15 @@ const NeckAlignment = ({ onClose }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
             </button>
-            <div className="flex-1 max-w-[280px]">
-                <div className="relative group">
+            <div className="flex items-center gap-4 flex-1 max-w-[400px]">
+                <button
+                    onClick={() => navigate('/Diagnostic')}
+                    className="m-back-btn"
+                    title="Back to Diagnostic"
+                >
+                    <Icon name="back" size={24} />
+                </button>
+                <div className="relative group flex-1">
                     <input
                         type="text"
                         placeholder="Search..."

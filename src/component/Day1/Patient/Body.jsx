@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Body.css';
-import frontalBody from '../../../assets/human-body-frontal-removebg-preview 1.svg';
+import frontalBody from '../../../assets/human-body-frontal.png';
+import backBody from '../../../assets/human-body-back.png';
 import patientPhoto from '../../../assets/Patient Photo.svg';
 import Sidebar from '../../../components/Patient/Patient_sidebar';
 import Profile from '../../../components/Patient/Profile';
@@ -82,6 +83,9 @@ const Body = () => {
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
   const [activeModal, setActiveModal] = React.useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
+  const [isFront, setIsFront] = React.useState(true);
+
+  const toggleView = () => setIsFront(!isFront);
 
   const regionData = {
     Forehead: {
@@ -298,81 +302,103 @@ const Body = () => {
 
         <div className="anatomical-view">
           <div className="body-container">
-            <img src={frontalBody} alt="Front Body" className="human-body-img" />
+            <img src={isFront ? frontalBody : backBody} alt="Primary Body" className="human-body-img" />
             
-            <div className={`hotspot hp-forehead ${activeRegion === 'Forehead' ? 'active' : ''}`} onClick={() => setActiveRegion('Forehead')}>
-              {activeRegion === 'Forehead' && <div className="hotspot-label active">Forehead</div>}
-            </div>
+            {isFront && (
+              <>
+                <div className={`hotspot hp-forehead ${activeRegion === 'Forehead' ? 'active' : ''}`} onClick={() => setActiveRegion('Forehead')}>
+                  {activeRegion === 'Forehead' && <div className="hotspot-label active">Forehead</div>}
+                </div>
 
-            <div className={`hotspot hp-head ${activeRegion === 'Head' ? 'active' : ''}`} onClick={() => setActiveRegion('Head')}>
-              {activeRegion === 'Head' && <div className="hotspot-label active">Skull Top</div>}
-            </div>
+                <div className={`hotspot hp-head ${activeRegion === 'Head' ? 'active' : ''}`} onClick={() => setActiveRegion('Head')}>
+                  {activeRegion === 'Head' && <div className="hotspot-label active">Skull Top</div>}
+                </div>
 
-            <div className={`hotspot hp-eyes ${activeRegion === 'Eyes' ? 'active' : ''}`} onClick={() => setActiveRegion('Eyes')}>
-              {activeRegion === 'Eyes' && <div className="hotspot-label active">Eyes</div>}
-            </div>
+                <div className={`hotspot hp-eyes ${activeRegion === 'Eyes' ? 'active' : ''}`} onClick={() => setActiveRegion('Eyes')}>
+                  {activeRegion === 'Eyes' && <div className="hotspot-label active">Eyes</div>}
+                </div>
 
-            <div className={`hotspot hp-nose ${activeRegion === 'Nose' ? 'active' : ''}`} onClick={() => setActiveRegion('Nose')}>
-              {activeRegion === 'Nose' && <div className="hotspot-label active">Nose</div>}
-            </div>
+                <div className={`hotspot hp-nose ${activeRegion === 'Nose' ? 'active' : ''}`} onClick={() => setActiveRegion('Nose')}>
+                  {activeRegion === 'Nose' && <div className="hotspot-label active">Nose</div>}
+                </div>
 
-            <div className={`hotspot hp-ears ${activeRegion === 'Ears' ? 'active' : ''}`} onClick={() => setActiveRegion('Ears')}>
-              {activeRegion === 'Ears' && <div className="hotspot-label active">Ears</div>}
-            </div>
+                <div className={`hotspot hp-ears ${activeRegion === 'Ears' ? 'active' : ''}`} onClick={() => setActiveRegion('Ears')}>
+                  {activeRegion === 'Ears' && <div className="hotspot-label active">Ears</div>}
+                </div>
 
-            <div className={`hotspot hp-neck ${activeRegion === 'Neck' ? 'active' : ''}`} onClick={() => setActiveRegion('Neck')}>
-              {activeRegion === 'Neck' && <div className="hotspot-label active">Neck</div>}
-            </div>
+                <div className={`hotspot hp-neck ${activeRegion === 'Neck' ? 'active' : ''}`} onClick={() => setActiveRegion('Neck')}>
+                  {activeRegion === 'Neck' && <div className="hotspot-label active">Neck</div>}
+                </div>
 
-            <div className={`hotspot hp-shoulder-r ${activeRegion === 'Shoulders' ? 'active' : ''}`} onClick={() => setActiveRegion('Shoulders')}>
-              {activeRegion === 'Shoulders' && <div className="hotspot-label active">Right Shoulder</div>}
-            </div>
+                <div className={`hotspot hp-shoulder-r ${activeRegion === 'Shoulders' ? 'active' : ''}`} onClick={() => setActiveRegion('Shoulders')}>
+                  {activeRegion === 'Shoulders' && <div className="hotspot-label active">Right Shoulder</div>}
+                </div>
 
-            <div className={`hotspot hp-shoulder-l ${activeRegion === 'Shoulders' ? 'active' : ''}`} onClick={() => setActiveRegion('Shoulders')}>
-              {activeRegion === 'Shoulders' && <div className="hotspot-label active">Left Shoulder</div>}
-            </div>
+                <div className={`hotspot hp-shoulder-l ${activeRegion === 'Shoulders' ? 'active' : ''}`} onClick={() => setActiveRegion('Shoulders')}>
+                  {activeRegion === 'Shoulders' && <div className="hotspot-label active">Left Shoulder</div>}
+                </div>
 
-            <div className={`hotspot hp-arm ${activeRegion === 'Arms' ? 'active' : ''}`} onClick={() => setActiveRegion('Arms')}>
-              {activeRegion === 'Arms' && <div className="hotspot-label active">Arms</div>}
-            </div>
+                <div className={`hotspot hp-arm ${activeRegion === 'Arms' ? 'active' : ''}`} onClick={() => setActiveRegion('Arms')}>
+                  {activeRegion === 'Arms' && <div className="hotspot-label active">Arms</div>}
+                </div>
 
-            <div className={`hotspot hp-hand ${activeRegion === 'Hands' ? 'active' : ''}`} onClick={() => setActiveRegion('Hands')}>
-              {activeRegion === 'Hands' && <div className="hotspot-label active">Hands</div>}
-            </div>
-            
-            <div className={`hotspot hp-chest ${activeRegion === 'Thoracic' ? 'active' : ''}`} onClick={() => setActiveRegion('Thoracic')}>
-              {activeRegion === 'Thoracic' && <div className="hotspot-label active">Thoracic</div>}
-            </div>
-            
-            <div className={`hotspot hp-abd ${activeRegion === 'Abdomen' ? 'active' : ''}`} onClick={() => setActiveRegion('Abdomen')}>
-              {activeRegion === 'Abdomen' && <div className="hotspot-label active">Abdomen</div>}
-            </div>
+                <div className={`hotspot hp-hand-r ${activeRegion === 'Hands' ? 'active' : ''}`} onClick={() => setActiveRegion('Hands')}>
+                  {activeRegion === 'Hands' && <div className="hotspot-label active">Right Hand</div>}
+                </div>
 
-            <div className={`hotspot hp-pelvis ${activeRegion === 'Pelvis' ? 'active' : ''}`} onClick={() => setActiveRegion('Pelvis')}>
-              {activeRegion === 'Pelvis' && <div className="hotspot-label active">Pelvis</div>}
-            </div>
+                <div className={`hotspot hp-hand-l ${activeRegion === 'Hands' ? 'active' : ''}`} onClick={() => setActiveRegion('Hands')}>
+                  {activeRegion === 'Hands' && <div className="hotspot-label active">Left Hand</div>}
+                </div>
 
-            <div className={`hotspot hp-thigh ${activeRegion === 'Thighs' ? 'active' : ''}`} onClick={() => setActiveRegion('Thighs')}>
-              {activeRegion === 'Thighs' && <div className="hotspot-label active">Thighs</div>}
-            </div>
-            
-            <div className={`hotspot hp-knee ${activeRegion === 'Knee' ? 'active' : ''}`} onClick={() => setActiveRegion('Knee')}>
-              {activeRegion === 'Knee' && <div className="hotspot-label active">Knee</div>}
-            </div>
+                <div className={`hotspot hp-finger ${activeRegion === 'Hands' ? 'active' : ''}`} onClick={() => setActiveRegion('Hands')}>
+                  {activeRegion === 'Hands' && <div className="hotspot-label active">Fingers</div>}
+                </div>
+                
+                <div className={`hotspot hp-chest ${activeRegion === 'Thoracic' ? 'active' : ''}`} onClick={() => setActiveRegion('Thoracic')}>
+                  {activeRegion === 'Thoracic' && <div className="hotspot-label active">Thoracic</div>}
+                </div>
+                
+                <div className={`hotspot hp-abd ${activeRegion === 'Abdomen' ? 'active' : ''}`} onClick={() => setActiveRegion('Abdomen')}>
+                  {activeRegion === 'Abdomen' && <div className="hotspot-label active">Abdomen</div>}
+                </div>
 
-            <div className={`hotspot hp-calf ${activeRegion === 'Calves' ? 'active' : ''}`} onClick={() => setActiveRegion('Calves')}>
-              {activeRegion === 'Calves' && <div className="hotspot-label active">Calves</div>}
-            </div>
+                <div className={`hotspot hp-pelvis ${activeRegion === 'Pelvis' ? 'active' : ''}`} onClick={() => setActiveRegion('Pelvis')}>
+                  {activeRegion === 'Pelvis' && <div className="hotspot-label active">Pelvis</div>}
+                </div>
 
-            <div className={`hotspot hp-foot ${activeRegion === 'Feet' ? 'active' : ''}`} onClick={() => setActiveRegion('Feet')}>
-              {activeRegion === 'Feet' && <div className="hotspot-label active">Feet</div>}
-            </div>
+                <div className={`hotspot hp-thigh ${activeRegion === 'Thighs' ? 'active' : ''}`} onClick={() => setActiveRegion('Thighs')}>
+                  {activeRegion === 'Thighs' && <div className="hotspot-label active">Thighs</div>}
+                </div>
+                
+                <div className={`hotspot hp-knee-r ${activeRegion === 'Knee' ? 'active' : ''}`} onClick={() => setActiveRegion('Knee')}>
+                  {activeRegion === 'Knee' && <div className="hotspot-label active">Right Knee</div>}
+                </div>
+
+                <div className={`hotspot hp-knee-l ${activeRegion === 'Knee' ? 'active' : ''}`} onClick={() => setActiveRegion('Knee')}>
+                  {activeRegion === 'Knee' && <div className="hotspot-label active">Left Knee</div>}
+                </div>
+
+                <div className={`hotspot hp-calf ${activeRegion === 'Calves' ? 'active' : ''}`} onClick={() => setActiveRegion('Calves')}>
+                  {activeRegion === 'Calves' && <div className="hotspot-label active">Calves</div>}
+                </div>
+
+                <div className={`hotspot hp-foot ${activeRegion === 'Feet' ? 'active' : ''}`} onClick={() => setActiveRegion('Feet')}>
+                  {activeRegion === 'Feet' && <div className="hotspot-label active">Feet</div>}
+                </div>
+              </>
+            )}
           </div>
           
-          <img src={frontalBody} alt="Back Body" className="secondary-model" style={{ transform: 'scaleX(-1)' }} />
+          <img 
+            src={isFront ? backBody : frontalBody} 
+            alt="Secondary Body" 
+            className="secondary-model" 
+            onClick={toggleView}
+            style={{ cursor: 'pointer' }}
+          />
 
           <div className="bottom-controls">
-            <button className="control-btn"><Icon name="rotate" /></button>
+            <button className="control-btn" onClick={toggleView}><Icon name="rotate" /></button>
             <button className="control-btn"><Icon name="search" /></button>
             <button className="control-btn"><Icon name="layers" /></button>
           </div>

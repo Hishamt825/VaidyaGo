@@ -13,6 +13,8 @@ import ConnectPopup from './ConnectPopup';
 import PharmacyPopup from './PharmacyPopup';
 import HealthGuidePopup from './HealthGuidePopup';
 
+import Diagnosticinput from './Diagnosticinput';
+
 const Icon = ({ name, className }) => {
   const icons = {
     overview: (
@@ -86,12 +88,13 @@ const Diagnostic = () => {
   const [showTTH, setShowTTH] = useState(false);
   const [showCervicogenic, setShowCervicogenic] = useState(false);
   const [showDseasonal, setShowDseasonal] = useState(false);
+  const [showDiagnosticInput, setShowDiagnosticInput] = useState(false);
   const [active, setActive] = useState('Symptom Checker');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
-  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal;
+  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal || showDiagnosticInput;
 
   const conditions = [
     { title: 'Tension-Type Headache', match: 85, desc: 'Most common primary headache disorder, often characterized by a pressing or tightening sensation around the head of mild to moderate intensity.' },
@@ -113,7 +116,7 @@ const Diagnostic = () => {
       />
 
       {/* ── Main Area ── */}
-      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || showDiagnosticInput ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
         {/* Top Navbar */}
         <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
             {/* Hamburger for Mobile */}
@@ -125,6 +128,18 @@ const Diagnostic = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
             </button>
+            
+            {/* Back Button */}
+            <button 
+                onClick={() => navigate('/Body')}
+                className="flex text-white w-[38px] h-[38px] mr-4 bg-white/10 border border-white/5 rounded-full hover:bg-white/20 transition-all items-center justify-center shrink-0"
+                title="Back to Dashboard"
+            >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
             <div className="flex-1 max-w-[280px]">
                 <div className="relative group">
                     <input
@@ -220,7 +235,7 @@ const Diagnostic = () => {
               </div>
 
               <div className="card-footer">
-                <span onClick={() => navigate('/Diagnosticinput')} className="edit-link" style={{ cursor: 'pointer' }}>Edit details ✎</span>
+                <span onClick={() => setShowDiagnosticInput(true)} className="edit-link" style={{ cursor: 'pointer' }}>Edit details ✎</span>
               </div>
             </div>
 
@@ -380,6 +395,11 @@ const Diagnostic = () => {
     {showDseasonal && (
       <Dseasonal onClose={() => setShowDseasonal(false)} />
     )}
+
+    {showDiagnosticInput && (
+      <Diagnosticinput onClose={() => setShowDiagnosticInput(false)} />
+    )}
+
     {activeModal === 'profile' && (
       <Profile
         onClose={() => setActiveModal(null)}
