@@ -173,16 +173,29 @@ body {
 .banner-text p { margin: 0; font-size: 13px; line-height: 1.5; opacity: 0.9; }
 
 /* Anatomical View area */
-.anatomical-view { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.anatomical-view { 
+  flex: 1; 
+  position: relative; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 10px; 
+  overflow: hidden;
+}
 .body-container { 
-  height: 55%; 
-  width: fit-content; 
+  height: 75%; 
+  width: auto; 
   position: relative; 
   display: flex; 
   justify-content: center; 
   margin: 0 auto;
 }
-.human-body-img { height: 100%; width: auto; object-fit: contain; filter: drop-shadow(0 0 50px rgba(0,0,0,0.4)); }
+.human-body-img { 
+  height: 100%; 
+  width: auto; 
+  object-fit: contain; 
+  filter: drop-shadow(0 0 50px rgba(0,0,0,0.4)); 
+}
 
 /* Hotspots */
 .hotspot {
