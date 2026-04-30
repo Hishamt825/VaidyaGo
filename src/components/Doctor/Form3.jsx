@@ -232,7 +232,7 @@ const [activeStep, setActiveStep] = useState(3);
                                         value={formData.joining_date}
 
                                         onChange={handleChange}
-                                        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] outline-none focus:border-[#19718A]"
+                                        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] text-[#0D1C2E] outline-none focus:border-[#19718A]"
                                         required
                                     />
                                 </div>
@@ -244,7 +244,7 @@ const [activeStep, setActiveStep] = useState(3);
                                         name="consultation_fees"
                                         value={formData.consultation_fees}
                                         onChange={handleChange}
-                                        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] outline-none focus:border-[#19718A]"
+                                        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] text-[#0D1C2E] outline-none focus:border-[#19718A]"
                                         required
                                     />
                                 </div>
@@ -256,7 +256,7 @@ const [activeStep, setActiveStep] = useState(3);
                                         name="leave_day"  // ✅ fixed
                                         value={formData.leave_day}
                                         onChange={handleChange}
-                                        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] outline-none focus:border-[#19718A]"
+                                        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] text-[#0D1C2E] outline-none focus:border-[#19718A]"
                                         required
                                     />
                                 </div>
@@ -271,7 +271,7 @@ const [activeStep, setActiveStep] = useState(3);
                                             name="employment_type"
                                             value={formData.employment_type}
                                             onChange={handleChange}
-                                            className="w-full bg-white border border-gray-400 rounded-md px-4 py-2.5 text-[16px] outline-none appearance-none focus:border-[#19718A] cursor-pointer text-gray-700"
+                                            className="w-full bg-white border border-gray-400 rounded-md px-4 py-2.5 text-[16px] outline-none appearance-none focus:border-[#19718A] cursor-pointer text-[#0D1C2E]"
                                             required
                                         >
                                             <option value="" disabled>Select Type</option>

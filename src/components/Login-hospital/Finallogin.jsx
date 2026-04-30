@@ -66,11 +66,16 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
         // Ensure fresh landing on basic dashboard
         localStorage.removeItem("prescriptionUploaded");
 
-        // ✅ Handle tokens (prioritize 'access' for JWT compatibility)
+        // ✅ Handle tokens (save both access and refresh for auto-refresh logic)
         const token = data.access || data.token;
+        const refreshToken = data.refresh;
+        
         if (token) {
           localStorage.setItem("token", token);
-          localStorage.setItem("access", token); // for backward compatibility
+          localStorage.setItem("access", token);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh", refreshToken);
         }
 
         // Close modal if open

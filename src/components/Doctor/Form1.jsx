@@ -317,7 +317,7 @@ return (
                     value={formData.address}
                     onChange={handleChange}
                     rows="3"
-                    className="w-full bg-white border border-gray-300 rounded-md px-4 py-3 text-[16px] outline-none focus:border-[#19718A]"
+                    className="w-full bg-white border border-gray-300 rounded-md px-4 py-3 text-[16px] text-[#0D1C2E] outline-none focus:border-[#19718A]"
                   />
                 </div>
 
@@ -432,7 +432,7 @@ const Input = ({ name, label, value, onChange, type = "text" }) => (
       value={value}
       onChange={onChange}
       placeholder={`Enter your ${label.toLowerCase()}`}
-      className="w-full bg-white border border-gray-300 rounded-md px-4 py-2.5 text-[16px] outline-none focus:border-[#19718A] focus:ring-1 focus:ring-[#19718A]/30 placeholder:text-gray-500"
+      className="w-full bg-white border border-gray-300 rounded-md px-4 py-2.5 text-[16px] text-[#0D1C2E] outline-none focus:border-[#19718A] focus:ring-1 focus:ring-[#19718A]/30 placeholder:text-gray-500"
       required
     />
   </div>
@@ -446,7 +446,7 @@ const Select = ({ name, label, value, onChange }) => (
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full bg-white border border-gray-300 rounded-md px-4 py-2.5 text-[16px] outline-none appearance-none focus:border-[#19718A] focus:ring-1 focus:ring-[#19718A]/30 text-gray-500 cursor-pointer"
+        className="w-full bg-white border border-gray-300 rounded-md px-4 py-2.5 text-[16px] outline-none appearance-none focus:border-[#19718A] focus:ring-1 focus:ring-[#19718A]/30 text-[#0D1C2E] cursor-pointer"
         required
       >
         <option value="" disabled>Select {label}</option>

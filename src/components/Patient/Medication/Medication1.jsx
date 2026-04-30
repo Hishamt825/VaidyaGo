@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../Patient_sidebar';
 import BASE_URL from '../../../baseUrl';
+import apiFetch from '../../../api';
 import Profile from '../Profile';
 import Account from '../Account';
 import Notification from '../notification';
@@ -40,11 +41,8 @@ const Medication1 = () => {
 
         setIsLoading(true);
         try {
-            const response = await fetch(`${BASE_URL}/today-schedule/today/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            const response = await apiFetch(`${BASE_URL}/today-schedule/today/`, {
+                method: 'GET'
             });
             const data = await response.json();
             if (response.ok) {
@@ -65,11 +63,8 @@ const Medication1 = () => {
         if (!token) return;
 
         try {
-            const response = await fetch(`${BASE_URL}/today-schedule/mark-taken/${id}/`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            const response = await apiFetch(`${BASE_URL}/today-schedule/mark-taken/${id}/`, {
+                method: 'PATCH'
             });
             if (response.ok) {
                 fetchTodaySchedule(); // Refresh list
@@ -79,8 +74,27 @@ const Medication1 = () => {
         }
     };
 
+    const [activePrescriptions, setActivePrescriptions] = useState([]);
+    const [isPrescriptionsLoading, setIsPrescriptionsLoading] = useState(true);
+
+    const fetchActivePrescriptions = async () => {
+        setIsPrescriptionsLoading(true);
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/prescriptions/medications/`);
+            const data = await response.json();
+            if (response.ok) {
+                setActivePrescriptions(data);
+            }
+        } catch (error) {
+            console.error("Prescriptions Error:", error);
+        } finally {
+            setIsPrescriptionsLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchTodaySchedule();
+        fetchActivePrescriptions();
     }, []);
 
     // Helper to categorize time into Morning/Afternoon/Evening
@@ -276,70 +290,59 @@ const Medication1 = () => {
                                         </button>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div 
-                                        onClick={() => navigate('/Metformin')}
-                                        className="bg-white rounded-[32px] p-6 shadow-sm relative group overflow-hidden border border-gray-50 cursor-pointer hover:shadow-lg transition-all"
-                                    >
-                                        <div className="flex justify-between items-start mb-5">
-                                            <div className="w-10 h-10 rounded-2xl bg-[#DFEEF0] flex items-center justify-center text-[#1A7785]">
-                                                <svg className="w-5 h-5 animate-pump" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                                        {isPrescriptionsLoading ? (
+                                            <div className="col-span-full py-10 flex flex-col items-center justify-center bg-white/50 backdrop-blur-md rounded-[32px] border border-dashed border-white/30">
+                                                <div className="w-8 h-8 border-4 border-[#1A7785] border-t-transparent rounded-full animate-spin mb-4"></div>
+                                                <p className="text-white/60 font-medium">Loading prescriptions...</p>
                                             </div>
-                                            <div className="text-right flex flex-col items-end">
-                                                <span className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Refills Left</span>
-                                                <span className="text-[28px] font-medium text-[#0D1C2E] leading-none">04</span>
+                                        ) : activePrescriptions.length === 0 ? (
+                                            <div className="col-span-full py-10 flex flex-col items-center justify-center bg-white/50 backdrop-blur-md rounded-[32px] border border-dashed border-white/30">
+                                                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4">
+                                                    <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                </div>
+                                                <p className="text-white/60 font-medium">No active prescriptions scheduled yet.</p>
                                             </div>
-                                        </div>
-                                        <h3 className="text-[18px] font-medium text-[#0D1C2E] mb-1">Metformin</h3>
-                                        <p className="text-[14px] text-[#627382] font-medium mb-6">Type 2 Diabetes Management • Oral Tablet</p>
-                                        <div className="flex items-end justify-between">
-                                            <div>
-                                                <p className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Dosage</p>
-                                                <p className="text-[14px] font-[900] text-[#0D1C2E]">500mg Twice Daily</p>
-                                            </div>
-                                            <button 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setIsRefillOpen(true);
-                                                }}
-                                                className="bg-[#006A70] hover:bg-[#005a5f] text-white px-4 py-2.5 rounded-[14px] font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20"
-                                            >
-                                                Request Refill
-                                            </button>
-                                        </div>
+                                        ) : (
+                                            activePrescriptions.map((med) => (
+                                                <div 
+                                                    key={med.id}
+                                                    onClick={() => navigate(`/${med.name}`)}
+                                                    className="bg-white rounded-[32px] p-6 shadow-sm relative group overflow-hidden border border-gray-50 cursor-pointer hover:shadow-lg transition-all"
+                                                >
+                                                    <div className="flex justify-between items-start mb-5">
+                                                        <div className="w-10 h-10 rounded-2xl bg-[#DFEEF0] flex items-center justify-center text-[#1A7785]">
+                                                            <svg className="w-5 h-5 animate-pump" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                                            </svg>
+                                                        </div>
+                                                        <div className="text-right flex flex-col items-end">
+                                                            <span className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Refills Left</span>
+                                                            <span className="text-[28px] font-medium text-[#0D1C2E] leading-none">--</span>
+                                                        </div>
+                                                    </div>
+                                                    <h3 className="text-[18px] font-medium text-[#0D1C2E] mb-1">{med.name}</h3>
+                                                    <p className="text-[14px] text-[#627382] font-medium mb-6">{med.dosage || 'Dosage not set'}</p>
+                                                    <div className="flex items-end justify-between">
+                                                        <div>
+                                                            <p className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Dosage Status</p>
+                                                            <p className="text-[14px] font-[900] text-[#0D1C2E]">{med.dosage}</p>
+                                                        </div>
+                                                        <button 
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setIsRefillOpen(true);
+                                                            }}
+                                                            className="bg-[#006A70] hover:bg-[#005a5f] text-white px-4 py-2.5 rounded-[14px] font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20"
+                                                        >
+                                                            Request Refill
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
                                     </div>
-
-                                    <div 
-                                        onClick={() => navigate('/Lisinopril')}
-                                        className="bg-white rounded-[32px] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)] relative group overflow-hidden border border-gray-50 cursor-pointer hover:shadow-lg transition-all"
-                                    >
-                                        <div className="flex justify-between items-start mb-6">
-                                            <div className="w-10 h-10 rounded-2xl bg-[#DFF4F5] flex items-center justify-center text-[#1A7785]">
-                                                <svg className="w-5 h-5 animate-pump" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-                                            </div>
-                                            <div className="text-right flex flex-col items-end">
-                                                <span className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Refills Left</span>
-                                                <span className="text-[28px] font-medium text-[#0D1C2E] leading-none">02</span>
-                                            </div>
-                                        </div>
-                                        <h3 className="text-[18px] font-medium text-[#0D1C2E] mb-1">Lisinopril</h3>
-                                        <p className="text-[14px] text-[#627382] font-medium mb-6">Blood Pressure Regulation • Oral Tablet</p>
-                                        <div className="flex items-end justify-between">
-                                            <div>
-                                                <p className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Dosage</p>
-                                                <p className="text-[14px] font-[900] text-[#0D1C2E]">10mg Once Daily</p>
-                                            </div>
-                                            <button 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setIsRefillOpen(true);
-                                                }}
-                                                className="bg-[#006A70] hover:bg-[#005a5f] text-white px-4 py-2.5 rounded-[14px] font-medium text-[15px] transition-all shadow-lg shadow-[#1A7785]/20"
-                                            >
-                                                Request Refill
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
                                 </div>
                             </div>
 
@@ -514,7 +517,7 @@ const Medication1 = () => {
             )}
             {isNewRequestOpen && (
                 <div className="fixed inset-0 z-[200]">
-                     <New_request onClose={() => setIsNewRequestOpen(false)} />
+                     <New_request onClose={() => setIsNewRequestOpen(false)} onRequestAdded={fetchActivePrescriptions} />
                 </div>
             )}
             {isPastMedicationOpen && (
