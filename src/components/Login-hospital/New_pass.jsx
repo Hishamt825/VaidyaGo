@@ -25,18 +25,14 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
     }
 
     const payload = {
+      email: contact,
       password: newPassword,
       confirm_password: confirmPassword
     };
 
-    if (contact.includes("@")) {
-      payload.email = contact;
-    } else {
-      payload.phone = contact;
-    }
-
     try {
-      const response = await fetch(`${BASE_URL}/accounts/reset-password/`, {
+      const fullUrl = "http://13.60.96.212:8000/accounts/reset-password/";
+      const response = await fetch(fullUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,7 +142,7 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
                 placeholder="Enter new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full text-sm px-4 py-3 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
+                className="w-full text-sm text-black px-4 py-3 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
               />
             </div>
           </div>
@@ -176,7 +172,7 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full text-sm px-4 py-3 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
+                className="w-full text-sm text-black px-4 py-3 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
               />
             </div>
           </div>

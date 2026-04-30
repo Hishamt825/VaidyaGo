@@ -6,105 +6,117 @@ const Request = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-      {/* Backdrop with Blur */}
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-0 md:p-4">
+      {/* Backdrop */}
       <div
         onClick={onClose}
         className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
       />
 
       {/* Modal Container */}
-      <div className="relative w-full max-w-[550px] bg-white rounded-xl shadow-2xl overflow-hidden font-sans">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-[22px] font-bold text-[#0B2132]">Request a Call Back</h2>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X size={24} className="text-gray-900" strokeWidth={2.5} />
-          </button>
-        </div>
+      <div className="relative w-full max-w-[800px] bg-white rounded-none md:rounded-lg shadow-2xl overflow-hidden font-['Poppins',sans-serif]">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 p-1 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <X size={28} className="text-gray-900" strokeWidth={2} />
+        </button>
 
-        {/* Form Content */}
-        <div className="p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* First Name */}
-            <div className="space-y-1">
-              <label className="text-[13px] font-semibold text-gray-700">
-                First Name<span className="text-red-500 ml-0.5">*</span>
+        <div className="p-8 md:p-12">
+          {/* Title */}
+          <h2 className="text-[32px] font-medium text-gray-800 mb-8 mt-4 md:mt-0">Request a Call Back</h2>
+
+          {/* Form Content */}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+              {/* First Name */}
+              <div className="space-y-2">
+                <label className="text-[16px] font-medium text-gray-700">
+                  First Name<span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder=""
+                  className="w-full bg-[#f8f9fa] border border-gray-200 rounded-md py-3 px-4 text-[16px] focus:outline-none focus:border-gray-300 transition-colors"
+                />
+                <p className="text-[#f83a3a] text-[13px] font-medium">Please enter first name</p>
+              </div>
+
+              {/* Last Name */}
+              <div className="space-y-2">
+                <label className="text-[16px] font-medium text-gray-700">
+                  Last Name<span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder=""
+                  className="w-full bg-[#f8f9fa] border border-gray-200 rounded-md py-3 px-4 text-[16px] focus:outline-none focus:border-gray-300 transition-colors"
+                />
+                <p className="text-[#f83a3a] text-[13px] font-medium">Please enter last name</p>
+              </div>
+            </div>
+
+            {/* Mobile Number */}
+            <div className="space-y-2">
+              <label className="text-[16px] font-medium text-gray-700">
+                Mobile Number<span className="text-red-500">*</span>
               </label>
               <input
-                type="text"
-                className="w-full bg-[#F8F9FA] border border-gray-200 rounded-md py-2 px-3 text-[14px] focus:outline-none focus:border-[#19718A] transition-colors"
+                type="tel"
+                placeholder=""
+                className="w-full bg-[#f8f9fa] border border-gray-200 rounded-md py-3 px-4 text-[16px] focus:outline-none focus:border-gray-300 transition-colors"
               />
+              <p className="text-[#f83a3a] text-[13px] font-medium">Please enter mobile number</p>
             </div>
 
-            {/* Last Name */}
-            <div className="space-y-1">
-              <label className="text-[13px] font-semibold text-gray-700">
-                Last Name<span className="text-red-500 ml-0.5">*</span>
+            {/* Email */}
+            <div className="space-y-2">
+              <label className="text-[16px] font-medium text-gray-700">
+                Email<span className="text-red-500">*</span>
               </label>
               <input
-                type="text"
-                className="w-full bg-[#F8F9FA] border border-gray-200 rounded-md py-2 px-3 text-[14px] focus:outline-none focus:border-[#19718A] transition-colors"
+                type="email"
+                placeholder=""
+                className="w-full bg-[#f8f9fa] border border-gray-200 rounded-md py-3 px-4 text-[16px] focus:outline-none focus:border-gray-300 transition-colors"
               />
+              <p className="text-[#f83a3a] text-[13px] font-medium">Please enter email id</p>
             </div>
-          </div>
 
-          {/* Mobile Number */}
-          <div className="space-y-1">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Mobile Number<span className="text-red-500 ml-0.5">*</span>
-            </label>
-            <input
-              type="tel"
-              className="w-full bg-[#F8F9FA] border border-gray-200 rounded-md py-2 px-3 text-[14px] focus:outline-none focus:border-[#19718A] transition-colors"
-            />
-          </div>
-
-          {/* Email */}
-          <div className="space-y-1">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Email<span className="text-red-500 ml-0.5">*</span>
-            </label>
-            <input
-              type="email"
-              className="w-full bg-[#F8F9FA] border border-gray-200 rounded-md py-2 px-3 text-[14px] focus:outline-none focus:border-[#19718A] transition-colors"
-            />
-          </div>
-
-          {/* Hospital Name */}
-          <div className="space-y-1">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Hospital Name<span className="text-red-500 ml-0.5">*</span>
-            </label>
-            <div className="relative">
-              <select className="w-full appearance-none bg-[#F8F9FA] border border-gray-200 rounded-md py-2 px-3 pr-10 text-[14px] text-gray-500 focus:outline-none focus:border-[#19718A] transition-colors cursor-pointer font-medium">
-                <option value="">-Select Hospital-</option>
-                <option value="h1">VaidyaGo Hospital 1</option>
-                <option value="h2">VaidyaGo Hospital 2</option>
-              </select>
-              <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            {/* Hospital Name */}
+            <div className="space-y-2">
+              <label className="text-[16px] font-medium text-gray-700">
+                Hospital Name<span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <select className="w-full appearance-none bg-[#f8f9fa] border border-gray-200 rounded-md py-3 px-4 pr-10 text-[16px] text-gray-500 focus:outline-none focus:border-gray-300 transition-colors cursor-pointer">
+                  <option value="">-Select Hospital-</option>
+                  <option value="h1">VaidyaGo Hospital 1</option>
+                  <option value="h2">VaidyaGo Hospital 2</option>
+                </select>
+                <ChevronDown size={24} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
+              <p className="text-[#f83a3a] text-[13px] font-medium">Please select hospital</p>
             </div>
-          </div>
 
-          {/* Comments */}
-          <div className="space-y-1">
-            <label className="text-[13px] font-semibold text-gray-700">Comments</label>
-            <textarea
-              rows={3}
-              className="w-full bg-[#F8F9FA] border border-gray-200 rounded-md py-2 px-3 text-[14px] focus:outline-none focus:border-[#19718A] transition-colors resize-none"
-            ></textarea>
-          </div>
+            {/* Comments */}
+            <div className="space-y-2">
+              <label className="text-[16px] font-medium text-gray-700">Comments</label>
+              <textarea
+                rows={3}
+                placeholder=""
+                className="w-full bg-[#f8f9fa] border border-gray-200 rounded-md py-3 px-4 text-[16px] focus:outline-none focus:border-gray-300 transition-colors resize-none"
+              ></textarea>
+            </div>
 
-          {/* Submit Button */}
-          <button
-            onClick={(e) => { e.preventDefault(); onClose(); }}
-            className="w-full bg-[#19718A] hover:bg-[#156176] text-white font-bold py-3 rounded-md transition-all duration-200 text-[15px] shadow-md mt-2"
-          >
-            Request a Call Back
-          </button>
+            {/* Submit Button */}
+            <button
+              onClick={(e) => { e.preventDefault(); onClose(); }}
+              className="w-full bg-[#f5d5d5] hover:bg-[#efc5c5] text-gray-800 font-medium py-4 rounded-md transition-all duration-200 text-[16px] mt-6"
+            >
+              Request a Call Back
+            </button>
+          </div>
         </div>
       </div>
     </div>

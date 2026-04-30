@@ -23,37 +23,37 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
     setError("");
     setIsLoading(true);
 
-    // Determine if input is email or phone
-    const isEmail = loginId.includes("@");
+    // Payload as per backend requirements (email and password)
     const payload = {
-      email: isEmail ? loginId : "",
-      phone: !isEmail ? loginId : "",
+      email: loginId,
       password: password
     };
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/accounts/api/admin/login/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      // 🌍 Using AWS Production URL for Login
+      const loginUrl = "http://13.60.96.212:8000/accounts/api/login/";
+      console.log("Submitting Login to Production:", loginUrl);
+
+      const response = await fetch(loginUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload),
+      });
 
       const data = await response.json();
       console.log("LOGIN_DEBUG: Full API Response:", data);
 
       if (response.ok) {
-        // 🔍 EXTRACT ROLE (Try all common field names)
-        const rawRole = data.role || data.user_type || data.user?.role || data.user?.user_type;
+        // 🔍 EXTRACT ROLE
+        // The backend usually returns 'usertype', 'role', or nested in 'user' object
+        const rawRole = data.usertype || data.role || data.user_type || data.user?.usertype || data.user?.role;
         
         if (!rawRole) {
           console.error("LOGIN_DEBUG: Role not found in response!");
-          setError("Account role not found. Please contact support.");
+          setError("Account role not recognized. Please contact support.");
           setIsLoading(false);
           return;
         }
@@ -63,12 +63,14 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
         
         localStorage.setItem("user_type", userType);
 
-        if (data.access) {
-          localStorage.setItem("access", data.access);
-          localStorage.setItem("refresh", data.refresh);
-        }
-        if (data.token) {
-          localStorage.setItem("access", data.token);
+        // Ensure fresh landing on basic dashboard
+        localStorage.removeItem("prescriptionUploaded");
+
+        // ✅ Handle tokens (prioritize 'access' for JWT compatibility)
+        const token = data.access || data.token;
+        if (token) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("access", token); // for backward compatibility
         }
 
         // Close modal if open
@@ -76,7 +78,7 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
           onClose();
         }
 
-        // 🚀 DYNAMIC REDIRECT based on stored data
+        // 🚀 DYNAMIC REDIRECT
         if (userType === "admin") {
           navigate("/Admin_dashboard1");
         } else if (userType === "doctor") {
@@ -88,14 +90,13 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
         }
 
       } else {
-        // Handle specific errors (Invalid credentials / Unregistered user)
-        const errMsg = data.detail || data.error || data.message || "Invalid credentials. Please check your email/phone and password.";
+        const errMsg = data.detail || data.error || data.message || "Invalid credentials. Please check your email and password.";
         setError(errMsg);
       }
 
     } catch (err) {
       console.error("Server error:", err);
-      setError("Unable to connect to the server. Please try again later.");
+      setError("Unable to connect to the production server. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -176,7 +177,7 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
                 placeholder="Enter Email or Phone"
                 value={loginId}
                 onChange={(e) => setLoginId(e.target.value)}
-                className="w-full text-sm px-4 py-2.5 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
+                className="w-full text-sm text-black px-4 py-2.5 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
               />
             </div>
           </div>
@@ -206,7 +207,7 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
                 placeholder="Enter Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full text-sm pl-4 pr-10 py-2.5 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
+                className="w-full text-sm text-black pl-4 pr-10 py-2.5 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
               />
               <button
                 type="button"

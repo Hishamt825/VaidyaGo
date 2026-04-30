@@ -59,8 +59,20 @@ const Admin_dashboard1 = () => {
     const [openProfile, setOpenProfile] = useState(false);
     const menuRef = useRef(null);
     const [showFullApproval, setShowFullApproval] = useState(false);
+    const [showFullActivity, setShowFullActivity] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [expandedApprovalId, setExpandedApprovalId] = useState(1);
+
+    const [recentActivities, setRecentActivities] = useState([
+        { id: 1, date: "28-01-2026", patient: "Arti yadav", doctor: "Dr. Sumaiya Javed", status: "Completed", type: "Checkup" },
+        { id: 2, date: "28-01-2026", patient: "Arti yadav", doctor: "Dr. Sumaiya Javed", status: "Completed", type: "Emergency" },
+        { id: 3, date: "28-01-2026", patient: "Arti yadav", doctor: "Dr. Sumaiya Javed", status: "Completed", type: "Routine" },
+        { id: 4, date: "28-01-2026", patient: "Arti yadav", doctor: "Dr. Sumaiya Javed", status: "Completed", type: "Consultation" },
+        { id: 5, date: "27-01-2026", patient: "Rahul Kumar", doctor: "Dr. Vivek Sharma", status: "Cancelled", type: "Checkup" },
+        { id: 6, date: "27-01-2026", patient: "Anjali Singh", doctor: "Dr. Anjali Gupta", status: "Completed", type: "Checkup" },
+        { id: 7, date: "26-01-2026", patient: "Vikram Mehta", doctor: "Dr. Rahul Singh", status: "Completed", type: "Surgery" },
+        { id: 8, date: "26-01-2026", patient: "Sneha Kapur", doctor: "Dr. Sneha Paul", status: "In Progress", type: "Therapy" },
+    ]);
     const [month, setMonth] = useState(0); // January
     const [year, setYear] = useState(2025);
     const [selectedDate, setSelectedDate] = useState(13);
@@ -300,11 +312,11 @@ const Admin_dashboard1 = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
                                 onClick={() => navigate('/Appointment2')}
-                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
+                                className="bg-[#F4E045]/10 shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <div>
                                     <div className="flex items-center gap-2 mt-[-10px]">
-                                        <div className="bg-white w-15 h-15 rounded-full flex items-center justify-center shadow-sm">
+                                        <div className="bg-white/80 w-15 h-15 rounded-full flex items-center justify-center shadow-sm border border-[#F4E045]/20">
                                             <img src="/assets/ap.png" className="w-10 h-10" />
                                         </div>
                                         <h3 className="text-[18px] font-semibold text-gray-700">Appointments</h3>
@@ -326,14 +338,14 @@ const Admin_dashboard1 = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
+                                className="bg-[#E542CD]/10 shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <div>
                                     <div className="flex items-center gap-2 mt-[-10px]">
-                                        <div className="bg-white w-15 h-15 rounded-full flex items-center justify-center shadow-sm">
+                                        <div className="bg-white/80 w-15 h-15 rounded-full flex items-center justify-center shadow-sm border border-[#E542CD]/20">
                                             <img src="/assets/pers.png" className="w-10 h-10" />
                                         </div>
-                                        <h3 className="text-[18px] font-semibold text-black-700">Patients</h3>
+                                        <h3 className="text-[18px] font-semibold text-black">Patients</h3>
                                     </div>
 
                                     <h2 className="text-[48px] font-normal text-black leading-none mt-3">1863</h2>
@@ -352,11 +364,11 @@ const Admin_dashboard1 = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
+                                className="bg-[#1CF0FE]/10 shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <div>
                                     <div className="flex items-center gap-2 mt-[-10px]">
-                                        <div className="bg-white w-15 h-15 rounded-full flex items-center justify-center shadow-sm">
+                                        <div className="bg-white/80 w-15 h-15 rounded-full flex items-center justify-center shadow-sm border border-[#1CF0FE]/20">
                                             <img src="/assets/arr.png" className="w-10 h-10" />
                                         </div>
                                         <h3 className="text-[18px] font-semibold text-gray-700">Income</h3>
@@ -1208,9 +1220,9 @@ const Admin_dashboard1 = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    {[1, 2, 3, 4].map((i) => (
+                                    {recentActivities.slice(0, 4).map((activity, i) => (
                                         <motion.div
-                                            key={i}
+                                            key={activity.id}
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: i * 0.1 }}
@@ -1218,31 +1230,34 @@ const Admin_dashboard1 = () => {
                                         >
                                             {/* DATE */}
                                             <div className="text-[15px] font-semibold text-gray-800">
-                                                28-01-2026
+                                                {activity.date}
                                             </div>
 
                                             {/* PATIENT */}
                                             <div className="text-[15px] font-semibold text-gray-800">
-                                                Arti yadav
+                                                {activity.patient}
                                             </div>
 
                                             {/* DOCTOR */}
                                             <div className="text-[15px] font-semibold text-gray-800">
-                                                Dr. Sumaiya Javed
+                                                {activity.doctor}
                                             </div>
 
                                             {/* STATUS */}
                                             <div className="flex justify-center">
-                                                <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#22C55E] text-white">
-                                                    Completed
+                                                <span className={`px-4 py-1.5 text-xs font-bold rounded-full text-white shadow-sm ${
+                                                    activity.status === "Completed" ? "bg-[#22C55E]" : 
+                                                    activity.status === "Cancelled" ? "bg-[#EF4444]" : "bg-[#3B82F6]"
+                                                }`}>
+                                                    {activity.status}
                                                 </span>
                                             </div>
 
                                             {/* ACTION */}
                                             <div className="flex justify-center">
-                                                <button className="w-9 h-9 bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:scale-105 transition">
-                                                    <svg className="w-5 h-5 text-[#19718A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                <button className="w-9 h-9 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-sm hover:scale-110 transition active:scale-95 group">
+                                                    <svg className="w-5 h-5 text-[#19718A] group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
                                                 </button>
                                             </div>
@@ -1250,9 +1265,13 @@ const Admin_dashboard1 = () => {
                                     ))}
                                 </div>
                                 {/* VIEW MORE */}
-                                <div className="text-right mt-4">
-                                    <button className="text-[14px] font-semibold text-[#8FA5C2] hover:text-[#19718A]">
-                                        View More
+                                <div className="text-right mt-6">
+                                    <button 
+                                        onClick={() => setShowFullActivity(true)}
+                                        className="px-6 py-2 rounded-xl text-[14px] font-bold text-[#19718A] hover:bg-[#19718A]/5 transition-colors flex items-center gap-2 ml-auto group"
+                                    >
+                                        View All Activities
+                                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                                     </button>
                                 </div>
                             </div>
@@ -1594,14 +1613,8 @@ const Admin_dashboard1 = () => {
                                                 ))}
                                             </div>
 
-                                            {/* Restore Button */}
-                                            <div className="p-5 pt-0 space-y-3">
-                                                <button
-                                                    onClick={() => handleRestoreDoctor(selectedDoctorForReject?.id)}
-                                                    className="w-full py-3 bg-[#FFD39F] text-gray-800 font-bold rounded-[14px] shadow-sm hover:bg-[#ffc885] transition-all text-[15px]"
-                                                >
-                                                    Restore Doctor
-                                                </button>
+                                            {/* Return Link */}
+                                            <div className="p-5 pt-0">
                                                 <div
                                                     onClick={() => setShowRejectedStatusModal(false)}
                                                     className="flex items-center justify-center gap-2 text-gray-400 font-bold cursor-pointer hover:text-gray-600 text-[14px]"
@@ -1632,6 +1645,97 @@ const Admin_dashboard1 = () => {
                     )}
                 </AnimatePresence>
                 {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+                {/* Activity Modal */}
+                <AnimatePresence>
+                    {showFullActivity && (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                className="bg-white rounded-[32px] w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
+                            >
+                                {/* Header */}
+                                <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-[#F7F9FB]">
+                                    <div>
+                                        <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Hospital Activity Log</h2>
+                                        <p className="text-gray-500 font-medium mt-1">Detailed history of all hospital interactions and appointments.</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setShowFullActivity(false)}
+                                        className="w-12 h-12 rounded-2xl bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all shadow-sm group"
+                                    >
+                                        <svg className="w-6 h-6 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+                                </div>
+
+                                {/* Table Header */}
+                                <div className="px-8 py-4 bg-gray-50/50 border-b border-gray-100 grid grid-cols-[1fr_1.5fr_1.5fr_1fr_1.2fr_0.8fr] gap-4 text-sm font-bold text-gray-400 uppercase tracking-wider">
+                                    <div>Date</div>
+                                    <div>Patient</div>
+                                    <div>Doctor</div>
+                                    <div>Type</div>
+                                    <div className="text-center">Status</div>
+                                    <div className="text-right">Details</div>
+                                </div>
+
+                                {/* Content */}
+                                <div className="flex-1 overflow-y-auto p-8 space-y-4">
+                                    {recentActivities.map((activity, idx) => (
+                                        <motion.div
+                                            key={activity.id}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: idx * 0.05 }}
+                                            className="grid grid-cols-[1fr_1.5fr_1.5fr_1fr_1.2fr_0.8fr] gap-4 items-center p-4 rounded-2xl border border-gray-100 hover:border-[#19718A] hover:bg-teal-50/30 transition-all group"
+                                        >
+                                            <div className="font-bold text-gray-700">{activity.date}</div>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-[#19718A]/10 flex items-center justify-center text-[#19718A] font-bold">
+                                                    {activity.patient.charAt(0)}
+                                                </div>
+                                                <span className="font-bold text-gray-800">{activity.patient}</span>
+                                            </div>
+                                            <div className="font-semibold text-gray-600">{activity.doctor}</div>
+                                            <div>
+                                                <span className="px-3 py-1 rounded-lg bg-gray-100 text-gray-500 text-xs font-bold uppercase tracking-tight">
+                                                    {activity.type}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-center">
+                                                <span className={`px-4 py-1.5 rounded-full text-xs font-bold shadow-sm ${
+                                                    activity.status === "Completed" ? "bg-[#22C55E] text-white" : 
+                                                    activity.status === "Cancelled" ? "bg-[#EF4444] text-white" : 
+                                                    "bg-[#3B82F6] text-white"
+                                                }`}>
+                                                    {activity.status}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-end">
+                                                <button className="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center shadow-sm group-hover:border-[#19718A] transition-all">
+                                                    <svg className="w-5 h-5 text-[#19718A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+
+                                {/* Footer */}
+                                <div className="p-8 border-t border-gray-100 bg-[#F7F9FB] flex justify-between items-center">
+                                    <div className="text-gray-500 text-sm font-medium">
+                                        Showing <span className="font-bold text-gray-800">{recentActivities.length}</span> entries
+                                    </div>
+                                    <button 
+                                        onClick={() => setShowFullActivity(false)}
+                                        className="px-8 py-3 bg-[#19718A] text-white font-bold rounded-2xl hover:shadow-lg hover:bg-[#155e73] transition-all"
+                                    >
+                                        Close Activity Log
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
             </main>
         </div>
     );

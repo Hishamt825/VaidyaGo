@@ -10,6 +10,7 @@ import Patient_sym from './Patient_sym';
 import Book from './Book';
 import Upload from './Upload';
 import Patient_record from './Patient_record';
+import DraggableRobot from './DraggableRobot';
 
 const Patient_dashboard1 = () => {
     const [active, setActive] = useState('Dashboard');
@@ -34,11 +35,12 @@ const Patient_dashboard1 = () => {
     }, [location]);
 
     return (
-        <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+        <div className="flex min-h-screen w-full font-sans antialiased text-[#0D1C2E]"
             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+            <DraggableRobot />
 
-            <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+            <div className="flex-1 flex flex-col min-w-0 min-h-screen">
                 {/* Top Navbar */}
                 <header className="h-[72px] flex items-center justify-between px-6 md:px-8 shrink-0 border-b border-white/5 mb-1">
                     <div className="flex items-center gap-[32px] h-full">

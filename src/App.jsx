@@ -21,6 +21,7 @@ import AdminLoginPage from './components/Admin/AdminLoginPage';
 import VerticalProgress1 from './components/Admin/VerticalProgress1';
 
 import Profile from './components/Admin/Profile';
+import Accessibility from './components/Admin/Accessibility';
 
 
 import Admin_dashboard1 from './components/Admin/Admin_dashboard1';
@@ -79,24 +80,14 @@ import Lisinopril from './components/Patient/Medication/Lisinopril';
 import Metformin_detail from './components/Patient/Medication/Metformin_detail';
 import Atorvastatin from './components/Patient/Medication/Atorvastatin';
 import Amoxicillin from './components/Patient/Medication/Amoxicillin';
-<<<<<<< HEAD
 import Clinic from './components/Patient/Appointment/Clinic';
-=======
->>>>>>> adiba
 import Hisham from './component/Day1/Hisham';
 import Consultation1 from './component/Day1/Consultation/Consultation1';
 import Consultation_info from './component/Day1/Consultation/Consultation_info';
 import Appointment_Day1 from './component/Day1/Doctor/Appointment';
-<<<<<<< HEAD
-import Appointment2_Day1 from './component/Day1/Doctor/Appointment2';
-import Appointmentb_Day1 from './component/Day1/Doctor/Appointmentb';
-import Bot_Day1 from './component/Day1/Doctor/Bot';
-=======
 import Appointment2 from './component/Day1/Doctor/Appointment2';
 import Appointmentb from './component/Day1/Doctor/Appointmentb';
 import Bot_Day1 from './component/Day1/Doctor/Bot';
-import Clinic from './components/Patient/Appointment/Clinic';
->>>>>>> adiba
 import Dsetting from './component/Day1/Doctor/Dsetting';
 import Dslot from './component/Day1/Doctor/Dslot';
 import Editprofile from './component/Day1/Doctor/Editprofile';
@@ -120,15 +111,12 @@ import SteadyAscent from './component/Day1/Patient/SteadyAscent';
 import CarePlan from './component/Day1/Patient/CarePlan';
 import Stabilization from './component/Day1/Patient/Stabilization';
 import Phase2D from './component/Day1/Patient/Phase2D';
-<<<<<<< HEAD
 import Phase3D from './component/Day1/Patient/Phase3D';
 import MaintenanceLog from './component/Day1/Patient/MaintenanceLog';
 import RecoveryJourney from './component/Day1/Patient/RecoveryJourney';
 import MonthlyReview from './component/Day1/Patient/MonthlyReview';
-=======
-import Consultation_info from './component/Day1/Consultation/Consultation_info';
 import ViewProfile from './component/Day1/Consultation/view_profile';
->>>>>>> adiba
+import Share from './components/Patient/Share';
 
 const App = () => {
   return (
@@ -153,6 +141,7 @@ const App = () => {
       <Route path="/AdminLoginPage" element={<AdminLoginPage />} />
       <Route path="/Adddoctor" element={<Adddoctor />} />
       <Route path="/Profile" element={<Profile />} />
+      <Route path="/Accessibility" element={<Accessibility />} />
 
       <Route path="/Admin_dashboard1" element={<Admin_dashboard1 />} />
       <Route path="/DasyWilliam" element={<DasyWilliam />} />
@@ -250,7 +239,7 @@ const App = () => {
       <Route path="/MaintenanceLog" element={<MaintenanceLog />} />
       <Route path="/RecoveryJourney" element={<RecoveryJourney />} />
       <Route path="/MonthlyReview" element={<MonthlyReview />} />
-
+      <Route path="/MonthlyReview" element={<MonthlyReview />} />
     </Routes>
 
   );

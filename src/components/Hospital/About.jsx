@@ -472,7 +472,7 @@ const Hero1 = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 lg:gap-24 mt-10">
 
           {/* VISION CARD */}
-          <div className="relative bg-[#D1E9F1]/40 rounded-2xl p-10 pt-20 shadow-sm border border-blue-100/50">
+          <div className="relative bg-[#D1E9F1]/40 rounded-2xl p-10 pt-20 shadow-sm border border-[#19718A]/30">
             {/* TOP CIRCLE ICON */}
             <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-32 h-32 bg-white rounded-full p-4 shadow-lg border border-gray-100 flex items-center justify-center">
               <img src="/assets/eye.png" alt="Vision" className="w-20 h-20 object-contain" />
@@ -485,7 +485,7 @@ const Hero1 = () => {
           </div>
 
           {/* MISSION CARD */}
-          <div className="relative bg-[#FADBD8]/40 rounded-2xl p-10 pt-20 shadow-sm border border-red-100/50">
+          <div className="relative bg-[#FADBD8]/40 rounded-2xl p-10 pt-20 shadow-sm border border-[#C0392B]/30">
             {/* TOP CIRCLE ICON */}
             <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-32 h-32 bg-white rounded-full p-4 shadow-lg border border-gray-100 flex items-center justify-center">
               <img src="/assets/goal.png" alt="Mission" className="w-20 h-20 object-contain" />
@@ -501,41 +501,41 @@ const Hero1 = () => {
       </section>
 
 
-      {/* ================= KEY FEATURES SECTION ================= */}
-      <section className="relative w-full max-w-7xl mx-auto px-6 py-20 lg:py-32 overflow-hidden">
+      {/* ================= SMART HEALTHCARE FEATURES SECTION ================= */}
+      <section className="relative w-full max-w-7xl mx-auto px-6 py-12 lg:py-20 overflow-visible">
         
         {/* Decorative Background Elements */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#19718A]/5 rounded-full blur-[120px] -z-10"></div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-50 rounded-full blur-3xl -z-10 opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -z-10 opacity-50"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#19718A]/5 rounded-full blur-[100px] -z-10"></div>
+        <div className="absolute top-0 right-0 w-48 h-48 bg-purple-50 rounded-full blur-3xl -z-10 opacity-30"></div>
         
-        <div className="text-center mb-16 relative">
+        <div className="text-center mb-12 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-[36px] md:text-[48px] font-black text-[#0B2132] font-serif mb-4 tracking-tight">
+            <h2 className="text-[32px] md:text-[42px] font-black text-[#0B2132] font-serif mb-3 tracking-tight">
               Smart Healthcare <span className="text-[#19718A]">Features</span>
             </h2>
-            <p className="text-gray-500 max-w-2xl mx-auto text-[18px] leading-relaxed">
-              Experience the future of medicine with our integrated digital solutions designed for your comfort.
+            <p className="text-gray-500 max-w-2xl mx-auto text-[16px] leading-relaxed">
+              Experience the future of medicine with our integrated digital solutions.
             </p>
           </motion.div>
         </div>
 
-        {/* 3+2 Grid Layout */}
-        <div className="flex flex-wrap justify-center gap-8">
+        {/* Staggered Grid Layout */}
+        <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
           
           {[
             {
               id: 1,
               title: "AI Chat Assistant",
-              icon: <Brain size={32} />,
+              icon: <Brain size={28} />,
               color: "from-purple-500 to-indigo-600",
               bgColor: "bg-purple-50",
               textColor: "text-purple-600",
+              shadow: "shadow-purple-200/50",
               bullets: [
                 "Instant support for health queries",
                 "Seamless navigation through services",
@@ -545,10 +545,11 @@ const Hero1 = () => {
             {
               id: 2,
               title: "Medicine Reminder",
-              icon: <Clock size={32} />,
+              icon: <Clock size={28} />,
               color: "from-blue-500 to-cyan-600",
               bgColor: "bg-blue-50",
               textColor: "text-blue-600",
+              shadow: "shadow-blue-200/50",
               bullets: [
                 "Smart medication tracking",
                 "Ensure you never miss a dose",
@@ -558,10 +559,11 @@ const Hero1 = () => {
             {
               id: 3,
               title: "Prescription Upload",
-              icon: <FileText size={32} />,
+              icon: <FileText size={28} />,
               color: "from-emerald-500 to-teal-600",
               bgColor: "bg-emerald-50",
               textColor: "text-emerald-600",
+              shadow: "shadow-emerald-200/50",
               bullets: [
                 "Quick and secure submission",
                 "Faster diagnostic processing",
@@ -571,10 +573,11 @@ const Hero1 = () => {
             {
               id: 4,
               title: "Voice Interaction",
-              icon: <Smartphone size={32} />,
+              icon: <Smartphone size={28} />,
               color: "from-orange-500 to-rose-600",
               bgColor: "bg-orange-50",
               textColor: "text-orange-600",
+              shadow: "shadow-orange-200/50",
               bullets: [
                 "Intuitive hands-free control",
                 "Enhanced platform accessibility",
@@ -584,10 +587,11 @@ const Hero1 = () => {
             {
               id: 5,
               title: "Book Appointment",
-              icon: <Calendar size={32} />,
+              icon: <Calendar size={28} />,
               color: "from-[#19718A] to-[#0C6173]",
               bgColor: "bg-cyan-50",
               textColor: "text-[#19718A]",
+              shadow: "shadow-cyan-200/50",
               bullets: [
                 "Effortlessly schedule visits",
                 "Access to expert specialists",
@@ -607,22 +611,34 @@ const Hero1 = () => {
                   window.scrollTo(0, 0);
                 }
               }}
-              className={`group bg-white rounded-3xl p-8 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] border border-gray-100 flex flex-col gap-6 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.5rem)] min-w-[320px] hover:shadow-[0_20px_50px_-12px_rgba(25,113,138,0.15)] hover:-translate-y-2 transition-all duration-500 relative overflow-hidden ${feature.title === "Book Appointment" ? "cursor-pointer" : ""}`}
+              className={`
+                group relative bg-white/80 backdrop-blur-md rounded-[2.5rem] p-8 
+                border border-gray-300 shadow-[0_8px_30px_rgba(0,0,0,0.04)] 
+                hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] 
+                flex flex-col gap-6 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.5rem)] 
+                min-w-[300px] transition-all duration-500 overflow-hidden
+                ${feature.title === "Book Appointment" ? "cursor-pointer" : ""}
+                ${idx % 2 === 1 ? 'lg:translate-y-8' : ''}
+              `}
             >
-              {/* Background Glow on Hover */}
-              <div className={`absolute -right-10 -top-10 w-32 h-32 ${feature.bgColor} rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+              {/* Background Accent */}
+              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.color} opacity-5 group-hover:opacity-10 rounded-bl-[100px] transition-opacity duration-500`}></div>
 
               {/* Icon Section */}
-              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-white shadow-lg transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+              <div className={`
+                w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} 
+                flex items-center justify-center text-white shadow-lg 
+                group-hover:scale-110 group-hover:rotate-[8deg] transition-all duration-500
+              `}>
                 {feature.icon}
               </div>
 
               {/* Content Section */}
-              <div className="relative z-10">
-                <h3 className="text-[22px] font-bold text-[#0B2132] mb-4 group-hover:text-[#19718A] transition-colors">{feature.title}</h3>
+              <div className="relative z-10 flex-1">
+                <h3 className="text-[20px] font-bold text-[#0B2132] mb-4 group-hover:text-[#19718A] transition-colors">{feature.title}</h3>
                 <ul className="space-y-3">
                   {feature.bullets.map((bullet, i) => (
-                    <li key={i} className="flex items-start gap-3 text-gray-500 text-[15px] leading-relaxed group-hover:text-gray-700 transition-colors">
+                    <li key={i} className="flex items-start gap-3 text-gray-500 text-[14px] leading-relaxed group-hover:text-gray-700 transition-colors">
                       <div className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${feature.color} shrink-0`}></div>
                       <span>{bullet}</span>
                     </li>
@@ -630,10 +646,8 @@ const Hero1 = () => {
                 </ul>
               </div>
 
-              {/* Action Indicator */}
-              <div className={`mt-auto pt-4 flex items-center ${feature.textColor} font-bold text-[13px] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0`}>
-                Explore Now <ChevronRight size={16} className="ml-1" />
-              </div>
+              {/* Bottom Border Glow */}
+              <div className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${feature.color} w-0 group-hover:w-full transition-all duration-700`}></div>
             </motion.div>
           ))}
         </div>

@@ -876,7 +876,32 @@ const MainPage = () => {
             setShowForgetModal(false);
             setShowLoginModal(true);
           }}
-        // Assuming we might need to handle OTP switch later, we can pass it if we make Otp.jsx a modal
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
         />
       )}
 

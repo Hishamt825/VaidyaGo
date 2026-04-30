@@ -47,7 +47,7 @@ const Service = () => {
       title: "AI symptom Checker",
       icon: (
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" strokeWidth="1.5" />
           <text x="50%" y="54%" dominantBaseline="central" textAnchor="middle" fill="currentColor" fontSize="8" fontWeight="bold">AI</text>
         </svg>
       ),
@@ -333,39 +333,139 @@ const Service = () => {
       </section>
 
       {/* ======================= OUR SERVICES SECTION ======================= */}
-      <section className="py-20 relative overflow-hidden bg-white">
-        {/* Background Decorative Shapes */}
-        <div className="absolute top-[10%] right-[10%] w-[450px] h-[450px] bg-[#E8F3F4] rounded-full opacity-60 mix-blend-multiply blur-2xl pointer-events-none"></div>
-        <div className="absolute bottom-[0%] left-[5%] w-[350px] h-[350px] bg-[#E6EEF8] rounded-full opacity-50 mix-blend-multiply blur-2xl pointer-events-none"></div>
+      <section className="py-20 relative overflow-hidden bg-[#F8FAFB]">
+
+        {/* Background Decorative Elements - Bubbles & Shapes */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Animated Large Blobs */}
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+              x: [0, 20, 0],
+              y: [0, -20, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#E1F1F3] rounded-full blur-[120px] opacity-40"
+          ></motion.div>
+
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [0, -30, 0],
+              y: [0, 30, 0]
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#E6EEF8] rounded-full blur-[100px] opacity-30"
+          ></motion.div>
+
+          {/* Defined Bubbles (Circles) - Floating Effect */}
+          <motion.div
+            animate={{ y: [0, -25, 0], x: [0, 10, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[10%] left-[5%] w-32 h-32 bg-gray-200/30 rounded-full blur-[2px]"
+          ></motion.div>
+
+          <motion.div
+            animate={{ y: [0, 30, 0], x: [0, -15, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-[20%] left-[15%] w-20 h-20 bg-[#CFE4E5]/40 rounded-full blur-sm"
+          ></motion.div>
+
+          <motion.div
+            animate={{ x: [0, 20, 0], y: [0, -10, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[35%] right-[5%] w-28 h-28 bg-[#8ABFCB]/20 rounded-full blur-md"
+          ></motion.div>
+
+          {/* New Extra Bubbles */}
+          <motion.div
+            animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute top-[50%] left-[50%] w-12 h-12 bg-[#19718A]/10 rounded-full"
+          ></motion.div>
+
+          <motion.div
+            animate={{ y: [0, -40, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-[10%] right-[20%] w-16 h-16 bg-blue-100/40 rounded-full border border-blue-200/20"
+          ></motion.div>
+
+          <motion.div
+            animate={{ scale: [1, 1.5, 1] }}
+            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+            className="absolute top-[5%] right-[30%] w-8 h-8 bg-[#8ABFCB]/30 rounded-full"
+          ></motion.div>
+
+          <motion.div
+            animate={{ x: [-20, 20, -20] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-[40%] left-[8%] w-10 h-10 bg-gray-300/20 rounded-full"
+          ></motion.div>
+
+          <motion.div
+            animate={{ y: [0, 50, 0], rotate: 360 }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            className="absolute top-[60%] right-[15%] w-36 h-36 border-2 border-dashed border-[#19718A]/10 rounded-full"
+          ></motion.div>
+
+          {/* Sparkle/Dot Pattern Overlay */}
+          <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: `radial-gradient(#19718A 1.5px, transparent 1.5px)`, backgroundSize: '40px 40px' }}></div>
+
+          {/* Noise Texture Overlay */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.04] pointer-events-none">
+            <filter id="noiseFilter">
+              <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+          </svg>
+
+          {/* Decorative Wavy SVG Shape */}
+          <div className="absolute right-[-50px] top-[15%] opacity-10">
+            <svg width="200" height="400" viewBox="0 0 200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100 0C150 100 50 200 100 300C150 400 50 500 100 600" stroke="#19718A" strokeWidth="2" strokeDasharray="10 10" />
+            </svg>
+          </div>
+        </div>
 
         {/* TITLE */}
         <div className="text-center mb-16 relative z-10">
-          <h2 className="text-[36px] md:text-[42px] font-black text-black tracking-tight mb-2 uppercase">OUR SERVICES</h2>
-          <p className="text-gray-600 text-[16px] font-medium max-w-xl mx-auto">we offer complete healthcare to individual with various health concern</p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-[36px] md:text-[42px] font-black text-black tracking-tight mb-2 uppercase">OUR SERVICES</h2>
+            <p className="text-gray-600 text-[16px] font-medium max-w-xl mx-auto">we offer complete healthcare to individual with various health concern</p>
+          </motion.div>
         </div>
 
         {/* SERVICE CARDS GRID */}
         <div className="max-w-7xl mx-auto px-6 relative z-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
             {servicesData.map((service, index) => (
-              <div 
+              <motion.div
                 key={index}
-                className="group relative rounded-[32px] p-8 flex flex-col items-center shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-gray-100 bg-white text-[#0B2132] transition-all duration-300 w-full h-[400px] hover:bg-[#8ABFCB] hover:border-[#8ABFCB] hover:-translate-y-2"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className="group relative rounded-[32px] p-8 flex flex-col items-center shadow-[0_15px_35px_rgba(0,0,0,0.05)] border border-gray-200/50 bg-white/80 backdrop-blur-sm text-[#0B2132] transition-all duration-500 w-full h-[420px] hover:bg-[#8ABFCB] hover:border-[#8ABFCB] hover:-translate-y-3"
               >
-                <h3 className="font-extrabold text-[22px] mb-6 text-center h-[60px] flex items-center">{service.title}</h3>
-                
-                <div className="w-[72px] h-[72px] rounded-full flex items-center justify-center mb-6 shrink-0 shadow-sm bg-[#19718A] text-white group-hover:bg-white group-hover:text-[#19718A] transition-all duration-300">
+                <h3 className="font-extrabold text-[22px] mb-6 text-center h-[60px] flex items-center group-hover:text-white transition-colors">{service.title}</h3>
+
+                <div className="w-[80px] h-[80px] rounded-full flex items-center justify-center mb-6 shrink-0 shadow-md bg-[#19718A] text-white group-hover:bg-white group-hover:text-[#19718A] transition-all duration-500">
                   {service.icon}
                 </div>
 
-                <p className="text-[14px] leading-relaxed mb-6 text-center flex-grow font-medium text-gray-500 group-hover:text-[#0B2132]/80 transition-all duration-300">
+                <p className="text-[14px] leading-relaxed mb-6 text-center flex-grow font-medium text-gray-500 group-hover:text-white/90 transition-all duration-500">
                   {service.text}
                 </p>
 
-                <button className="text-[16px] font-bold py-[10px] px-8 rounded-full bg-[#19718A] text-white transition-all w-max tracking-wide shadow-md hover:bg-[#106272] hover:scale-105 active:scale-95 group-hover:bg-[#19718A]">
+                <button className="text-[16px] font-bold py-[12px] px-10 rounded-full bg-[#19718A] text-white transition-all w-max tracking-wide shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 group-hover:bg-white group-hover:text-[#19718A]">
                   {service.btnText}
                 </button>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -373,19 +473,19 @@ const Service = () => {
 
       {/* ======================= FACILITIES SECTION ======================= */}
       <section className="relative py-12 overflow-hidden bg-white">
-        
+
         {/* Background Decorative Wavy Lines */}
         <div className="absolute right-0 top-0 bottom-0 w-full h-full pointer-events-none opacity-20">
-           <svg className="w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0,500 C200,300 400,700 600,500 C800,300 1000,700 1000,500 L1000,1000 L0,1000 Z" fill="#CFE4E5" />
-           </svg>
+          <svg className="w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,500 C200,300 400,700 600,500 C800,300 1000,700 1000,500 L1000,1000 L0,1000 Z" fill="#CFE4E5" />
+          </svg>
         </div>
 
         <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
-          
+
           {/* LEFT SIDE: Interactive Card & Decorative Elements */}
           <div className="w-full lg:w-3/5 relative flex items-center justify-center lg:justify-start">
-            
+
             {/* Soft Background Shape behind card */}
             <div className="absolute -left-10 top-0 w-[450px] h-[400px] bg-[#E8F3F4] rounded-[40px] -z-10"></div>
 
@@ -396,14 +496,14 @@ const Service = () => {
 
             {/* Floating Expand Badge */}
             <div className="absolute left-[0%] md:left-[2%] top-[30%] w-14 h-14 bg-[#8ABFCB] rounded-xl flex items-center justify-center shadow-lg z-30 transform -translate-x-1/2">
-               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4855" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-               </svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4855" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+              </svg>
             </div>
 
             {/* MAIN CARD */}
             <div className="bg-white rounded-[24px] p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-teal-50/50 w-full max-w-md ml-12 md:ml-20 relative z-10">
-              
+
               {/* Header with Circle Decoration */}
               <div className="flex items-center gap-3 mb-10 relative">
                 <div className="absolute -left-4 -top-3 w-10 h-10 bg-[#A6D1D6] rounded-full opacity-60"></div>
@@ -434,15 +534,15 @@ const Service = () => {
 
           {/* RIGHT SIDE: Statistics */}
           <div className="w-full lg:w-2/5 flex flex-col gap-16 relative z-10">
-            
+
             {/* Stat 1 */}
             <div className="relative">
-               {/* Soft Blob behind text */}
-               <div className="absolute -left-6 -top-2 w-28 h-12 bg-[#CFE4E5] rounded-full opacity-60 blur-sm -z-10"></div>
-               <h3 className="text-[42px] font-black text-[#1a3a44] leading-none mb-4">100K+</h3>
-               <p className="text-gray-700 text-[18px] font-medium leading-relaxed max-w-[280px]">
-                 Total number of Happy Client ,They get best experience
-               </p>
+              {/* Soft Blob behind text */}
+              <div className="absolute -left-6 -top-2 w-28 h-12 bg-[#CFE4E5] rounded-full opacity-60 blur-sm -z-10"></div>
+              <h3 className="text-[42px] font-black text-[#1a3a44] leading-none mb-4">100K+</h3>
+              <p className="text-gray-700 text-[18px] font-medium leading-relaxed max-w-[280px]">
+                Total number of Happy Client ,They get best experience
+              </p>
             </div>
 
             {/* Divider */}
@@ -450,12 +550,12 @@ const Service = () => {
 
             {/* Stat 2 */}
             <div className="relative">
-               {/* Soft Blob behind text */}
-               <div className="absolute -left-6 -top-2 w-28 h-12 bg-[#CFE4E5] rounded-full opacity-60 blur-sm -z-10"></div>
-               <h3 className="text-[42px] font-black text-[#1a3a44] leading-none mb-4">20K+</h3>
-               <p className="text-gray-700 text-[18px] font-medium leading-relaxed max-w-[280px]">
-                 REVIEWS of clients who were happy by using this.
-               </p>
+              {/* Soft Blob behind text */}
+              <div className="absolute -left-6 -top-2 w-28 h-12 bg-[#CFE4E5] rounded-full opacity-60 blur-sm -z-10"></div>
+              <h3 className="text-[42px] font-black text-[#1a3a44] leading-none mb-4">20K+</h3>
+              <p className="text-gray-700 text-[18px] font-medium leading-relaxed max-w-[280px]">
+                REVIEWS of clients who were happy by using this.
+              </p>
             </div>
 
           </div>
@@ -463,81 +563,141 @@ const Service = () => {
       </section>
 
       {/* ======================= 3 REASONS TO CHOOSE US ======================= */}
-      <section className="py-20 relative overflow-hidden bg-white">
-        
+      <section className="py-24 relative overflow-visible bg-[#F8FAFB]">
         {/* Background Decorative Elements */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-           <div className="absolute top-[10%] right-[10%] w-[400px] h-[400px] bg-[#E8F3F4] rounded-full opacity-30 blur-3xl"></div>
-           <div className="absolute bottom-[10%] left-[5%] w-[300px] h-[300px] bg-[#D4E9EC] rounded-full opacity-20 blur-3xl"></div>
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#8ABFCB] rounded-full opacity-10 blur-3xl"></div>
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          {/* Blobs */}
+          <div className="absolute top-[10%] right-[-5%] w-[400px] h-[400px] bg-[#E1F1F3] rounded-full opacity-40 blur-[100px]"></div>
+          <div className="absolute bottom-[10%] left-[-5%] w-[350px] h-[350px] bg-[#D4E9EC] rounded-full opacity-30 blur-[80px]"></div>
+
+          {/* LARGE TEAL BUBBLE (From Reference) */}
+          <motion.div 
+            animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[5%] left-[5%] w-[450px] h-[450px] bg-[#19718A]/15 rounded-full blur-3xl shadow-[inset_0_0_100px_rgba(25,113,138,0.2)]"
+          ></motion.div>
+
+          {/* DARK PILL SHAPE (From Reference) */}
+          <motion.div 
+            animate={{ x: [0, 10, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[30%] right-[5%] w-16 h-10 bg-[#19718A]/40 rounded-full blur-sm shadow-lg"
+          ></motion.div>
+
+          {/* Animated Bubbles */}
+          <motion.div
+            animate={{ y: [0, -30, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[20%] left-[10%] w-24 h-24 bg-gray-200/20 rounded-full blur-sm"
+          ></motion.div>
+          <motion.div
+            animate={{ y: [0, 40, 0], opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-[20%] right-[15%] w-32 h-32 bg-[#8ABFCB]/10 rounded-full blur-md"
+          ></motion.div>
+
+          {/* Noise Overlay */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.03] pointer-events-none">
+            <filter id="noiseFilter2">
+              <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noiseFilter2)" />
+          </svg>
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-6">
-          
-          {/* Left Title - More Compact */}
-          <div className="md:w-1/2 mb-10 md:mb-0">
+        <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-16">
+
+          {/* Left Title */}
+          <div className="lg:w-2/5 text-center lg:text-left">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
             >
-              <h2 className="text-[42px] md:text-[52px] font-black text-[#0B2132] leading-[1.1] tracking-tight mb-4">
-                3 Reasons To <br /> 
-                <span className="text-[#19718A] relative">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full text-[#19718A] font-bold text-[13px] tracking-widest uppercase mb-6">
+                <span className="w-2 h-2 bg-[#19718A] rounded-full animate-pulse"></span>
+                Why Choose VaidyaGo
+              </div>
+              <h2 className="text-[48px] md:text-[64px] font-black text-[#0B2132] leading-[1.05] tracking-tight mb-6">
+                3 Reasons To <br />
+                <span className="text-[#19718A] relative inline-block">
                   Choose Us
-                  <svg className="absolute -bottom-1 left-0 w-full h-2 text-[#8ABFCB]/40" viewBox="0 0 100 10" preserveAspectRatio="none">
-                    <path d="M0,5 Q50,0 100,5" stroke="currentColor" strokeWidth="3" fill="none" />
-                  </svg>
+                  <motion.svg
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    transition={{ duration: 1.5, delay: 0.5 }}
+                    className="absolute -bottom-2 left-0 w-full h-3 text-[#8ABFCB]/60"
+                    viewBox="0 0 100 10"
+                    preserveAspectRatio="none"
+                  >
+                    <path d="M0,5 Q50,0 100,5" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+                  </motion.svg>
                 </span>
               </h2>
-              <p className="text-gray-500 text-[16px] font-medium max-w-sm leading-relaxed">
-                We provide the most advanced healthcare services with a human touch, ensuring your recovery is fast.
+              <p className="text-gray-500 text-[18px] font-medium max-w-md leading-relaxed mx-auto lg:mx-0">
+                We provide medical excellence with a compassionate touch, ensuring your recovery is our top priority.
               </p>
             </motion.div>
           </div>
 
-          {/* Right Graphical Area - Spread Out Layout */}
-          <div className="md:w-1/2 relative h-[600px] w-full flex justify-center items-center">
-            
-            {/* Card 1: Top Left-ish */}
-            <motion.div 
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-[0%] left-[10%] md:left-[5%] z-30"
+          {/* Right Graphical Area */}
+          <div className="lg:w-3/5 relative h-[550px] w-full flex justify-center items-center overflow-visible">
+
+            {/* Card 1: Professional Doctors */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 50 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -15, scale: 1.02 }}
+              transition={{ duration: 0.5 }}
+              className="absolute top-[0%] left-[5%] md:left-[10%] z-30"
             >
-              <div className="bg-[#8ABFCB] rounded-[40px] p-8 shadow-xl w-[230px] text-center border border-[#19718A]/40 group">
-                 <div className="mb-4 h-[120px] flex items-center justify-center">
-                    <img src={doctorsImg} alt="Doctors" className="max-h-full object-contain mix-blend-multiply" />
-                 </div>
-                 <h3 className="font-extrabold text-[#0B2132] text-[19px] leading-tight">Professional <br /> Doctors</h3>
+              <div className="bg-white/80 backdrop-blur-md rounded-[40px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)] w-[240px] text-center border border-gray-300 hover:border-[#8ABFCB]/50 transition-all duration-500 group relative">
+                <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#19718A] text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg transform -rotate-12 group-hover:rotate-0 transition-transform">1</div>
+                <div className="mb-6 h-[110px] flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500">
+                  <img src={doctorsImg} alt="Doctors" className="max-h-full object-contain mix-blend-multiply" />
+                </div>
+                <h3 className="font-extrabold text-[#0B2132] text-[20px] leading-tight">Professional <br /> Doctors</h3>
+                <div className="mt-4 w-10 h-1 bg-[#8ABFCB] mx-auto rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
             </motion.div>
 
-            {/* Card 2: Middle Right */}
-            <motion.div 
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute top-[25%] right-[0%] md:right-[-10%] z-20"
+            {/* Card 2: Patient Support */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 50 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -15, scale: 1.02 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="absolute top-[20%] right-[0%] md:right-[5%] z-20"
             >
-              <div className="bg-white rounded-[40px] p-8 shadow-xl w-[230px] text-center border border-gray-300 group">
-                 <div className="mb-4 h-[120px] flex items-center justify-center">
-                    <img src={hospitalImg} alt="Support" className="max-h-full object-contain mix-blend-multiply" />
-                 </div>
-                 <h3 className="font-extrabold text-gray-900 text-[19px] leading-tight">24/7 patient <br /> support</h3>
+              <div className="bg-white/80 backdrop-blur-md rounded-[40px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)] w-[240px] text-center border border-gray-300 hover:border-[#19718A]/30 transition-all duration-500 group relative">
+                <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#19718A] text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform">2</div>
+                <div className="mb-6 h-[110px] flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500">
+                  <img src={hospitalImg} alt="Support" className="max-h-full object-contain mix-blend-multiply" />
+                </div>
+                <h3 className="font-extrabold text-[#0B2132] text-[20px] leading-tight">24/7 Patient <br /> Support</h3>
+                <div className="mt-4 w-10 h-1 bg-[#19718A] mx-auto rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
             </motion.div>
 
-            {/* Card 3: Bottom Left/Center */}
-            <motion.div 
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute bottom-[5%] left-[20%] md:left-[15%] z-30"
+            {/* Card 3: Specialised Services */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 50 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -15, scale: 1.02 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="absolute bottom-[0%] left-[25%] md:left-[30%] z-30"
             >
-              <div className="bg-white rounded-[40px] p-8 shadow-xl w-[230px] text-center border border-gray-300 group">
-                 <div className="mb-4 h-[120px] flex items-center justify-center">
-                    <img src={familyImg} alt="Services" className="max-h-full object-contain mix-blend-multiply" />
-                 </div>
-                 <h3 className="font-extrabold text-gray-900 text-[19px] leading-tight">Specialised <br /> Services</h3>
+              <div className="bg-white/80 backdrop-blur-md rounded-[40px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)] w-[240px] text-center border border-gray-300 hover:border-[#8ABFCB]/50 transition-all duration-500 group relative">
+                <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-[#19718A] text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform">3</div>
+                <div className="mb-6 h-[110px] flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500">
+                  <img src={familyImg} alt="Services" className="max-h-full object-contain mix-blend-multiply" />
+                </div>
+                <h3 className="font-extrabold text-[#0B2132] text-[20px] leading-tight">Specialised <br /> Services</h3>
+                <div className="mt-4 w-10 h-1 bg-[#8ABFCB] mx-auto rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
             </motion.div>
 
