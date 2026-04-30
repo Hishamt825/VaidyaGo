@@ -72,7 +72,7 @@ const Cervicogenic = ({ onClose }) => {
                 <Icon name="movement" className="title-icon" /> Understanding Your Neck Health
               </h2>
               <div className="new-cg-subgrid">
-                <div className="new-cg-subcard clickable" onClick={() => setShowNeckAlignment(true)}>
+                <div className="new-cg-subcard clickable" onClick={() => navigate('/NeckAlignment')}>
                   <label>NECK ALIGNMENT & MOVEMENT</label>
                   <p>We found some stiffness where your head meets your neck (the C1-C2 area). This is likely causing the sensitivity you feel near the base of your skull.</p>
                 </div>

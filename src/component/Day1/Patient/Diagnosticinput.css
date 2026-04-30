@@ -72,21 +72,22 @@
 }
 
 .diagnostic-input-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.05); /* More transparent to show background better */
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
+  backdrop-filter: blur(2px);
   font-family: 'Inter', sans-serif;
 }
 
 .edit-summary-modal {
-  width: 620px; /* Increased width as requested */
+  width: 620px;
   max-height: 90vh;
   background: var(--white);
   border-radius: 24px;
@@ -95,8 +96,32 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   animation: modalScale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px; /* Space for scrollbar */
+  margin-right: -8px; /* Offset padding to keep layout centered */
+}
+
+/* Custom Scrollbar for Modal Body */
+.modal-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 @keyframes modalScale {

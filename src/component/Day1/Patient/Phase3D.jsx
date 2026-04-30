@@ -12,6 +12,15 @@ const Phase3D = () => {
   const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
   const [showRoutineModal, setShowRoutineModal] = React.useState(false);
   const [showSavedModal, setShowSavedModal] = React.useState(false);
+  const [showEnvironmentalModal, setShowEnvironmentalModal] = React.useState(false);
+  const [showFinalizeModal, setShowFinalizeModal] = React.useState(false);
+  const [showEnvSuccessModal, setShowEnvSuccessModal] = React.useState(false);
+  const [showFinalReviewModal, setShowFinalReviewModal] = React.useState(false);
+  const [envData, setEnvData] = React.useState({
+    pollen: '',
+    humidity: 45,
+    mode: 'OPTIMAL'
+  });
 
   const menuItems = [
     { id: 'dashboard', icon: 'overview', label: 'Dashboard' },
@@ -93,6 +102,80 @@ const Phase3D = () => {
           <polyline points="7 10 12 15 17 10" />
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
+      ),
+      leaf: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8a8 8 0 0 1-10 10Z" />
+          <path d="M21 2c-2 2-3.5 3-9 4" />
+        </svg>
+      ),
+      pollen: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+        </svg>
+      ),
+      humidity: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5s-3 3.5-3 5.5a7 7 0 0 0 7 7z" />
+        </svg>
+      ),
+      eco: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8a8 8 0 0 1-10 10Z" />
+        </svg>
+      ),
+      optimal: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+      ),
+      turbo: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" />
+        </svg>
+      ),
+      submit: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      ),
+      lung: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M7 3c0 3 2.5 5 2.5 9s-2.5 6-2.5 9" /><path d="M17 3c0 3-2.5 5-2.5 9s2.5 6 2.5 9" /><path d="M3 13a4 4 0 0 1 4-4h2a2 2 0 0 0 2-2V3" /><path d="M21 13a4 4 0 0 0-4-4h-2a2 2 0 0 1-2-2V3" /><path d="M12 9v12" />
+        </svg>
+      ),
+      strategy: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+          <path d="M12 11h4" /><path d="M12 16h4" /><path d="M8 11h.01" /><path d="M8 16h.01" /><path d="M9 2h6" />
+        </svg>
+      ),
+      survey: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+      ),
+      lock: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      ),
+      arrowRight: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+        </svg>
+      ),
+      sync: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+          <path d="M16 16h5v5" />
+        </svg>
       )
     };
 
@@ -123,7 +206,7 @@ const Phase3D = () => {
       />
 
       {/* ── Main Area ── */}
-      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isNotificationOpen || showRoutineModal || showSavedModal || activeModal ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${isNotificationOpen || showRoutineModal || showSavedModal || showEnvironmentalModal || showFinalizeModal || showEnvSuccessModal || showFinalReviewModal || activeModal ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
         {/* Top Navbar */}
         <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
             {/* Hamburger for Mobile */}
@@ -135,6 +218,18 @@ const Phase3D = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
             </button>
+
+            {/* Back Button */}
+            <button 
+                onClick={() => navigate('/Phase2D')}
+                className="flex text-white w-[38px] h-[38px] mr-4 bg-white/10 border border-white/5 rounded-full hover:bg-white/20 transition-all items-center justify-center shrink-0"
+                title="Back to Phase 2"
+            >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
             <div className="flex-1 max-w-[280px]">
                 <div className="relative group">
                     <input
@@ -224,7 +319,7 @@ const Phase3D = () => {
                     </div>
                     <h3>Environmental Resilience</h3>
                     <p>Weekly tracking of triggers to ensure immunity remains high against seasonal shifts.</p>
-                    <button className="p3-btn-update">Update Report</button>
+                    <button className="p3-btn-update" onClick={() => setShowEnvironmentalModal(true)}>Update Report</button>
                  </div>
               </div>
 
@@ -263,7 +358,7 @@ const Phase3D = () => {
                     </div>
                  </div>
 
-                 <button className="p3-btn-prepare">Prepare for Final Review</button>
+                 <button className="p3-btn-prepare" onClick={() => setShowFinalReviewModal(true)}>Prepare for Final Review</button>
               </div>
            </div>
 
@@ -416,43 +511,398 @@ const Phase3D = () => {
       {showSavedModal && (
         <div className="routine-popup-overlay" onClick={() => setShowSavedModal(false)}>
           <div className="saved-modal-content" onClick={(e) => e.stopPropagation()}>
-             <div className="saved-success-icon">
-                <div className="icon-inner">
-                   <Icon name="check" />
+            <div className="saved-success-icon">
+               <div className="icon-inner">
+                  <Icon name="check" />
+               </div>
+            </div>
+            <h2 className="saved-title">Routine Log Saved</h2>
+            <p className="saved-desc">
+               Your maintenance activities for today have been securely synchronized with your clinical recovery plan.
+            </p>
+
+            <div className="tasks-completed-card">
+               <label>COMPLETED TODAY</label>
+               
+               <div className="completed-task-item">
+                  <div className="task-name-icon">
+                     <span>💨</span>
+                     <strong>Air Quality Check</strong>
+                  </div>
+                  <span className="task-status verified">VERIFIED</span>
+               </div>
+
+               <div className="completed-task-item">
+                  <div className="task-name-icon">
+                     <span>▽</span>
+                     <strong>Filter Maintenance</strong>
+                  </div>
+                  <span className="task-status verified">VERIFIED</span>
+               </div>
+
+               <div className="completed-task-item">
+                  <div className="task-name-icon">
+                     <span>💧</span>
+                     <strong>Hydration Target</strong>
+                  </div>
+                  <span className="task-status achieved">ACHIEVED</span>
+               </div>
+            </div>
+
+            <div className="saved-modal-actions">
+               <button className="btn-return-dash" onClick={() => setShowSavedModal(false)}>
+                  Return to Dashboard
+               </button>
+               <button className="btn-view-log" onClick={() => navigate('/MaintenanceLog')}>
+                  View Routine Log
+               </button>
+            </div>
+
+            <div className="saved-footer">
+               Ref ID: MNT-092-SAVED
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEnvironmentalModal && (
+        <div className="env-modal-overlay" onClick={() => setShowEnvironmentalModal(false)}>
+          <div className="env-modal-container" onClick={(e) => e.stopPropagation()}>
+            {/* Left Sidebar */}
+            <div className="env-modal-sidebar">
+              <div className="env-sidebar-top">
+                <div className="env-leaf-box">
+                  <Icon name="leaf" />
                 </div>
-             </div>
-
-             <h2 className="saved-title">Maintenance Routine Saved</h2>
-             <p className="saved-desc">
-                Your daily sustainability tasks have been securely logged for <strong>Day 42 of 90</strong>. Great job staying consistent with your protocol!
-             </p>
-
-             <div className="tasks-completed-card">
-                <label>TASKS COMPLETED</label>
-                <div className="completed-task-item">
-                   <div className="task-name-icon">
-                      <span>💨</span>
-                      <strong>Air Quality Check</strong>
-                   </div>
-                   <span className="task-status verified">Verified</span>
+                <h2 className="env-sidebar-title">Environmental<br/>Resilience Update</h2>
+                <p className="env-sidebar-desc">
+                  Update your surroundings to synchronize clinical protocols.
+                </p>
+              </div>
+              <div className="env-sidebar-bottom">
+                <div className="env-secure-badge">
+                  <div className="env-check-mini">
+                    <Icon name="check" />
+                  </div>
+                  <span>SECURE LINK ACTIVE</span>
                 </div>
-                <div className="completed-task-item">
-                   <div className="task-name-icon">
-                      <span>💧</span>
-                      <strong>Hydration Target</strong>
-                   </div>
-                   <span className="task-status achieved">Achieved (3.2L)</span>
+              </div>
+            </div>
+
+            {/* Right Main Content */}
+            <div className="env-modal-main">
+              <button className="env-close-btn" onClick={() => setShowEnvironmentalModal(false)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+
+              <div className="env-content-header">
+                <span className="env-label-top">PROTOCOL UPDATE</span>
+                <h3 className="env-main-title">Tracker Configuration</h3>
+              </div>
+
+              <div className="env-form-body">
+                {/* Pollen Levels */}
+                <div className="env-input-group">
+                  <label className="env-input-label">POLLEN LEVELS (PPM)</label>
+                  <div className="env-pollen-input-wrapper">
+                    <Icon name="pollen" />
+                    <input 
+                      type="text" 
+                      placeholder="Enter ppm value..." 
+                      className="env-pollen-input"
+                      value={envData.pollen}
+                      onChange={(e) => setEnvData({...envData, pollen: e.target.value})}
+                    />
+                    <span className="env-status-indicator low">LOW</span>
+                  </div>
                 </div>
-             </div>
 
-             <div className="saved-modal-actions">
-                <button className="btn-return-dash" onClick={() => setShowSavedModal(false)}>Return to Dashboard</button>
-                <button className="btn-view-log" onClick={() => navigate('/MaintenanceLog')}>View Maintenance Log</button>
-             </div>
+                {/* Humidity */}
+                <div className="env-input-group">
+                  <label className="env-input-label">HUMIDITY %</label>
+                  <div className="env-slider-wrapper">
+                    <div className="env-slider-icon">
+                      <Icon name="humidity" />
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="100" 
+                      value={envData.humidity}
+                      onChange={(e) => setEnvData({...envData, humidity: e.target.value})}
+                      className="env-range-slider"
+                    />
+                    <span className="env-slider-value">{envData.humidity}%</span>
+                  </div>
+                </div>
 
-             <div className="saved-footer">
-                <span>👤 Logged for: Alex Rivera (AR-092)</span>
-             </div>
+                {/* Air Purifier Efficiency */}
+                <div className="env-input-group">
+                  <label className="env-input-label">AIR PURIFIER EFFICIENCY</label>
+                  <div className="env-mode-grid">
+                    <button 
+                      className={`env-mode-card ${envData.mode === 'ECO' ? 'active' : ''}`}
+                      onClick={() => setEnvData({...envData, mode: 'ECO'})}
+                    >
+                      <Icon name="eco" />
+                      <span>ECO</span>
+                    </button>
+                    <button 
+                      className={`env-mode-card ${envData.mode === 'OPTIMAL' ? 'active' : ''}`}
+                      onClick={() => setEnvData({...envData, mode: 'OPTIMAL'})}
+                    >
+                      <Icon name="optimal" />
+                      <span>OPTIMAL</span>
+                    </button>
+                    <button 
+                      className={`env-mode-card ${envData.mode === 'TURBO' ? 'active' : ''}`}
+                      onClick={() => setEnvData({...envData, mode: 'TURBO'})}
+                    >
+                      <Icon name="turbo" />
+                      <span>TURBO</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Environment Status */}
+                <div className="env-status-bar">
+                  <div className="env-status-left">
+                    <div className="env-status-dot"></div>
+                    <span>Environment Balanced</span>
+                  </div>
+                  <div className="env-status-right">
+                    <span>LIVE SENSOR SYNC</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="env-footer">
+                <button className="env-finalize-btn" onClick={() => setShowFinalizeModal(true)}>
+                  FINALIZE REPORT
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showFinalizeModal && (
+        <div className="env-modal-overlay" onClick={() => setShowFinalizeModal(false)}>
+          <div className="finalize-modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="finalize-modal-body">
+              <div className="finalize-header">
+                <div className="finalize-check-circle">
+                  <Icon name="check" />
+                </div>
+                <h2 className="finalize-title">Finalize Resilience Report</h2>
+              </div>
+
+              <p className="finalize-desc">
+                You are about to securely log your environmental data to your clinical record. Please confirm the details below.
+              </p>
+
+              <div className="finalize-data-summary">
+                <label className="summary-label">DATA SUMMARY</label>
+                
+                <div className="summary-item">
+                  <div className="summary-item-left">
+                    <Icon name="pollen" />
+                    <span>Pollen Levels</span>
+                  </div>
+                  <strong className="summary-value">Low</strong>
+                </div>
+
+                <div className="summary-item">
+                  <div className="summary-item-left">
+                    <Icon name="humidity" />
+                    <span>Humidity</span>
+                  </div>
+                  <strong className="summary-value">{envData.humidity}%</strong>
+                </div>
+
+                <div className="summary-item">
+                  <div className="summary-item-left">
+                    <Icon name="optimal" />
+                    <span>Air Purifier</span>
+                  </div>
+                  <strong className="summary-value">{envData.mode.charAt(0) + envData.mode.slice(1).toLowerCase()}</strong>
+                </div>
+              </div>
+
+              <div className="finalize-actions">
+                <button className="finalize-submit-btn" onClick={() => {
+                  setShowFinalizeModal(false);
+                  setShowEnvironmentalModal(false);
+                  setShowEnvSuccessModal(true);
+                }}>
+                  Submit Report <Icon name="submit" />
+                </button>
+                <button className="finalize-cancel-link" onClick={() => setShowFinalizeModal(false)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+            <div className="finalize-footer">
+              <div className="footer-hub">
+                <div className="hub-dot"></div>
+                <span>VAIDYAGO CLINICAL HUB</span>
+              </div>
+              <span className="clinician-id">Clinician ID: AR-993-PH3</span>
+            </div>
+          </div>
+        </div>
+      )}
+      {showEnvSuccessModal && (
+        <div className="env-modal-overlay" onClick={() => setShowEnvSuccessModal(false)}>
+          <div className="env-success-modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="env-success-body">
+              <div className="env-success-icon-wrap">
+                <div className="env-success-check">
+                  <Icon name="check" />
+                </div>
+              </div>
+              
+              <h2 className="env-success-title">Resilience Report Submitted</h2>
+              <p className="env-success-desc">
+                Your environmental data has been securely logged and is now visible to your clinical care team. Thank you for your commitment to the Maintenance Phase.
+              </p>
+
+              <div className="env-success-info-card">
+                <div className="env-info-row">
+                  <span className="env-info-label">REFERENCE ID</span>
+                  <strong className="env-info-value">RES-993-PH3</strong>
+                </div>
+                <div className="env-info-row">
+                  <span className="env-info-label">TIMESTAMP</span>
+                  <strong className="env-info-value">Oct 24, 2024, 10:45 AM</strong>
+                </div>
+              </div>
+
+              <button className="env-success-return-btn" onClick={() => setShowEnvSuccessModal(false)}>
+                Return to Dashboard
+              </button>
+
+              <div className="env-success-account">
+                Account: Alex Rivera
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showFinalReviewModal && (
+        <div className="env-modal-overlay" onClick={() => setShowFinalReviewModal(false)}>
+          <div className="final-review-modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="final-review-modal-header">
+               <div className="fr-header-text">
+                  <h2 className="fr-title">Final Review Preparation</h2>
+                  <p className="fr-subtitle">Complete your clinical exit requirements for the Rhinitis Recovery Protocol.</p>
+               </div>
+               <button className="fr-close-x" onClick={() => setShowFinalReviewModal(false)}>×</button>
+            </div>
+
+            <div className="final-review-modal-body">
+               {/* Patient Progress Summary */}
+               <div className="fr-progress-banner">
+                  <div className="fr-patient-profile">
+                     <div className="fr-avatar-wrap">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Alex Rivera" />
+                        <div className="fr-verified-badge">
+                           <Icon name="check" />
+                        </div>
+                     </div>
+                     <div className="fr-patient-details">
+                        <h3>Alex Rivera</h3>
+                        <span>ID: AR-092</span>
+                     </div>
+                  </div>
+                  <div className="fr-progress-track">
+                     <div className="fr-track-header">
+                        <label>RECOVERY PROGRESS</label>
+                        <span><strong>Day 150</strong> / 180</span>
+                     </div>
+                     <div className="fr-progress-bar-bg">
+                        <div className="fr-progress-bar-fill" style={{ width: '83%' }}></div>
+                     </div>
+                  </div>
+               </div>
+
+               {/* Checklist Section */}
+               <div className="fr-checklist-section">
+                  <label className="fr-section-label">EXIT REQUIREMENTS CHECKLIST</label>
+                  
+                  <div className="fr-requirement-card completed">
+                     <div className="fr-req-icon-box">
+                        <Icon name="check" />
+                     </div>
+                     <div className="fr-req-info">
+                        <div className="fr-req-top">
+                           <h4>Full Allergy Panel</h4>
+                           <span className="fr-req-date">Aug 14, 2023</span>
+                        </div>
+                        <span className="fr-status-badge completed">COMPLETED</span>
+                     </div>
+                  </div>
+
+                  <div className="fr-requirement-card pending">
+                     <div className="fr-req-icon-box grey">
+                        <Icon name="lung" />
+                     </div>
+                     <div className="fr-req-info">
+                        <div className="fr-req-top">
+                           <h4>Lung Function Test</h4>
+                           <button className="fr-action-link">Schedule Now</button>
+                        </div>
+                        <span className="fr-status-badge pending">PENDING</span>
+                     </div>
+                  </div>
+
+                  <div className="fr-requirement-card in-progress">
+                     <div className="fr-req-icon-box grey">
+                        <Icon name="strategy" />
+                     </div>
+                     <div className="fr-req-info">
+                        <div className="fr-req-top">
+                           <h4>Long-term Care Strategy</h4>
+                           <button className="fr-action-link">Continue</button>
+                        </div>
+                        <span className="fr-status-badge in-progress">IN PROGRESS</span>
+                     </div>
+                  </div>
+
+                  <div className="fr-requirement-card locked">
+                     <div className="fr-req-icon-box locked">
+                        <Icon name="lock" />
+                     </div>
+                     <div className="fr-req-info">
+                        <div className="fr-req-top">
+                           <h4 className="locked">Post-Protocol Survey</h4>
+                        </div>
+                        <span className="fr-locked-text">Available after Day 175</span>
+                     </div>
+                  </div>
+               </div>
+
+               {/* Clinical Note Box */}
+               <div className="fr-clinical-note-box">
+                  <div className="fr-note-header">
+                     <div className="fr-info-icon">i</div>
+                     <label>CLINICAL NOTE</label>
+                  </div>
+                  <p>
+                     "Your final review with <strong>Dr. Elena Sterling</strong> is the bridge to your permanent relief. Please ensure all 'Pending' items are addressed before your Day 180 evaluation."
+                  </p>
+               </div>
+
+               {/* Actions */}
+               <div className="fr-modal-actions">
+                  <button className="fr-btn-close" onClick={() => setShowFinalReviewModal(false)}>Close</button>
+                  <button className="fr-btn-submit" onClick={() => setShowFinalReviewModal(false)}>
+                     Submit Preliminary Data <Icon name="arrowRight" />
+                  </button>
+               </div>
+            </div>
           </div>
         </div>
       )}

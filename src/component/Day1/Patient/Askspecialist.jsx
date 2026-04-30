@@ -3,9 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './Askspecialist.css';
 
+// Imported components
+import Sidebar from '../../../components/Patient/Patient_sidebar';
+import Profile from '../../../components/Patient/Profile';
+import Account from '../../../components/Patient/Account';
+import Notification from '../../../components/Patient/notification';
+
 // Importing images
 import drArjanImg from '../../../assets/dr_arjan_singh.png';
 import drSarahImg from '../../../assets/dr_sarah_jenkins.png';
+import logoUrl from '../../../assets/vadyago_pat.png';
+import phImg from '../../../assets/ph.png';
 
 const Icon = ({ name, className, size = 20 }) => {
   const getIconContent = () => {
@@ -147,6 +155,8 @@ const Icon = ({ name, className, size = 20 }) => {
         );
       case 'star':
         return <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />;
+      case 'back':
+        return <path d="m15 18-6-6 6-6" />;
       default:
         return <circle cx="12" cy="12" r="10" />;
     }
@@ -171,6 +181,10 @@ const Icon = ({ name, className, size = 20 }) => {
 
 
 const Askspecialist = () => {
+  const [active, setActive] = useState('Dashboard');
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const navigate = useNavigate();
   const [activeSpec, setActiveSpec] = useState('Cardiology');
 
@@ -196,64 +210,76 @@ const Askspecialist = () => {
   };
 
   return (
-    <div className="ask-container">
-      {/* Sidebar */}
-      <aside className="ask-sidebar">
-        <div className="ask-sidebar-logo">
-          <div className="logo-icon-wrapper">
-             <Icon name="logo" size={40} />
-          </div>
-          <h1>VaidyaGo</h1>
-        </div>
+    <div
+      className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}
+    >
+      {/* ── Sidebar ── */}
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
-        <nav className="ask-nav">
-          {[
-            { id: 'dashboard', name: 'Dashboard', icon: 'dashboard', active: true },
-            { id: 'symptom', name: 'Symptom Checker', icon: 'symptom' },
-            { id: 'vitals', name: 'Vitals', icon: 'vitals' },
-            { id: 'medications', name: 'Medications', icon: 'medications' },
-            { id: 'appointments', name: 'Appointments', icon: 'appointments' },
-            { id: 'messages', name: 'Messages', icon: 'messages' },
-            { id: 'reminder', name: 'REMINDER', icon: 'reminder' },
-            { id: 'records', name: 'MY RECORDS', icon: 'records' },
-          ].map(item => (
-            <a href="#" key={item.id} className={`ask-nav-item ${item.active ? 'active' : ''}`}>
-              <Icon name={item.icon} size={22} />
-              <span>{item.name}</span>
-            </a>
-          ))}
-        </nav>
+      {/* ── Main Area ── */}
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+        {/* Top Navbar */}
+        <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
+          {/* Hamburger for Mobile */}
+          <button
+            onClick={() => setIsMobileOpen(true)}
+            className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+          </button>
 
-        <div className="ask-sidebar-bottom">
-           <button 
-            onClick={() => navigate('/Consultation1')}
-            className="new-consult-btn"
-           >
-             <Icon name="plus-circle" size={14} />
-             <span>New Consultation</span>
-           </button>
-        </div>
-      </aside>
-
-      {/* Content Wrapper */}
-      <div className="ask-content-wrapper">
-        {/* Main Content */}
-        <main className="ask-main">
-          {/* Top Header */}
-          <header className="ask-header">
-            <div className="ask-search-top">
-              <Icon name="search" size={18} />
-              <input type="text" placeholder="Search records or doctors..." />
+          <div className="flex items-center gap-4 flex-1 max-w-[400px]">
+            <button
+              onClick={() => navigate('/Diagnostic')}
+              className="m-back-btn"
+              title="Back to Diagnostic"
+            >
+              <Icon name="back" size={24} />
+            </button>
+            <div className="relative group flex-1">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
+              />
+              <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
-            <div className="ask-header-actions">
-              <div className="ask-header-icon"><Icon name="bell" /></div>
-              <div className="ask-header-icon"><Icon name="help" /></div>
-              <div className="ask-header-profile">
-                <span>Alex Rivera</span>
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Alex Rivera" />
+          </div>
+
+          <div className="flex items-center gap-[32px] ml-auto">
+            <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+            <div className="flex items-center gap-[20px]">
+              <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
+                <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#E85B5A] rounded-full" />
+              </button>
+              <button onClick={() => navigate('/Setting')} className="text-white hover:text-[#6ED4D4] transition-colors">
+                <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+              <div onClick={() => setActiveModal('profile')} className="w-[38px] h-[38px] rounded-full border-[2px] border-[#6ED4D4] overflow-hidden shadow-sm cursor-pointer hover:scale-110 transition-transform">
+                <img src={phImg} alt="User" className="w-full h-full object-cover" />
               </div>
             </div>
-          </header>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto no-scrollbar pb-[64px] flex">
+          <div className="flex-1 overflow-y-auto no-scrollbar px-[24px] md:px-[48px]">
 
           {/* Hero Section */}
           <motion.div 
@@ -359,90 +385,102 @@ const Askspecialist = () => {
               </motion.div>
             ))}
           </motion.div>
+          </div>
+          {/* Right Panel */}
+          <aside className="ask-right-panel w-[350px] shrink-0 border-l border-white/5 bg-white/5 backdrop-blur-md p-6 overflow-y-auto no-scrollbar hidden xl:block">
+            <motion.div
+              className="ask-right-card card-diagnostic"
+              {...fadeInUp}
+            >
+              <div className="ask-card-header">
+                <div className="ask-card-icon"><Icon name="diagnostic" size={24} /></div>
+                <div className="ask-card-label">
+                  <p>Recent Diagnostic</p>
+                  <span>ALEX RIVERA</span>
+                </div>
+              </div>
+
+              <div className="diagnostic-box">
+                <small>Condition</small>
+                <h4>Tension-Type Headache</h4>
+                <div className="condition-bar">
+                  <motion.div
+                    className="condition-progress"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: '70%' }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                  />
+                </div>
+                <p>Diagnostic Date: 12 Oct 2023</p>
+              </div>
+
+              <p className="diagnostic-quote">
+                "Consulting a neurologist or a general practitioner is advised for recurrent
+                tension headaches exceeding 2 sessions per week."
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="ask-right-card card-why"
+              {...fadeInUp}
+              transition={{ delay: 0.2 }}
+            >
+              <h3>Why VaidyaGo Specialists?</h3>
+              <div className="why-list">
+                <div className="why-item">
+                  <Icon name="check-circle" size={20} className="why-icon" />
+                  <div>
+                    <h5>Verified Expertise</h5>
+                    <p>Every doctor is board certified and vetted by our medical board.</p>
+                  </div>
+                </div>
+                <div className="why-item">
+                  <Icon name="check-circle" size={20} className="why-icon" />
+                  <div>
+                    <h5>Instant Connectivity</h5>
+                    <p>Connect via HD video or chat within minutes of booking.</p>
+                  </div>
+                </div>
+                <div className="why-item">
+                  <Icon name="check-circle" size={20} className="why-icon" />
+                  <div>
+                    <h5>Holistic Records</h5>
+                    <p>Doctors see your full medical history for accurate advice.</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="ask-right-card card-support"
+              {...fadeInUp}
+              transition={{ delay: 0.4 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="support-icon-circle">
+                <Icon name="support-boy" size={36} />
+              </div>
+              <h4>Need help finding?</h4>
+              <p> Our concierge team can help you select the right specialist. </p>
+              <div className="support-actions">
+                <button className="support-talk-btn">Talk to Support</button>
+              </div>
+            </motion.div>
+          </aside>
         </main>
-
-        {/* Right Panel */}
-        <aside className="ask-right-panel">
-          <motion.div 
-            className="ask-right-card card-diagnostic"
-            {...fadeInUp}
-          >
-            <div className="ask-card-header">
-              <div className="ask-card-icon"><Icon name="diagnostic" size={24} /></div>
-              <div className="ask-card-label">
-                <p>Recent Diagnostic</p>
-                <span>ALEX RIVERA</span>
-              </div>
-            </div>
-            
-            <div className="diagnostic-box">
-              <small>Condition</small>
-              <h4>Tension-Type Headache</h4>
-              <div className="condition-bar">
-                <motion.div 
-                  className="condition-progress"
-                  initial={{ width: 0 }}
-                  whileInView={{ width: '70%' }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                />
-              </div>
-              <p>Diagnostic Date: 12 Oct 2023</p>
-            </div>
-
-            <p className="diagnostic-quote">
-              "Consulting a neurologist or a general practitioner is advised for recurrent 
-              tension headaches exceeding 2 sessions per week."
-            </p>
-          </motion.div>
-
-          <motion.div 
-            className="ask-right-card card-why"
-            {...fadeInUp}
-            transition={{ delay: 0.2 }}
-          >
-            <h3>Why VaidyaGo Specialists?</h3>
-            <div className="why-list">
-              <div className="why-item">
-                <Icon name="check-circle" size={20} className="why-icon" />
-                <div>
-                  <h5>Verified Expertise</h5>
-                  <p>Every doctor is board certified and vetted by our medical board.</p>
-                </div>
-              </div>
-              <div className="why-item">
-                <Icon name="check-circle" size={20} className="why-icon" />
-                <div>
-                  <h5>Instant Connectivity</h5>
-                  <p>Connect via HD video or chat within minutes of booking.</p>
-                </div>
-              </div>
-              <div className="why-item">
-                <Icon name="check-circle" size={20} className="why-icon" />
-                <div>
-                  <h5>Holistic Records</h5>
-                  <p>Doctors see your full medical history for accurate advice.</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            className="ask-right-card card-support"
-            {...fadeInUp}
-            transition={{ delay: 0.4 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className="support-icon-circle">
-               <Icon name="support-boy" size={36} />
-            </div>
-            <h4>Need help finding?</h4>
-            <p> Our concierge team can help you select the right specialist. </p>
-            <div className="support-actions">
-              <button className="support-talk-btn">Talk to Support</button>
-            </div>
-          </motion.div>
-        </aside>
       </div>
+
+      {/* Modals */}
+      {activeModal === 'profile' && (
+        <Profile
+          onClose={() => setActiveModal(null)}
+          onAccountSettings={() => setActiveModal('account')}
+        />
+      )}
+      {activeModal === 'account' && (
+        <Account onClose={() => setActiveModal(null)} />
+      )}
+      {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
     </div>
   );
 };

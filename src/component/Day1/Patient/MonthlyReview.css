@@ -13,6 +13,29 @@
   animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.m-back-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0F2A4A;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.m-back-btn:hover {
+  background: #f8fafc;
+  transform: translateX(-5px);
+  color: #1db1c2;
+  border-color: #1db1c2;
+}
+
 .mr-breadcrumb {
   font-size: 11px;
   font-weight: 800;
