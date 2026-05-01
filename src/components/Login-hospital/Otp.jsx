@@ -161,10 +161,12 @@ const Otp = ({ isModal, onClose, onSwitchToNewPass, onSwitchToLogin }) => {
             <button
               type="button"
               onClick={() => {
-                if (isModal && onSwitchToLogin) {
+                if (onSwitchToLogin) {
                   onSwitchToLogin();
+                } else if (isModal) {
+                  if (onClose) onClose();
+                  navigate("/Finallogin");
                 } else {
-                  if (isModal && onClose) onClose();
                   navigate("/Finallogin");
                 }
               }}

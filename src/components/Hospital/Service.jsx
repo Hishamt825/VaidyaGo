@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
+import Otp from "../Login-hospital/Otp";
+import New_pass from "../Login-hospital/New_pass";
+import Logout from "../Login-hospital/Logout";
 import {
   Search, Bell, Activity, Heart, Smile, Brain,
   Clock, ClipboardList, Stethoscope, Calendar,
@@ -33,6 +36,9 @@ const Service = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const servicesData = [
@@ -846,6 +852,10 @@ const Service = () => {
             setShowLoginModal(false);
             setShowForgetModal(true);
           }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
+          }}
         />
       )}
 
@@ -866,6 +876,51 @@ const Service = () => {
           onClose={() => setShowForgetModal(false)}
           onSwitchToLogin={() => {
             setShowForgetModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
             setShowLoginModal(true);
           }}
         />

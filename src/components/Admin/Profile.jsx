@@ -27,7 +27,7 @@ const MenuItem = ({ text, img, active, onClick }) => (
   </div>
 );
 
-const Profile = () => {
+const Profile = ({ setOpenProfile }) => {
   const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -244,24 +244,45 @@ const Profile = () => {
     }
   };
 
+  const handleBackToDashboard = () => {
+    const storedRole = localStorage.getItem("user_type") || 
+                       localStorage.getItem("role") || 
+                       localStorage.getItem("usertype") || 
+                       "";
+    const role = storedRole.toLowerCase().trim();
+    console.log("DEBUG: handleBackToDashboard triggered. Role:", role, "setOpenProfile exists:", !!setOpenProfile);
+
+    // 1. Try to close the overlay if it was opened from a dashboard
+    if (setOpenProfile) {
+      console.log("DEBUG: Closing profile overlay via setOpenProfile(false)");
+      setOpenProfile(false);
+      return;
+    }
+
+    // 2. Otherwise navigate explicitly
+    if (role === "doctor") {
+      console.log("DEBUG: Navigating to Doctor Dashboard");
+      navigate("/Doctor_dashboard");
+    } else if (role === "admin") {
+      console.log("DEBUG: Navigating to Admin Dashboard");
+      navigate("/Admin_dashboard1");
+    } else if (role === "patient") {
+      navigate("/Patient_dashboard");
+    } else {
+      console.log("DEBUG: No role found, using history back");
+      navigate(-1);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/MainPage");
+  };
+
   return (
     <div className="flex h-screen bg-[#f5f8fb] overflow-hidden">
 
-      {/* LEFT ICON BAR */}
-      <div className="h-full w-14 bg-white flex flex-col items-center shadow-lg border-r border-[#19718A] py-4 rounded-full">
-        <div
-          onClick={() => navigate("/Admin_dashboard1")}
-          className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-100 cursor-pointer hover:bg-blue-200 transition-colors"
-        >
-          <img src="/assets/me.png" className="w-5 h-5" alt="" />
-        </div>
 
-        <div className="mt-10 flex flex-col gap-6">
-          <img src="/assets/d.png" className="w-6 h-6 cursor-pointer" alt="" />
-          <img src="/assets/i.png" className="w-6 h-6 cursor-pointer" alt="" />
-          <img src="/assets/app.png" className="w-6 h-6 cursor-pointer" alt="" />
-        </div>
-      </div>
 
       {/* MAIN SIDEBAR */}
       <div className="h-full w-64 bg-[#eef5f9] border-r p-6">
@@ -270,10 +291,11 @@ const Profile = () => {
         <p className="text-[14px] text-gray-500 mb-3">Personal Account</p>
 
         <nav className="flex flex-col gap-2">
+          <MenuItem text="Dashboard" img="/assets/d.png" active={false} onClick={handleBackToDashboard} />
           <MenuItem text="Your Profile" img="/assets/user.svg" active={true} onClick={() => navigate("/Profile")} />
-          <MenuItem text="Login" img="/assets/right.png" active={false} />
           <MenuItem text="Accessibility" img="/assets/ad.png" active={false} onClick={() => setIsAccessibilityModalOpen(true)} />
           <MenuItem text="Privacy Policy" img="/assets/lo.png" active={false} onClick={() => setIsPrivacyModalOpen(true)} />
+          <MenuItem text="Logout" img="/assets/right.png" active={false} onClick={handleLogout} />
         </nav>
       </div>
 

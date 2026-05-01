@@ -159,6 +159,7 @@ const Form4 = ({ onNext }) => {
 
         localStorage.setItem("document_info_id", "completed");
         alert("All Documents Uploaded Successfully ✅");
+        setTimeout(() => navigate("/Doctor_dashboard"), 10);
 
       } else if (id && isChanged) {
         // PATCH existing records
@@ -192,16 +193,19 @@ const Form4 = ({ onNext }) => {
 
         if (hasUpdates) {
           alert("Documents Updated Successfully ✏️");
+          setTimeout(() => navigate("/Doctor_dashboard"), 10);
         }
       } else {
         // No Changes
         alert("Process Completed ✅");
         setLoading(false);
+        setTimeout(() => navigate("/Doctor_dashboard"), 10);
         return;
       }
 
       await fetchDocuments();
       alert("Process Completed ✅");
+      setTimeout(() => navigate("/Doctor_dashboard"), 10);
 
     } catch (error) {
       console.error(error);

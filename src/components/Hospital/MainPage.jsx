@@ -854,6 +854,10 @@ const MainPage = () => {
             setShowLoginModal(false);
             setShowForgetModal(true);
           }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
+          }}
         />
       )}
 
@@ -891,6 +895,10 @@ const MainPage = () => {
             setShowOtpModal(false);
             setShowNewPassModal(true);
           }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
         />
       )}
 
@@ -900,6 +908,21 @@ const MainPage = () => {
           onClose={() => setShowNewPassModal(false)}
           onSwitchToLogin={() => {
             setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
             setShowLoginModal(true);
           }}
         />
