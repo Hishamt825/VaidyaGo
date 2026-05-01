@@ -5,6 +5,9 @@ import { Search, Bell, X, Info, CalendarCheck, UserPlus, ArrowRight } from "luci
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
+import Otp from "../Login-hospital/Otp";
+import New_pass from "../Login-hospital/New_pass";
+import Logout from "../Login-hospital/Logout";
 
 const HospitalNavbar = () => {
   const navigate = useNavigate();
@@ -13,6 +16,9 @@ const HospitalNavbar = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -288,6 +294,111 @@ const HospitalNavbar = () => {
           </div>
         )}
       </AnimatePresence>
+      <AuthModals 
+        states={{ showLoginModal, showSignupModal, showForgetModal, showOtpModal, showNewPassModal, showLogoutModal }}
+        setters={{ setShowLoginModal, setShowSignupModal, setShowForgetModal, setShowOtpModal, setShowNewPassModal, setShowLogoutModal }}
+      />
+    </>
+  );
+};
+
+/* Authentication Modals Component to keep the return clean */
+const AuthModals = ({ 
+  states, 
+  setters 
+}) => {
+  const { 
+    showLoginModal, showSignupModal, showForgetModal, 
+    showOtpModal, showNewPassModal, showLogoutModal 
+  } = states;
+  const { 
+    setShowLoginModal, setShowSignupModal, setShowForgetModal, 
+    setShowOtpModal, setShowNewPassModal, setShowLogoutModal 
+  } = setters;
+
+  return (
+    <>
+      {showLoginModal && (
+        <Finallogin
+          isModal={true}
+          onClose={() => setShowLoginModal(false)}
+          onSwitchToForget={() => {
+            setShowLoginModal(false);
+            setShowForgetModal(true);
+          }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
+          }}
+        />
+      )}
+
+      {showSignupModal && (
+        <Signup1
+          isModal={true}
+          onClose={() => setShowSignupModal(false)}
+          onSwitchToLogin={() => {
+            setShowSignupModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showForgetModal && (
+        <Forget
+          isModal={true}
+          onClose={() => setShowForgetModal(false)}
+          onSwitchToLogin={() => {
+            setShowForgetModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
     </>
   );
 };

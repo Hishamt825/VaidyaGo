@@ -194,27 +194,19 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
             <button
               type="button"
               onClick={() => {
-                if (isModal && onSwitchToLogin) {
+                if (onSwitchToLogin) {
                   onSwitchToLogin();
+                } else if (isModal) {
+                  if (onClose) onClose();
+                  navigate("/Finallogin");
                 } else {
-                  if (isModal && onClose) onClose();
                   navigate("/Finallogin");
                 }
               }}
-              className="text-[13px] text-gray-600 hover:text-[#19718A] flex items-center transition-colors underline underline-offset-2 font-medium bg-transparent border-none cursor-pointer"
+              className="text-[#19718A] text-sm font-semibold hover:underline bg-transparent border-none cursor-pointer flex items-center gap-1"
             >
-              <svg
-                className="w-3.5 h-3.5 mr-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               Back to Login
             </button>

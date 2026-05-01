@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
+import Otp from "../Login-hospital/Otp";
+import New_pass from "../Login-hospital/New_pass";
+import Logout from "../Login-hospital/Logout";
 import { ArrowRight, Activity, X, Brain, Clock, FileText, Smartphone, Calendar, ChevronRight } from "lucide-react";
 
 const Hero1 = () => {
@@ -12,6 +15,9 @@ const Hero1 = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [activeFeature, setActiveFeature] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
 
@@ -901,6 +907,7 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
 
       </footer>
       {/* Render Modals */}
+      {/* Render Modals */}
       {showLoginModal && (
         <Finallogin
           isModal={true}
@@ -908,6 +915,10 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
           onSwitchToForget={() => {
             setShowLoginModal(false);
             setShowForgetModal(true);
+          }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
           }}
         />
       )}
@@ -929,6 +940,51 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
           onClose={() => setShowForgetModal(false)}
           onSwitchToLogin={() => {
             setShowForgetModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
             setShowLoginModal(true);
           }}
         />

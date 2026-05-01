@@ -244,6 +244,10 @@ const App = () => {
       <Route path="/MaintenanceLog" element={<MaintenanceLog />} />
       <Route path="/RecoveryJourney" element={<RecoveryJourney />} />
       <Route path="/MonthlyReview" element={<MonthlyReview />} />
+<<<<<<< HEAD
+=======
+      <Route path="/MonthlyReview" element={<MonthlyReview />} />
+>>>>>>> 452cd2563bb32dfbfa76515dcf72576bc86a9d71
       <Route path="/ProgressReview" element={<ProgressReview />} />
     </Routes>
 

@@ -78,7 +78,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
         const targetDashboard = 
           role === "Patient" ? "/Patient_dashboard" : 
           role === "Admin" ? "/Admin_dashboard1" :
-          role === "Doctor" ? "/Doctor_dashboard" : 
+          role === "Doctor" ? "/Form1" : 
           "/Finallogin";
 
         console.log("Signup Successful, navigating to:", targetDashboard);

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import BASE_URL from "../../baseUrl";
 
-const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
+const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -289,6 +289,24 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget }) => {
             </span>
           </button>
         </div>
+        {/* Signup Link */}
+        <p className="text-sm mt-6 text-gray-600">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            onClick={() => {
+              if (isModal && onSwitchToSignup) {
+                onSwitchToSignup();
+              } else {
+                if (isModal && onClose) onClose();
+                navigate("/Signup1");
+              }
+            }}
+            className="text-black font-semibold hover:underline bg-transparent border-none cursor-pointer"
+          >
+            SIGN UP
+          </button>
+        </p>
       </div>
     </div>
   );
