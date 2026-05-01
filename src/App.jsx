@@ -117,12 +117,9 @@ import Phase3D from './component/Day1/Patient/Phase3D';
 import MaintenanceLog from './component/Day1/Patient/MaintenanceLog';
 import RecoveryJourney from './component/Day1/Patient/RecoveryJourney';
 import MonthlyReview from './component/Day1/Patient/MonthlyReview';
-<<<<<<< HEAD
 import ViewProfile from './component/Day1/Consultation/view_profile';
 import Share from './components/Patient/Share';
-=======
 import ProgressReview from './component/Day1/Patient/ProgressReview';
->>>>>>> frontend
 
 const App = () => {
   return (
@@ -247,12 +244,7 @@ const App = () => {
       <Route path="/MaintenanceLog" element={<MaintenanceLog />} />
       <Route path="/RecoveryJourney" element={<RecoveryJourney />} />
       <Route path="/MonthlyReview" element={<MonthlyReview />} />
-<<<<<<< HEAD
-      <Route path="/MonthlyReview" element={<MonthlyReview />} />
-=======
       <Route path="/ProgressReview" element={<ProgressReview />} />
-
->>>>>>> frontend
     </Routes>
 
   );

@@ -367,7 +367,9 @@ const MainPage = () => {
                         </li>
                       ))}
                     </ul>
-                    <button className="w-full bg-[#E9F3F6] hover:bg-[#19718A] text-[#19718A] hover:text-white py-2.5 rounded-[12px] text-[13px] font-bold transition-colors">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); navigate('/Makeapp'); window.scrollTo(0, 0); }}
+                      className="w-full bg-[#E9F3F6] hover:bg-[#19718A] text-[#19718A] hover:text-white py-2.5 rounded-[12px] text-[13px] font-bold transition-colors">
                       Book Appointment
                     </button>
                   </div>

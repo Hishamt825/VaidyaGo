@@ -117,11 +117,7 @@ const Clinic = () => {
                                     <Download size={18} /> Export PDF
                                 </button>
                                 <button 
-<<<<<<< HEAD
                                     onClick={() => setIsClinicRequestOpen(true)}
-=======
-                                    onClick={() => setIsRequestOpen(true)}
->>>>>>> frontend
                                     className="bg-gradient-to-r from-[#1A7785] to-[#49AAB3] text-white px-6 py-2.5 rounded-full font-bold text-[13px] hover:shadow-lg hover:shadow-[#1A7785]/20 transition-all uppercase tracking-widest flex items-center gap-2"
                                 >
                                     <Plus size={18} /> New Request
