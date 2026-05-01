@@ -3,6 +3,9 @@ import { useState, useEffect, useRef } from "react";
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
+import Otp from "../Login-hospital/Otp";
+import New_pass from "../Login-hospital/New_pass";
+import Logout from "../Login-hospital/Logout";
 
 const ContactUs = () => {
   const navigate = useNavigate();
@@ -12,6 +15,9 @@ const ContactUs = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const formRef = useRef(null);
 
   useEffect(() => {
@@ -375,13 +381,13 @@ const ContactUs = () => {
       </div>
 
       {/* ================= LOCATION SECTION ================= */}
-      <div className="max-w-4xl mx-auto px-4 mb-24">
+      <div className="max-w-7xl mx-auto px-4 mb-24">
         <h2 className="text-[20px] md:text-[22px] font-[800] text-black mb-4 uppercase tracking-wide">
           LOCATION
         </h2>
         <div className="relative border border-gray-200 rounded-[24px] overflow-hidden shadow-sm h-[380px]">
           <iframe
-            src="https://www.google.com/maps?q=Rheinstraße&output=embed"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d57002.327668612!2d83.33230635!3d26.757041749999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3991446a0c332127%3A0x81de3d9633298193!2sGorakhpur%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1714399000000!5m2!1sen!2sin"
             width="100%"
             height="100%"
             style={{ border: 0 }}
@@ -398,7 +404,7 @@ const ContactUs = () => {
               </svg>
             </button>
             <a
-              href="https://www.google.com/maps?q=Rheinstraße"
+              href="https://www.google.com/maps/place/Gorakhpur,+Uttar+Pradesh/@26.7570417,83.3323063,13z"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#19718A] text-white font-medium px-6 py-2.5 rounded-lg shadow-md hover:bg-[#08334A] transition-all text-[16px]"
@@ -438,7 +444,7 @@ const ContactUs = () => {
               <li className="flex items-center gap-2 mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/MainPage")}
+                  onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Home
@@ -448,7 +454,7 @@ const ContactUs = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/About")}
+                  onClick={() => { navigate("/About"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   About Us
@@ -458,17 +464,32 @@ const ContactUs = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Service")}
+                  onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Services
                 </button>
               </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <button
+                  onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  FAQ
+                </button>
+              </li>
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
-                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Gallery</a>
+                <button
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  Contact Us
+                </button>
               </li>
+
             </ul>
           </div>
 
@@ -535,6 +556,10 @@ const ContactUs = () => {
             setShowLoginModal(false);
             setShowForgetModal(true);
           }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
+          }}
         />
       )}
 
@@ -555,6 +580,51 @@ const ContactUs = () => {
           onClose={() => setShowForgetModal(false)}
           onSwitchToLogin={() => {
             setShowForgetModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
             setShowLoginModal(true);
           }}
         />

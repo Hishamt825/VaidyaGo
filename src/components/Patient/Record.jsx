@@ -7,6 +7,10 @@ import Profile from './Profile';
 import Account from './Account';
 import Notification from './notification';
 import AllLabReportsModal from './AllLabReportsModal';
+import Share from './Share';
+import VaccinationCertificateModal from './VaccinationCertificateModal';
+import Upload from './Upload';
+import RequestScansModal from './RequestScansModal';
 
 // Specific radiology images as requested
 import brustImg from '../../assets/brust.png';
@@ -51,8 +55,8 @@ const LabReportItem = ({ name, lab, date, status, iconType }) => {
 
 // Radiology Card
 const RadiologyCard = ({ img, title, date, location }) => (
-    <div className="min-w-[240px] bg-[#EEF5F8] p-3 rounded-[32px] shadow-sm group transition-all hover:shadow-xl hover:-translate-y-1">
-        <div className="h-[210px] rounded-[24px] overflow-hidden relative mb-4">
+    <div className="min-w-[280px] bg-[#EEF5F8] p-3 rounded-[32px] shadow-sm group transition-all hover:shadow-xl hover:-translate-y-1">
+        <div className="h-[190px] rounded-[24px] overflow-hidden relative mb-4">
             <img src={img} alt={title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
         </div>
         <div className="px-3 pb-3">
@@ -93,11 +97,15 @@ const TimelineEvent = ({ date, type, title, description, badge, badgeColor, show
 ───────────────────────────────────────────── */
 
 const Record = () => {
-    const [activeMenu, setActiveMenu] = useState('My Records');
+    const [activeMenu, setActiveMenu] = useState('My Record');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isAllReportsModalOpen, setIsAllReportsModalOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [isRequestScansModalOpen, setIsRequestScansModalOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -114,7 +122,7 @@ const Record = () => {
             />
 
             {/* Content Area */}
-            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || isAllReportsModalOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || isAllReportsModalOpen || isShareModalOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
 
                 {/* Top Navbar */}
                 <header className="h-[72px] flex items-center justify-between px-6 md:px-8 shrink-0 border-b border-white/5 mb-1 z-20">
@@ -172,11 +180,17 @@ const Record = () => {
                                 <p className="text-white/70 text-[14px] font-medium">Manage and access your full clinical history securely.</p>
                             </div>
                             <div className="flex items-center gap-4">
-                                <button className="bg-white hover:bg-gray-50 text-[#0B1F4D] px-4 py-2 rounded-full font-medium text-[13px] shadow-lg flex items-center gap-2 transition-all hover:-translate-y-1">
+                                <button 
+                                    onClick={() => setIsShareModalOpen(true)}
+                                    className="bg-white hover:bg-gray-50 text-[#0B1F4D] px-4 py-2 rounded-full font-medium text-[13px] shadow-lg flex items-center gap-2 transition-all hover:-translate-y-1"
+                                >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                     Share
                                 </button>
-                                <button className="bg-[#1A7785] hover:bg-[#125863] text-white px-4 py-2 rounded-full font-medium text-[13px] shadow-lg flex items-center gap-2 transition-all hover:-translate-y-1 border border-white/10">
+                                <button 
+                                    onClick={() => setIsUploadModalOpen(true)}
+                                    className="bg-[#1A7785] hover:bg-[#125863] text-white px-4 py-2 rounded-full font-medium text-[13px] shadow-lg flex items-center gap-2 transition-all hover:-translate-y-1 border border-white/10"
+                                >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
                                     Upload
                                 </button>
@@ -267,7 +281,10 @@ const Record = () => {
                                     </div>
                                 </div>
 
-                                <button className="w-full bg-white text-[#0B1423] py-4 rounded-2xl font-bold text-[15px] shadow-lg hover:bg-gray-50 transition-all z-10">
+                                <button 
+                                    onClick={() => setIsCertificateModalOpen(true)}
+                                    className="w-full bg-white text-[#0B1423] py-4 rounded-2xl font-bold text-[15px] shadow-lg hover:bg-gray-50 transition-all z-10"
+                                >
                                     View Certificate
                                 </button>
                             </div>
@@ -289,8 +306,8 @@ const Record = () => {
                                 <RadiologyCard img={brustImg} title="Chest X-Ray (PA View)" date="Nov 15, 2023" location="St. Mary's" />
                                 <RadiologyCard img={ctImg} title="Abdominal MRI" date="Oct 02, 2023" location="Radiance Center" />
 
-                                <div className="min-w-[240px] bg-[#EEF5F8] rounded-[32px] p-3 shadow-sm flex flex-col group transition-all hover:shadow-xl cursor-default">
-                                    <div className="h-[210px] bg-[#DAE7EB] rounded-[24px] flex flex-col items-center justify-center mb-4">
+                                <div className="min-w-[280px] bg-[#EEF5F8] rounded-[32px] p-3 shadow-sm flex flex-col group transition-all hover:shadow-xl cursor-default">
+                                    <div className="h-[190px] bg-[#DAE7EB] rounded-[24px] flex flex-col items-center justify-center mb-4">
                                         <div className="w-[36px] h-[36px] rounded-full border-[2.5px] border-[#A8BCC3] flex items-center justify-center text-[#A8BCC3]">
                                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                                 <circle cx="12" cy="12" r="1.5"/>
@@ -305,8 +322,10 @@ const Record = () => {
                                     </div>
                                 </div>
 
-                                <div className="min-w-[240px] bg-[#89B6BB] rounded-[32px] p-8 border-[2.5px] border-dashed border-[#A8C7CD] flex flex-col items-center justify-center transition-all hover:bg-[#80B0B5] cursor-pointer">
-                                    <div className="w-[48px] h-[48px] rounded-xl bg-transparent flex items-center justify-center text-[#0B2132]/80 mb-5 border border-[#0B2132]/20 shadow-sm">
+                                <div 
+                                    onClick={() => setIsRequestScansModalOpen(true)}
+                                    className="min-w-[280px] bg-[#89B6BB] rounded-[32px] p-8 border-[2.5px] border-dashed border-[#A8C7CD] flex flex-col items-center justify-center transition-all hover:bg-[#80B0B5] cursor-pointer"
+                                >                                    <div className="w-[48px] h-[48px] rounded-xl bg-transparent flex items-center justify-center text-[#0B2132]/80 mb-5 border border-[#0B2132]/20 shadow-sm">
                                         <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M12 4v16m8-8H4" />
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -379,7 +398,19 @@ const Record = () => {
                 <Account onClose={() => setActiveModal(null)} />
             )}
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
-            {isAllReportsModalOpen && <AllLabReportsModal onClose={() => setIsAllReportsModalOpen(false)} />}
+            {isAllReportsModalOpen && (
+                <AllLabReportsModal 
+                    onClose={() => setIsAllReportsModalOpen(false)} 
+                    onShareAll={() => {
+                        setIsAllReportsModalOpen(false);
+                        setIsShareModalOpen(true);
+                    }}
+                />
+            )}
+            {isShareModalOpen && <Share isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} />}
+            {isCertificateModalOpen && <VaccinationCertificateModal onClose={() => setIsCertificateModalOpen(false)} />}
+            {isUploadModalOpen && <Upload onClose={() => setIsUploadModalOpen(false)} />}
+            {isRequestScansModalOpen && <RequestScansModal onClose={() => setIsRequestScansModalOpen(false)} />}
         </div>
     );
 };

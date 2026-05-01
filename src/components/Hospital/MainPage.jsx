@@ -367,7 +367,9 @@ const MainPage = () => {
                         </li>
                       ))}
                     </ul>
-                    <button className="w-full bg-[#E9F3F6] hover:bg-[#19718A] text-[#19718A] hover:text-white py-2.5 rounded-[12px] text-[13px] font-bold transition-colors">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); navigate('/Makeapp'); window.scrollTo(0, 0); }}
+                      className="w-full bg-[#E9F3F6] hover:bg-[#19718A] text-[#19718A] hover:text-white py-2.5 rounded-[12px] text-[13px] font-bold transition-colors">
                       Book Appointment
                     </button>
                   </div>
@@ -378,7 +380,10 @@ const MainPage = () => {
           </div>
 
           <div className="flex justify-center mt-14">
-            <button className="bg-gradient-to-r from-[#19718A] to-[#0C6173] text-white px-10 py-4 rounded-full text-[15px] font-bold hover:shadow-[0_10px_30px_-10px_rgba(25,113,138,0.5)] transition-all duration-300 flex items-center gap-3 group">
+            <button 
+              onClick={() => { navigate("/Hos_consultation"); window.scrollTo(0, 0); }}
+              className="bg-gradient-to-r from-[#19718A] to-[#0C6173] text-white px-10 py-4 rounded-full text-[15px] font-bold hover:shadow-[0_10px_30px_-10px_rgba(25,113,138,0.5)] transition-all duration-300 flex items-center gap-3 group"
+            >
               View All Specialities
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -442,7 +447,7 @@ const MainPage = () => {
                 {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
                   <button
                     key={letter}
-                    onClick={() => navigate(`/Disease?letter=${letter}`)}
+                    onClick={() => { navigate(`/Disease?letter=${letter}`); window.scrollTo(0, 0); }}
                     className="w-[42px] h-[42px] rounded-[14px] bg-white shadow-sm border border-gray-300 text-[#0B2132] font-bold text-[16px] flex items-center justify-center hover:bg-[#19718A] hover:text-white hover:border-[#19718A] hover:-translate-y-1 hover:shadow-md transition-all duration-300"
                   >
                     {letter}
@@ -462,7 +467,7 @@ const MainPage = () => {
                     className="w-full outline-none text-gray-700 bg-transparent text-[16px] px-5 py-2 placeholder-gray-400"
                   />
                   <button 
-                    onClick={() => navigate(`/Disease?letter=${diseaseSearch}`)}
+                    onClick={() => { navigate(`/Disease?letter=${diseaseSearch}`); window.scrollTo(0, 0); }}
                     className="bg-[#19718A] text-white px-8 py-3 rounded-full font-bold hover:bg-[#0C6173] transition-colors shadow-sm whitespace-nowrap"
                   >
                     Search
@@ -738,7 +743,7 @@ const MainPage = () => {
               <li className="flex items-center gap-2 mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/MainPage")}
+                  onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Home
@@ -748,7 +753,7 @@ const MainPage = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/About")}
+                  onClick={() => { navigate("/About"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   About Us
@@ -758,22 +763,32 @@ const MainPage = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Service")}
+                  onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Services
+                </button>
+              </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <button
+                  onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  FAQ
                 </button>
               </li>
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Gallery")}
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
-                  Gallery
+                  Contact Us
                 </button>
               </li>
+
             </ul>
           </div>
 
@@ -841,6 +856,10 @@ const MainPage = () => {
             setShowLoginModal(false);
             setShowForgetModal(true);
           }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
+          }}
         />
       )}
 
@@ -863,7 +882,51 @@ const MainPage = () => {
             setShowForgetModal(false);
             setShowLoginModal(true);
           }}
-        // Assuming we might need to handle OTP switch later, we can pass it if we make Otp.jsx a modal
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
+            setShowLoginModal(true);
+          }}
         />
       )}
 

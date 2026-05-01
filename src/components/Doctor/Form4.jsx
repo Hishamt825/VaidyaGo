@@ -159,6 +159,7 @@ const Form4 = ({ onNext }) => {
 
         localStorage.setItem("document_info_id", "completed");
         alert("All Documents Uploaded Successfully ✅");
+        setTimeout(() => navigate("/Doctor_dashboard"), 10);
 
       } else if (id && isChanged) {
         // PATCH existing records
@@ -192,16 +193,19 @@ const Form4 = ({ onNext }) => {
 
         if (hasUpdates) {
           alert("Documents Updated Successfully ✏️");
+          setTimeout(() => navigate("/Doctor_dashboard"), 10);
         }
       } else {
         // No Changes
         alert("Process Completed ✅");
         setLoading(false);
+        setTimeout(() => navigate("/Doctor_dashboard"), 10);
         return;
       }
 
       await fetchDocuments();
       alert("Process Completed ✅");
+      setTimeout(() => navigate("/Doctor_dashboard"), 10);
 
     } catch (error) {
       console.error(error);
@@ -389,7 +393,7 @@ const DocumentUploadRow = ({
           <div className="px-5 h-full flex items-center text-[16px] font-bold text-[#475569] border-r border-slate-100 bg-slate-50 cursor-pointer">
             Browse
           </div>
-          <div className="flex-1 px-4 truncate text-[14px] font-medium text-gray-500 h-full flex items-center italic">
+          <div className="flex-1 px-4 truncate text-[14px] font-medium text-[#0D1C2E] h-full flex items-center italic">
             {displayText}
           </div>
           <input

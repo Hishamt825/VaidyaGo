@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AllLabReportsModal = ({ onClose }) => {
+const AllLabReportsModal = ({ onClose, onShareAll }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFilter, setActiveFilter] = useState('Recent');
     const [currentPage, setCurrentPage] = useState(1);
@@ -48,9 +48,12 @@ const AllLabReportsModal = ({ onClose }) => {
                         <h2 className="text-[22px] font-extrabold tracking-tight mb-0.5">All Lab Reports</h2>
                         <p className="opacity-60 text-[13px] font-medium">Manage and review your complete diagnostic history</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <button className="bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#0D1C2E] px-6 py-2.5 rounded-full text-[13.5px] font-bold flex items-center gap-2 transition-all border border-gray-100 shadow-sm">
-                            <svg className="w-4.5 h-4.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={onShareAll}
+                            className="bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#0D1C2E] px-4 py-2 rounded-full text-[12px] font-bold flex items-center gap-2 transition-all border border-gray-100 shadow-sm whitespace-nowrap"
+                        >
+                            <svg className="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                             Share All
                         </button>
                         <button onClick={onClose} className="text-[#0D1C2E] hover:opacity-40 transition-all p-1">

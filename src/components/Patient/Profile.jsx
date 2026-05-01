@@ -1,6 +1,15 @@
 import phImg from '../../assets/ph.png';
+import { useNavigate } from 'react-router-dom';
  
 const Profile = ({ onClose, onAccountSettings }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate("/MainPage");
+        if (onClose) onClose();
+    };
+
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
             {/* Backdrop with blur */}
@@ -84,7 +93,10 @@ const Profile = ({ onClose, onAccountSettings }) => {
 
                     {/* Bottom Line & Logout */}
                     <div className="w-full pt-5 border-t border-gray-100 flex justify-center">
-                        <button className="flex items-center gap-2.5 text-[#E85B5A] font-medium text-[15px] hover:opacity-70 transition-all">
+                        <button 
+                            onClick={handleLogout}
+                            className="flex items-center gap-2.5 text-[#E85B5A] font-medium text-[15px] hover:opacity-70 transition-all"
+                        >
                             <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                             </svg>

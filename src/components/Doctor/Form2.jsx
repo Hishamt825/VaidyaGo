@@ -401,7 +401,7 @@ const Input = ({ name, label, onChange, value, type = "text", placeholder }) => 
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] outline-none focus:border-[#19718A] focus:ring-1 focus:ring-[#19718A]/30"
+      className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] text-[#0D1C2E] outline-none focus:border-[#19718A] focus:ring-1 focus:ring-[#19718A]/30"
       required
     />
   </div>
@@ -415,7 +415,7 @@ const Select = ({ name, label, onChange, value, options }) => (
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] outline-none appearance-none focus:border-[#19718A] focus:ring-1 focus:ring-[#19718A]/30 text-gray-600 cursor-pointer"
+        className="w-full bg-white border border-gray-400 rounded-md px-4 py-2 text-[16px] outline-none appearance-none focus:border-[#19718A] focus:ring-1 focus:ring-[#19718A]/30 text-[#0D1C2E] cursor-pointer"
         required
       >
         {options.map(({ value: val, label: lab, disabled }, idx) => (

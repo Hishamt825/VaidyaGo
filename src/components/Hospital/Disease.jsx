@@ -4,6 +4,9 @@ import { ArrowRight } from "lucide-react";
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
+import Otp from "../Login-hospital/Otp";
+import New_pass from "../Login-hospital/New_pass";
+import Logout from "../Login-hospital/Logout";
 
 const HospitalDisease = () => {
   const navigate = useNavigate();
@@ -12,6 +15,9 @@ const HospitalDisease = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expandedDisease, setExpandedDisease] = useState(null);
   const [selectedDisease, setSelectedDisease] = useState(null);
   
@@ -246,12 +252,29 @@ const HospitalDisease = () => {
 
       </section>
 
-      {/* Hero Header */}
-      <section className="w-full bg-gradient-to-br from-[#19718A] to-[#0C6173] py-16 text-center text-white">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Medical Directory</h1>
-        <p className="text-blue-100 text-lg max-w-2xl mx-auto px-6">
-          Find comprehensive information about diseases and conditions by their first letter or full medical name.
-        </p>
+      {/* Hero Header - With Background Image */}
+      <section className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/assets/faq_hero_1.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center"
+          }}
+        />
+
+        {/* Teal Overlay */}
+        <div className="absolute inset-0 bg-[#19718A]/70"></div>
+
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight drop-shadow-md">
+            Medical Directory
+          </h1>
+          <p className="text-blue-50 text-lg max-w-2xl mx-auto px-6 font-medium drop-shadow-sm">
+            Find comprehensive information about diseases and conditions by their first letter or full medical name.
+          </p>
+        </div>
       </section>
 
       {/* Main Content */}
@@ -427,7 +450,7 @@ const HospitalDisease = () => {
               <li className="flex items-center gap-2 mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/MainPage")}
+                  onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Home
@@ -437,7 +460,7 @@ const HospitalDisease = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/About")}
+                  onClick={() => { navigate("/About"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   About Us
@@ -447,22 +470,32 @@ const HospitalDisease = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Service")}
+                  onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Services
+                </button>
+              </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <button
+                  onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  FAQ
                 </button>
               </li>
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Gallery")}
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
-                  Gallery
+                  Contact Us
                 </button>
               </li>
+
             </ul>
           </div>
 
@@ -644,10 +677,88 @@ const HospitalDisease = () => {
         </div>
       )}
 
-      {/* Modals */}
-      {showLoginModal && <Finallogin onClose={() => setShowLoginModal(false)} onSignup={() => { setShowLoginModal(false); setShowSignupModal(true); }} onForget={() => { setShowLoginModal(false); setShowForgetModal(true); }} />}
-      {showSignupModal && <Signup1 onClose={() => setShowSignupModal(false)} onLogin={() => { setShowSignupModal(false); setShowLoginModal(true); }} />}
-      {showForgetModal && <Forget onClose={() => setShowForgetModal(false)} onLogin={() => { setShowForgetModal(false); setShowLoginModal(true); }} />}
+      {/* Render Modals */}
+      {showLoginModal && (
+        <Finallogin
+          isModal={true}
+          onClose={() => setShowLoginModal(false)}
+          onSwitchToForget={() => {
+            setShowLoginModal(false);
+            setShowForgetModal(true);
+          }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
+          }}
+        />
+      )}
+
+      {showSignupModal && (
+        <Signup1
+          isModal={true}
+          onClose={() => setShowSignupModal(false)}
+          onSwitchToLogin={() => {
+            setShowSignupModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showForgetModal && (
+        <Forget
+          isModal={true}
+          onClose={() => setShowForgetModal(false)}
+          onSwitchToLogin={() => {
+            setShowForgetModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
     </div>
   );
 };

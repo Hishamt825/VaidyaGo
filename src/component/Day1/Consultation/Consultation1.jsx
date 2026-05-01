@@ -6,7 +6,7 @@ import Sidebar from '../../../components/Patient/Patient_sidebar';
 import Profile from '../../../components/Patient/Profile';
 import Account from '../../../components/Patient/Account';
 import Notification from '../../../components/Patient/notification';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import phImg from '../../../assets/ph.png';
 
 const CustomCalendar = ({ onSelect, initialDate }) => {
@@ -154,7 +154,9 @@ const MedicalIcon = ({ type }) => {
 
 const Consultation1 = () => {
   const navigate = useNavigate();
-  const [active, setActive] = useState('Home');
+  const location = useLocation();
+  const fromPath = location.state?.from;
+  const [active, setActive] = useState(fromPath === 'Appointment' ? 'Appointments' : '');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -242,15 +244,31 @@ const Consultation1 = () => {
         <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
           
           {/* Hamburger for Mobile */}
-          <button 
-              onClick={() => setIsMobileOpen(true)}
-              className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
-          >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
-              </svg>
-          </button>
-          <div className="flex-1 max-w-[280px]">
+          <div className="flex items-center gap-4">
+            <button 
+                onClick={() => setIsMobileOpen(true)}
+                className="lg:hidden text-white p-2 -ml-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+            {fromPath || location.state?.fromBook ? (
+              <button 
+                  onClick={() => {
+                      if (location.state?.fromBook) {
+                          navigate('/Patient_dashboard1', { state: { reopenBook: true } });
+                      } else {
+                          navigate(fromPath === 'Appointment' ? '/Appointment' : '/Clinic');
+                      }
+                  }}
+                  className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all border border-white/10 shrink-0 active:scale-90"
+              >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+            ) : null}
+          </div>
+          <div className="flex-1 max-w-[280px] ml-6">
             <div className="relative group">
               <input
                 type="text"
@@ -307,7 +325,7 @@ const Consultation1 = () => {
                   onClick={() => {
                     setActiveCardId(speciality.id);
                     setSelectedSpeciality(speciality.title);
-                    navigate('/Consultation_info', { state: { specialityName: speciality.title } });
+                    navigate('/Consultation_info', { state: { specialityName: speciality.title, from: fromPath } });
                   }}
                 >
                   <div 

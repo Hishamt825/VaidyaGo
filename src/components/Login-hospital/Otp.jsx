@@ -41,13 +41,14 @@ const Otp = ({ isModal, onClose, onSwitchToNewPass, onSwitchToLogin }) => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/accounts/verify-otp/`, {
+      const fullUrl = "http://13.60.96.212:8000/accounts/verify-otp/";
+      const response = await fetch(fullUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify({ otp: otpValue }),
+        body: JSON.stringify({ otp: parseInt(otpValue) }),
       });
 
       const data = await response.json();
@@ -138,7 +139,7 @@ const Otp = ({ isModal, onClose, onSwitchToNewPass, onSwitchToLogin }) => {
                 value={digit}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className="w-12 h-12 text-center text-xl font-bold bg-[#F8F9FA] border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#19718A] focus:border-transparent transition-all shadow-sm"
+                className="w-12 h-12 text-center text-xl font-bold bg-[#F8F9FA] border border-[#19718A] rounded-xl outline-none focus:ring-2 focus:ring-[#19718A] focus:border-transparent transition-all shadow-sm"
               />
             ))}
           </div>
@@ -160,10 +161,12 @@ const Otp = ({ isModal, onClose, onSwitchToNewPass, onSwitchToLogin }) => {
             <button
               type="button"
               onClick={() => {
-                if (isModal && onSwitchToLogin) {
+                if (onSwitchToLogin) {
                   onSwitchToLogin();
+                } else if (isModal) {
+                  if (onClose) onClose();
+                  navigate("/Finallogin");
                 } else {
-                  if (isModal && onClose) onClose();
                   navigate("/Finallogin");
                 }
               }}

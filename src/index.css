@@ -28,3 +28,22 @@
 .animate-pump {
   animation: pump 0.8s infinite ease-in-out;
 }
+
+/* Accessibility Modes */
+.high-contrast {
+  filter: contrast(1.2) saturate(1.5);
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+.high-contrast * {
+  border-color: #fff !important;
+}
+
+.large-text {
+  font-size: 1.15rem !important;
+}
+
+.large-text p, .large-text span, .large-text input, .large-text h2, .large-text h3 {
+  font-size: 115% !important;
+}

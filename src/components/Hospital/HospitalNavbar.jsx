@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Bell, X, Info, CalendarCheck, UserPlus, ArrowRight } from "lucide-react";
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
+import Otp from "../Login-hospital/Otp";
+import New_pass from "../Login-hospital/New_pass";
+import Logout from "../Login-hospital/Logout";
 
 const HospitalNavbar = () => {
   const navigate = useNavigate();
@@ -11,6 +16,25 @@ const HospitalNavbar = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    if (showSearch || showNotifications) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [showSearch, showNotifications]);
+
+  const notifications = [
+    { id: 1, title: "Appointment Confirmed", desc: "Your checkup with Dr. Smith is scheduled for tomorrow.", time: "2h ago", icon: <CalendarCheck className="text-green-500" />, color: "bg-green-50" },
+    { id: 2, title: "New Specialist Joined", desc: "Dr. Sarah Lee (Cardiology) is now accepting appointments.", time: "5h ago", icon: <UserPlus className="text-blue-500" />, color: "bg-blue-50" },
+    { id: 3, title: "Health Tip", desc: "Stay hydrated! Drink at least 8 glasses of water daily.", time: "1d ago", icon: <Info className="text-[#19718A]" />, color: "bg-[#19718A]/10" },
+  ];
 
   const navItems = [
     { name: "Home", path: "/MainPage" },
@@ -53,14 +77,21 @@ const HospitalNavbar = () => {
             <div className="hidden lg:flex items-center gap-4 xl:gap-6">
               <div className="w-px h-6 bg-white/40"></div>
 
-              <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
-                <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
+              <button 
+                onClick={() => setShowSearch(true)}
+                className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300 text-white"
+              >
+                <Search size={20} strokeWidth={2.5} />
               </button>
 
               <div className="w-px h-6 bg-white/40"></div>
 
-              <button className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300">
-                <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
+              <button 
+                onClick={() => setShowNotifications(true)}
+                className="p-2 hover:bg-[#0C6173] rounded-full transition-all duration-300 text-white relative"
+              >
+                <Bell size={20} strokeWidth={2.5} />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#19718A]"></span>
               </button>
 
               <button
@@ -167,7 +198,126 @@ const HospitalNavbar = () => {
         </div>
       </section>
 
-      {/* Render Modals */}
+      {/* Search Overlay */}
+      <AnimatePresence>
+        {showSearch && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSearch(false)}
+              className="absolute inset-0 bg-[#0B2132]/80 backdrop-blur-xl"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              className="relative w-full max-w-2xl mx-4"
+            >
+              <div className="bg-white rounded-[2rem] p-4 shadow-2xl flex items-center gap-4 border border-white/20">
+                <div className="p-3 bg-[#E9F3F6] rounded-2xl text-[#19718A]">
+                  <Search size={24} strokeWidth={2.5} />
+                </div>
+                <input 
+                  autoFocus
+                  type="text" 
+                  placeholder="Search doctors, services, or health topics..." 
+                  className="flex-1 bg-transparent border-none outline-none text-[#0B2132] font-semibold text-lg placeholder-gray-400"
+                />
+                <button 
+                  onClick={() => setShowSearch(false)}
+                  className="p-3 hover:bg-gray-100 rounded-2xl text-gray-400 transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                <span className="text-white/60 text-xs font-bold uppercase tracking-widest px-2">Popular:</span>
+                {["Cardiology", "Neurology", "Checkup Plans", "Best Doctors"].map(tag => (
+                  <button key={tag} className="text-white/80 hover:text-white text-xs font-bold uppercase tracking-widest hover:underline transition-all underline-offset-4">
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Notifications Dropdown */}
+      <AnimatePresence>
+        {showNotifications && (
+          <div className="fixed inset-0 z-[120] pointer-events-none">
+            <div 
+              className="absolute inset-0 pointer-events-auto"
+              onClick={() => setShowNotifications(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="absolute top-[80px] right-4 md:right-[150px] xl:right-[300px] w-full max-w-[380px] bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 overflow-hidden pointer-events-auto"
+            >
+              <div className="p-6 bg-[#F8FAFC] border-b border-gray-100 flex justify-between items-center">
+                <h3 className="text-[#0B2132] font-extrabold text-lg flex items-center gap-2">
+                  <Bell size={20} className="text-[#19718A]" />
+                  Notifications
+                </h3>
+                <span className="bg-[#19718A] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">3 New</span>
+              </div>
+              <div className="max-h-[400px] overflow-y-auto no-scrollbar">
+                {notifications.map((note) => (
+                  <div key={note.id} className="p-5 hover:bg-gray-50 transition-colors border-b border-gray-50 group cursor-pointer">
+                    <div className="flex gap-4">
+                      <div className={`w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center ${note.color}`}>
+                        {note.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="text-[#0B2132] font-bold text-sm leading-tight group-hover:text-[#19718A] transition-colors">{note.title}</h4>
+                          <span className="text-gray-400 text-[10px] font-bold">{note.time}</span>
+                        </div>
+                        <p className="text-gray-500 text-xs font-medium leading-relaxed">{note.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-4 bg-white text-center border-t border-gray-100">
+                <button className="text-[#19718A] text-xs font-bold uppercase tracking-widest flex items-center gap-2 mx-auto hover:gap-3 transition-all">
+                  View All Notifications
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      <AuthModals 
+        states={{ showLoginModal, showSignupModal, showForgetModal, showOtpModal, showNewPassModal, showLogoutModal }}
+        setters={{ setShowLoginModal, setShowSignupModal, setShowForgetModal, setShowOtpModal, setShowNewPassModal, setShowLogoutModal }}
+      />
+    </>
+  );
+};
+
+/* Authentication Modals Component to keep the return clean */
+const AuthModals = ({ 
+  states, 
+  setters 
+}) => {
+  const { 
+    showLoginModal, showSignupModal, showForgetModal, 
+    showOtpModal, showNewPassModal, showLogoutModal 
+  } = states;
+  const { 
+    setShowLoginModal, setShowSignupModal, setShowForgetModal, 
+    setShowOtpModal, setShowNewPassModal, setShowLogoutModal 
+  } = setters;
+
+  return (
+    <>
       {showLoginModal && (
         <Finallogin
           isModal={true}
@@ -175,6 +325,10 @@ const HospitalNavbar = () => {
           onSwitchToForget={() => {
             setShowLoginModal(false);
             setShowForgetModal(true);
+          }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
           }}
         />
       )}
@@ -196,6 +350,51 @@ const HospitalNavbar = () => {
           onClose={() => setShowForgetModal(false)}
           onSwitchToLogin={() => {
             setShowForgetModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
             setShowLoginModal(true);
           }}
         />

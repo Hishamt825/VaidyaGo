@@ -59,7 +59,7 @@ const Icon = ({ name, className }) => {
     plusCircle: <React.Fragment><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></React.Fragment>,
     info: <React.Fragment><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></React.Fragment>,
     device: <React.Fragment><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></React.Fragment>,
-    check: <React.Fragment><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 10"/></React.Fragment>,
+    checkCircle: <React.Fragment><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 10"/></React.Fragment>,
     shutter: <React.Fragment><circle cx="12" cy="12" r="11" strokeWidth="2.5"/><path d="M12 4l3 3h-6l3-3zM20 12l-3 3v-6l3 3zM12 20l-3-3h6l-3 3zM4 12l3-3v6l-3-3z" opacity="0.6"/><circle cx="12" cy="12" r="4" fill="currentColor"/></React.Fragment>,
   };
 

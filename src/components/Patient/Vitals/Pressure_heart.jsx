@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
 import Pressure_report from './Pressure_report';
+import NewMeasurement from './NewMeasurement';
+import Reading from './Reading';
 
 const Pressure_heart = ({ isOpen, onClose }) => {
-    const [isReportOpen, setIsReportOpen] = React.useState(false);
+    const [isMeasureOpen, setIsMeasureOpen] = useState(false);
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+    const [isReadingOpen, setIsReadingOpen] = useState(false);
     
     if (!isOpen) return null;
+
+    const handleSaveReading = () => {
+        setIsMeasureOpen(false);
+        setIsReadingOpen(true);
+    };
 
     return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
@@ -128,12 +137,13 @@ const Pressure_heart = ({ isOpen, onClose }) => {
                     {/* Action Footer */}
                     <div className="flex items-center gap-3 w-full">
                         <button 
-                            onClick={() => setIsReportOpen(true)}
+                            onClick={() => setIsMeasureOpen(true)}
                             className="flex-1 h-[56px] bg-gradient-to-r from-[#0B4052] to-[#1A7785] text-white rounded-[20px] font-bold text-[16px] shadow-xl shadow-teal-900/15 flex items-center justify-center tracking-tight transition-all active:scale-95"
                         >
                             New Measurement
                         </button>
                         <button 
+                            onClick={() => setIsHistoryOpen(true)}
                             className="w-[110px] h-[56px] rounded-[20px] border-2 border-[#F0F4F5] text-[#627382] font-bold text-[16px] bg-white transition-all active:scale-95"
                         >
                             History
@@ -142,9 +152,25 @@ const Pressure_heart = ({ isOpen, onClose }) => {
                 </div>
             </div>
 
+            <NewMeasurement 
+                isOpen={isMeasureOpen} 
+                onClose={() => setIsMeasureOpen(false)} 
+                onSave={handleSaveReading}
+            />
+
             <Pressure_report 
-                isOpen={isReportOpen} 
-                onClose={() => setIsReportOpen(false)} 
+                isOpen={isHistoryOpen} 
+                onClose={() => setIsHistoryOpen(false)} 
+            />
+
+            <Reading
+                isOpen={isReadingOpen}
+                onClose={() => setIsReadingOpen(false)}
+                onReturn={() => setIsReadingOpen(false)}
+                onViewHistory={() => {
+                    setIsReadingOpen(false);
+                    setIsHistoryOpen(true);
+                }}
             />
         </div>
     );

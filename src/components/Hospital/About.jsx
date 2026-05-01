@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
-import { ArrowRight, Activity, X } from "lucide-react";
+import Otp from "../Login-hospital/Otp";
+import New_pass from "../Login-hospital/New_pass";
+import Logout from "../Login-hospital/Logout";
+import { ArrowRight, Activity, X, Brain, Clock, FileText, Smartphone, Calendar, ChevronRight } from "lucide-react";
 
 const Hero1 = () => {
   const navigate = useNavigate();
@@ -12,6 +15,9 @@ const Hero1 = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [activeFeature, setActiveFeature] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
 
@@ -68,10 +74,10 @@ const Hero1 = () => {
                 <button
                   key={item}
                   onClick={() => {
-                    if (item === "Home") navigate("/MainPage");
-                    else if (item === "Our Service") navigate("/Service");
-                    else if (item === "Doctor") navigate("/Makeapp");
-                    else navigate(`/${item.replace(/\s+/g, "")}`);
+                    if (item === "Home") { navigate("/MainPage"); window.scrollTo(0, 0); }
+                    else if (item === "Our Service") { navigate("/Service"); window.scrollTo(0, 0); }
+                    else if (item === "Doctor") { navigate("/Makeapp"); window.scrollTo(0, 0); }
+                    else { navigate(`/${item.replace(/\s+/g, "")}`); window.scrollTo(0, 0); }
                   }}
                   className={`relative text-white font-medium tracking-wide transition-colors duration-300 hover:text-gray-300 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-white after:transition-all after:duration-300 ${item === "About" ? "after:w-full" : "after:w-0 hover:after:w-full"}`}
                 >
@@ -97,7 +103,7 @@ const Hero1 = () => {
                 </button>
 
                 <button
-                  onClick={() => navigate("/ContactUs")}
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
                   className="border-[1.2px] border-white text-white px-5 py-1.5 rounded-full font-bold text-sm transform transition-all duration-300 hover:scale-105 active:scale-95"
                 >
                   Contact Us
@@ -161,11 +167,11 @@ const Hero1 = () => {
             </div>
 
             <div className="flex flex-col space-y-6 flex-1">
-              <button onClick={() => { navigate("/MainPage"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Home</button>
-              <button onClick={() => { navigate("/About"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">About</button>
-              <button onClick={() => { navigate("/Service"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Our Service</button>
-              <button onClick={() => { navigate("/Makeapp"); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Doctor</button>
-              <button onClick={() => { setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">FAQ</button>
+              <button onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Home</button>
+              <button onClick={() => { navigate("/About"); window.scrollTo(0, 0); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">About</button>
+              <button onClick={() => { navigate("/Service"); window.scrollTo(0, 0); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Our Service</button>
+              <button onClick={() => { navigate("/Makeapp"); window.scrollTo(0, 0); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">Doctor</button>
+              <button onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); setIsMobileMenuOpen(false); }} className="text-white font-medium hover:text-gray-300 text-left text-[18px]">FAQ</button>
             </div>
 
             <div className="flex gap-6 mt-auto pt-6 border-t border-white/20 justify-center">
@@ -177,7 +183,7 @@ const Hero1 = () => {
               </button>
             </div>
             <button
-              onClick={() => { navigate("/ContactUs"); setIsMobileMenuOpen(false); }}
+              onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); setIsMobileMenuOpen(false); }}
               className="border-[1.2px] border-white text-white px-8 py-3 rounded-full font-bold transform transition-all duration-300 hover:scale-105 mt-6 text-[16px] w-full"
             >
               Contact Us
@@ -248,7 +254,10 @@ const Hero1 = () => {
             <p className="text-[14px] text-black mt-1">
               Book online appointment and get <br /> consultation to doctors
             </p>
-            <button className="mt-4 w-full bg-white border border-[#FEF4AB] py-2 rounded-full font-semibold text-black text-[16px] hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={() => { navigate("/Hos_consultation"); window.scrollTo(0, 0); }}
+              className="mt-4 w-full bg-white border border-[#FEF4AB] py-2 rounded-full font-semibold text-black text-[16px] hover:bg-gray-50 transition-colors"
+            >
               Make Appointment
             </button>
           </div>
@@ -352,7 +361,7 @@ const Hero1 = () => {
                 committed to your well-being.
               </p>
               <button
-                onClick={() => navigate("/Service")}
+                onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                 className="bg-[#19718A] text-white px-8 py-3 rounded-full shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-3 font-bold text-[16px] group"
               >
                 More Service
@@ -390,25 +399,25 @@ const Hero1 = () => {
               {
                 title: "Radiology",
                 icon: "/assets/red.png",
-                color: "bg-blue-50",
+                color: "bg-blue-200 border border-blue-300",
                 text: "Precision imaging using X-rays, MRI, and ultrasound to diagnose complex conditions."
               },
               {
                 title: "Emergency",
                 icon: "/assets/lok.png",
-                color: "bg-red-50",
+                color: "bg-red-200 border border-red-300",
                 text: "Rapid-response critical care services available 24/7 for life-saving medical attention."
               },
               {
                 title: "Laboratory",
                 icon: "/assets/lab.png",
-                color: "bg-emerald-50",
+                color: "bg-emerald-200 border border-emerald-300",
                 text: "High-quality clinical testing providing precise results for accurate diagnosis and treatment."
               },
               {
                 title: "Pharmacy",
                 icon: "/assets/phar.png",
-                color: "bg-amber-50",
+                color: "bg-amber-200 border border-amber-300",
                 text: "Expert-led procurement and sterile preparation of essential medications for all patients."
               }
             ].map((service, idx) => (
@@ -469,7 +478,7 @@ const Hero1 = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 lg:gap-24 mt-10">
 
           {/* VISION CARD */}
-          <div className="relative bg-[#D1E9F1]/40 rounded-2xl p-10 pt-20 shadow-sm border border-blue-100/50">
+          <div className="relative bg-[#D1E9F1]/40 rounded-2xl p-10 pt-20 shadow-sm border border-[#19718A]/30">
             {/* TOP CIRCLE ICON */}
             <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-32 h-32 bg-white rounded-full p-4 shadow-lg border border-gray-100 flex items-center justify-center">
               <img src="/assets/eye.png" alt="Vision" className="w-20 h-20 object-contain" />
@@ -482,7 +491,7 @@ const Hero1 = () => {
           </div>
 
           {/* MISSION CARD */}
-          <div className="relative bg-[#FADBD8]/40 rounded-2xl p-10 pt-20 shadow-sm border border-red-100/50">
+          <div className="relative bg-[#FADBD8]/40 rounded-2xl p-10 pt-20 shadow-sm border border-[#C0392B]/30">
             {/* TOP CIRCLE ICON */}
             <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-32 h-32 bg-white rounded-full p-4 shadow-lg border border-gray-100 flex items-center justify-center">
               <img src="/assets/goal.png" alt="Mission" className="w-20 h-20 object-contain" />
@@ -498,157 +507,155 @@ const Hero1 = () => {
       </section>
 
 
-      {/* ================= KEY FEATURES SECTION ================= */}
-      <section className="relative w-full max-w-7xl mx-auto px-6 py-8 lg:py-12 overflow-visible">
-
-        {/* Background Decorative Elements */}
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#E8F1F2]/40 rounded-full blur-[140px] -z-10"></div>
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#D1E9F1]/30 rounded-full blur-[120px] -z-10"></div>
-
-        <div className="text-center mb-10 relative">
+      {/* ================= SMART HEALTHCARE FEATURES SECTION ================= */}
+      <section className="relative w-full max-w-7xl mx-auto px-6 py-12 lg:py-20 overflow-visible">
+        
+        {/* Decorative Background Elements */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#19718A]/5 rounded-full blur-[100px] -z-10"></div>
+        <div className="absolute top-0 right-0 w-48 h-48 bg-purple-50 rounded-full blur-3xl -z-10 opacity-30"></div>
+        
+        <div className="text-center mb-12 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-[36px] md:text-[48px] font-bold text-[#0E4056] font-serif mb-4 tracking-tight">
+            <h2 className="text-[32px] md:text-[42px] font-black text-[#0B2132] font-serif mb-3 tracking-tight">
               Smart Healthcare <span className="text-[#19718A]">Features</span>
             </h2>
-            <p className="text-gray-500 max-w-2xl mx-auto text-[17px] leading-relaxed">
-              Experience the future of medicine with our integrated digital solutions designed for your comfort.
+            <p className="text-gray-500 max-w-2xl mx-auto text-[16px] leading-relaxed">
+              Experience the future of medicine with our integrated digital solutions.
             </p>
-            <div className="w-24 h-1.5 bg-gradient-to-r from-transparent via-[#19718A] to-transparent mx-auto mt-6 rounded-full opacity-30"></div>
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+        {/* Staggered Grid Layout */}
+        <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
           
-          {/* AI Chat (ID: 1) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveFeature(1)}
-            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
-              activeFeature === 1 
-              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
-              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
-            }`}
-          >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-              activeFeature === 1 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-            }`}>
-              <img src="/assets/ai1.png" alt="AI Chat" className="w-10 h-10 object-contain invert brightness-0" />
-            </div>
-            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 1 ? "text-white" : "text-[#0E4056]"}`}>AI Chat Assistant</h3>
-            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 1 ? "text-blue-50/90" : "text-gray-600"}`}>
-              Instant support for health queries and seamless navigation through our services using cutting-edge AI.
-            </p>
-          </motion.div>
+          {[
+            {
+              id: 1,
+              title: "AI Chat Assistant",
+              icon: <Brain size={28} />,
+              color: "from-purple-500 to-indigo-600",
+              bgColor: "bg-purple-50",
+              textColor: "text-purple-600",
+              shadow: "shadow-purple-200/50",
+              bullets: [
+                "Instant support for health queries",
+                "Seamless navigation through services",
+                "Cutting-edge AI technology"
+              ]
+            },
+            {
+              id: 2,
+              title: "Medicine Reminder",
+              icon: <Clock size={28} />,
+              color: "from-blue-500 to-cyan-600",
+              bgColor: "bg-blue-50",
+              textColor: "text-blue-600",
+              shadow: "shadow-blue-200/50",
+              bullets: [
+                "Smart medication tracking",
+                "Ensure you never miss a dose",
+                "Stay on track with recovery"
+              ]
+            },
+            {
+              id: 3,
+              title: "Prescription Upload",
+              icon: <FileText size={28} />,
+              color: "from-emerald-500 to-teal-600",
+              bgColor: "bg-emerald-50",
+              textColor: "text-emerald-600",
+              shadow: "shadow-emerald-200/50",
+              bullets: [
+                "Quick and secure submission",
+                "Faster diagnostic processing",
+                "Direct pharmacy integration"
+              ]
+            },
+            {
+              id: 4,
+              title: "Voice Interaction",
+              icon: <Smartphone size={28} />,
+              color: "from-orange-500 to-rose-600",
+              bgColor: "bg-orange-50",
+              textColor: "text-orange-600",
+              shadow: "shadow-orange-200/50",
+              bullets: [
+                "Intuitive hands-free control",
+                "Enhanced platform accessibility",
+                "Interactive voice commands"
+              ]
+            },
+            {
+              id: 5,
+              title: "Book Appointment",
+              icon: <Calendar size={28} />,
+              color: "from-[#19718A] to-[#0C6173]",
+              bgColor: "bg-cyan-50",
+              textColor: "text-[#19718A]",
+              shadow: "shadow-cyan-200/50",
+              bullets: [
+                "Effortlessly schedule visits",
+                "Access to expert specialists",
+                "Choose convenient time & date"
+              ]
+            }
+          ].map((feature, idx) => (
+            <motion.div
+              key={feature.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1 }}
+              onClick={() => {
+                if (feature.title === "Book Appointment") {
+                  navigate("/Hos_consultation");
+                  window.scrollTo(0, 0);
+                }
+              }}
+              className={`
+                group relative bg-white/80 backdrop-blur-md rounded-[2.5rem] p-8 
+                border border-gray-300 shadow-[0_8px_30px_rgba(0,0,0,0.04)] 
+                hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] 
+                flex flex-col gap-6 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.5rem)] 
+                min-w-[300px] transition-all duration-500 overflow-hidden
+                ${feature.title === "Book Appointment" ? "cursor-pointer" : ""}
+                ${idx % 2 === 1 ? 'lg:translate-y-8' : ''}
+              `}
+            >
+              {/* Background Accent */}
+              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.color} opacity-5 group-hover:opacity-10 rounded-bl-[100px] transition-opacity duration-500`}></div>
 
-          {/* Medicine Reminder (ID: 2) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveFeature(2)}
-            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
-              activeFeature === 2 
-              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
-              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
-            }`}
-          >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-              activeFeature === 2 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-            }`}>
-              <img src="/assets/med1.png" alt="Medicine" className="w-10 h-10 object-contain invert brightness-0" />
-            </div>
-            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 2 ? "text-white" : "text-[#0E4056]"}`}>Medicine Reminder</h3>
-            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 2 ? "text-blue-50/90" : "text-gray-600"}`}>
-              Smart medication tracking to ensure you never miss a dose, helping you stay on track with your recovery.
-            </p>
-          </motion.div>
+              {/* Icon Section */}
+              <div className={`
+                w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} 
+                flex items-center justify-center text-white shadow-lg 
+                group-hover:scale-110 group-hover:rotate-[8deg] transition-all duration-500
+              `}>
+                {feature.icon}
+              </div>
 
-          {/* Prescription Upload (ID: 3) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveFeature(3)}
-            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
-              activeFeature === 3 
-              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
-              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
-            }`}
-          >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-              activeFeature === 3 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-            }`}>
-              <img src="/assets/pre1.png" alt="Prescription" className="w-10 h-10 object-contain invert brightness-0" />
-            </div>
-            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 3 ? "text-white" : "text-[#0E4056]"}`}>Prescription Upload</h3>
-            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 3 ? "text-blue-50/90" : "text-gray-600"}`}>
-              Quick and secure submission of your prescriptions for faster diagnostic processing and pharmacy services.
-            </p>
-          </motion.div>
+              {/* Content Section */}
+              <div className="relative z-10 flex-1">
+                <h3 className="text-[20px] font-bold text-[#0B2132] mb-4 group-hover:text-[#19718A] transition-colors">{feature.title}</h3>
+                <ul className="space-y-3">
+                  {feature.bullets.map((bullet, i) => (
+                    <li key={i} className="flex items-start gap-3 text-gray-500 text-[14px] leading-relaxed group-hover:text-gray-700 transition-colors">
+                      <div className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${feature.color} shrink-0`}></div>
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          {/* Voice Interaction (ID: 4) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveFeature(4)}
-            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
-              activeFeature === 4 
-              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
-              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
-            }`}
-          >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-              activeFeature === 4 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-            }`}>
-              <img src="/assets/voice1.png" alt="Voice" className="w-10 h-10 object-contain invert brightness-0" />
-            </div>
-            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 4 ? "text-white" : "text-[#0E4056]"}`}>Voice Interaction</h3>
-            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 4 ? "text-blue-50/90" : "text-gray-600"}`}>
-              Intuitive hands-free control and accessibility, allowing you to interact with our platform using voice commands.
-            </p>
-          </motion.div>
-
-          {/* Book Appointment (ID: 5) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveFeature(5)}
-            className={`group relative p-8 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border-2 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col h-full ${
-              activeFeature === 5 
-              ? "bg-[#19718A] border-[#19718A] shadow-[0_20px_50px_rgba(25,113,138,0.3)] scale-[1.02]" 
-              : "bg-white border-gray-400 hover:border-[#19718A] hover:bg-blue-50/20"
-            }`}
-          >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#19718A]/5 to-transparent rounded-bl-[100px]"></div>
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${
-              activeFeature === 5 ? "bg-white/20 backdrop-blur-sm shadow-none" : "bg-gradient-to-br from-[#19718A] to-[#2db3c6] shadow-[#19718A]/20"
-            }`}>
-              <img src="/assets/book1.png" alt="Book" className="w-10 h-10 object-contain invert brightness-0" />
-            </div>
-            <h3 className={`text-[24px] font-bold mb-4 ${activeFeature === 5 ? "text-white" : "text-[#0E4056]"}`}>Book Appointment</h3>
-            <p className={`leading-relaxed text-[15.5px] ${activeFeature === 5 ? "text-blue-50/90" : "text-gray-600"}`}>
-              Effortlessly schedule visits with our expert specialists, choosing the time and date that works best for you.
-            </p>
-          </motion.div>
-
+              {/* Bottom Border Glow */}
+              <div className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${feature.color} w-0 group-hover:w-full transition-all duration-700`}></div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -665,13 +672,23 @@ const Hero1 = () => {
         {/* GRID BOX */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 place-items-center">
 
+          {/* 5. Book Appointment (Bottom Left) */}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            onClick={() => { navigate("/Hos_consultation"); window.scrollTo(0, 0); }}
+            className="absolute bottom-20 left-[5%] w-[320px] cursor-pointer group"
+          >
+          </motion.div>
+
           {/* 1 — Canteen */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             whileHover={{ y: -5, scale: 1.02 }}
-            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
+            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-gray-400
 hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shadow-[0_0_12px_rgba(93,167,194,0.3)] cursor-pointer">
             {/* IMAGE WITH HOVER SCALE */}
             <div className="overflow-hidden rounded">
@@ -694,7 +711,7 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
             viewport={{ once: true }}
             whileHover={{ y: -5, scale: 1.02 }}
             transition={{ delay: 0.1 }}
-            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
+            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-gray-400
 hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shadow-[0_0_12px_rgba(93,167,194,0.3)] cursor-pointer"
           >
             <div className="overflow-hidden rounded">
@@ -716,7 +733,7 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
             viewport={{ once: true }}
             whileHover={{ y: -5, scale: 1.02 }}
             transition={{ delay: 0.2 }}
-            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
+            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-gray-400
 hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shadow-[0_0_12px_rgba(93,167,194,0.3)] cursor-pointer">
             <div className="overflow-hidden rounded">
               <img
@@ -737,7 +754,7 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
             viewport={{ once: true }}
             whileHover={{ y: -5, scale: 1.02 }}
             transition={{ delay: 0.3 }}
-            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-[#A7C7D9]
+            className="group bg-white p-3 rounded-md shadow-md w-[260px] border border-gray-400
 hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shadow-[0_0_12px_rgba(93,167,194,0.3)] cursor-pointer"
           >
             <div className="overflow-hidden rounded">
@@ -786,7 +803,7 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
               <li className="flex items-center gap-2 mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/MainPage")}
+                  onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Home
@@ -796,7 +813,7 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/About")}
+                  onClick={() => { navigate("/About"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   About Us
@@ -806,17 +823,32 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Service")}
+                  onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors"
                 >
                   Services
                 </button>
               </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <button
+                  onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  FAQ
+                </button>
+              </li>
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
-                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Gallery</a>
+                <button
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  Contact Us
+                </button>
               </li>
+
             </ul>
           </div>
 
@@ -875,6 +907,7 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
 
       </footer>
       {/* Render Modals */}
+      {/* Render Modals */}
       {showLoginModal && (
         <Finallogin
           isModal={true}
@@ -882,6 +915,10 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
           onSwitchToForget={() => {
             setShowLoginModal(false);
             setShowForgetModal(true);
+          }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
           }}
         />
       )}
@@ -905,21 +942,62 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
             setShowForgetModal(false);
             setShowLoginModal(true);
           }}
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
+        />
+      )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
+            setShowLoginModal(true);
+          }}
         />
       )}
 
       {/* Service Details Modal */}
       {selectedService && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <div 
             className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
             onClick={() => setSelectedService(null)}
-          ></motion.div>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+          ></div>
+          <div 
             className="relative bg-white rounded-[2rem] w-full max-w-4xl overflow-hidden shadow-2xl z-[110]"
           >
             <button 
@@ -954,14 +1032,14 @@ hover:border-[#5DA7C2] transition-all duration-500 ease-out transform hover:shad
                   </ul>
                 </div>
                 <button 
-                  onClick={() => { setSelectedService(null); navigate("/Service"); }}
+                  onClick={() => { setSelectedService(null); navigate("/Service"); window.scrollTo(0, 0); }}
                   className="mt-10 bg-[#19718A] text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all"
                 >
                   View Full Services
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

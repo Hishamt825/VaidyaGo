@@ -28,9 +28,16 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!role) {
+      alert("Please select a user type (Patient, Doctor, or Admin)");
+      return;
+    }
+
     try {
-      const fullUrl = `${BASE_URL}/accounts/api/admin/signup/`;
-      console.log("Full Request URL:", fullUrl);
+      // 🌍 Using AWS IP for all roles to avoid local connection errors
+      const fullUrl = "http://13.60.96.212:8000/accounts/api/signup/";
+        
+      console.log("Submitting Signup to Production:", fullUrl);
 
       const response = await fetch(fullUrl, {
         method: "POST",
@@ -39,11 +46,11 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
           "Accept": "application/json",
         },
         body: JSON.stringify({
+          usertype: role.toLowerCase(),
           email,
-          phone: `91${phone}`, 
+          phone: `+91${phone}`, 
           password,
           confirm_password,
-          role,
         }),
       });
 
@@ -59,21 +66,30 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
       console.log("Status Code:", response.status);
 
       // ✅ Handle success
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         if (data?.token) {
           localStorage.setItem("token", data.token);
         }
+        
+        // Ensure new signups start fresh on the basic dashboard
+        localStorage.removeItem("prescriptionUploaded");
 
-        // 🚀 Role-based Redirection (Execute for both Modal and Page)
+        // 🚀 Role-based Redirection
         const targetDashboard = 
-          role === "Patient" ? "/Patient_dashboard" :
+          role === "Patient" ? "/Patient_dashboard" : 
           role === "Admin" ? "/Admin_dashboard1" :
-          role === "Doctor" ? "/Doctor_dashboard" : 
+          role === "Doctor" ? "/Form1" : 
           "/Finallogin";
 
+        console.log("Signup Successful, navigating to:", targetDashboard);
+
+        // First close the modal to clear overlays, then navigate
         if (isModal && onClose) {
-          onClose(); // Close modal first
-          navigate(targetDashboard); // Then navigate
+          onClose();
+          // Small timeout to ensure state update propagates before unmount
+          setTimeout(() => {
+            navigate(targetDashboard);
+          }, 10);
         } else {
           navigate(targetDashboard);
         }
@@ -94,7 +110,9 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
       console.error("Server error:", error);
       alert("Server error occurred. Check console for details.");
     }
-  }; const innerContent = (
+  };
+
+  const innerContent = (
     <div
       className="w-[530px] relative mt-12 flex flex-row items-start"
       onClick={(e) => e.stopPropagation()}

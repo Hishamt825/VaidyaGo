@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, Phone, Calendar, Stethoscope, ChevronDown, CalendarClock, Menu, X, User } from 'lucide-react';
+import { Search, Bell, Phone, Calendar, Stethoscope, ChevronDown, CalendarClock, Menu, X, User, Hospital, MapPin } from 'lucide-react';
 import Finallogin from "../Login-hospital/Finallogin";
 import Signup1 from "../Signup-hospital/Signup1";
 import Forget from "../Login-hospital/Forget";
+import Otp from "../Login-hospital/Otp";
+import New_pass from "../Login-hospital/New_pass";
+import Logout from "../Login-hospital/Logout";
+import Request from "./Request";
+
+import DoctorProfileModal from "./DoctorProfileModal";
+
+import HealthCheckupModal from "./HealthCheckupModal";
 
 const Makeapp = () => {
   const navigate = useNavigate();
@@ -13,6 +21,12 @@ const Makeapp = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgetModal, setShowForgetModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showNewPassModal, setShowNewPassModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showHealthCheckupModal, setShowHealthCheckupModal] = useState(false);
+  const [selectedDoctorForProfile, setSelectedDoctorForProfile] = useState(null);
   const [activeCard, setActiveCard] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
@@ -2534,15 +2548,21 @@ const Makeapp = () => {
 
       <div className="border-b border-gray-200 bg-[#F6F9FA] py-3 shadow-sm">
         <div className="max-w-[1280px] w-[90%] md:w-[85%] mx-auto flex justify-center items-center gap-4 text-[14px]">
-          <button className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]">
+          <button 
+            onClick={() => setShowRequestModal(true)}
+            className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]"
+          >
             <Phone size={16} className="text-[#64A3E3]" strokeWidth={2.5} />
             <span className="text-[#5190a0]">Request Callback</span>
           </button>
-          <button className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]">
-            <Calendar size={16} className="text-[#19718A]" strokeWidth={2.5} />
-            <span className="text-[#5190a0]">Make Appointment</span>
+          <button className="flex items-center gap-2 border border-[#19718A] bg-[#19718A] text-white rounded-full px-5 py-2 font-semibold transition-colors shadow-md text-[14px]">
+            <Calendar size={16} className="text-white" strokeWidth={2.5} />
+            <span className="text-white">Make Appointment</span>
           </button>
-          <button className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]">
+          <button 
+            onClick={() => setShowHealthCheckupModal(true)}
+            className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]"
+          >
             <Stethoscope size={16} className="text-[#19718A]" strokeWidth={2.5} />
             <span className="text-[#5190a0]">Get Health Checkup</span>
           </button>
@@ -2595,7 +2615,7 @@ const Makeapp = () => {
 
       {/* 4. DOCTOR CARDS GRID */}
       <div className="max-w-[1280px] w-[90%] md:w-[85%] mx-auto px-4 md:px-6 mt-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
 
           {doctors
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -2603,63 +2623,73 @@ const Makeapp = () => {
             <div
               key={index}
               className={`flex flex-col bg-white transition-all duration-500 ease-out cursor-pointer w-full relative font-['Montserrat',sans-serif] 
-                rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.06)] border border-gray-100 overflow-hidden
-                ${activeCard === index ? 'ring-2 ring-[#19718A]/30 scale-[1.01]' : 'hover:shadow-[0_8px_25px_rgba(0,0,0,0.1)]'}
+                rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-300 overflow-hidden
+                ${activeCard === index ? 'ring-2 ring-[#19718A]/30 scale-[1.02]' : 'hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] hover:-translate-y-2'}
               `}
               onClick={() => setActiveCard(index)}
             >
               {/* Card Body: Profile Info */}
-              <div className="p-4 flex-grow flex flex-col">
+              <div className="p-8 flex-grow flex flex-col">
                 {/* Top Row: Photo & Titles */}
-                <div className="flex gap-4 mb-3">
-                  <div className="w-[75px] h-[75px] rounded-full overflow-hidden shrink-0 border-2 border-gray-50 flex items-center justify-center bg-gray-50">
+                <div className="flex gap-6 mb-6">
+                  <div className="w-28 h-28 rounded-[2rem] overflow-hidden shrink-0 border-4 border-white shadow-md flex items-center justify-center bg-gray-50">
                     <img src={doctor.image} alt={doctor.name} className="w-full h-full object-cover" />
                   </div>
 
-                  <div className="flex flex-col">
-                    <h3 className="text-[18px] font-bold text-[#1a1a1a] leading-tight mb-0.5">{doctor.name}</h3>
-                    <p className="text-[14px] font-bold text-gray-500 uppercase tracking-tight leading-3">
+                  <div className="flex flex-col justify-center">
+                    <h3 className="text-[22px] font-bold text-[#0B2132] leading-tight mb-1.5 tracking-tight">{doctor.name}</h3>
+                    <p className="text-[14px] font-semibold text-[#19718A] uppercase tracking-wider leading-none mb-2">
                       {doctor.title}
                     </p>
-                    <p className="text-[14px] font-medium text-gray-600 mt-0.5">{doctor.department}</p>
+                    <p className="text-[15px] font-semibold text-gray-500 flex items-center gap-1.5">
+                       <Hospital size={14} />
+                       {doctor.department}
+                    </p>
                   </div>
                 </div>
 
                 {/* Specialty Pills */}
-                <div className="space-y-1.5 mb-4">
+                <div className="space-y-2 mb-8">
                   {doctor.specialties?.map((spec, i) => (
-                    <div key={i} className="bg-[#F3F4FF] rounded-md px-2.5 py-1 text-[14px] text-gray-600 font-medium leading-normal">
+                    <div key={i} className="bg-[#F0F7F9] border border-[#19718A]/10 rounded-xl px-4 py-2 text-[14px] text-[#1a4a58] font-semibold leading-normal">
                       {spec}
                     </div>
                   ))}
                 </div>
 
                 {/* Stats Row: Experience & Fees */}
-                <div className="flex items-center gap-10 mb-4">
+                <div className="flex items-center gap-12 mb-2">
                   <div className="flex flex-col">
-                    <div className="flex items-center gap-1.5">
-                      <CalendarClock className="w-3.5 h-3.5 text-gray-400" />
-                      <span className="text-[16px] font-bold text-black">{doctor.experience}</span>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="p-1.5 bg-blue-50 rounded-lg">
+                        <CalendarClock className="w-5 h-5 text-[#19718A]" />
+                      </div>
+                      <span className="text-[20px] font-bold text-[#0B2132]">{doctor.experience}</span>
                     </div>
-                    <span className="text-[11px] text-gray-400 mt-0.5">Experience</span>
+                    <span className="text-[12px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Experience</span>
                   </div>
 
+                  <div className="w-px h-10 bg-gray-100"></div>
+
                   <div className="flex flex-col">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[18px] font-bold text-black">₹ {doctor.fees}</span>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="p-1.5 bg-green-50 rounded-lg text-[#19718A]">
+                        <span className="font-bold text-[18px]">₹</span>
+                      </div>
+                      <span className="text-[22px] font-bold text-[#0B2132]">{doctor.fees}</span>
                     </div>
-                    <span className="text-[11px] text-gray-400 mt-0.5 ml-0.5">Fees</span>
+                    <span className="text-[12px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Consultation Fees</span>
                   </div>
                 </div>
 
                 {/* Extra Information */}
                 {doctor.extraInfo && (
-                  <div className="mb-4">
-                    <div className="flex items-start gap-1.5 text-[13px] text-gray-600">
+                  <div className="mt-6 pt-6 border-t border-gray-50">
+                    <div className="flex items-start gap-2 text-[14px] text-gray-600 font-medium">
                       <div className="mt-0.5">
-                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        <MapPin size={16} className="text-[#19718A]/60" />
                       </div>
-                      <div className="whitespace-pre-line leading-snug">
+                      <div className="whitespace-pre-line leading-relaxed">
                         {doctor.extraInfo}
                       </div>
                     </div>
@@ -2668,12 +2698,18 @@ const Makeapp = () => {
               </div>
 
               {/* Card Bottom: Action Buttons */}
-              <div className="flex border-t border-gray-100 h-[46px]">
-                <button className="flex-1 bg-white hover:bg-gray-50 text-gray-700 text-[14px] font-bold tracking-tight border-r border-gray-100 transition-colors uppercase">
-                  View Full Profile
+              <div className="flex border-t border-gray-200 h-[60px]">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedDoctorForProfile(doctor);
+                  }}
+                  className="flex-1 bg-white hover:bg-gray-50 text-[#19718A] text-[14px] font-bold tracking-widest border-r border-gray-200 transition-all uppercase"
+                >
+                  View Profile
                 </button>
-                <button className="flex-1 bg-[#19718A] hover:bg-[#156176] text-white text-[14px] font-bold tracking-tight transition-colors uppercase">
-                  Book An Appointment
+                <button className="flex-1 bg-[#248da5] hover:bg-[#19718A] text-white text-[14px] font-bold tracking-widest transition-all uppercase shadow-[inset_0_4px_10px_rgba(0,0,0,0.1)]">
+                  Book Appointment
                 </button>
               </div>
             </div>
@@ -2771,7 +2807,7 @@ const Makeapp = () => {
               <li className="flex items-center gap-2 mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/MainPage")}
+                  onClick={() => { navigate("/MainPage"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors text-left"
                 >
                   Home
@@ -2781,7 +2817,7 @@ const Makeapp = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/About")}
+                  onClick={() => { navigate("/About"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors text-left"
                 >
                   About Us
@@ -2791,17 +2827,32 @@ const Makeapp = () => {
               <li className="flex items-center gap-2 font-serif mb-4">
                 <span className="text-white text-sm">▶</span>
                 <button
-                  onClick={() => navigate("/Service")}
+                  onClick={() => { navigate("/Service"); window.scrollTo(0, 0); }}
                   className="hover:text-[#AEE8F5] transition-colors text-left"
                 >
                   Services
                 </button>
               </li>
+              <li className="flex items-center gap-2 font-serif mb-4">
+                <span className="text-white text-sm">▶</span>
+                <button
+                  onClick={() => { navigate("/FAQ"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  FAQ
+                </button>
+              </li>
 
               <li className="flex items-center gap-2 font-serif">
                 <span className="text-white text-sm">▶</span>
-                <a href="#" className="hover:text-[#AEE8F5] transition-colors">Gallery</a>
+                <button
+                  onClick={() => { navigate("/ContactUs"); window.scrollTo(0, 0); }}
+                  className="hover:text-[#AEE8F5] transition-colors"
+                >
+                  Contact Us
+                </button>
               </li>
+
             </ul>
           </div>
 
@@ -2859,6 +2910,7 @@ const Makeapp = () => {
         {/* === Bottom Line === */}
 
       </footer>
+
       {/* Render Modals */}
       {showLoginModal && (
         <Finallogin
@@ -2867,6 +2919,10 @@ const Makeapp = () => {
           onSwitchToForget={() => {
             setShowLoginModal(false);
             setShowForgetModal(true);
+          }}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
           }}
         />
       )}
@@ -2890,8 +2946,69 @@ const Makeapp = () => {
             setShowForgetModal(false);
             setShowLoginModal(true);
           }}
+          onSwitchToOtp={() => {
+            setShowForgetModal(false);
+            setShowOtpModal(true);
+          }}
         />
       )}
+
+      {showOtpModal && (
+        <Otp
+          isModal={true}
+          onClose={() => setShowOtpModal(false)}
+          onSwitchToNewPass={() => {
+            setShowOtpModal(false);
+            setShowNewPassModal(true);
+          }}
+          onSwitchToLogin={() => {
+            setShowOtpModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      {showNewPassModal && (
+        <New_pass
+          isModal={true}
+          onClose={() => setShowNewPassModal(false)}
+          onSwitchToLogin={() => {
+            setShowNewPassModal(false);
+            setShowLoginModal(true);
+          }}
+          onSwitchToLogout={() => {
+            setShowNewPassModal(false);
+            setShowLogoutModal(true);
+          }}
+        />
+      )}
+
+      {showLogoutModal && (
+        <Logout
+          isModal={true}
+          onClose={() => setShowLogoutModal(false)}
+          onSwitchToLogin={() => {
+            setShowLogoutModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
+
+      <Request 
+        isOpen={showRequestModal} 
+        onClose={() => setShowRequestModal(false)} 
+      />
+
+      <DoctorProfileModal
+        doctor={selectedDoctorForProfile}
+        isOpen={!!selectedDoctorForProfile}
+        onClose={() => setSelectedDoctorForProfile(null)}
+      />
+
+      <HealthCheckupModal
+        isOpen={showHealthCheckupModal}
+        onClose={() => setShowHealthCheckupModal(false)}
+      />
     </div>
 
   );

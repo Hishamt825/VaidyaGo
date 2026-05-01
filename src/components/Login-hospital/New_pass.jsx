@@ -25,18 +25,14 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
     }
 
     const payload = {
+      email: contact,
       password: newPassword,
       confirm_password: confirmPassword
     };
 
-    if (contact.includes("@")) {
-      payload.email = contact;
-    } else {
-      payload.phone = contact;
-    }
-
     try {
-      const response = await fetch(`${BASE_URL}/accounts/reset-password/`, {
+      const fullUrl = "http://13.60.96.212:8000/accounts/reset-password/";
+      const response = await fetch(fullUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,7 +142,7 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
                 placeholder="Enter new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full text-sm px-4 py-3 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
+                className="w-full text-sm text-black px-4 py-3 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
               />
             </div>
           </div>
@@ -176,7 +172,7 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full text-sm px-4 py-3 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
+                className="w-full text-sm text-black px-4 py-3 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
               />
             </div>
           </div>
@@ -198,27 +194,19 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
             <button
               type="button"
               onClick={() => {
-                if (isModal && onSwitchToLogin) {
+                if (onSwitchToLogin) {
                   onSwitchToLogin();
+                } else if (isModal) {
+                  if (onClose) onClose();
+                  navigate("/Finallogin");
                 } else {
-                  if (isModal && onClose) onClose();
                   navigate("/Finallogin");
                 }
               }}
-              className="text-[13px] text-gray-600 hover:text-[#19718A] flex items-center transition-colors underline underline-offset-2 font-medium bg-transparent border-none cursor-pointer"
+              className="text-[#19718A] text-sm font-semibold hover:underline bg-transparent border-none cursor-pointer flex items-center gap-1"
             >
-              <svg
-                className="w-3.5 h-3.5 mr-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               Back to Login
             </button>

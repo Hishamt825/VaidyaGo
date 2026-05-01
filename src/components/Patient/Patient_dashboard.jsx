@@ -21,6 +21,13 @@ const Patient_dashboard = () => {
 
     const navigate = useNavigate();
 
+    React.useEffect(() => {
+        const uploaded = localStorage.getItem('prescriptionUploaded');
+        if (uploaded === 'true') {
+            navigate('/Patient_dashboard1');
+        }
+    }, [navigate]);
+
     return (
         <div
             className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
@@ -145,6 +152,7 @@ const Patient_dashboard = () => {
                     text-white text-[14px] font-semibold px-[24px] py-[12px] rounded-full shadow-[0_10px_25px_rgba(11,37,61,0.3)] hover:scale-[1.05] transition-all cursor-pointer">
                                     <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={(e) => {
                                         if (e.target.files && e.target.files.length > 0) {
+                                            localStorage.setItem('prescriptionUploaded', 'true');
                                             navigate('/Patient_dashboard1');
                                         }
                                     }} />

@@ -5,22 +5,27 @@ import BASE_URL from "../../baseUrl";
 
 const Forget = ({ isModal, onClose, onSwitchToLogin, onSwitchToOtp }) => {
   const navigate = useNavigate();
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!phone) {
-      setError("Please enter your phone number");
+    if (!email) {
+      setError("Please enter your email");
       return;
     }
 
-    const payload = phone.includes("@") ? { email: phone } : { phone: phone };
+    // Using 'email' key as confirmed for Gmail delivery
+    const payload = { email: email };
+    const fullUrl = `${BASE_URL}/accounts/send-otp/`;
+
+    console.log("SEND_OTP_DEBUG: Sending to ->", fullUrl);
+    console.log("SEND_OTP_DEBUG: Payload ->", payload);
 
     try {
-      const response = await fetch(`${BASE_URL}/accounts/send-otp/`, {
+      const response = await fetch(fullUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,10 +35,11 @@ const Forget = ({ isModal, onClose, onSwitchToLogin, onSwitchToOtp }) => {
       });
 
       const data = await response.json();
+      console.log("SEND_OTP_DEBUG: Backend Response ->", data);
 
       if (response.ok) {
         // Success: save contact for reset-password API
-        localStorage.setItem("resetContact", phone);
+        localStorage.setItem("resetContact", email);
 
         if (isModal && onSwitchToOtp) {
           onSwitchToOtp();
@@ -43,7 +49,7 @@ const Forget = ({ isModal, onClose, onSwitchToLogin, onSwitchToOtp }) => {
         }
       } else {
         // Error from backend
-        setError(data.message || data.error || "Failed to send OTP");
+        setError(data.message || data.error || "Failed to send OTP. Check if email is registered.");
       }
     } catch (err) {
       console.error("Error sending OTP:", err);
@@ -94,15 +100,15 @@ const Forget = ({ isModal, onClose, onSwitchToLogin, onSwitchToOtp }) => {
       </div>
 
       {/* Content Container */}
-      <div className="relative pt-[65px] px-8 pb-6 flex flex-col items-center z-10">
+      <div className="relative pt-[80px] px-8 pb-10 flex flex-col items-center z-10">
         {/* Title & Subtitle */}
         <h2 className="text-[28px] font-bold text-[#19718A] mt-2 mb-1 text-center leading-tight">
           Forget Password?
         </h2>
-        <p className="text-gray-600 text-sm text-center mb-8 px-4 leading-snug">
-          please enter the Email or Phone Number
+        <p className="text-gray-600 text-sm text-center mb-12 px-4 leading-snug">
+          please enter your Email
           <br />
-          to get the OTP
+          to get the OTP on your Gmail
         </p>
 
         {/* Error Display */}
@@ -130,48 +136,37 @@ const Forget = ({ isModal, onClose, onSwitchToLogin, onSwitchToOtp }) => {
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
-              Enter Email/Phone Number
+              Enter Email Address
             </label>
 
             {/* Input Field */}
             <div className="rounded-md shadow-[0_2px_8px_rgba(25,113,138,0.2)]">
               <input
-                type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Email/Number"
-                className="w-full text-sm px-4 py-3.5 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email Address"
+                className="w-full text-sm text-black px-4 py-3.5 bg-white border border-[#19718A] rounded-md outline-none placeholder-gray-400 focus:ring-1 focus:ring-[#19718A] transition-all"
               />
             </div>
           </div>
 
           {/* Back Link */}
-          <div className="mb-8 pl-1">
+          <div className="mb-12 pl-1">
             <button
               type="button"
               onClick={() => {
-                if (isModal && onSwitchToLogin) {
+                if (onSwitchToLogin) {
                   onSwitchToLogin();
+                } else if (isModal) {
+                  if (onClose) onClose();
+                  navigate("/Finallogin");
                 } else {
-                  if (isModal && onClose) onClose();
                   navigate("/Finallogin");
                 }
               }}
-              className="text-[13px] text-gray-600 hover:text-gray-800 flex items-center transition-colors underline underline-offset-2 bg-transparent border-none cursor-pointer"
+              className="text-[#19718A] text-sm font-semibold hover:underline bg-transparent border-none cursor-pointer"
             >
-              <svg
-                className="w-3.5 h-3.5 mr-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
               Back to page
             </button>
           </div>

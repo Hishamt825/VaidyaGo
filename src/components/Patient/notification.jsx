@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const NotificationItem = ({ 
     type, 
@@ -51,6 +51,32 @@ const NotificationItem = ({
 };
 
 const Notification = ({ onClose }) => {
+    useEffect(() => {
+        const registerDevice = async () => {
+            const token = localStorage.getItem('token') || localStorage.getItem('access');
+            const userId = localStorage.getItem('user_id') || 1; 
+            
+            if (!token) return;
+
+            try {
+                await fetch('http://13.60.96.212:8000/notifications/devices/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        fcm_token: "abc123token",
+                        user: parseInt(userId)
+                    })
+                });
+            } catch (error) {
+                console.error("Notification Registration Error:", error);
+            }
+        };
+        registerDevice();
+    }, []);
+
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4 font-serif antialiased">
             {/* Main Window */}

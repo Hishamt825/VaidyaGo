@@ -10,6 +10,7 @@ import Tomorrow from './Tomorrow';
 import Message from './Message';
 import Cancel from './Cancel';
 import Concierge from './Concierge';
+import Direction from './Direction';
 
 const View_request = () => {
     const navigate = useNavigate();
@@ -22,6 +23,7 @@ const View_request = () => {
     const [isMessageOpen, setIsMessageOpen] = useState(false);
     const [isCancelOpen, setIsCancelOpen] = useState(false);
     const [isConciergeOpen, setIsConciergeOpen] = useState(false);
+    const [isDirectionOpen, setIsDirectionOpen] = useState(false);
 
     const medications = [
         { name: 'Lisinopril', dose: '10mg Oral Tablet', freq: 'Once daily (morning)', qty: 30 },
@@ -35,7 +37,7 @@ const View_request = () => {
             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
 
             {/* Main Content Wrapper */}
-            <div className={`flex h-full w-full transition-all duration-300 ${activeModal || isNotificationOpen || isProgressOpen || isTomorrowOpen || isMessageOpen || isCancelOpen || isConciergeOpen ? 'blur-[8px] scale-[0.98]' : ''}`}>
+            <div className={`flex h-full w-full transition-all duration-300 ${activeModal || isNotificationOpen || isProgressOpen || isTomorrowOpen || isMessageOpen || isCancelOpen || isConciergeOpen || isDirectionOpen ? 'blur-[8px] scale-[0.98]' : ''}`}>
 
                 <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
@@ -307,7 +309,10 @@ const View_request = () => {
                                                 <p className="text-[13px] text-[#627382] font-medium">08:00 AM – 09:00 PM</p>
                                             </div>
                                         </div>
-                                        <button className="w-full bg-[#0D1C2E] text-white py-3.5 rounded-full font-bold text-[15px] flex items-center justify-center gap-2.5 shadow-xl hover:bg-[#152536] transition-all mt-4 group">
+                                        <button 
+                                            onClick={() => setIsDirectionOpen(true)}
+                                            className="w-full bg-[#0D1C2E] text-white py-3.5 rounded-full font-bold text-[15px] flex items-center justify-center gap-2.5 shadow-xl hover:bg-[#152536] transition-all mt-4 group active:scale-95"
+                                        >
                                             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="m3 11 19-9-9 19-2-8-8-2Z" />
                                             </svg>
@@ -362,6 +367,7 @@ const View_request = () => {
             {isMessageOpen && <Message onClose={() => setIsMessageOpen(false)} />}
             {isCancelOpen && <Cancel onClose={() => setIsCancelOpen(false)} onConfirm={() => setIsCancelOpen(false)} />}
             {isConciergeOpen && <Concierge onClose={() => setIsConciergeOpen(false)} />}
+            {isDirectionOpen && <Direction onClose={() => setIsDirectionOpen(false)} />}
         </div>
     );
 };
