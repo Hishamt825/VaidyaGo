@@ -285,7 +285,7 @@ const Body = () => {
             </div>
         </header>
 
-        <main className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 overflow-y-auto pb-[64px]">
 
         <div className="welcome-text-container">
            <h1>Welcome to VaidyaGo</h1>
@@ -302,13 +302,7 @@ const Body = () => {
 
         <div className="anatomical-view">
           <div className="body-container">
-            <img 
-              src={isFront ? frontalBody : backBody} 
-              alt="Primary Body" 
-              className="human-body-img" 
-              onClick={toggleView}
-              style={{ cursor: 'pointer' }}
-            />
+            <img src={isFront ? frontalBody : backBody} alt="Primary Body" className="human-body-img" />
             
             {isFront && (
               <>
@@ -395,7 +389,13 @@ const Body = () => {
             )}
           </div>
           
-          {/* Secondary model removed as requested */}
+          <img 
+            src={isFront ? backBody : frontalBody} 
+            alt="Secondary Body" 
+            className="secondary-model" 
+            onClick={toggleView}
+            style={{ cursor: 'pointer' }}
+          />
 
           <div className="bottom-controls">
             <button className="control-btn" onClick={toggleView}><Icon name="rotate" /></button>
