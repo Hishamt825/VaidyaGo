@@ -37,7 +37,7 @@ const Recent_patient = () => {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col bg-white overflow-hidden">
-                <div className="flex-1 overflow-auto bg-[#f8fafc] p-8 min-h-0">
+                <div className="flex-1 overflow-auto bg-white p-8 min-h-0">
                     <div className="max-w-[1400px] mx-auto bg-white border border-gray-100 rounded-3xl shadow-sm p-6">
                         <div className="mb-6 px-4">
                             <h1 className="text-[30px] font-bold text-[#111] mb-4">Recent Patients</h1>

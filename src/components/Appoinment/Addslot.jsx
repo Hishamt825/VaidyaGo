@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/lo.svg';
 import Side_app from './Side_app';
+import './Dsetting.css';
+import apiFetch from '../../api';
+import BASE_URL from '../../baseUrl';
 
 import appointmentIcon from '../../assets/appointment.svg';
 import totalPatientsIcon from '../../assets/total_patients.svg';
@@ -11,26 +14,7 @@ import emergencyIcon from '../../assets/emergency.svg';
 import doctorImg from '../../assets/image_76.svg';
 
 
-// Reusing same navItems layout logic but with "Add Slots" added at the bottom
-// Slots and other constants remain unchanged
-
-const slots = [
-   { id: 1, type: 'available', time: '2:00-2:20AM', switchActive: true },
-   { id: 2, type: 'break', time: '2:00-2:40 AM', switchActive: false, title: 'Doctor Break', subtitle: "Reason:Doctor's Break Time" },
-   { id: 3, type: 'booked', time: '2:00-3:00AM', switchActive: false, title: 'Rahul Verma', subtitle: 'Booking ID : #A234B6' },
-   { id: 4, type: 'break', time: '2:00-2:40 AM', switchActive: false, title: 'Doctor Break', subtitle: "Reason:Doctor's Break Time" },
-   { id: 5, type: 'available', time: '2:00-2:20AM', switchActive: true },
-   { id: 6, type: 'break', time: '2:00-2:40 AM', switchActive: false, title: 'Doctor Break', subtitle: "Reason:Doctor's Break Time" },
-   { id: 7, type: 'booked', time: '2:00-3:00AM', switchActive: false, title: 'Rahul Verma', subtitle: 'Booking ID : #A23468' },
-   { id: 8, type: 'break', time: '2:00-2:40 AM', switchActive: false, title: 'Doctor Break', subtitle: "Reason:Doctor's Break Time" },
-   { id: 9, type: 'available', time: '2:00-2:20AM', switchActive: true },
-   { id: 10, type: 'available', time: '2:00-2:20AM', switchActive: true },
-   { id: 11, type: 'booked', time: '2:00-3:00AM', switchActive: false, title: 'Rahul Verma', subtitle: 'Booking ID : #A234B6' },
-   { id: 12, type: 'break', time: '2:00-2:40 AM', switchActive: false, title: 'Doctor Break', subtitle: "Reason:Doctor's Break Time" },
-   { id: 13, type: 'booked', time: '2:00-3:00AM', switchActive: false, title: 'Rahul Verma', subtitle: 'Booking ID : #A234B6' },
-   { id: 14, type: 'break', time: '2:00-2:40 AM', switchActive: false, title: 'Doctor Break', subtitle: "Reason:Doctor's Break Time" },
-   { id: 15, type: 'available', time: '2:00-2:20AM', switchActive: true },
-];
+// Slots will be fetched from API
 
 
 const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -41,11 +25,20 @@ const calendarDays = ['27', '28', '29', '30', '31', '1', '2',
    '17', '18', '19', '20', '21', '22', '23',
    '24', '25', '26', '27', '28', '29', '30'];
 
-const CustomModalDatePicker = ({ initialActiveIndex, initialMonth, initialYear }) => {
+const CustomModalDatePicker = ({ initialActiveIndex, initialMonth, initialYear, onDateChange }) => {
    const [isOpen, setIsOpen] = useState(false);
    const [activeDateIndex, setActiveDateIndex] = useState(initialActiveIndex);
    const [viewMonth, setViewMonth] = useState(initialMonth);
    const [viewYear, setViewYear] = useState(initialYear);
+
+   useEffect(() => {
+      if (onDateChange) {
+         const day = calendarDays[activeDateIndex].padStart(2, '0');
+         const monthIdx = monthsList.indexOf(viewMonth) + 1;
+         const month = monthIdx < 10 ? `0${monthIdx}` : monthIdx;
+         onDateChange(`${viewYear}-${month}-${day}`);
+      }
+   }, [activeDateIndex, viewMonth, viewYear]);
 
    const [isMonthOpen, setIsMonthOpen] = useState(false);
    const [isYearOpen, setIsYearOpen] = useState(false);
@@ -347,6 +340,73 @@ const Addslot = () => {
 
    const [fromTime, setFromTime] = useState('09:00');
    const [toTime, setToTime] = useState('14:00');
+   const [fromDate, setFromDate] = useState('2026-02-13');
+   const [toDate, setToDate] = useState('2026-02-19');
+   const [slots, setSlots] = useState([]);
+   const [isLoading, setIsLoading] = useState(false);
+   const [message, setMessage] = useState({ text: '', type: '' });
+
+   const fetchSlots = async () => {
+      try {
+         const response = await apiFetch(`${BASE_URL}/api/doctor-slots/?doctor=1`);
+         if (response.ok) {
+            const data = await response.json();
+            // Map backend data to UI format
+            const mappedSlots = data.map(item => ({
+               id: item.id,
+               type: item.status?.toLowerCase() || 'available', // Fallback to available
+               time: `${item.from_time?.slice(0, 5)} - ${item.to_time?.slice(0, 5)}`,
+               title: item.title || (item.status === 'break' ? 'Doctor Break' : 'Available'),
+               subtitle: item.subtitle || (item.status === 'booked' ? `Booking ID: #${item.id}` : '')
+            }));
+            setSlots(mappedSlots);
+         }
+      } catch (error) {
+         console.error('Error fetching slots:', error);
+      }
+   };
+
+   useEffect(() => {
+      fetchSlots();
+   }, []);
+
+   const handleSave = async () => {
+      setIsLoading(true);
+      setMessage({ text: '', type: '' });
+
+      const payload = {
+         doctor: 1, // Placeholder as per user example
+         from_date: fromDate,
+         to_date: toDate,
+         from_time: fromTime,
+         to_time: toTime,
+         slot_duration: parseInt(slotDuration, 10)
+      };
+
+      try {
+         const response = await apiFetch(`${BASE_URL}/api/doctor-slots/`, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+         });
+
+         if (response.ok) {
+            setMessage({ text: 'Slots created successfully!', type: 'success' });
+            fetchSlots(); // Refresh slots after successful save
+            setTimeout(() => {
+               setIsAddSlotModalOpen(false);
+               setMessage({ text: '', type: '' });
+            }, 2000);
+         } else {
+            const errorData = await response.json();
+            setMessage({ text: errorData.detail || 'Failed to create slots.', type: 'error' });
+         }
+      } catch (error) {
+         console.error('Error saving slots:', error);
+         setMessage({ text: 'An error occurred while saving.', type: 'error' });
+      } finally {
+         setIsLoading(false);
+      }
+   };
 
    const formatModalTime = (t) => {
       if (!t) return '';
@@ -499,10 +559,12 @@ const Addslot = () => {
    const formattedPopupDate = `${calendarDays[popupActiveDateIndex]}/${popupSelectedMonth.slice(0, 3).toLowerCase()}/${popupSelectedYear}`;
 
    return (
-      <div className="flex h-screen w-full bg-[#f4f7fa] font-sans text-sm overflow-hidden text-gray-700">
+      <div className="flex h-screen w-full bg-white font-sans text-sm overflow-hidden text-gray-700">
 
          {/* Shared Sidebar */}
-         <Side_app active={activeNav} setActive={setActiveNav} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+         <div className={`${isAddSlotModalOpen ? 'blur-[2px] pointer-events-none' : ''} transition-all duration-300`}>
+            <Side_app active={activeNav} setActive={setActiveNav} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+         </div>
 
          {/* Main Container */}
          <main className="flex-1 flex flex-col bg-white overflow-hidden">
@@ -510,7 +572,7 @@ const Addslot = () => {
             {/* Header */}
             <header className="h-[74px] flex flex-row items-center justify-between px-4 md:px-8 shrink-0 bg-white">
                <div className="flex items-center flex-1 max-w-[700px] gap-[10px] md:gap-[12px]">
-                  <button 
+                  <button
                      onClick={() => setIsMobileOpen(true)}
                      className="w-[38px] h-[38px] border-[1.5px] border-gray-200 rounded-[6px] shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col items-start justify-center pl-[9px] gap-[3px] bg-white hover:bg-gray-50 transition-colors shrink-0 lg:hidden"
                   >
@@ -768,62 +830,72 @@ const Addslot = () => {
                </div>
 
 
-                  {/* Legend area */}
-                  <div className="flex gap-[40px] mb-5 items-center">
-                     <div className="font-bold text-gray-800 text-[13px] tracking-wide">Date : &nbsp; {formattedPopupDate}</div>
-                     <div className="flex gap-[28px] ml-[6px]">
-                        <div className="flex items-center gap-[10px] font-bold text-gray-800 text-[13px]">
-                           <div className="w-[20px] h-[14px] bg-[#a2d2e1] rounded-[2px] opacity-90"></div> Available
-                        </div>
-                        <div className="flex items-center gap-[10px] font-bold text-gray-800 text-[13px]">
-                           <div className="w-[20px] h-[14px] bg-[#7bba84] rounded-[2px] opacity-90"></div> Booked
-                        </div>
-                        <div className="flex items-center gap-[10px] font-bold text-gray-800 text-[13px]">
-                           <div className="w-[20px] h-[14px] bg-[#f2eaba] rounded-[2px] opacity-90"></div> Blocked/Break
-                        </div>
+               {/* Legend area */}
+               <div className="flex gap-[40px] mb-5 items-center">
+                  <div className="font-bold text-gray-800 text-[13px] tracking-wide">Date : &nbsp; {formattedPopupDate}</div>
+                  <div className="flex gap-[28px] ml-[6px]">
+                     <div className="flex items-center gap-[10px] font-bold text-gray-800 text-[13px]">
+                        <div className="w-[20px] h-[14px] bg-[#a2d2e1] rounded-[2px] opacity-90"></div> Available
                      </div>
-                  </div>
-
-                  {/* Grid of Slots */}
-                  <div className="grid grid-cols-3 gap-x-[20px] gap-y-[20px] pb-2 overflow-y-auto max-h-[460px] scroll-smooth px-1 pt-1" style={{ scrollbarWidth: 'thin' }}>
-                     {slots.map(renderSlot)}
-                  </div>
-
-               </div>
-
-               {/* Floating Bot Icon */}
-               <div
-                  className="fixed bottom-10 right-10 z-50 touch-none select-none group"
-                  style={{ transform: `translate(${dragPos.x}px, ${dragPos.y}px)`, cursor: isDragging ? 'grabbing' : 'grab' }}
-                  onMouseDown={handlePointerDown}
-                  onTouchStart={handlePointerDown}
-                  onClick={(e) => {
-                     if (dragRef.current.hasMoved) {
-                        e.preventDefault();
-                        return;
-                     }
-                     navigate('/Bot');
-                  }}
-               >
-                  <div className="w-[54px] h-[54px] bg-[#1a738c] rounded-[24px] flex justify-center items-center shadow-lg border-[2px] border-[#a0cddb] hover:bg-[#155b70] transition-colors relative" style={{ borderRadius: '50% 50% 50% 12px' }}>
-                     <svg className="w-[28px] h-[28px] text-white pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2a2 2 0 012 2v2h2a4 4 0 014 4v7a4 4 0 01-4 4H8a4 4 0 01-4-4v-7a4 4 0 014-4h2V4a2 2 0 012-2zm0 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-3.5-5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
-                     </svg>
-                     <div className="absolute top-[0px] right-[-6px] bg-[#65d065] text-white text-[10px] font-extrabold px-[6px] py-[3px] rounded-[6px] rounded-bl-sm tracking-widest shadow-sm border border-[#52af52] leading-none pointer-events-none">
-                        ...
+                     <div className="flex items-center gap-[10px] font-bold text-gray-800 text-[13px]">
+                        <div className="w-[20px] h-[14px] bg-[#7bba84] rounded-[2px] opacity-90"></div> Booked
+                     </div>
+                     <div className="flex items-center gap-[10px] font-bold text-gray-800 text-[13px]">
+                        <div className="w-[20px] h-[14px] bg-[#f2eaba] rounded-[2px] opacity-90"></div> Blocked/Break
                      </div>
                   </div>
                </div>
+
+               {/* Grid of Slots */}
+               <div className="grid grid-cols-3 gap-x-[20px] gap-y-[20px] pb-2 overflow-y-auto max-h-[460px] scroll-smooth px-1 pt-1" style={{ scrollbarWidth: 'thin' }}>
+                  {slots.length > 0 ? (
+                     slots.map(renderSlot)
+                  ) : (
+                     <div className="col-span-3 flex flex-col items-center justify-center py-[80px] text-gray-400 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                        <svg className="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-[16px] font-bold">No slots added yet.</p>
+                        <p className="text-[12px] mt-1">Click "Add Slots" to create your schedule.</p>
+                     </div>
+                  )}
+               </div>
+
+            </div>
+
+            {/* Floating Bot Icon */}
+            <div
+               className="fixed bottom-10 right-10 z-50 touch-none select-none group"
+               style={{ transform: `translate(${dragPos.x}px, ${dragPos.y}px)`, cursor: isDragging ? 'grabbing' : 'grab' }}
+               onMouseDown={handlePointerDown}
+               onTouchStart={handlePointerDown}
+               onClick={(e) => {
+                  if (dragRef.current.hasMoved) {
+                     e.preventDefault();
+                     return;
+                  }
+                  navigate('/Bot');
+               }}
+            >
+               <div className="w-[54px] h-[54px] bg-[#1a738c] rounded-[24px] flex justify-center items-center shadow-lg border-[2px] border-[#a0cddb] hover:bg-[#155b70] transition-colors relative" style={{ borderRadius: '50% 50% 50% 12px' }}>
+                  <svg className="w-[28px] h-[28px] text-white pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
+                     <path d="M12 2a2 2 0 012 2v2h2a4 4 0 014 4v7a4 4 0 01-4 4H8a4 4 0 01-4-4v-7a4 4 0 014-4h2V4a2 2 0 012-2zm0 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-3.5-5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
+                  </svg>
+                  <div className="absolute top-[0px] right-[-6px] bg-[#65d065] text-white text-[10px] font-extrabold px-[6px] py-[3px] rounded-[6px] rounded-bl-sm tracking-widest shadow-sm border border-[#52af52] leading-none pointer-events-none">
+                     ...
+                  </div>
+               </div>
+            </div>
 
 
 
             {/* Add Slots Modal */}
             {isAddSlotModalOpen && (
-               <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                  <div className="bg-white rounded-[16px] shadow-2xl w-[620px] max-h-[95vh] overflow-hidden flex flex-col relative">
+               <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                  <div className="bg-white rounded-[16px] shadow-2xl w-[680px] h-[450px] max-h-[95vh] flex flex-col relative">
 
                      {/* Header */}
-                     <div className="bg-white px-[26px] py-[14px] border-b border-gray-200 shrink-0">
+                     <div className="bg-white px-[26px] py-[10px] border-b border-gray-200 shrink-0 rounded-t-[16px]">
                         <h2 className="text-[#111] font-[800] text-[18px]">Doctor Slot</h2>
                         <button
                            onClick={() => setIsAddSlotModalOpen(false)}
@@ -834,27 +906,27 @@ const Addslot = () => {
                      </div>
 
                      {/* Body */}
-                     <div className="px-[32px] pt-[28px] pb-[10px] flex flex-col gap-[22px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                     <div className="px-[32px] pt-[10px] pb-0 flex flex-col gap-[14px] flex-1">
 
                         {/* Date Range */}
-                        <div className="flex flex-col gap-[14px]">
+                        <div className="flex flex-col gap-[10px]">
                            <h3 className="text-[#207a95] font-[800] text-[16px]">Date Range :</h3>
                            <div className="flex items-center gap-[34px] ml-[0px]">
                               <div className="flex items-center gap-[12px]">
                                  <span className="text-[#444] font-[600] text-[12.5px]">From Date :</span>
-                                 <CustomModalDatePicker initialActiveIndex={17} initialMonth="February" initialYear={2026} />
+                                 <CustomModalDatePicker initialActiveIndex={17} initialMonth="February" initialYear={2026} onDateChange={setFromDate} />
                               </div>
                               <div className="flex items-center gap-[12px]">
                                  <span className="text-[#444] font-[600] text-[12.5px]">To Date :</span>
-                                 <CustomModalDatePicker initialActiveIndex={23} initialMonth="February" initialYear={2026} />
+                                 <CustomModalDatePicker initialActiveIndex={23} initialMonth="February" initialYear={2026} onDateChange={setToDate} />
                               </div>
                            </div>
                         </div>
 
-                        <div className="h-[1px] bg-gray-300/80 w-full mt-[2px] mb-[2px]"></div>
+                        <div className="h-[1px] bg-gray-300/80 w-full"></div>
 
                         {/* Time Range */}
-                        <div className="flex flex-col gap-[14px]">
+                        <div className="flex flex-col gap-[10px]">
                            <h3 className="text-[#207a95] font-[800] text-[16px]">Time Range :</h3>
                            <div className="flex items-center gap-[34px] ml-[0px]">
                               <div className="flex items-center gap-[12px]">
@@ -876,10 +948,10 @@ const Addslot = () => {
                            </div>
                         </div>
 
-                        <div className="h-[1px] bg-gray-300/80 w-full mt-[2px] mb-[2px]"></div>
+                        <div className="h-[1px] bg-gray-300/80 w-full"></div>
 
                         {/* Slot Duration */}
-                        <div className="flex flex-col gap-[14px] relative mb-[8px]">
+                        <div className="flex flex-col gap-[10px] relative">
                            <h3 className="text-[#207a95] font-[800] text-[16px]">Slot Duration :</h3>
                            <div className="flex items-center gap-[10px] relative z-10 w-fit">
                               <span className="text-[#444] font-[600] text-[12.5px]">Slot Time :</span>
@@ -928,13 +1000,21 @@ const Addslot = () => {
                      </div>
 
                      {/* Footer */}
-                     <div className="flex justify-end px-[32px] pb-[28px] pt-[20px] bg-white mt-auto relative z-10 shrink-0">
-                        <button
-                           onClick={() => setIsAddSlotModalOpen(false)}
-                           className="bg-[#1b738b] hover:bg-[#166378] transition-colors text-white font-[700] text-[14px] px-[36px] py-[8px] rounded-[6px] shadow-sm tracking-wide"
-                        >
-                           Save
-                        </button>
+                     <div className="flex flex-col gap-2 px-[32px] pb-[18px] pt-[12px] bg-white mt-auto relative z-10 shrink-0 rounded-b-[16px]">
+                        {message.text && (
+                           <div className={`text-[12px] font-bold text-center p-2 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                              {message.text}
+                           </div>
+                        )}
+                        <div className="flex justify-end">
+                           <button
+                              onClick={handleSave}
+                              disabled={isLoading}
+                              className={`bg-[#1b738b] hover:bg-[#166378] transition-colors text-white font-[700] text-[14px] px-[36px] py-[8px] rounded-[6px] shadow-sm tracking-wide ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                           >
+                              {isLoading ? 'Saving...' : 'Save'}
+                           </button>
+                        </div>
                      </div>
 
                   </div>

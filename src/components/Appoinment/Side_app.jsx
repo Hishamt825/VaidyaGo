@@ -88,7 +88,7 @@ const Side_app = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOp
 
       <div className={`
         fixed lg:static inset-y-0 left-0 z-[110]
-        w-[240px] md:w-[260px] min-h-screen bg-[#F7F9FB] font-sans flex flex-col
+        w-[240px] md:w-[260px] min-h-screen bg-white font-sans flex flex-col
         transition-transform duration-300 ease-in-out
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
@@ -155,7 +155,7 @@ const Side_app = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOp
 
           {/* PROFILE CARD (Integrated below menu) */}
           <div className="w-full px-[20px] md:px-[25px] pt-[65px] pb-[20px] bg-white border-r-[1.8px] border-[#166E83]">
-            <div className="relative bg-[#E8E8E8] rounded-[24px] pt-[30px] pb-[12px] flex flex-col items-center">
+            <div className="relative bg-white border border-gray-200 rounded-[24px] pt-[30px] pb-[12px] flex flex-col items-center shadow-sm">
               
               {/* Overlapping Avatar (Clickable) */}
               <div 
