@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
-const DasyWilliam = ({ setOpenProfile }) => {
+const DasyWilliam = ({ setOpenProfile, isDoctor = false }) => {
+    const navigate = useNavigate();
     const [isThemeOpen, setIsThemeOpen] = useState(false);
     const [activeTheme, setActiveTheme] = useState('default');
     const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -14,8 +16,8 @@ const DasyWilliam = ({ setOpenProfile }) => {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
 
-                className="absolute right-0 mt-2 w-[400px] bg-white rounded-2xl 
-border border-gray-200 divide-y z-50
+                className="absolute right-0 mt-2 w-[350px] bg-white rounded-2xl 
+border border-gray-200 divide-y z-[100]
 shadow-[0_10px_40px_rgba(0,120,255,0.15)]"
             >
 
@@ -24,22 +26,19 @@ shadow-[0_10px_40px_rgba(0,120,255,0.15)]"
                 <div className="px-4 py-3">
                     <p className="text-gray-500 text-[14px] mb-2">Account</p>
 
-                    <div className="flex items-center justify-between cursor-pointer hover:bg-gray-50 rounded-xl p-2 transition">
+                    <div className="flex items-center justify-between cursor-pointer hover:bg-gray-50 rounded-xl p-2 transition group" onClick={() => navigate('/Profile')}>
                         <div className="flex gap-3 items-center">
                             <img
                                 src="/assets/ph.png"
                                 alt="profile"
-                                className="w-12 h-12 rounded-full object-cover"
+                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-100"
                             />
 
-                            <div
-                                className="leading-tight cursor-pointer"
-                                onClick={() => setOpenProfile(true)}
-                            >
-                                <h2 className="font-semibold text-[18px] text-gray-700">
+                            <div className="leading-tight">
+                                <h2 className="font-bold text-[17px] text-gray-800 group-hover:text-[#1b738c] transition-colors">
                                     Dasy William
                                 </h2>
-                                <p className="text-sky-600 text-[14px]">
+                                <p className="text-gray-500 text-[13px]">
                                     javedtuba@gmail.com
                                 </p>
                             </div>
@@ -48,13 +47,13 @@ shadow-[0_10px_40px_rgba(0,120,255,0.15)]"
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setOpenProfile(true);
+                                navigate('/Profile');
                             }}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition"
+                            className="p-2 rounded-lg bg-gray-50 group-hover:bg-[#1b738c]/10 transition-colors"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="w-5 h-5 text-gray-500"
+                                className="w-5 h-5 text-gray-400 group-hover:text-[#1b738c]"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -67,104 +66,119 @@ shadow-[0_10px_40px_rgba(0,120,255,0.15)]"
                     </div>
                 </div>
 
-                {/* Plan Section */}
-                <div className="px-2 py-3">
-                    <p className="text-gray-600 text-[14px] mb-2">Plan</p>
-
-                    <button className="w-full border rounded-full py-2 flex items-center justify-center gap-2 hover:bg-gray-100 transition">
-                        <img src="/assets/plus.png" className="w-6 h-6 object-contain" />
-                        <p className="text-[16px] font-medium text-gray-700">Create plan</p>
-                    </button>
-                </div>
+                {!isDoctor && (
+                    <>
+                        {/* Plan Section */}
+                        <div className="px-2 py-3">
+                            <p className="text-gray-600 text-[14px] mb-2 pl-2">Plan</p>
+                            <button className="w-full border rounded-full py-2 flex items-center justify-center gap-2 hover:bg-gray-100 transition">
+                                <img src="/assets/plus.png" className="w-6 h-6 object-contain" />
+                                <p className="text-[16px] font-medium text-gray-700">Create plan</p>
+                            </button>
+                        </div>
+                    </>
+                )}
 
                 {/* Menu Items */}
                 <div className="py-2">
 
                     {/* Settings */}
                     <div
-                        onClick={() => setOpenProfile(true)}
-                        className="flex items-center justify-between py-2 px-4 hover:bg-gray-100 cursor-pointer transition">
+                        onClick={() => navigate('/Profile')}
+                        className="flex items-center justify-between py-2.5 px-4 hover:bg-gray-50 cursor-pointer transition group">
                         <div className="flex items-center gap-3">
-                            <img src="/assets/settt.png" className="w-6 h-6 object-contain" />
-                            <p className="text-[16px] font-medium text-gray-700">Settings</p>
-                        </div>
-                    </div>
-
-                    {/* Theme */}
-                    <div>
-                        <div
-                            onClick={() => setIsThemeOpen(!isThemeOpen)}
-                            className="flex items-center justify-between py-2 px-4 hover:bg-gray-100 cursor-pointer transition"
-                        >
-                            <div className="flex items-center gap-3">
-                                <img src="/assets/Theme.png" className="w-6 h-6 object-contain" />
-                                <p className="text-[16px] font-medium text-gray-700">Theme</p>
+                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-[#1b738c]/10 transition-colors">
+                                <img src="/assets/settt.png" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100" />
                             </div>
-                            <span className={`text-gray-400 transition-transform duration-300 ${isThemeOpen ? 'rotate-180' : ''}`}>⌄</span>
+                            <p className="text-[15px] font-bold text-gray-700 group-hover:text-[#1b738c]">Settings</p>
                         </div>
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                    </div>
 
-                        {isThemeOpen && (
-                            <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                className="bg-gray-50/50 overflow-hidden"
-                            >
-                                <div className="px-4 py-2 flex flex-col gap-1">
-                                    {[
-                                        { id: 'default', label: 'Default', icon: '✨' },
-                                        { id: 'dark', label: 'Dark', icon: '🌙' }
-                                    ].map((t) => (
-                                        <div
-                                            key={t.id}
-                                            onClick={() => {
-                                                setActiveTheme(t.id);
-                                                if (t.id === 'dark') {
-                                                    document.documentElement.classList.add('dark');
-                                                } else {
-                                                    document.documentElement.classList.remove('dark');
-                                                }
-                                            }}
-                                            className={`flex items-center justify-between py-2.5 px-6 rounded-xl cursor-pointer transition-all duration-300 ${activeTheme === t.id ? 'bg-white shadow-sm border border-gray-100' : 'hover:bg-gray-100'}`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-lg">{t.icon}</span>
-                                                <p className={`text-sm font-semibold ${activeTheme === t.id ? 'text-[#19718A]' : 'text-gray-600'}`}>{t.label}</p>
-                                            </div>
-                                            {activeTheme === t.id && (
-                                                <div className="w-2 h-2 rounded-full bg-[#19718A] shadow-[0_0_8px_#19718A]"></div>
-                                            )}
+                    {!isDoctor && (
+                        <>
+                            {/* Theme */}
+                            <div>
+                                <div
+                                    onClick={() => setIsThemeOpen(!isThemeOpen)}
+                                    className="flex items-center justify-between py-2.5 px-4 hover:bg-gray-50 cursor-pointer transition group"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-[#1b738c]/10">
+                                            <img src="/assets/Theme.png" className="w-5 h-5 object-contain opacity-70" />
                                         </div>
-                                    ))}
+                                        <p className="text-[15px] font-bold text-gray-700">Theme</p>
+                                    </div>
+                                    <span className={`text-gray-400 transition-transform duration-300 ${isThemeOpen ? 'rotate-180' : ''}`}>⌄</span>
                                 </div>
-                            </motion.div>
-                        )}
-                    </div>
 
-                    {/* Help */}
-                    <div
-                        onClick={() => {
-                            setIsHelpModalOpen(true);
-                            setHelpView('menu');
-                        }}
-                        className="flex items-center justify-between py-2 px-4 hover:bg-gray-100 cursor-pointer transition"
-                    >
-                        <div className="flex items-center gap-3">
-                            <img src="/assets/help.png" className="w-6 h-6 object-contain" />
-                            <p className="text-[16px] font-medium text-gray-700">Help & Resources</p>
-                        </div>
+                                {isThemeOpen && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        className="bg-gray-50/50 overflow-hidden"
+                                    >
+                                        <div className="px-4 py-2 flex flex-col gap-1">
+                                            {[
+                                                { id: 'default', label: 'Default', icon: '✨' },
+                                                { id: 'dark', label: 'Dark', icon: '🌙' }
+                                            ].map((t) => (
+                                                <div
+                                                    key={t.id}
+                                                    onClick={() => {
+                                                        setActiveTheme(t.id);
+                                                        if (t.id === 'dark') {
+                                                            document.documentElement.classList.add('dark');
+                                                        } else {
+                                                            document.documentElement.classList.remove('dark');
+                                                        }
+                                                    }}
+                                                    className={`flex items-center justify-between py-2 px-6 rounded-xl cursor-pointer transition-all ${activeTheme === t.id ? 'bg-white shadow-sm border border-gray-100' : 'hover:bg-gray-100'}`}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-sm">{t.icon}</span>
+                                                        <p className={`text-[13px] font-bold ${activeTheme === t.id ? 'text-[#19718A]' : 'text-gray-600'}`}>{t.label}</p>
+                                                    </div>
+                                                    {activeTheme === t.id && (
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-[#19718A]"></div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
 
-                        <span className="text-gray-400">⌄</span>
-                    </div>
+                            {/* Help */}
+                            <div
+                                onClick={() => {
+                                    setIsHelpModalOpen(true);
+                                    setHelpView('menu');
+                                }}
+                                className="flex items-center justify-between py-2.5 px-4 hover:bg-gray-50 cursor-pointer transition group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-[#1b738c]/10">
+                                        <img src="/assets/help.png" className="w-5 h-5 object-contain opacity-70" />
+                                    </div>
+                                    <p className="text-[15px] font-bold text-gray-700">Help & Resources</p>
+                                </div>
+                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                            </div>
+                        </>
+                    )}
 
                 </div>
 
 
                 {/* Logout */}
-                <div className="p-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3 transition">
-
-                    <img src="/assets/log.png" className="w-6 h-6 object-contain" />
-                    <p className="text-[16px] font-medium text-gray-700">Logout</p>
-
+                <div className="p-3 hover:bg-red-50 cursor-pointer flex items-center justify-between transition group border-t border-gray-100">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center group-hover:bg-red-100">
+                            <img src="/assets/log.png" className="w-4 h-4 object-contain opacity-70 group-hover:opacity-100" />
+                        </div>
+                        <p className="text-[15px] font-bold text-red-600">Logout</p>
+                    </div>
                 </div>
 
             </motion.div>

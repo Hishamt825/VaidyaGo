@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../../../components/Patient/Patient_sidebar';
 import Profile from '../../../components/Patient/Profile';
@@ -7,7 +7,9 @@ import Notification from '../../../components/Patient/notification';
 import phImg from '../../../assets/ph.png';
 import pen1 from '../../../assets/pen1.png';
 import Info from './Info';
-import { Search, Bell, Settings, ChevronLeft, ChevronRight, ChevronDown, Filter, MapPin } from 'lucide-react';
+import { Search, Bell, Settings, ChevronLeft, ChevronRight, ChevronDown, Filter, MapPin, Loader2 } from 'lucide-react';
+import apiFetch from '../../../api';
+import BASE_URL from '../../../baseUrl';
 
 const Consultation_info = () => {
     const navigate = useNavigate();
@@ -32,14 +34,46 @@ const Consultation_info = () => {
 
     const clearFilters = () => setSelectedFilters([]);
 
-    const doctors = [
-        { id: 1, name: 'Dr. Sumaiya Javed', spec: 'Cardiologist', degree: 'MBBS, MD Physician, Post Graduate....', location: 'Gorakhpur', onlinePrice: 800, offlinePrice: 500 },
-        { id: 2, name: 'Dr. Sumaiya Javed', spec: 'Cardiologist', degree: 'MBBS, MD Physician, Post Graduate....', location: 'Gorakhpur', onlinePrice: 800, offlinePrice: 500 },
-        { id: 3, name: 'Dr. Sumaiya Javed', spec: 'Cardiologist', degree: 'MBBS, MD Physician, Post Graduate....', location: 'Gorakhpur', onlinePrice: 800, offlinePrice: 500 },
-        { id: 4, name: 'Dr. Sumaiya Javed', spec: 'Cardiologist', degree: 'MBBS, MD Physician, Post Graduate....', location: 'Gorakhpur', onlinePrice: 800, offlinePrice: 500 },
-        { id: 5, name: 'Dr. Sumaiya Javed', spec: 'Cardiologist', degree: 'MBBS, MD Physician, Post Graduate....', location: 'Gorakhpur', onlinePrice: 800, offlinePrice: 500 },
-        { id: 6, name: 'Dr. Sumaiya Javed', spec: 'Cardiologist', degree: 'MBBS, MD Physician, Post Graduate....', location: 'Gorakhpur', onlinePrice: 800, offlinePrice: 500 },
-    ];
+    const [doctors, setDoctors] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                // Determine department name (stripping 'Care' if present)
+                const dept = specialityName.replace('Care', '').trim();
+                const url = `${BASE_URL}/api/approved-doctors/?department=${dept}`;
+                
+                const response = await apiFetch(url);
+                if (!response.ok) throw new Error('Failed to fetch doctors');
+                
+                const data = await response.json();
+                
+                // Map API data to UI structure
+                const mappedDoctors = data.map(doc => ({
+                    id: doc.id,
+                    name: `Dr. ${doc.first_name} ${doc.last_name}`,
+                    spec: doc.specialization || doc.department,
+                    degree: 'MBBS, MD Physician, Specialization in ' + (doc.specialization || doc.department),
+                    location: doc.city || 'Gorakhpur',
+                    onlinePrice: 800, // Default prices as not in API yet
+                    offlinePrice: 500
+                }));
+                
+                setDoctors(mappedDoctors);
+            } catch (err) {
+                console.error('Fetch Doctors Error:', err);
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchDoctors();
+    }, [specialityName]);
 
     return (
         <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
@@ -172,58 +206,75 @@ const Consultation_info = () => {
 
                             {/* Doctor List */}
                             <div className="space-y-4">
-                                {doctors.map(doc => (
-                                    <div key={doc.id} className="bg-white rounded-[28px] p-5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-transparent hover:border-[#1A7785]/20 group flex flex-col md:flex-row gap-6 relative overflow-hidden">
-                                        
-                                        {/* Doctor Avatar */}
-                                        <div className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-2xl bg-[#F0F7F8] flex items-center justify-center shrink-0 overflow-hidden relative">
-                                            <img src={pen1} alt="Doctor" className="w-full h-full object-cover" />
-                                            <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                                        </div>
-
-                                        {/* Doctor Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="mb-2">
-                                                <h3 className="text-[20px] font-bold text-[#0D1C2E] leading-tight mb-1 group-hover:text-[#1A7785] transition-colors">{doc.name}</h3>
-                                                <p className="text-[#1A7785] text-[14px] font-bold">{doc.spec}</p>
-                                            </div>
-                                            <p className="text-gray-400 text-[13px] font-medium leading-relaxed mb-1">{doc.degree}</p>
-                                            <div className="flex items-center gap-1.5 text-gray-400 text-[12px] font-bold">
-                                                <MapPin size={12} className="text-[#1A7785]" />
-                                                {doc.location}
-                                            </div>
-                                        </div>
-
-                                        {/* Pricing & Actions */}
-                                        <div className="flex flex-col md:flex-row items-center gap-4 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 md:min-w-[340px]">
-                                            <div className="flex-1 w-full text-center md:text-right">
-                                                <div className="mb-2">
-                                                    <span className="text-[24px] font-bold text-[#0D1C2E]">{doc.onlinePrice}</span>
-                                                </div>
-                                                <button className="w-full bg-[#1A7785] text-white py-2.5 px-4 rounded-xl font-bold text-[12px] hover:bg-[#15616D] transition-all flex flex-col items-center">
-                                                    <span>Online Consult</span>
-                                                    <span className="text-[10px] opacity-70 font-medium">Available tomorrow at 10:00AM</span>
-                                                </button>
-                                            </div>
-
-                                            <div className="flex-1 w-full text-center md:text-right">
-                                                <div className="mb-2">
-                                                    <span className="text-[24px] font-bold text-[#0D1C2E]">{doc.offlinePrice}</span>
-                                                </div>
-                                                <button 
-                                                    onClick={() => {
-                                                        setSelectedDoctor(doc);
-                                                        setIsInfoOpen(true);
-                                                    }}
-                                                    className="w-full bg-white border-2 border-[#1A7785] text-[#1A7785] py-2.5 px-4 rounded-xl font-bold text-[12px] hover:bg-[#F0F7F8] transition-all flex flex-col items-center"
-                                                >
-                                                    <span>Available Doctor</span>
-                                                    <span className="text-[10px] opacity-70 font-medium">Available tomorrow at 9:00AM</span>
-                                                </button>
-                                            </div>
-                                        </div>
+                                {isLoading ? (
+                                    <div className="flex flex-col items-center justify-center py-20 bg-white/5 rounded-[28px] border border-white/10 text-white">
+                                        <Loader2 className="w-12 h-12 animate-spin mb-4 opacity-60" />
+                                        <p className="font-bold text-lg">Fetching Specialists...</p>
                                     </div>
-                                ))}
+                                ) : error ? (
+                                    <div className="bg-red-500/10 border border-red-500/20 p-8 rounded-[28px] text-center text-white">
+                                        <h3 className="text-xl font-bold mb-2">Oops! Something went wrong</h3>
+                                        <p className="opacity-80">{error}</p>
+                                    </div>
+                                ) : doctors.length === 0 ? (
+                                    <div className="bg-white/5 border border-white/10 p-20 rounded-[28px] text-center text-white">
+                                        <h3 className="text-xl font-bold mb-2">No doctors found</h3>
+                                        <p className="opacity-60">We couldn't find any approved doctors for {specialityName} right now.</p>
+                                    </div>
+                                ) : (
+                                    doctors.map(doc => (
+                                        <div key={doc.id} className="bg-white rounded-[28px] p-5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-transparent hover:border-[#1A7785]/20 group flex flex-col md:flex-row gap-6 relative overflow-hidden">
+                                            
+                                            {/* Doctor Avatar */}
+                                            <div className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-2xl bg-[#F0F7F8] flex items-center justify-center shrink-0 overflow-hidden relative">
+                                                <img src={pen1} alt="Doctor" className="w-full h-full object-cover" />
+                                                <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                                            </div>
+
+                                            {/* Doctor Info */}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="mb-2">
+                                                    <h3 className="text-[20px] font-bold text-[#0D1C2E] leading-tight mb-1 group-hover:text-[#1A7785] transition-colors">{doc.name}</h3>
+                                                    <p className="text-[#1A7785] text-[14px] font-bold">{doc.spec}</p>
+                                                </div>
+                                                <p className="text-gray-400 text-[13px] font-medium leading-relaxed mb-1">{doc.degree}</p>
+                                                <div className="flex items-center gap-1.5 text-gray-400 text-[12px] font-bold">
+                                                    <MapPin size={12} className="text-[#1A7785]" />
+                                                    {doc.location}
+                                                </div>
+                                            </div>
+
+                                            {/* Pricing & Actions */}
+                                            <div className="flex flex-col md:flex-row items-center gap-4 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 md:min-w-[340px]">
+                                                <div className="flex-1 w-full text-center md:text-right">
+                                                    <div className="mb-2">
+                                                        <span className="text-[24px] font-bold text-[#0D1C2E]">{doc.onlinePrice}</span>
+                                                    </div>
+                                                    <button className="w-full bg-[#1A7785] text-white py-2.5 px-4 rounded-xl font-bold text-[12px] hover:bg-[#15616D] transition-all flex flex-col items-center">
+                                                        <span>Online Consult</span>
+                                                        <span className="text-[10px] opacity-70 font-medium">Available tomorrow at 10:00AM</span>
+                                                    </button>
+                                                </div>
+
+                                                <div className="flex-1 w-full text-center md:text-right">
+                                                    <div className="mb-2">
+                                                        <span className="text-[24px] font-bold text-[#0D1C2E]">{doc.offlinePrice}</span>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => {
+                                                            setSelectedDoctor(doc);
+                                                            setIsInfoOpen(true);
+                                                        }}
+                                                        className="w-full bg-white border-2 border-[#1A7785] text-[#1A7785] py-2.5 px-4 rounded-xl font-bold text-[12px] hover:bg-[#F0F7F8] transition-all flex flex-col items-center"
+                                                    >
+                                                        <span>Available Doctor</span>
+                                                        <span className="text-[10px] opacity-70 font-medium">Available tomorrow at 9:00AM</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
 
                                 {/* Pagination */}
                                 <div className="flex items-center justify-center gap-2 pt-8">

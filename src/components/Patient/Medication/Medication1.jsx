@@ -15,6 +15,7 @@ import New_request from './New_request';
 import Past_medication from './Past_medication';
 import Request_refill from './Request_refill';
 import Refill_request from './Refill_request';
+import Add_past from './Add_past';
 
 const Medication1 = () => {
     const navigate = useNavigate();
@@ -29,9 +30,11 @@ const Medication1 = () => {
     const [isPastMedicationOpen, setIsPastMedicationOpen] = useState(false);
     const [isRefillOpen, setIsRefillOpen] = useState(false);
     const [isRefillRequestOpen, setIsRefillRequestOpen] = useState(false);
+    const [isAddPastOpen, setIsAddPastOpen] = useState(false);
 
-    // State for today's schedule
+    // State for data
     const [todaySchedule, setTodaySchedule] = useState([]);
+    const [pastMedications, setPastMedications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -55,6 +58,18 @@ const Medication1 = () => {
             setError('Server error. Please try again later.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const fetchPastMedications = async () => {
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/past-medications/`);
+            const data = await response.json();
+            if (response.ok) {
+                setPastMedications(data);
+            }
+        } catch (err) {
+            console.error("Fetch Past Medications Error:", err);
         }
     };
 
@@ -95,6 +110,7 @@ const Medication1 = () => {
     useEffect(() => {
         fetchTodaySchedule();
         fetchActivePrescriptions();
+        fetchPastMedications();
     }, []);
 
     // Helper to categorize time into Morning/Afternoon/Evening
@@ -444,7 +460,18 @@ const Medication1 = () => {
 
                         {/* Past Medications Table */}
                         <div className="flex flex-col gap-4 mt-8">
-                            <h2 className="text-[18px] font-medium text-white">Past Medications</h2>
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-[18px] font-medium text-white">Past Medications</h2>
+                                <button 
+                                    onClick={() => setIsPastMedicationOpen(true)}
+                                    className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3.5 py-2 rounded-full text-[14px] font-bold transition-all border border-white/10 shadow-lg"
+                                >
+                                    <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Record
+                                </button>
+                            </div>
                             <div className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
@@ -456,30 +483,28 @@ const Medication1 = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="text-[#0D1C2E] cursor-pointer">
-                                        <tr 
-                                            onClick={() => setIsPastMedicationOpen(true)}
-                                            className="border-t border-gray-50 hover:bg-gray-50 transition-colors group"
-                                        >
-                                            <td className="px-6 py-4">
-                                                <p className="font-medium text-[15px]">Amoxicillin</p>
-                                                <p className="text-[10px] text-[#627382] font-medium">500mg Capsule</p>
-                                            </td>
-                                            <td className="px-6 py-4 text-[14px] font-medium text-[#627382]">Jan 2023 - Feb 2023</td>
-                                            <td className="px-6 py-4 text-[14px] font-medium text-[#0D1C2E]">Dr. Gregory House</td>
-                                            <td className="px-6 py-4 text-[14px] font-medium text-[#627382]">Sinus Infection</td>
-                                        </tr>
-                                        <tr 
-                                            onClick={() => setIsPastMedicationOpen(true)}
-                                            className="border-t border-gray-50 hover:bg-gray-50 transition-colors"
-                                        >
-                                            <td className="px-6 py-4">
-                                                <p className="font-medium text-[15px]">Prednisone</p>
-                                                <p className="text-[10px] text-[#627382] font-medium">10mg Tablet</p>
-                                            </td>
-                                            <td className="px-6 py-4 text-[13px] font-medium text-[#627382]">Aug 2022 - Sept 2022</td>
-                                            <td className="px-6 py-4 text-[13px] font-medium text-[#0D1C2E]">Dr. Sarah Chen</td>
-                                            <td className="px-6 py-4 text-[13px] font-medium text-[#627382]">Allergic Reaction</td>
-                                        </tr>
+                                        {pastMedications.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="4" className="px-6 py-10 text-center text-[#627382] font-medium">
+                                                    No past medication history found.
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            pastMedications.map((med) => (
+                                                <tr 
+                                                    key={med.id}
+                                                    className="border-t border-gray-50 hover:bg-gray-50 transition-colors group"
+                                                >
+                                                    <td className="px-6 py-4">
+                                                        <p className="font-medium text-[15px]">{med.medication_name}</p>
+                                                        <p className="text-[10px] text-[#627382] font-medium">{med.dosage}</p>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-[14px] font-medium text-[#627382]">{med.start_date} - {med.end_date}</td>
+                                                    <td className="px-6 py-4 text-[14px] font-medium text-[#0D1C2E]">Dr. {med.doctor_name || med.prescribing_doctor}</td>
+                                                    <td className="px-6 py-4 text-[14px] font-medium text-[#627382]">{med.reason}</td>
+                                                </tr>
+                                            ))
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -509,7 +534,11 @@ const Medication1 = () => {
             )}
             {isUpdateLogsOpen && (
                 <div className="fixed inset-0 z-[200]">
-                     <Update_logs onClose={() => setIsUpdateLogsOpen(false)} />
+                     <Update_logs 
+                        onClose={() => setIsUpdateLogsOpen(false)} 
+                        initialSchedule={todaySchedule}
+                        refreshSchedule={fetchTodaySchedule}
+                    />
                 </div>
             )}
             {isScheduleOpen && (
@@ -522,7 +551,10 @@ const Medication1 = () => {
             )}
             {isPastMedicationOpen && (
                 <div className="fixed inset-0 z-[200]">
-                     <Past_medication onClose={() => setIsPastMedicationOpen(false)} />
+                     <Past_medication 
+                        onClose={() => setIsPastMedicationOpen(false)} 
+                        onRefreshDashboard={fetchPastMedications}
+                    />
                 </div>
             )}
             {isRefillOpen && (
@@ -534,6 +566,9 @@ const Medication1 = () => {
                 <div className="fixed inset-0 z-[400]">
                     <Refill_request onClose={() => setIsRefillRequestOpen(false)} onTrackAll={() => navigate('/Order')} />
                 </div>
+            )}
+            {isAddPastOpen && (
+                <Add_past onClose={() => setIsAddPastOpen(false)} onBack={() => setIsAddPastOpen(false)} />
             )}
         </div>
     );

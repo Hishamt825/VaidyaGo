@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import apiFetch from '../../api';
 import phImg from '../../assets/ph.png';
+
+const BASE_URL = 'http://13.60.96.212:8000';
 
 const ToggleSwitch = ({ enabled, setEnabled }) => (
     <button
@@ -15,7 +18,24 @@ const ToggleSwitch = ({ enabled, setEnabled }) => (
 );
 
 const Account = ({ onClose }) => {
-    const [autoUpdate, setAutoUpdate] = useState(true);
+    // Profile & Settings States
+    const [profileData, setProfileData] = useState({
+        full_name: '',
+        phone_number: '',
+        email: '',
+        language: 'English (United Kingdom)',
+        automatic_updates: true
+    });
+    
+    // Security & History States
+    const [passwords, setPasswords] = useState({ old_password: '', new_password: '' });
+    const [loginHistory, setLoginHistory] = useState([]);
+    const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+    const [isChangingPassword, setIsChangingPassword] = useState(false); // Collapsible logic
+    
+    // UI States
+    const [isLoading, setIsLoading] = useState(false);
+    const [message, setMessage] = useState({ text: '', type: '' });
     const [dataSharing, setDataSharing] = useState(false);
     
     // Global Font Size Scaling
@@ -27,12 +47,106 @@ const Account = ({ onClose }) => {
     React.useEffect(() => {
         document.documentElement.style.fontSize = `${(fontSize / 20) * 100}%`;
     }, [fontSize]);
-    
-    // Editable states
-    const [name, setName] = useState("Dr. Abhinav Vaidya");
-    const [email, setEmail] = useState("dr.vaidya@vaidyago.com");
-    const [phone, setPhone] = useState("+91 98765 43210");
-    const [clinicianId, setClinicianId] = useState("VG-9921-MED");
+
+    // ── API Handlers ──
+    const fetchAccountData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/account-settings/`);
+            if (response.ok) {
+                const data = await response.json();
+                setProfileData({
+                    full_name: data.full_name || '',
+                    phone_number: data.phone_number || '',
+                    email: data.email || '',
+                    language: data.language || 'English (United Kingdom)',
+                    automatic_updates: data.automatic_updates ?? true
+                });
+                setTwoFactorEnabled(data.two_factor_enabled || false);
+            }
+            
+            const historyRes = await apiFetch(`${BASE_URL}/api/login-history/`);
+            if (historyRes.ok) {
+                const historyData = await historyRes.json();
+                setLoginHistory(Array.isArray(historyData) ? historyData : []);
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAccountData();
+    }, []);
+
+    const handleUpdateProfile = async () => {
+        setIsLoading(true);
+        setMessage({ text: '', type: '' });
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/account-settings/`, {
+                method: 'PUT',
+                body: JSON.stringify(profileData)
+            });
+            if (response.ok) {
+                setMessage({ text: 'Profile updated successfully!', type: 'success' });
+            } else {
+                setMessage({ text: 'Failed to update profile.', type: 'error' });
+            }
+        } catch (error) {
+            setMessage({ text: 'Network error.', type: 'error' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handlePasswordChange = async () => {
+        if (!passwords.old_password || !passwords.new_password) {
+            setMessage({ text: 'Please fill both password fields.', type: 'error' });
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/change-password/`, {
+                method: 'POST',
+                body: JSON.stringify(passwords)
+            });
+            if (response.ok) {
+                setMessage({ text: 'Password updated!', type: 'success' });
+                setPasswords({ old_password: '', new_password: '' });
+            } else {
+                setMessage({ text: 'Error updating password.', type: 'error' });
+            }
+        } catch (error) {
+            setMessage({ text: 'Network error.', type: 'error' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleToggle2FA = async (enabled) => {
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/toggle-2fa/`, {
+                method: 'POST',
+                body: JSON.stringify({ two_factor_enabled: enabled })
+            });
+            if (response.ok) setTwoFactorEnabled(enabled);
+        } catch (error) {
+            console.error("2FA toggle error:", error);
+        }
+    };
+
+    const handleDeleteRequest = async () => {
+        if (window.confirm("Delete all your data? This cannot be undone.")) {
+            try {
+                const response = await apiFetch(`${BASE_URL}/api/request-data-deletion/`, { method: 'POST' });
+                if (response.ok) setMessage({ text: 'Deletion request sent.', type: 'success' });
+            } catch (error) {
+                console.error("Delete error:", error);
+            }
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4 sm:p-6">
@@ -65,11 +179,21 @@ const Account = ({ onClose }) => {
                         <button onClick={onClose} className="px-[20px] py-[10px] rounded-full border border-white/30 text-white text-[13.5px] font-medium hover:bg-white/10 transition-colors">
                             Discard Changes
                         </button>
-                        <button onClick={onClose} className="px-[20px] py-[10px] rounded-full bg-[#52BFC9] hover:bg-[#3facb6] text-white text-[13.5px] font-medium shadow-md transition-colors">
-                            Save Changes
+                        <button 
+                            onClick={handleUpdateProfile} 
+                            disabled={isLoading}
+                            className={`px-[20px] py-[10px] rounded-full bg-[#52BFC9] hover:bg-[#3facb6] text-white text-[13.5px] font-medium shadow-md transition-colors ${isLoading ? 'opacity-50' : ''}`}
+                        >
+                            {isLoading ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
                 </div>
+
+                {message.text && (
+                    <div className={`mb-6 p-3 rounded-xl text-center text-[13px] font-bold ${message.type === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                        {message.text}
+                    </div>
+                )}
 
                 {/* ── Main Grid ── */}
                 <div className="flex flex-col gap-5">
@@ -107,8 +231,8 @@ const Account = ({ onClose }) => {
                                         </label>
                                         <input 
                                             type="text"
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
+                                            value={profileData.full_name}
+                                            onChange={(e) => setProfileData({...profileData, full_name: e.target.value})}
                                             className="w-full px-4 py-2.5 bg-[#EEF2F6] rounded-[8px] text-[14px] font-medium text-[#0D1C2E] border border-transparent focus:border-[#16879B] focus:bg-white outline-none transition-colors"
                                         />
                                     </div>
@@ -118,8 +242,8 @@ const Account = ({ onClose }) => {
                                         </label>
                                         <input 
                                             type="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            value={profileData.email}
+                                            onChange={(e) => setProfileData({...profileData, email: e.target.value})}
                                             className="w-full px-4 py-2.5 bg-[#EEF2F6] rounded-[8px] text-[14px] font-medium text-[#0D1C2E] border border-transparent focus:border-[#16879B] focus:bg-white outline-none transition-colors"
                                         />
                                     </div>
@@ -129,8 +253,8 @@ const Account = ({ onClose }) => {
                                         </label>
                                         <input 
                                             type="text"
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
+                                            value={profileData.phone_number}
+                                            onChange={(e) => setProfileData({...profileData, phone_number: e.target.value})}
                                             className="w-full px-4 py-2.5 bg-[#EEF2F6] rounded-[8px] text-[14px] font-medium text-[#0D1C2E] border border-transparent focus:border-[#16879B] focus:bg-white outline-none transition-colors"
                                         />
                                     </div>
@@ -140,9 +264,9 @@ const Account = ({ onClose }) => {
                                         </label>
                                         <input 
                                             type="text"
-                                            value={clinicianId}
-                                            onChange={(e) => setClinicianId(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-[#E3E9EE] rounded-[8px] text-[14px] font-medium text-[#5A6A7D] border border-transparent focus:border-[#16879B] focus:bg-white outline-none transition-colors"
+                                            value={profileData.clinician_id || 'VG-9921-MED'}
+                                            disabled
+                                            className="w-full px-4 py-2.5 bg-[#E3E9EE] rounded-[8px] text-[14px] font-medium text-[#5A6A7D] border border-transparent outline-none transition-colors cursor-not-allowed"
                                         />
                                     </div>
                                 </div>
@@ -165,7 +289,11 @@ const Account = ({ onClose }) => {
                                         Language
                                     </label>
                                     <div className="relative">
-                                        <select className="w-full appearance-none bg-white border border-[#D5E1E6] text-[#0D1C2E] text-[14px] font-medium rounded-[8px] px-4 py-2.5 outline-none focus:border-[#16879B] transition-colors cursor-pointer">
+                                        <select 
+                                            value={profileData.language}
+                                            onChange={(e) => setProfileData({...profileData, language: e.target.value})}
+                                            className="w-full appearance-none bg-white border border-[#D5E1E6] text-[#0D1C2E] text-[14px] font-medium rounded-[8px] px-4 py-2.5 outline-none focus:border-[#16879B] transition-colors cursor-pointer"
+                                        >
                                             <option>English (United Kingdom)</option>
                                             <option>English (US)</option>
                                             <option>Hindi</option>
@@ -197,7 +325,10 @@ const Account = ({ onClose }) => {
                             <div className="mt-auto pt-6">
                                 <div className="flex flex-row items-center justify-between p-4 bg-white border border-[#D5E1E6] rounded-[12px]">
                                     <span className="text-[14px] font-medium text-[#0D1C2E]">Automatic Updates</span>
-                                    <ToggleSwitch enabled={autoUpdate} setEnabled={setAutoUpdate} />
+                                    <ToggleSwitch 
+                                        enabled={profileData.automatic_updates} 
+                                        setEnabled={(val) => setProfileData({...profileData, automatic_updates: val})} 
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -220,38 +351,87 @@ const Account = ({ onClose }) => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {/* 2FA Card */}
                             <div className="bg-[#F4F7F9] rounded-[16px] p-5 flex flex-col">
-                                <h3 className="text-[15px] font-medium text-[#0D1C2E] mb-2">Two-Factor Auth</h3>
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-[15px] font-medium text-[#0D1C2E]">Two-Factor Auth</h3>
+                                    <ToggleSwitch enabled={twoFactorEnabled} setEnabled={handleToggle2FA} />
+                                </div>
                                 <p className="text-[12.5px] text-[#5A6A7D] leading-[1.6] mb-5">
-                                    Extra layer of security for your account.
+                                    Extra layer of security for your account. {twoFactorEnabled ? 'Enabled' : 'Disabled'}.
                                 </p>
-                                <button className="mt-auto text-[13.5px] font-medium text-[#16879B] flex items-center gap-1 hover:text-[#0f5c6b] transition-colors self-start">
-                                    Manage 2FA
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 12h14M12 5l7 7-7 7" /></svg>
-                                </button>
                             </div>
 
                             {/* Password Card */}
-                            <div className="bg-[#F4F7F9] rounded-[16px] p-5 flex flex-col">
+                            <div className={`bg-[#F4F7F9] rounded-[16px] p-5 flex flex-col transition-all duration-300 ${isChangingPassword ? 'ring-2 ring-[#16879B]/20' : ''}`}>
                                 <h3 className="text-[15px] font-medium text-[#0D1C2E] mb-2">Update Password</h3>
-                                <p className="text-[12.5px] text-[#5A6A7D] leading-[1.6] mb-5">
-                                    Change password regularly for security.
-                                </p>
-                                <button className="mt-auto text-[13.5px] font-medium text-[#16879B] flex items-center gap-1 hover:text-[#0f5c6b] transition-colors self-start">
-                                    Change Password
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 12h14M12 5l7 7-7 7" /></svg>
-                                </button>
+                                
+                                {!isChangingPassword ? (
+                                    <>
+                                        <p className="text-[12.5px] text-[#5A6A7D] leading-[1.6] mb-5">
+                                            Change password regularly for security.
+                                        </p>
+                                        <button 
+                                            onClick={() => setIsChangingPassword(true)}
+                                            className="mt-auto text-[13.5px] font-medium text-[#16879B] flex items-center gap-1 hover:text-[#0f5c6b] transition-colors self-start"
+                                        >
+                                            Change Password
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 12h14M12 5l7 7-7 7" /></svg>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-[#5A6A7D] uppercase mb-1">Old Password</label>
+                                            <input 
+                                                type="password"
+                                                value={passwords.old_password}
+                                                onChange={(e) => setPasswords({...passwords, old_password: e.target.value})}
+                                                className="w-full px-3 py-2 text-[13px] bg-white border border-gray-200 rounded-lg outline-none focus:border-[#16879B]"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-[#5A6A7D] uppercase mb-1">New Password</label>
+                                            <input 
+                                                type="password"
+                                                value={passwords.new_password}
+                                                onChange={(e) => setPasswords({...passwords, new_password: e.target.value})}
+                                                className="w-full px-3 py-2 text-[13px] bg-white border border-gray-200 rounded-lg outline-none focus:border-[#16879B]"
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-3 pt-1">
+                                            <button 
+                                                onClick={handlePasswordChange}
+                                                disabled={isLoading}
+                                                className="px-4 py-2 bg-[#16879B] text-white text-[12px] font-bold rounded-lg hover:bg-[#0f5c6b] transition-all"
+                                            >
+                                                {isLoading ? 'Updating...' : 'Update'}
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    setIsChangingPassword(false);
+                                                    setPasswords({ old_password: '', new_password: '' });
+                                                }}
+                                                className="text-[12px] font-bold text-[#5A6A7D] hover:text-[#0D1C2E]"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Login History Card */}
-                            <div className="bg-[#F9F4F4] rounded-[16px] p-5 border border-red-100/50 flex flex-col">
+                            <div className="bg-[#F9F4F4] rounded-[16px] p-5 border border-red-100/50 flex flex-col max-h-[300px] overflow-hidden">
                                 <h3 className="text-[15px] font-medium text-[#C62B2B] mb-2">Login History</h3>
-                                <p className="text-[12.5px] text-[#5A6A7D] leading-[1.6] mb-5">
-                                    Review activity and logged-in devices.
-                                </p>
-                                <button className="mt-auto text-[13.5px] font-medium text-[#C62B2B] flex items-center gap-1 hover:text-[#a02222] transition-colors self-start">
-                                    View Sessions
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                </button>
+                                <div className="space-y-3 overflow-y-auto pr-1 custom-scrollbar">
+                                    {loginHistory.length > 0 ? loginHistory.map((log, idx) => (
+                                        <div key={idx} className="bg-white/50 p-2 rounded-lg border border-red-50 text-[11px]">
+                                            <div className="font-bold">{log.browser || 'Chrome'} • {log.os || 'Windows'}</div>
+                                            <div className="text-gray-500">{log.last_login} • {log.location || 'India'}</div>
+                                        </div>
+                                    )) : (
+                                        <p className="text-[12px] text-gray-400">No history found.</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -324,7 +504,10 @@ const Account = ({ onClose }) => {
                                     Deactivate Account
                                 </button>
 
-                                <button className="w-full py-2 text-[#4a5c68] text-[13.5px] font-medium hover:text-[#334c59] transition-colors mt-auto">
+                                <button 
+                                    onClick={handleDeleteRequest}
+                                    className="w-full py-2 text-[#4a5c68] text-[13.5px] font-medium hover:text-[#334c59] transition-colors mt-auto"
+                                >
                                     Request Data Deletion
                                 </button>
                             </div>

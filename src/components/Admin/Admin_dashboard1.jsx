@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import DasyWilliam from "./DasyWilliam";
 import Profile from "./Profile";
 import Notification from "../Patient/notification";
+import apiFetch from "../../api";
+import BASE_URL from "../../baseUrl";
 
 import AdminSidebar from "./AdminSidebar";
 import { AnimatePresence, motion } from "framer-motion";
@@ -90,21 +92,35 @@ const Admin_dashboard1 = () => {
     const [rejectionReason, setRejectionReason] = useState("Document Not Correct");
     const [rejectionFeedback, setRejectionFeedback] = useState("The documents uploaded for verification are incorrect.Please ensure all documents are complete and accurate.");
     const [attachedFile, setAttachedFile] = useState(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [selectedDoctorForDetail, setSelectedDoctorForDetail] = useState(null);
     const [showRejectedStatusModal, setShowRejectedStatusModal] = useState(false);
     const fileInputRef = useRef(null);
     const approvalRef = useRef(null);
 
-    const [doctors, setDoctors] = useState([
-        { id: 1, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-        { id: 2, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-        { id: 3, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-        { id: 4, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/admin.png", fullImage: "/assets/de.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-        { id: 5, name: "Dr. Sumaiya Javed", subTitle: "Cardiologist", phone: "1234567890", experience: "5 years", email: "sumaiya@gmail.com", status: "pending", image: "/assets/active.png", fullImage: "/assets/active.png", speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-        { id: 6, name: "Dr. Vivek Sharma", subTitle: "Cardiologist", phone: "1234567890", experience: "8 years", email: "vivek@gmail.com", status: "pending", image: person4, fullImage: person4, speciality: "Cardiologist", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-        { id: 7, name: "Dr. Anjali Gupta", specialty: "PEDIATRICIAN", phone: "1234567890", experience: "4 years", email: "anjali@gmail.com", status: "pending", image: person4, fullImage: person4, speciality: "PEDIATRICIAN", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-        { id: 8, name: "Dr. Rahul Singh", specialty: "ORTHOPEDIC", phone: "1234567890", experience: "10 years", email: "rahul@gmail.com", status: "pending", image: person4, fullImage: person4, speciality: "ORTHOPEDIC", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-        { id: 9, name: "Dr. Sneha Paul", specialty: "ONCOLOGIST", phone: "1234567890", experience: "6 years", email: "sneha@gmail.com", status: "pending", image: person4, fullImage: person4, speciality: "ONCOLOGIST", documents: ["Adhaar Card", "Experience letter", "Doctor license"] },
-    ]);
+    const [doctors, setDoctors] = useState([]);
+    const [isLoadingDoctors, setIsLoadingDoctors] = useState(true);
+
+    useEffect(() => {
+        const fetchPendingDoctors = async () => {
+            try {
+                // Fetching doctors from the backend
+                const response = await apiFetch(`${BASE_URL}/accounts/doctors/`);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Filter for pending doctors
+                    const pendingDocs = data.filter(d => d.status === 'pending' || !d.is_approved);
+                    setDoctors(pendingDocs);
+                }
+            } catch (err) {
+                console.error("Failed to fetch doctors:", err);
+            } finally {
+                setIsLoadingDoctors(false);
+            }
+        };
+
+        fetchPendingDoctors();
+    }, []);
 
     // Logic to restore doctor status
     const handleRestoreDoctor = (doctorId) => {
@@ -114,6 +130,48 @@ const Admin_dashboard1 = () => {
         setShowRejectedStatusModal(false);
         setSelectedDoctorForReject(null);
         navigate('/reject_doctor');
+    };
+
+    const handleDoctorClick = (doctor) => {
+        setSelectedDoctorForDetail(doctor);
+        setShowDetailModal(true);
+    };
+
+    const handleApproveDoctor = async () => {
+        if (!selectedDoctorForDetail) return;
+
+        const url = `${BASE_URL}/accounts/doctors/approve/${selectedDoctorForDetail.id}/`;
+        console.log("Approving Doctor at URL:", url);
+
+        try {
+            // POST request as per curl provided
+            // Using empty string for body as per curl --body ''
+            const response = await apiFetch(url, {
+                method: "POST",
+                body: "" 
+            });
+
+            if (response.ok) {
+                // Update local state to reflect change
+                setDoctors(prev => prev.map(doc =>
+                    doc.id === selectedDoctorForDetail.id ? { ...doc, status: "active" } : doc
+                ));
+                alert(`Doctor ${selectedDoctorForDetail.name} approved successfully!`);
+                setShowDetailModal(false);
+            } else {
+                let errorMsg = "Failed to approve doctor";
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.detail || errorMsg;
+                } catch (e) {
+                    console.error("Could not parse error response", e);
+                }
+                alert(`Error: ${errorMsg}`);
+            }
+        } catch (error) {
+            console.error("Approval API Error:", error);
+            alert("Network error: Could not reach the server. Please check your connection and CORS settings.");
+        }
     };
 
     // Logic to confirm rejection and update status
@@ -819,7 +877,23 @@ const Admin_dashboard1 = () => {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <div className="space-y-3">
+                                        {isLoadingDoctors ? (
+                                            <div className="flex flex-col items-center justify-center py-20 gap-4">
+                                                <div className="w-12 h-12 border-4 border-[#1b738c] border-t-transparent rounded-full animate-spin"></div>
+                                                <p className="text-gray-400 font-medium animate-pulse">Fetching Registration Requests...</p>
+                                            </div>
+                                        ) : doctors.length === 0 ? (
+                                            <div className="flex flex-col items-center justify-center py-20 gap-3 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200">
+                                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                                    <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </div>
+                                                <p className="text-gray-500 font-bold text-lg">No Pending Approvals</p>
+                                                <p className="text-gray-400 text-sm">All registration requests have been processed.</p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-3">
                                             <AnimatePresence>
                                                 {doctors.slice(0, 3).map((doctor) => (
                                                     <motion.div
@@ -832,7 +906,9 @@ const Admin_dashboard1 = () => {
                                                     >
                                                         {/* DOCTOR */}
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-11 h-11 rounded-full overflow-hidden border">
+                                                            <div 
+                                                                className="w-11 h-11 rounded-full overflow-hidden border transition-all"
+                                                            >
                                                                 <img
                                                                     src={doctor.image}
                                                                     className="w-full h-full object-cover"
@@ -878,13 +954,18 @@ const Admin_dashboard1 = () => {
 
                                                         {/* ACTION */}
                                                         <div className="flex justify-center gap-2">
-                                                            <button className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    handleDoctorClick(doctor);
+                                                                }}
+                                                                className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
                                                                 <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
                                                                     <polyline points="20 6 9 17 4 12" />
                                                                 </svg>
                                                             </button>
                                                             <button
-                                                                onClick={() => {
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
                                                                     setSelectedDoctorForReject(doctor);
                                                                     setShowRejectConfirm(true);
                                                                 }}
@@ -902,6 +983,7 @@ const Admin_dashboard1 = () => {
                                                 ))}
                                             </AnimatePresence>
                                         </div>
+                                        )}
                                     </div>
                                     {/* VIEW MORE */}
                                     <div className="text-right mt-4">
@@ -913,8 +995,7 @@ const Admin_dashboard1 = () => {
                             ) : (
                                 <div className="min-w-[800px]">
                                     {/* HEADERS FOR FULL VIEW */}
-                                    <div className="grid grid-cols-[0.5fr_2.2fr_1.3fr_1.2fr_1.1fr_1fr] text-[14px] font-bold text-gray-500 px-6 py-2 mb-2">
-                                        <div></div>
+                                    <div className="grid grid-cols-[2.2fr_1.3fr_1.2fr_1.1fr_1fr] text-[14px] font-bold text-gray-500 px-6 py-2 mb-2">
                                         <div>Doctor Name</div>
                                         <div>Phone Number</div>
                                         <div>Experience</div>
@@ -928,21 +1009,13 @@ const Admin_dashboard1 = () => {
                                             <div key={doctor.id} className={`bg-white rounded-[16px] border-[1.2px] border-gray-300 transition-all duration-300 ${expandedApprovalId === doctor.id ? 'shadow-md ring-1 ring-[#19718A]/10' : 'shadow-sm'}`}>
 
                                                 {/* MAIN ROW */}
-                                                <div className="grid grid-cols-[0.5fr_2.2fr_1.3fr_1.2fr_1.1fr_1fr] items-center px-4 py-3 cursor-pointer hover:bg-gray-50/30"
-                                                    onClick={() => setExpandedApprovalId(expandedApprovalId === doctor.id ? null : doctor.id)}>
-
-                                                    {/* Toggle Icon */}
-                                                    <div className="text-gray-400">
-                                                        {expandedApprovalId === doctor.id ? (
-                                                            <svg className="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7" /></svg>
-                                                        ) : (
-                                                            <svg className="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
-                                                        )}
-                                                    </div>
+                                                <div className="grid grid-cols-[2.2fr_1.3fr_1.2fr_1.1fr_1fr] items-center px-4 py-3 transition-all duration-300">
 
                                                     {/* Doctor Info */}
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-11 h-11 rounded-full overflow-hidden border border-gray-100 bg-gray-50">
+                                                        <div 
+                                                            className="w-11 h-11 rounded-full overflow-hidden border border-gray-100 bg-gray-50 transition-all"
+                                                        >
                                                             <img src={doctor.image} className="w-full h-full object-cover" alt="" />
                                                         </div>
                                                         <div>
@@ -964,9 +1037,12 @@ const Admin_dashboard1 = () => {
                                                         </span>
                                                     </div>
 
-                                                    {/* Action */}
                                                     <div className="flex justify-center gap-3">
-                                                        <button className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                        <button 
+                                                            onClick={(e) => {
+                                                                handleDoctorClick(doctor);
+                                                            }}
+                                                            className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
                                                             <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
                                                                 <polyline points="20 6 9 17 4 12" />
                                                             </svg>
@@ -989,56 +1065,6 @@ const Admin_dashboard1 = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* EXPANDED PANEL */}
-                                                <AnimatePresence>
-                                                    {expandedApprovalId === doctor.id && (
-                                                        <motion.div
-                                                            initial={{ height: 0, opacity: 0 }}
-                                                            animate={{ height: "auto", opacity: 1 }}
-                                                            exit={{ height: 0, opacity: 0 }}
-                                                            className="overflow-hidden"
-                                                        >
-                                                            <div className="px-16 py-8 bg-white border-t border-gray-100">
-                                                                <div className="flex justify-between items-start gap-12">
-                                                                    {/* Detailed Info */}
-                                                                    <div className="flex-1 space-y-3">
-                                                                        {[
-                                                                            { label: "Name", value: doctor.name },
-                                                                            { label: "Speciality", value: doctor.speciality },
-                                                                            { label: "Experience", value: doctor.experience },
-                                                                            { label: "Phone Number", value: doctor.phone },
-                                                                            { label: "Email", value: doctor.email },
-                                                                        ].map((info, idx) => (
-                                                                            <div key={idx} className="flex text-[16px] items-center">
-                                                                                <div className="w-32 font-bold text-gray-700">{info.label}</div>
-                                                                                <div className="w-10 text-gray-400 font-bold">:</div>
-                                                                                <div className="flex-1 text-gray-800 font-semibold">{info.value}</div>
-                                                                            </div>
-                                                                        ))}
-
-                                                                        {/* Documents Info */}
-                                                                        <div className="flex text-[16px] mt-2">
-                                                                            <div className="w-32 font-bold text-gray-700">Documents</div>
-                                                                            <div className="w-10 text-gray-400 font-bold">:</div>
-                                                                            <div className="flex-1 space-y-1">
-                                                                                {doctor.documents.map((doc, dIdx) => (
-                                                                                    <p key={dIdx} className="text-gray-400 font-bold leading-tight">{doc}</p>
-                                                                                ))}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Large Photo */}
-                                                                    <div className="relative mr-12">
-                                                                        <div className="w-52 h-44 rounded-xl overflow-hidden shadow-lg border border-gray-100">
-                                                                            <img src={doctor.fullImage} className="w-full h-full object-cover" alt="" />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
                                             </div>
                                         ))}
                                     </div>
@@ -1737,8 +1763,146 @@ const Admin_dashboard1 = () => {
                     )}
                 </AnimatePresence>
             </main>
+            {/* ================= DOCTOR DETAIL MODAL (Form 1-4 Info) ================= */}
+            <AnimatePresence>
+                {showDetailModal && selectedDoctorForDetail && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 md:p-6 overflow-y-auto">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-[32px] w-full max-w-[1000px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                        >
+                            {/* Header */}
+                            <div className="px-8 py-6 bg-gradient-to-r from-[#19718A] to-[#278AA3] text-white flex justify-between items-center shrink-0">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/30 shadow-lg bg-white/10">
+                                        <img src={selectedDoctorForDetail.image} className="w-full h-full object-cover" alt="" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-[24px] font-bold leading-tight">{selectedDoctorForDetail.name}</h2>
+                                        <p className="text-white/80 font-medium">{selectedDoctorForDetail.speciality || selectedDoctorForDetail.subTitle}</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => setShowDetailModal(false)}
+                                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                >
+                                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Scrollable Content */}
+                            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                    
+                                    {/* Section 1: Personal Information (Form 1) */}
+                                    <div className="space-y-5">
+                                        <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                            <div className="w-8 h-8 bg-[#19718A]/10 rounded-lg flex items-center justify-center text-[#19718A]">
+                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                            </div>
+                                            <h3 className="text-[18px] font-bold text-gray-800">Personal Information</h3>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <InfoRow label="Full Name" value={selectedDoctorForDetail.name} />
+                                            <InfoRow label="Email" value={selectedDoctorForDetail.email || "sumaiya@gmail.com"} />
+                                            <InfoRow label="Phone" value={selectedDoctorForDetail.phone} />
+                                            <InfoRow label="DOB" value="12-05-1992" />
+                                            <InfoRow label="Gender" value="Female" />
+                                            <InfoRow label="City" value="Mumbai" />
+                                            <InfoRow label="Address" value="123 Healthcare Ave, Medical District" />
+                                        </div>
+                                    </div>
+
+                                    {/* Section 2: Professional Details (Form 2) */}
+                                    <div className="space-y-5">
+                                        <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                            <div className="w-8 h-8 bg-[#19718A]/10 rounded-lg flex items-center justify-center text-[#19718A]">
+                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                            </div>
+                                            <h3 className="text-[18px] font-bold text-gray-800">Professional Details</h3>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <InfoRow label="Employee ID" value={`DOC-${selectedDoctorForDetail.id}00${selectedDoctorForDetail.id}`} />
+                                            <InfoRow label="Specialization" value={selectedDoctorForDetail.speciality || "Cardiologist"} />
+                                            <InfoRow label="Qualification" value="MBBS, MD Cardiology" />
+                                            <InfoRow label="Experience" value={selectedDoctorForDetail.experience} />
+                                            <InfoRow label="License No." value="MC-2023-88991" />
+                                            <InfoRow label="Medical Council" value="Medical Council of India" />
+                                        </div>
+                                    </div>
+
+                                    {/* Section 3: Hospital Information (Form 3) */}
+                                    <div className="space-y-5">
+                                        <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                            <div className="w-8 h-8 bg-[#19718A]/10 rounded-lg flex items-center justify-center text-[#19718A]">
+                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5" /></svg>
+                                            </div>
+                                            <h3 className="text-[18px] font-bold text-gray-800">Hospital & Fees</h3>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <InfoRow label="Joining Date" value="15-01-2024" />
+                                            <InfoRow label="Employment" value="Full-Time" />
+                                            <InfoRow label="Consultation Fee" value="₹ 800" />
+                                            <InfoRow label="Leave Day" value="Sunday" />
+                                        </div>
+                                    </div>
+
+                                    {/* Section 4: Verified Documents (Form 4) */}
+                                    <div className="space-y-5">
+                                        <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                            <div className="w-8 h-8 bg-[#19718A]/10 rounded-lg flex items-center justify-center text-[#19718A]">
+                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                            </div>
+                                            <h3 className="text-[18px] font-bold text-gray-800">Verified Documents</h3>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {["Aadhaar Card", "PAN Card", "Medical License", "Degree Certificate", "Experience Letter"].map((doc, idx) => (
+                                                <div key={idx} className="flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200">
+                                                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white">
+                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M5 13l4 4L19 7" /></svg>
+                                                    </div>
+                                                    <span className="text-[13px] font-bold text-gray-600 truncate">{doc}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="px-8 py-6 bg-gray-50 border-t border-gray-100 flex justify-end items-center gap-4 shrink-0">
+                                <button 
+                                    onClick={() => setShowDetailModal(false)}
+                                    className="px-8 py-3 rounded-xl bg-white border border-gray-300 text-gray-700 font-bold text-[16px] hover:bg-gray-100 transition-all shadow-sm active:scale-95"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handleApproveDoctor}
+                                    className="px-10 py-3 rounded-xl bg-[#19718A] text-white font-bold text-[16px] hover:bg-[#15616D] transition-all shadow-lg active:scale-95"
+                                >
+                                    Approve Doctor
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
+
+// Helper Component for Modal Info Rows
+const InfoRow = ({ label, value }) => (
+    <div className="flex items-start text-[15px]">
+        <div className="w-32 text-gray-400 font-bold shrink-0">{label}</div>
+        <div className="w-4 text-gray-300 font-bold shrink-0">:</div>
+        <div className="flex-1 text-gray-700 font-semibold">{value}</div>
+    </div>
+);
 
 export default Admin_dashboard1;

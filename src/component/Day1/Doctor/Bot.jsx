@@ -6,7 +6,7 @@ import img2 from '../../../assets/Frame 226.svg'; // User avatar
 import trashIcon from '../../../assets/image_105.svg';
 import docMaleImage from '../../../assets/vid_profile_removebg_preview_1.svg';
 import docFemaleImage from '../../../assets/vidf_profile_removebg_preview_1.svg';
-import robotImage from '../../../assets/vrobo_removebg_preview_1.svg';
+import robotImage from '../../../assets/vaidya_character_transparent.png';
 
 
 const Bot = () => {
@@ -431,9 +431,7 @@ const Bot = () => {
 
                     {/* Create Doc Bot Component */}
                     <div className="h-[280px] bg-white rounded-[16px] border-[1.5px] border-gray-200 relative overflow-hidden flex flex-col shrink-0 shadow-sm mt-1">
-                        {/* Background Circles */}
-                        <div className="absolute top-[-25%] right-[-30%] w-[220px] h-[220px] bg-[#e4f4f7] rounded-full z-0"></div>
-                        <div className="absolute bottom-[-15%] left-[-25%] w-[260px] h-[260px] bg-[#6eb9c5] rounded-full z-0 opacity-90"></div>
+                        {/* Background Circles Removed */}
 
                         {/* Illustration Group */}
                         <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-[200px] h-[130px] z-10 flex items-end justify-center">
@@ -446,8 +444,8 @@ const Bot = () => {
                                 <img src={docMaleImage} alt="Male Doctor" className="w-full object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.08)]" />
                             </div>
                             {/* Robot Core (Center, Front) */}
-                            <div className="absolute left-1/2 -translate-x-1/2 bottom-[-15px] w-[95px] z-20 pointer-events-none">
-                                <img src={robotImage} alt="Robot Bot" className="w-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.15)]" />
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-[-15px] w-[110px] z-20 pointer-events-none">
+                                <img src={robotImage} alt="Robot Bot" className="w-full object-contain drop-shadow-2xl" />
                             </div>
                         </div>
 

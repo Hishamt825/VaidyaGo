@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import BASE_URL from "../../baseUrl";
 
 const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isModal) {
+      navigate("/MainPage?auth=login");
+    }
+  }, [isModal, navigate]);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -14,6 +20,7 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPendingModal, setShowPendingModal] = useState(false);
 
   // ================================
   //        HANDLE LOGIN API
@@ -66,7 +73,7 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
         // Ensure fresh landing on basic dashboard
         localStorage.removeItem("prescriptionUploaded");
 
-        // ✅ Handle tokens (save both access and refresh for auto-refresh logic)
+        // ✅ Handle tokens
         const token = data.access || data.token;
         const refreshToken = data.refresh;
         
@@ -78,6 +85,12 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
           localStorage.setItem("refresh", refreshToken);
         }
 
+        // Save doctor_id if it's a doctor login
+        const doctorId = data.doctor_id || data.id || data.user?.id;
+        if (doctorId) {
+          localStorage.setItem("doctor_id", doctorId);
+        }
+
         // Close modal if open
         if (isModal && onClose) {
           onClose();
@@ -87,6 +100,25 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
         if (userType === "admin") {
           navigate("/Admin_dashboard1");
         } else if (userType === "doctor") {
+          try {
+            const profileRes = await fetch(`${BASE_URL}/api/doctor-personal-info/${data.doctor_id || data.id || data.user?.id}/`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (profileRes.ok) {
+              const profileData = await profileRes.json();
+              const approved = profileData.is_approved || profileData.status === 'approved' || profileData.status === 'active';
+              
+              if (!approved) {
+                setShowPendingModal(true); // Open the beautiful popup
+                setIsLoading(false);
+                localStorage.clear();
+                return;
+              }
+            }
+          } catch (err) {
+            console.error("Approval check failed:", err);
+          }
+          
           navigate("/Doctor_dashboard");
         } else if (userType === "patient") {
           navigate("/Patient_dashboard");
@@ -315,6 +347,41 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
         {innerContent}
+
+        {/* Pending Approval Modal */}
+        <AnimatePresence>
+          {showPendingModal && (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-[32px] w-full max-w-md p-8 text-center shadow-2xl relative overflow-hidden"
+              >
+                <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#19718A]/10 rounded-full blur-2xl"></div>
+                <div className="flex justify-center mb-6">
+                  <div className="w-20 h-20 bg-[#F0F9FA] rounded-full flex items-center justify-center relative">
+                    <div className="absolute inset-0 border-2 border-dashed border-[#19718A]/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                    <svg className="w-10 h-10 text-[#19718A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Verification Pending</h3>
+                <p className="text-gray-500 mb-8 leading-relaxed">
+                  Your account is currently under review by our Admin team. You will receive an email confirmation once your profile is approved.
+                </p>
+                <button
+                  onClick={() => window.location.href = 'https://mail.google.com'}
+                  className="w-full bg-[#19718A] text-white py-4 rounded-2xl font-bold hover:bg-[#0E4A5C] transition-all shadow-lg active:scale-95"
+                >
+                  Back to Gmail
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
     );
   }
@@ -322,6 +389,43 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#252525] px-4 font-sans relative">
       {innerContent}
+
+      {/* Pending Approval Modal */}
+      <AnimatePresence>
+        {showPendingModal && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-[32px] w-full max-w-md p-8 text-center shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#19718A]/10 rounded-full blur-2xl"></div>
+              <div className="flex justify-center mb-6">
+                <div className="w-20 h-20 bg-[#F0F9FA] rounded-full flex items-center justify-center relative">
+                  <div className="absolute inset-0 border-2 border-dashed border-[#19718A]/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                  <svg className="w-10 h-10 text-[#19718A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Verification Pending</h3>
+              <p className="text-gray-500 mb-8 leading-relaxed">
+                Your account is currently under review by our Admin team. You will receive an email confirmation once your profile is approved.
+              </p>
+              <button
+                onClick={() => window.location.href = 'https://mail.google.com'}
+                className="w-full bg-[#19718A] text-white py-4 rounded-2xl font-bold hover:bg-[#0E4A5C] transition-all shadow-lg active:scale-95"
+              >
+                Back to Gmail
+              </button>
+              <div className="mt-6 text-[12px] text-gray-400 font-medium italic">
+                Usually takes 24-48 hours
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
