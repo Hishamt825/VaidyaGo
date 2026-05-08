@@ -389,17 +389,7 @@ const Body = () => {
             )}
           </div>
           
-<<<<<<< HEAD
-          <img 
-            src={isFront ? backBody : frontalBody} 
-            alt="Secondary Body" 
-            className="secondary-model" 
-            onClick={toggleView}
-            style={{ cursor: 'pointer' }}
-          />
-=======
           {/* Secondary model removed */}
->>>>>>> 4baebb020854670a80fc1b9c24c26d3aff59a754
 
           <div className="bottom-controls">
             <button className="control-btn" onClick={toggleView}><Icon name="rotate" /></button>

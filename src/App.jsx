@@ -48,6 +48,7 @@ import Form4 from './components/Doctor/Form4';
 import Vertical from './components/Doctor/Vertical';
 import DoctorCard from './components/Doctor/DoctorCard';
 import Doctor_dashboard from './components/Doctor/Doctor_dashboard';
+import AppointmentRequests from './components/Doctor/AppointmentRequests';
 import Recent_patient from './components/Appoinment/Recent_patient';
 import Settingpage from './components/Appoinment/Settingpage';
 import Reject_doctor from './components/Admin/Reject_doctor';
@@ -109,6 +110,7 @@ import Myrecord from './component/Day1/Patient/Myrecord';
 import Savechange from './component/Day1/Patient/Savechange';
 import Reject from './components/Admin/Reject';
 import PostureAnalysis from './component/Day1/Patient/PostureAnalysis';
+import PostureAnalysis2 from './component/Day1/Patient/PostureAnalysis2';
 import SteadyAscent from './component/Day1/Patient/SteadyAscent';
 import CarePlan from './component/Day1/Patient/CarePlan';
 import Stabilization from './component/Day1/Patient/Stabilization';
@@ -120,6 +122,7 @@ import MonthlyReview from './component/Day1/Patient/MonthlyReview';
 import ViewProfile from './component/Day1/Consultation/view_profile';
 import Share from './components/Patient/Share';
 import ProgressReview from './component/Day1/Patient/ProgressReview';
+import Analysiscomplete from './component/Day1/Patient/Analysiscomplete';
 
 const App = () => {
   return (
@@ -167,7 +170,8 @@ const App = () => {
       <Route path="/App_Dashboard" element={<App_Dashboard />} />
       <Route path="/Bot" element={<Bot />} />
       <Route path="/Addslot" element={<Addslot />} />
-      <Route path="/Doctor_dashboard" element={<Doctor_dashboard />} />
+       <Route path="/Doctor_dashboard" element={<Doctor_dashboard />} />
+      <Route path="/AppointmentRequests" element={<AppointmentRequests />} />
       <Route path="/Patients" element={<Recent_patient />} />
       <Route path="/Settingpage" element={<Settingpage />} />
       <Route path="/reject_doctor" element={<Reject_doctor />} />
@@ -236,6 +240,7 @@ const App = () => {
       <Route path="/Myrecord" element={<Myrecord />} />
       <Route path="/Savechange" element={<Savechange />} />
       <Route path="/PostureAnalysis" element={<PostureAnalysis />} />
+      <Route path="/PostureAnalysis2" element={<PostureAnalysis2 />} />
       <Route path="/SteadyAscent" element={<SteadyAscent />} />
       <Route path="/CarePlan" element={<CarePlan />} />
       <Route path="/Stabilization" element={<Stabilization />} />
@@ -244,11 +249,8 @@ const App = () => {
       <Route path="/MaintenanceLog" element={<MaintenanceLog />} />
       <Route path="/RecoveryJourney" element={<RecoveryJourney />} />
       <Route path="/MonthlyReview" element={<MonthlyReview />} />
-<<<<<<< HEAD
-=======
-      <Route path="/MonthlyReview" element={<MonthlyReview />} />
->>>>>>> 452cd2563bb32dfbfa76515dcf72576bc86a9d71
       <Route path="/ProgressReview" element={<ProgressReview />} />
+      <Route path="/Analysiscomplete" element={<Analysiscomplete />} />
     </Routes>
 
   );
