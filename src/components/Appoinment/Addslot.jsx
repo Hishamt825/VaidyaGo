@@ -2,9 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/lo.svg';
 import Side_app from './Side_app';
+<<<<<<< HEAD
+import { AnimatePresence, motion } from 'framer-motion';
+=======
 import './Dsetting.css';
 import apiFetch from '../../api';
 import BASE_URL from '../../baseUrl';
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
 import appointmentIcon from '../../assets/appointment.svg';
 import totalPatientsIcon from '../../assets/total_patients.svg';
@@ -12,10 +16,14 @@ import consultationsIcon from '../../assets/consultations.svg';
 import incomeIcon from '../../assets/income.svg';
 import emergencyIcon from '../../assets/emergency.svg';
 import doctorImg from '../../assets/image_76.svg';
+<<<<<<< HEAD
+import phImg from '../../assets/ph.png';
+=======
 import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
 
 // Slots will be fetched from API
@@ -23,6 +31,23 @@ import { AnimatePresence } from 'framer-motion';
 
 const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const yearsList = Array.from({ length: 22 }, (_, i) => 2005 + i);
+const timelineData = [
+   { time: "10:30 am", label: "Patient Checkup", patient: "Natalia khan", duration: "10:30 am - 11:00 am", color: "#facc15" },
+   { time: "12:00 am", label: "Treatment", patient: "Natalia khan", duration: "12:00 am - 11:00 am", color: "#f87171" },
+   { time: "02:00 am", label: "Round in Patient wards", patient: "Hall no - 6", duration: "02:00 am - 03:00 am", color: "#38bdf8" },
+   { time: "02:00 am", label: "Round in Patient wards", patient: "Hall no - 6", duration: "02:00 am - 03:00 am", color: "#f87171" },
+];
+
+const appRequestsData = [
+   { name: "Riya madeshiya", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
+   { name: "Riya madeshiya", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
+];
+
+const recentPatientsData = [
+   { name: "Riya madeshiya", gender: "Female", weight: "50kg", disease: "Typhoid", status: "OutPatient", heartRate: "70 bpm" },
+   { name: "Riya madeshiya", gender: "Female", weight: "50kg", disease: "Typhoid", status: "OutPatient", heartRate: "70 bpm" },
+];
+
 const calendarDays = ['27', '28', '29', '30', '31', '1', '2',
    '3', '4', '5', '6', '7', '8', '9',
    '10', '11', '12', '13', '14', '15', '16',
@@ -361,6 +386,15 @@ const Addslot = () => {
    const navigate = useNavigate();
    const [activeNav, setActiveNav] = useState('Add Slots');
    const [isMobileOpen, setIsMobileOpen] = useState(false);
+<<<<<<< HEAD
+   const [slotItems, setSlotItems] = useState(slots.map(s => ({ ...s, isBlocked: false })));
+
+   const toggleBlock = (id) => {
+      setSlotItems(prev => prev.map(item => 
+         item.id === id ? { ...item, isBlocked: !item.isBlocked } : item
+      ));
+   };
+=======
    const [open, setOpen] = useState(false);
    const [openProfile, setOpenProfile] = useState(false);
    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -379,6 +413,7 @@ const Addslot = () => {
    if (openProfile) {
       return <Profile setOpenProfile={setOpenProfile} />;
    }
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
    // Draggable logic for the floating bot
    const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
@@ -462,8 +497,17 @@ const Addslot = () => {
    const [popupSelectedYear, setPopupSelectedYear] = useState(todayYear); 
    const popupYearScrollRef = useRef(null);
 
+<<<<<<< HEAD
+   // Tiles Modals State
+   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+   const [isPatientsModalOpen, setIsPatientsModalOpen] = useState(false);
+   const [isConsultationsModalOpen, setIsConsultationsModalOpen] = useState(false);
+   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
+   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
+=======
    const dateGroupRefs = useRef({});
    const slotContainerRef = useRef(null);
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
    // Modal states
    const [isAddSlotModalOpen, setIsAddSlotModalOpen] = useState(false);
@@ -784,6 +828,31 @@ const Addslot = () => {
       return () => clearTimeout(timeoutId);
    }, [activeDateIndex]);
 
+<<<<<<< HEAD
+   const renderSlot = (slot) => {
+      // Shared Unblock toggle component to match image exactly
+      const toggleCircleColor = slot.type === 'available' ? 'bg-[#1a5b6e]' : 'bg-[#4b4b4b]';
+      const UnblockToggle = () => (
+         <div 
+            onClick={() => toggleBlock(slot.id)}
+            className="bg-[#e4e5e7] hover:bg-[#d5d6d8] transition-colors rounded-full flex items-center h-[26px] w-[74px] relative shadow-sm cursor-pointer border border-gray-300/60 overflow-hidden"
+         >
+            <motion.div 
+               className={`w-[19px] h-[19px] ${toggleCircleColor} rounded-full absolute left-0`}
+               initial={false}
+               animate={{ x: slot.isBlocked ? 51 : 3 }}
+               transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            />
+            <motion.span 
+               className="text-[10px] font-bold text-[#5c5e60] absolute w-full text-center pointer-events-none"
+               animate={{ x: slot.isBlocked ? -11 : 9 }}
+               transition={{ duration: 0.2 }}
+            >
+               {slot.isBlocked ? 'Block' : 'Unblock'}
+            </motion.span>
+         </div>
+      );
+=======
     const handleToggleSlotStatus = async (slotId, currentType) => {
         const newStatus = currentType === 'available' ? 'break' : 'available';
         
@@ -834,6 +903,7 @@ const Addslot = () => {
              </span>
           </div>
        );
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
       if (slot.type === 'available') {
          return (
@@ -846,8 +916,17 @@ const Addslot = () => {
                   <div className="w-[14px] h-[14px] bg-[#a2d2e1] rounded-sm shadow-sm"></div>
                   <span className="font-bold text-[#1a5b6e] text-[18px]">Available</span>
                </div>
+<<<<<<< HEAD
+               {/* Bottom area */}
+               <div className="flex-1 bg-white px-[14px] py-[10px] flex justify-end items-end">
+                  <button 
+                     onClick={() => setIsAddSlotModalOpen(true)}
+                     className="bg-[#cee6eb] hover:bg-[#b0d9e2] transition-colors text-[#2c5361] font-bold text-[16px] px-[22px] py-[6px] rounded-md border-[1.5px] border-[#a5cbd4] tracking-wide"
+                  >
+=======
                <div className="flex-1 bg-white px-[16px] py-[12px] flex justify-end items-end">
                   <button className="bg-[#cee6eb] hover:bg-[#b0d9e2] transition-all text-[#2c5361] font-bold text-[16px] px-[28px] py-[6px] rounded-lg border-[1.5px] border-[#a5cbd4] tracking-wide shadow-sm active:scale-95">
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
                      Schedule
                   </button>
                </div>
@@ -1015,11 +1094,21 @@ const Addslot = () => {
                            { name: 'Income', imgUrl: incomeIcon },
                            { name: 'Emergency', imgUrl: emergencyIcon }
                         ].map((t, i) => (
-                           <div key={i} className="flex flex-col items-center justify-between border-[1.5px] border-gray-600 rounded-2xl bg-white aspect-[1/0.85] shadow-sm px-[4px] py-[10px] mt-[4px]">
-                              <div className="flex-1 flex items-end justify-center w-full">
+                           <div 
+                              key={i} 
+                              onClick={() => {
+                                 if (t.name === 'Appointment') setIsAppointmentModalOpen(true);
+                                 if (t.name === 'Total Patients') setIsPatientsModalOpen(true);
+                                 if (t.name === 'Consultations') setIsConsultationsModalOpen(true);
+                                 if (t.name === 'Income') setIsIncomeModalOpen(true);
+                                 if (t.name === 'Emergency') setIsEmergencyModalOpen(true);
+                              }}
+                              className="flex flex-col items-center justify-between border-[1.5px] border-gray-600 rounded-2xl bg-white aspect-[1/0.85] shadow-sm px-[4px] py-[10px] mt-[4px] cursor-pointer hover:border-gray-400 transition-all hover:bg-gray-50/50"
+                           >
+                              <div className="flex-1 flex items-end justify-center w-full pointer-events-none">
                                  <img src={t.imgUrl} alt={t.name} className="h-full max-h-[58px] object-contain" />
                               </div>
-                              <span className="text-[11px] md:text-[13px] font-bold text-[#444] tracking-wide mt-[8px] text-center leading-tight">{t.name}</span>
+                              <span className="text-[11px] md:text-[13px] font-bold text-[#444] tracking-wide mt-[8px] text-center leading-tight pointer-events-none">{t.name}</span>
                            </div>
                         ))}
                      </div>
@@ -1268,6 +1357,15 @@ const Addslot = () => {
                         <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                      </button>
                   </div>
+<<<<<<< HEAD
+
+                  {/* Grid of Slots */}
+                  <div className="grid grid-cols-3 gap-x-[20px] gap-y-[20px] pb-2 overflow-y-auto max-h-[460px] scroll-smooth px-1 pt-1" style={{ scrollbarWidth: 'thin' }}>
+                     {slotItems.map(renderSlot)}
+                  </div>
+
+=======
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
                </div>
 
                {/* Legend area */}
@@ -1512,7 +1610,342 @@ const Addslot = () => {
                    </div>
                 </div>
             )}
-         </main>
+            </main>
+
+         {/* Tiles Modals from Doctor Dashboard */}
+            
+         {/* Appointment Modal */}
+         <AnimatePresence>
+             {isAppointmentModalOpen && (
+                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                     <motion.div 
+                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                         animate={{ opacity: 1, scale: 1, y: 0 }}
+                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                     >
+                         <div className="p-7">
+                             <div className="flex justify-between items-center mb-6">
+                                 <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Recent Appointment Requests</h3>
+                                 <button 
+                                     onClick={() => setIsAppointmentModalOpen(false)}
+                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                 >
+                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                     </svg>
+                                 </button>
+                             </div>
+                             
+                             <div className="space-y-4">
+                                 {appRequestsData.map((req, idx) => (
+                                     <div key={idx} className="border border-gray-300 rounded-2xl p-4 bg-white hover:border-gray-400 transition-colors">
+                                         <div className="flex justify-between items-start mb-4">
+                                             <div className="flex gap-4 items-center">
+                                                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm">
+                                                     <img src={phImg} alt="" className="w-full h-full object-cover" />
+                                                 </div>
+                                                 <div>
+                                                     <p className="text-[16px] font-bold text-gray-800 leading-tight">{req.name}</p>
+                                                     <p className="text-[13px] text-gray-400 font-bold mt-1">{req.gender} , {req.age}</p>
+                                                 </div>
+                                             </div>
+                                             <div className="text-[11px] font-bold text-gray-400">{req.date}</div>
+                                         </div>
+
+                                         <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                                             <div className="flex items-center gap-3">
+                                                 <p className="text-[14px] font-bold text-[#32869e]">{req.treatment}</p>
+                                                 <span className="bg-gray-100 border border-gray-200 text-[10px] font-bold px-2.5 py-1 rounded-full text-gray-500 uppercase">{req.time}</span>
+                                             </div>
+                                             <div className="flex gap-2">
+                                                 <button className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-lg text-[12px] font-bold shadow-sm transition-all">Accept</button>
+                                                 <button className="bg-[#f87171] hover:bg-[#ef4444] text-white px-4 py-2 rounded-lg text-[12px] font-bold shadow-sm transition-all">Decline</button>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 ))}
+                             </div>
+                             
+                             <button 
+                                 onClick={() => setIsAppointmentModalOpen(false)}
+                                 className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                             >
+                                 Close
+                             </button>
+                         </div>
+                     </motion.div>
+                 </div>
+             )}
+         </AnimatePresence>
+
+         {/* Total Patients Modal */}
+         <AnimatePresence>
+             {isPatientsModalOpen && (
+                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                     <motion.div 
+                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                         animate={{ opacity: 1, scale: 1, y: 0 }}
+                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                     >
+                         <div className="p-7">
+                             <div className="flex justify-between items-center mb-6">
+                                 <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Total Patients</h3>
+                                 <button 
+                                     onClick={() => setIsPatientsModalOpen(false)}
+                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                 >
+                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                     </svg>
+                                 </button>
+                             </div>
+                             
+                             <div className="space-y-4">
+                                 {recentPatientsData.map((patient, idx) => (
+                                     <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                         <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0">
+                                             <img src={phImg} alt="" className="w-full h-full object-cover" />
+                                         </div>
+                                         <div className="flex-1">
+                                             <div className="flex justify-between items-start">
+                                                 <p className="text-[16px] font-bold text-gray-800 leading-tight">{patient.name}</p>
+                                                 <span className="text-[11px] font-bold text-[#1b738c] bg-[#1b738c]/10 px-2 py-0.5 rounded-full uppercase tracking-wider">{patient.status}</span>
+                                             </div>
+                                             <p className="text-[14px] text-gray-500 font-medium mt-0.5">{patient.disease} • {patient.gender}</p>
+                                             <div className="flex gap-3 mt-1">
+                                                 <span className="text-[12px] text-gray-400 font-bold">Weight: {patient.weight}</span>
+                                                 <span className="text-[12px] text-gray-400 font-bold">Heart: {patient.heartRate}</span>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 ))}
+                             </div>
+                             
+                             <button 
+                                 onClick={() => setIsPatientsModalOpen(false)}
+                                 className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                             >
+                                 Close
+                             </button>
+                         </div>
+                     </motion.div>
+                 </div>
+             )}
+         </AnimatePresence>
+
+         {/* Consultations Modal */}
+         <AnimatePresence>
+             {isConsultationsModalOpen && (
+                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                     <motion.div 
+                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                         animate={{ opacity: 1, scale: 1, y: 0 }}
+                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                     >
+                         <div className="p-7">
+                             <div className="flex justify-between items-center mb-6">
+                                 <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Consultations</h3>
+                                 <button 
+                                     onClick={() => setIsConsultationsModalOpen(false)}
+                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                 >
+                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                     </svg>
+                                 </button>
+                             </div>
+                             
+                             <div className="space-y-4">
+                                 {timelineData.slice(0, 4).map((item, idx) => (
+                                     <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                         <div className="w-3 h-12 rounded-full shrink-0" style={{ backgroundColor: item.color }}></div>
+                                         <div className="flex-1">
+                                             <div className="flex justify-between items-start">
+                                                 <p className="text-[16px] font-bold text-gray-800 leading-tight">{item.label}</p>
+                                                 <span className="text-[11px] font-bold text-gray-400">{item.time}</span>
+                                             </div>
+                                             <p className="text-[14px] text-gray-500 font-medium mt-0.5">{item.patient}</p>
+                                             <p className="text-[12px] text-[#32869e] font-bold mt-1">{item.duration}</p>
+                                         </div>
+                                     </div>
+                                 ))}
+                             </div>
+                             
+                             <button 
+                                 onClick={() => setIsConsultationsModalOpen(false)}
+                                 className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                             >
+                                 Close
+                             </button>
+                         </div>
+                     </motion.div>
+                 </div>
+             )}
+         </AnimatePresence>
+
+         {/* Income Modal */}
+         <AnimatePresence>
+             {isIncomeModalOpen && (
+                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                     <motion.div 
+                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                         animate={{ opacity: 1, scale: 1, y: 0 }}
+                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                     >
+                         <div className="p-7">
+                             <div className="flex justify-between items-center mb-6">
+                                 <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Income Summary</h3>
+                                 <button 
+                                     onClick={() => setIsIncomeModalOpen(false)}
+                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                 >
+                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                     </svg>
+                                 </button>
+                             </div>
+                             
+                             <div className="space-y-6">
+                                 <div className="bg-gray-50 p-5 rounded-2xl border border-gray-300">
+                                     <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider">Total Revenue</p>
+                                     <h2 className="text-[48px] font-normal text-black leading-none mt-2">$142,000</h2>
+                                     <div className="flex items-center gap-2 mt-4 text-green-600">
+                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                         </svg>
+                                         <span className="text-[14px] font-bold">+12.5% from last month</span>
+                                     </div>
+                                 </div>
+
+                                 <div className="grid grid-cols-2 gap-4">
+                                     <div className="p-4 border border-gray-300 rounded-2xl bg-white">
+                                         <p className="text-[12px] text-gray-400 font-bold uppercase">Consultations</p>
+                                         <p className="text-[20px] font-bold text-gray-800 mt-1">$98,400</p>
+                                     </div>
+                                     <div className="p-4 border border-gray-300 rounded-2xl bg-white">
+                                         <p className="text-[12px] text-gray-400 font-bold uppercase">Treatments</p>
+                                         <p className="text-[20px] font-bold text-gray-800 mt-1">$43,600</p>
+                                     </div>
+                                 </div>
+
+                                 <div className="p-4 border border-gray-300 rounded-2xl bg-gray-50/50">
+                                     <div className="flex justify-between items-center mb-3">
+                                         <p className="text-[14px] font-bold text-gray-700">Recent Transactions</p>
+                                         <button className="text-[12px] text-[#32869e] font-bold">View All</button>
+                                     </div>
+                                     <div className="space-y-3">
+                                         {[1, 2].map(i => (
+                                             <div key={i} className="flex justify-between items-center">
+                                                 <div className="flex items-center gap-3">
+                                                     <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                                         <span className="text-[12px] font-bold">$</span>
+                                                     </div>
+                                                     <div>
+                                                         <p className="text-[14px] font-bold text-gray-800">Patient Payment</p>
+                                                         <p className="text-[11px] text-gray-400">May 12, 2025</p>
+                                                     </div>
+                                                 </div>
+                                                 <p className="text-[14px] font-bold text-gray-800">+$250.00</p>
+                                             </div>
+                                         ))}
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <button 
+                                 onClick={() => setIsIncomeModalOpen(false)}
+                                 className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                             >
+                                 Close
+                             </button>
+                         </div>
+                     </motion.div>
+                 </div>
+             )}
+         </AnimatePresence>
+
+         {/* Emergency Modal */}
+         <AnimatePresence>
+             {isEmergencyModalOpen && (
+                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                     <motion.div 
+                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                         animate={{ opacity: 1, scale: 1, y: 0 }}
+                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-red-100"
+                     >
+                         <div className="p-7">
+                             <div className="flex justify-between items-center mb-6">
+                                 <div className="flex items-center gap-3">
+                                     <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 shadow-sm">
+                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                         </svg>
+                                     </div>
+                                     <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Emergency Alerts</h3>
+                                 </div>
+                                 <button 
+                                     onClick={() => setIsEmergencyModalOpen(false)}
+                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                 >
+                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                     </svg>
+                                 </button>
+                             </div>
+                             
+                             <div className="space-y-4">
+                                 <div className="p-4 border border-red-200 rounded-2xl bg-red-50/50">
+                                     <div className="flex justify-between items-start mb-2">
+                                         <p className="text-[16px] font-bold text-red-700">Active Emergency</p>
+                                         <span className="text-[11px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-full animate-pulse">URGENT</span>
+                                     </div>
+                                     <p className="text-[14px] text-red-600 font-medium">Patient: Rajesh Kumar • Room 302</p>
+                                     <p className="text-[12px] text-red-500 font-bold mt-1">Status: Cardiac Distress • 2 mins ago</p>
+                                 </div>
+
+                                 <div className="space-y-3">
+                                     <p className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Quick Actions</p>
+                                     <div className="grid grid-cols-2 gap-3">
+                                         <button className="flex items-center justify-center gap-2 p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                                             <span className="text-[14px] font-bold text-gray-700">Call ER</span>
+                                         </button>
+                                         <button className="flex items-center justify-center gap-2 p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                                             <span className="text-[14px] font-bold text-gray-700">Dispatch Team</span>
+                                         </button>
+                                     </div>
+                                 </div>
+
+                                 <div className="p-4 border border-gray-300 rounded-2xl bg-gray-50/50">
+                                     <p className="text-[14px] font-bold text-gray-700 mb-3">Emergency Contact List</p>
+                                     <div className="space-y-3">
+                                         <div className="flex justify-between items-center">
+                                             <p className="text-[14px] font-bold text-gray-800">ICU Desk</p>
+                                             <p className="text-[14px] font-bold text-[#1b738c]">Ext: 405</p>
+                                         </div>
+                                         <div className="flex justify-between items-center">
+                                             <p className="text-[14px] font-bold text-gray-800">Ambulance Services</p>
+                                             <p className="text-[14px] font-bold text-[#1b738c]">102</p>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <button 
+                                 onClick={() => setIsEmergencyModalOpen(false)}
+                                 className="w-full mt-8 bg-red-600 text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all active:scale-[0.98]"
+                             >
+                                 Close
+                             </button>
+                         </div>
+                     </motion.div>
+                 </div>
+             )}
+         </AnimatePresence>
       </div>
    );
 };

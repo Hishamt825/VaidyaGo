@@ -93,8 +93,9 @@ const Diagnostic = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
-  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal || showDiagnosticInput;
+  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal || showDiagnosticInput || showSaveSuccess;
 
   const conditions = [
     { title: 'Tension-Type Headache', match: 85, desc: 'Most common primary headache disorder, often characterized by a pressing or tightening sensation around the head of mild to moderate intensity.' },
@@ -116,7 +117,7 @@ const Diagnostic = () => {
       />
 
       {/* ── Main Area ── */}
-      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || showDiagnosticInput ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+      <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || showDiagnosticInput || showSaveSuccess ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
         {/* Top Navbar */}
         <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px] z-20">
             {/* Hamburger for Mobile */}
@@ -397,7 +398,13 @@ const Diagnostic = () => {
     )}
 
     {showDiagnosticInput && (
-      <Diagnosticinput onClose={() => setShowDiagnosticInput(false)} />
+      <Diagnosticinput 
+        onClose={() => setShowDiagnosticInput(false)} 
+        onSave={() => {
+          setShowDiagnosticInput(false);
+          setShowSaveSuccess(true);
+        }}
+      />
     )}
 
     {activeModal === 'profile' && (
@@ -410,6 +417,41 @@ const Diagnostic = () => {
       <Account onClose={() => setActiveModal(null)} />
     )}
     {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+    
+    {showSaveSuccess && (
+      <div className="save-success-overlay">
+        <div className="success-modal">
+          <div className="checkmark-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+
+          <h2>Changes Saved Successfully</h2>
+          
+          <p>
+            Your patient profile and clinical data have <br /> 
+            been updated across the <span>VaidyaGo network.</span>
+          </p>
+
+          <button className="done-btn" onClick={() => setShowSaveSuccess(false)}>Done</button>
+          
+          <button className="return-btn" onClick={() => setShowSaveSuccess(false)}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+            Return to Dashboard
+          </button>
+
+          <footer className="system-footer">
+            <svg className="shield-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            The Sanctuary Sanctuary System
+          </footer>
+        </div>
+      </div>
+    )}
     </>
   );
 };

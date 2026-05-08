@@ -58,7 +58,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
   );
 };
 
-const Diagnosticinput = ({ onClose }) => {
+const Diagnosticinput = ({ onClose, onSave }) => {
   const navigate = useNavigate();
   const [complaints, setComplaints] = useState([
     { id: 1, symptom: 'Persistent Headache', duration: '3 Days', severity: 'Moderate' },
@@ -163,7 +163,7 @@ const Diagnosticinput = ({ onClose }) => {
           </div>
           <div className="footer-actions">
             <button className="cancel-btn" onClick={onClose}>Cancel</button>
-            <button className="save-btn" onClick={() => navigate('/Savechange')}>Save Changes</button>
+            <button className="save-btn" onClick={onSave}>Save Changes</button>
           </div>
         </footer>
       </div>

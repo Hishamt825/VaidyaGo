@@ -6,44 +6,6 @@ const Savechange = () => {
   const navigate = useNavigate();
   return (
     <div className="savechange-page">
-      {/* Blurred Dashboard Background as in image */}
-      <div className="sc-bg-container">
-        <aside className="sc-bg-sidebar">
-          <div className="sc-bg-logo">The Sanctuary</div>
-          <div className="sc-bg-nav">
-            <div className="sc-bg-nav-item"><div className="icon-dot"></div> Home</div>
-            <div className="sc-bg-nav-item active"><div className="icon-dot"></div> Patients</div>
-            <div className="sc-bg-nav-item"><div className="icon-dot"></div> Records</div>
-          </div>
-        </aside>
-        <div className="sc-bg-content">
-          <div className="sc-bg-topbar">
-            <div className="sc-bg-search">Search patient records...</div>
-            <div className="sc-bg-top-icons">
-              <div className="icon-circle"></div>
-              <div className="icon-circle"></div>
-              <div className="icon-circle active"></div>
-            </div>
-          </div>
-          <div className="sc-bg-main">
-            <div className="sc-bg-profile-header">
-              <h1>Edit Patient Profile</h1>
-              <p>Patient ID: PR-882103 | Clinical Data Enabled</p>
-            </div>
-            <div className="sc-bg-editor-grid">
-              <div className="sc-bg-form-cols">
-                <div className="sc-bg-line"></div>
-                <div className="sc-bg-line"></div>
-                <div className="sc-bg-line"></div>
-              </div>
-              <div className="sc-bg-profile-card">
-                <div className="sc-bg-circle-large"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Success Modal Overlay */}
       <div className="save-success-overlay">
         <div className="success-modal">
