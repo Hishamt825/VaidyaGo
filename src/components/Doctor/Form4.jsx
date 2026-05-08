@@ -7,6 +7,7 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
 import { useRef } from 'react';
+import DoctorBot from "./doctor_bot";
 
 const Form4 = ({ onNext }) => {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ const Form4 = ({ onNext }) => {
   const [openProfile, setOpenProfile] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const menuRef = useRef(null);
+
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -206,18 +209,19 @@ const Form4 = ({ onNext }) => {
         }
       }
 
-      // ✅ Final Submit Integration
+      // ✅ Final Submit Integration (Matches requested POST /api/submit/${doctorId}/)
       const submitResponse = await fetch(`${BASE_URL}/api/submit/${doctorId}/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
       const submitData = await submitResponse.json();
 
       if (submitResponse.ok) {
-        alert(submitData?.msg || submitData?.message || "Process Completed ✅");
+        alert(submitData?.msg || submitData?.message || "Registration Submitted Successfully! ✅");
         localStorage.setItem("document_info_id", "completed");
         setTimeout(() => navigate("/MainPage?auth=login"), 10);
       } else {
@@ -399,6 +403,7 @@ const Form4 = ({ onNext }) => {
           </div>
         </div>
       </div>
+      <DoctorBot />
     </div>
   </div>
 );

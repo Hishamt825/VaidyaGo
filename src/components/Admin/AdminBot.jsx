@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import robotImg from '../../assets/patient.png';
+import robotImg from '../../assets/admin.png';
 
-const PatientBot = ({ onOpenChat }) => {
+const AdminBot = ({ onOpenChat }) => {
     const isDragging = useRef(false);
 
     return (
@@ -18,12 +18,12 @@ const PatientBot = ({ onOpenChat }) => {
                     isDragging.current = false;
                 }, 100);
             }}
-            style={{ 
+            style={{
                 touchAction: 'none',
                 top: '75%',
                 left: '88%'
             }}
-            className="fixed z-[9999] cursor-grab active:cursor-grabbing flex items-center justify-center w-36 h-48 group"
+            className="fixed z-[9999] cursor-grab active:cursor-grabbing flex items-center justify-center w-28 h-36 group"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9, cursor: "grabbing" }}
             onClick={() => {
@@ -32,20 +32,16 @@ const PatientBot = ({ onOpenChat }) => {
                 }
             }}
         >
-            {/* Final Clean Structure: Just the character with absolute transparency */}
             <div className="relative w-full h-full flex items-center justify-center overflow-visible z-10">
-                <img 
-                    src={robotImg} 
-                    alt="AI Patient Bot" 
+                <img
+                    src={robotImg}
+                    alt="AI Admin Bot"
                     draggable="false"
-                    className="w-full h-full object-contain scale-[1.4] transition-all duration-300 hover:scale-[1.45] drop-shadow-[0_0_15px_rgba(110,212,212,0.6)] group-hover:drop-shadow-[0_0_25px_rgba(110,212,212,0.8)]"
+                    className="w-full h-full object-contain scale-[1.2] transition-all duration-300 hover:scale-[1.25] drop-shadow-[0_0_15px_rgba(24,114,138,0.6)] group-hover:drop-shadow-[0_0_25px_rgba(24,114,138,0.8)]"
                 />
             </div>
         </motion.div>
     );
 };
 
-export default PatientBot;
-
-
-
+export default AdminBot;

@@ -8,7 +8,9 @@ import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence, motion } from 'framer-motion';
+
 import BASE_URL from '../../baseUrl';
+import DoctorBot from './doctor_bot';
 
 import appointmentIcon from '../../assets/appointment.svg';
 import totalPatientsIcon from '../../assets/total_patients.svg';
@@ -97,10 +99,7 @@ const Doctor_dashboard = () => {
     // Mobile Sidebar State
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-    // Bot States
-    const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
-    const [isDragging, setIsDragging] = useState(false);
-    const dragRef = useRef({ startX: 0, startY: 0, initialX: 0, initialY: 0, hasMoved: false });
+
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -161,33 +160,9 @@ const Doctor_dashboard = () => {
         return () => clearTimeout(timeoutId);
     }, [activeDateIndex, selectedMonth, selectedYear]);
 
-    useEffect(() => {
-        const handlePointerMove = (e) => {
-            if (!isDragging) return;
-            const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
-            const clientY = e.clientY ?? (e.touches && e.touches[0].clientY);
-            const dx = clientX - dragRef.current.startX;
-            const dy = clientY - dragRef.current.startY;
-            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragRef.current.hasMoved = true;
-            setDragPos({ x: dragRef.current.initialX + dx, y: dragRef.current.initialY + dy });
-        };
-        const handlePointerUp = () => setIsDragging(false);
-        if (isDragging) {
-            window.addEventListener('mousemove', handlePointerMove);
-            window.addEventListener('mouseup', handlePointerUp);
-        }
-        return () => {
-            window.removeEventListener('mousemove', handlePointerMove);
-            window.removeEventListener('mouseup', handlePointerUp);
-        };
-    }, [isDragging]);
 
-    const handlePointerDown = (e) => {
-        setIsDragging(true);
-        const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY ?? (e.touches && e.touches[0].clientY);
-        dragRef.current = { startX: clientX, startY: clientY, initialX: dragPos.x, initialY: dragPos.y, hasMoved: false };
-    };
+
+
 
     // 2. CONDITIONAL RENDERS LAST
     if (openProfile) {
@@ -670,13 +645,7 @@ const Doctor_dashboard = () => {
                     </div>
                 </div>
 
-                {/* Floating Bot Icon */}
-                <Link to="/Bot" className="fixed bottom-10 right-10 z-[60] touch-none select-none group cursor-pointer border-none p-0 bg-transparent outline-none no-underline" style={{ transform: `translate(${dragPos.x}px, ${dragPos.y}px)` }} onMouseDown={handlePointerDown} onClick={(e) => { if (dragRef.current.hasMoved) e.preventDefault(); }}>
-                    <div className="w-[64px] h-[64px] bg-[#1a738c] rounded-[24px] flex flex-col justify-center items-center shadow-2xl border-[2px] border-[#a0cddb] hover:bg-[#155b70] transition-all hover:scale-110 active:scale-95 relative" style={{ borderRadius: '50% 50% 50% 12px' }}>
-                        <svg className="w-[30px] h-[30px] text-white pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 012 2v2h2a4 4 0 014 4v7a4 4 0 01-4 4H8a4 4 0 01-4-4v-7a4 4 0 014-4h2V4a2 2 0 012-2zm0 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-3.5-5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" /></svg>
-                        <span className="text-white text-[8px] font-bold mt-[-2px] uppercase tracking-tighter">ChatBot</span>
-                    </div>
-                </Link>
+                <DoctorBot />
             </main>
         </div>
 

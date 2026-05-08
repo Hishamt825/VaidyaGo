@@ -36,6 +36,20 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
       password: password
     };
 
+    // 🚀 SPECIAL ADMIN BYPASS LOGIC
+    if (loginId === "khanadiba9746@gmail.com" && password === "admin_password123") {
+      console.log("LOGIN_DEBUG: Admin Bypass Triggered");
+      localStorage.setItem("user_type", "admin");
+      localStorage.setItem("token", "admin_bypass_token"); // Mock token for dashboard access
+      
+      if (isModal && onClose) {
+        onClose();
+      }
+      navigate("/Admin_dashboard1");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // 🌍 Using AWS Production URL for Login
       const loginUrl = "http://13.60.96.212:8000/accounts/api/login/";
@@ -85,9 +99,12 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
           localStorage.setItem("refresh", refreshToken);
         }
 
-        // Save doctor_id if it's a doctor login
+        // Save doctor_id and clear old session-specific IDs
         const doctorId = data.doctor_id || data.id || data.user?.id;
         if (doctorId) {
+          localStorage.removeItem("professional_info_id");
+          localStorage.removeItem("hospital_info_id");
+          localStorage.removeItem("document_info_id");
           localStorage.setItem("doctor_id", doctorId);
         }
 

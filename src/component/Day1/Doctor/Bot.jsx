@@ -6,7 +6,7 @@ import img2 from '../../../assets/Frame 226.svg'; // User avatar
 import trashIcon from '../../../assets/image_105.svg';
 import docMaleImage from '../../../assets/vid_profile_removebg_preview_1.svg';
 import docFemaleImage from '../../../assets/vidf_profile_removebg_preview_1.svg';
-import robotImage from '../../../assets/vaidya_character_transparent.png';
+import robotImage from '../../../assets/doctor_bot.png';
 
 
 const Bot = () => {

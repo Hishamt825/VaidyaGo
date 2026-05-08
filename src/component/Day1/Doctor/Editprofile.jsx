@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import './Editprofile.css';
+import DoctorBot from '../../../components/Doctor/doctor_bot';
 
 const Icon = ({ name }) => {
   const icons = {
@@ -191,6 +192,7 @@ const Editprofile = () => {
           <p>Today at 08:42 AM from Seattle, WA.</p>
         </div>
       </div>
+      <DoctorBot />
     </div>
   );
 };

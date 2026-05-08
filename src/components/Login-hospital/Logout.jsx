@@ -15,8 +15,10 @@ const Logout = ({ isModal, onClose, onSwitchToLogin }) => {
   };
 
   const handleLogout = () => {
-    // Add logout logic here (e.g., clear tokens)
-    console.log("User logged out");
+    // Clear all user data from localStorage
+    localStorage.clear();
+    console.log("User logged out and storage cleared");
+    
     if (isModal && onSwitchToLogin) {
       onSwitchToLogin();
     } else {

@@ -695,11 +695,11 @@ const Admin_dashboard1 = () => {
                                     </div>
 
                                     {/* Right Chart Area */}
-                                    <div className="absolute -bottom-1 right-0 lg:left-[282px] w-full md:w-[69%] h-[60%] md:h-[95%] pointer-events-none z-0 opacity-40 md:opacity-100">
+                                    <div className="absolute bottom-0 right-0 w-full md:w-[65%] h-[70%] md:h-full pointer-events-none z-0 opacity-40 md:opacity-100">
                                         <img
                                             src="/assets/graph.png"
                                             alt="Balance Graph"
-                                            className="w-full h-full object-contain"
+                                            className="w-full h-full object-contain object-right"
                                         />
                                     </div>
                                 </div>

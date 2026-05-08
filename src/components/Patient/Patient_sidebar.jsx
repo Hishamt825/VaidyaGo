@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/vadyago_pat.png';
 import visulImg from '../../assets/Visual.png';
 import Selectexercise from './Exercise/Selectexercise';
+import PatientBot from './patient_bot';
+import Chat from './Chat_bot/chat';
+import { AnimatePresence } from 'framer-motion';
 
 /* ─────────────────────────────────────────────
    MENU ITEMS
@@ -93,9 +96,17 @@ const MENU = [
 const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
     const navigate = useNavigate();
     const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     return (
         <>
+            {/* AI Chatbot Integration */}
+            <PatientBot onOpenChat={() => setIsChatOpen(true)} />
+            <AnimatePresence>
+                {isChatOpen && (
+                    <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+                )}
+            </AnimatePresence>
             {/* Mobile overlay */}
             {isMobileOpen && (
                 <div
@@ -106,7 +117,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
 
             <aside
                 className={`
-        fixed lg:static inset-y-0 left-0 z-[110]
+        fixed lg:sticky top-0 h-screen left-0 z-[110]
         w-[220px] flex flex-col justify-start
         transition-transform duration-300 ease-in-out border-r border-white/5
         ${isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}

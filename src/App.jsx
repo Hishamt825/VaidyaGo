@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 
 import MainPage from './components/Hospital/MainPage';
 import Makeapp from './components/Hospital/Makeapp';
@@ -130,6 +130,7 @@ const App = () => {
 
       <Route path="/MainPage" element={<MainPage />} />
       <Route path="/Makeapp" element={<Makeapp />} />
+      <Route path="/Doctor" element={<Navigate to="/Makeapp" replace />} />
       <Route path="/About" element={<About />} />
       <Route path="/ContactUs" element={<ContactUs />} />
       <Route path="/Section3" element={<Section3 />} />

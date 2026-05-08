@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Import assets
@@ -9,9 +9,12 @@ import consultationsIcon from '../../../assets/consultations.svg';
 import totalPatientsIcon from '../../../assets/total_patients.svg';
 import incomeIcon from '../../../assets/income.svg';
 import emergencyIcon from '../../../assets/emergency.svg';
+import DoctorBot from '../../../components/Doctor/doctor_bot';
 
 const Service = () => {
   const navigate = useNavigate();
+
+
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800">
@@ -329,6 +332,7 @@ const Service = () => {
           </div>
         </div>
       </footer>
+      <DoctorBot />
     </div>
   );
 };
