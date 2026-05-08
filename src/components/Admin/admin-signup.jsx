@@ -32,6 +32,11 @@ export default function Admin_signup({ isModal, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!role) {
+      alert("Please select a user type (Doctor)");
+      return;
+    }
+
     try {
       // 🕵️ Debug: Request details check
       const fullUrl = `${BASE_URL}/accounts/api/admin/signup/`;
@@ -162,9 +167,7 @@ export default function Admin_signup({ isModal, onClose }) {
                 <option value="" disabled>
                   Select User Type
                 </option>
-                <option value="Admin">Admin</option>
                 <option value="Doctor">Doctor</option>
-
               </select>
 
             </div>

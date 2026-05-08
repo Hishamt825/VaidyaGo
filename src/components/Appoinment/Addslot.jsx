@@ -2,13 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/lo.svg';
 import Side_app from './Side_app';
-<<<<<<< HEAD
 import { AnimatePresence, motion } from 'framer-motion';
-=======
 import './Dsetting.css';
 import apiFetch from '../../api';
 import BASE_URL from '../../baseUrl';
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
 import appointmentIcon from '../../assets/appointment.svg';
 import totalPatientsIcon from '../../assets/total_patients.svg';
@@ -16,14 +13,10 @@ import consultationsIcon from '../../assets/consultations.svg';
 import incomeIcon from '../../assets/income.svg';
 import emergencyIcon from '../../assets/emergency.svg';
 import doctorImg from '../../assets/image_76.svg';
-<<<<<<< HEAD
 import phImg from '../../assets/ph.png';
-=======
 import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
-import { AnimatePresence } from 'framer-motion';
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
 
 // Slots will be fetched from API
@@ -386,15 +379,6 @@ const Addslot = () => {
    const navigate = useNavigate();
    const [activeNav, setActiveNav] = useState('Add Slots');
    const [isMobileOpen, setIsMobileOpen] = useState(false);
-<<<<<<< HEAD
-   const [slotItems, setSlotItems] = useState(slots.map(s => ({ ...s, isBlocked: false })));
-
-   const toggleBlock = (id) => {
-      setSlotItems(prev => prev.map(item => 
-         item.id === id ? { ...item, isBlocked: !item.isBlocked } : item
-      ));
-   };
-=======
    const [open, setOpen] = useState(false);
    const [openProfile, setOpenProfile] = useState(false);
    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -413,7 +397,6 @@ const Addslot = () => {
    if (openProfile) {
       return <Profile setOpenProfile={setOpenProfile} />;
    }
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
    // Draggable logic for the floating bot
    const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
@@ -497,17 +480,14 @@ const Addslot = () => {
    const [popupSelectedYear, setPopupSelectedYear] = useState(todayYear); 
    const popupYearScrollRef = useRef(null);
 
-<<<<<<< HEAD
    // Tiles Modals State
    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
    const [isPatientsModalOpen, setIsPatientsModalOpen] = useState(false);
    const [isConsultationsModalOpen, setIsConsultationsModalOpen] = useState(false);
    const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
    const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
-=======
    const dateGroupRefs = useRef({});
    const slotContainerRef = useRef(null);
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
    // Modal states
    const [isAddSlotModalOpen, setIsAddSlotModalOpen] = useState(false);
@@ -828,31 +808,6 @@ const Addslot = () => {
       return () => clearTimeout(timeoutId);
    }, [activeDateIndex]);
 
-<<<<<<< HEAD
-   const renderSlot = (slot) => {
-      // Shared Unblock toggle component to match image exactly
-      const toggleCircleColor = slot.type === 'available' ? 'bg-[#1a5b6e]' : 'bg-[#4b4b4b]';
-      const UnblockToggle = () => (
-         <div 
-            onClick={() => toggleBlock(slot.id)}
-            className="bg-[#e4e5e7] hover:bg-[#d5d6d8] transition-colors rounded-full flex items-center h-[26px] w-[74px] relative shadow-sm cursor-pointer border border-gray-300/60 overflow-hidden"
-         >
-            <motion.div 
-               className={`w-[19px] h-[19px] ${toggleCircleColor} rounded-full absolute left-0`}
-               initial={false}
-               animate={{ x: slot.isBlocked ? 51 : 3 }}
-               transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            />
-            <motion.span 
-               className="text-[10px] font-bold text-[#5c5e60] absolute w-full text-center pointer-events-none"
-               animate={{ x: slot.isBlocked ? -11 : 9 }}
-               transition={{ duration: 0.2 }}
-            >
-               {slot.isBlocked ? 'Block' : 'Unblock'}
-            </motion.span>
-         </div>
-      );
-=======
     const handleToggleSlotStatus = async (slotId, currentType) => {
         const newStatus = currentType === 'available' ? 'break' : 'available';
         
@@ -885,7 +840,7 @@ const Addslot = () => {
      const renderSlot = (slot) => {
        const toggleCircleColor = slot.type === 'available' ? 'bg-[#1a5b6e]' : 'bg-[#4b4b4b]';
        
-       const displayTime = formatSlotTimeRange(slot.time);
+       const displayTime = formatSlotTimeRange(slot.from_time, slot.to_time);
 
        const handleToggle = (e) => {
           e.stopPropagation();
@@ -903,7 +858,6 @@ const Addslot = () => {
              </span>
           </div>
        );
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
       if (slot.type === 'available') {
          return (
@@ -916,17 +870,12 @@ const Addslot = () => {
                   <div className="w-[14px] h-[14px] bg-[#a2d2e1] rounded-sm shadow-sm"></div>
                   <span className="font-bold text-[#1a5b6e] text-[18px]">Available</span>
                </div>
-<<<<<<< HEAD
                {/* Bottom area */}
                <div className="flex-1 bg-white px-[14px] py-[10px] flex justify-end items-end">
                   <button 
                      onClick={() => setIsAddSlotModalOpen(true)}
                      className="bg-[#cee6eb] hover:bg-[#b0d9e2] transition-colors text-[#2c5361] font-bold text-[16px] px-[22px] py-[6px] rounded-md border-[1.5px] border-[#a5cbd4] tracking-wide"
                   >
-=======
-               <div className="flex-1 bg-white px-[16px] py-[12px] flex justify-end items-end">
-                  <button className="bg-[#cee6eb] hover:bg-[#b0d9e2] transition-all text-[#2c5361] font-bold text-[16px] px-[28px] py-[6px] rounded-lg border-[1.5px] border-[#a5cbd4] tracking-wide shadow-sm active:scale-95">
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
                      Schedule
                   </button>
                </div>
@@ -1357,15 +1306,6 @@ const Addslot = () => {
                         <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                      </button>
                   </div>
-<<<<<<< HEAD
-
-                  {/* Grid of Slots */}
-                  <div className="grid grid-cols-3 gap-x-[20px] gap-y-[20px] pb-2 overflow-y-auto max-h-[460px] scroll-smooth px-1 pt-1" style={{ scrollbarWidth: 'thin' }}>
-                     {slotItems.map(renderSlot)}
-                  </div>
-
-=======
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
                </div>
 
                {/* Legend area */}
