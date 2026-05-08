@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import logoUrl from '../../assets/vadyago_pat.png';
 import phImg from '../../assets/ph.png';
 import Sidebar from './Patient_sidebar';
@@ -10,7 +11,8 @@ import Patient_sym from './Patient_sym';
 import Book from './Book';
 import Upload from './Upload';
 import Patient_record from './Patient_record';
-import DraggableRobot from './DraggableRobot';
+import PatientBot from './patient_bot';
+import Chat from './Chat_bot/chat';
 
 const Patient_dashboard1 = () => {
     const [active, setActive] = useState('Dashboard');
@@ -23,6 +25,7 @@ const Patient_dashboard1 = () => {
     const [isBookOpen, setIsBookOpen] = useState(false);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [isRecordOpen, setIsRecordOpen] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -38,7 +41,13 @@ const Patient_dashboard1 = () => {
         <div className="flex min-h-screen w-full font-sans antialiased text-[#0D1C2E]"
             style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
-            <DraggableRobot />
+            <PatientBot onOpenChat={() => setIsChatOpen(true)} />
+            
+            <AnimatePresence>
+                {isChatOpen && (
+                    <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+                )}
+            </AnimatePresence>
 
             <div className="flex-1 flex flex-col min-w-0 min-h-screen">
                 {/* Top Navbar */}

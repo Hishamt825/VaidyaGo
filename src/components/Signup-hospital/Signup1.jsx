@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash, FaArrowRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -8,6 +8,12 @@ import BASE_URL from "../../baseUrl";
 
 export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isModal) {
+      navigate("/MainPage?auth=signup");
+    }
+  }, [isModal, navigate]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showconfirm_password, setShowconfirm_password] = useState(false);

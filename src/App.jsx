@@ -122,7 +122,12 @@ import MonthlyReview from './component/Day1/Patient/MonthlyReview';
 import ViewProfile from './component/Day1/Consultation/view_profile';
 import Share from './components/Patient/Share';
 import ProgressReview from './component/Day1/Patient/ProgressReview';
+<<<<<<< HEAD
 import Analysiscomplete from './component/Day1/Patient/Analysiscomplete';
+=======
+import Edit_profile_Patient from './components/Patient/Edit_profile';
+import Chat from './components/Patient/Chat_bot/chat';
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
 const App = () => {
   return (
@@ -182,6 +187,7 @@ const App = () => {
       <Route path="/Patient_dashboard1" element={<Patient_dashboard1 />} />
       <Route path="/Symptom" element={<Symptom />} />
       <Route path="/Account" element={<Account />} />
+      <Route path="/Edit_profile" element={<Edit_profile_Patient />} />
       <Route path="/notification" element={<Notification />} />
       <Route path="/Vitals" element={<Vitals />} />
       <Route path="/Medication" element={<Medication1 />} />
@@ -250,7 +256,11 @@ const App = () => {
       <Route path="/RecoveryJourney" element={<RecoveryJourney />} />
       <Route path="/MonthlyReview" element={<MonthlyReview />} />
       <Route path="/ProgressReview" element={<ProgressReview />} />
+<<<<<<< HEAD
       <Route path="/Analysiscomplete" element={<Analysiscomplete />} />
+=======
+      <Route path="/chat" element={<Chat />} />
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
     </Routes>
 
   );

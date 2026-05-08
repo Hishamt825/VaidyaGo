@@ -22,13 +22,24 @@ const HospitalNavbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // Trigger modals based on URL parameters (e.g. ?auth=login)
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const authType = params.get('auth');
+    
+    if (authType === 'login') setShowLoginModal(true);
+    else if (authType === 'signup') setShowSignupModal(true);
+    else if (authType === 'forget') setShowForgetModal(true);
+    else if (authType === 'otp') setShowOtpModal(true);
+    else if (authType === 'newpass') setShowNewPassModal(true);
+    else if (authType === 'logout') setShowLogoutModal(true);
+
     if (showSearch || showNotifications) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [showSearch, showNotifications]);
+  }, [showSearch, showNotifications, location.search]);
 
   const notifications = [
     { id: 1, title: "Appointment Confirmed", desc: "Your checkup with Dr. Smith is scheduled for tomorrow.", time: "2h ago", icon: <CalendarCheck className="text-green-500" />, color: "bg-green-50" },

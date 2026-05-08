@@ -8,6 +8,10 @@ import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence, motion } from 'framer-motion';
+<<<<<<< HEAD
+=======
+import BASE_URL from '../../baseUrl';
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
 import appointmentIcon from '../../assets/appointment.svg';
 import totalPatientsIcon from '../../assets/total_patients.svg';
@@ -72,6 +76,7 @@ const recentPatientsData = [
 ];
 
 const Doctor_dashboard = () => {
+    // 1. ALL HOOKS FIRST
     const navigate = useNavigate();
     const [activeNav, setActiveNav] = useState('Dashboard');
     const [open, setOpen] = useState(false);
@@ -84,22 +89,11 @@ const Doctor_dashboard = () => {
     const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
     const menuRef = useRef(null);
 
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (menuRef.current && !menuRef.current.contains(e.target)) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    if (openProfile) {
-        return <Profile setOpenProfile={setOpenProfile} />;
-    }
-
     // Dashboard States
     const [activeDateIndex, setActiveDateIndex] = useState(17); // 13th
+    const [isApproved, setIsApproved] = useState(true); 
+    const [checkingStatus, setCheckingStatus] = useState(true);
+    const [showPendingModal, setShowPendingModal] = useState(false);
     const [selectedMonth, setSelectedMonth] = useState('January');
     const [selectedYear, setSelectedYear] = useState(2025);
     const [isMonthOpen, setIsMonthOpen] = useState(false);
@@ -116,6 +110,48 @@ const Doctor_dashboard = () => {
     const [isDragging, setIsDragging] = useState(false);
     const dragRef = useRef({ startX: 0, startY: 0, initialX: 0, initialY: 0, hasMoved: false });
 
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (menuRef.current && !menuRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        const checkApprovalStatus = async () => {
+            const docId = localStorage.getItem("doctor_id");
+            const token = localStorage.getItem("token");
+            if (!docId || !token) {
+                navigate("/Finallogin");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/doctor-personal-info/${docId}/`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const approved = data.is_approved || data.status === 'approved' || data.status === 'active';
+                    
+                    if (!approved) {
+                        setShowPendingModal(true);
+                    }
+                    setIsApproved(approved);
+                }
+            } catch (err) {
+                console.error("Status check failed:", err);
+            } finally {
+                setCheckingStatus(false);
+            }
+        };
+
+        checkApprovalStatus();
+    }, [navigate]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -132,13 +168,6 @@ const Doctor_dashboard = () => {
         }, 30);
         return () => clearTimeout(timeoutId);
     }, [activeDateIndex, selectedMonth, selectedYear]);
-
-    const handlePointerDown = (e) => {
-        setIsDragging(true);
-        const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY ?? (e.touches && e.touches[0].clientY);
-        dragRef.current = { startX: clientX, startY: clientY, initialX: dragPos.x, initialY: dragPos.y, hasMoved: false };
-    };
 
     useEffect(() => {
         const handlePointerMove = (e) => {
@@ -161,13 +190,38 @@ const Doctor_dashboard = () => {
         };
     }, [isDragging]);
 
-    return (
-        <div className="flex flex-col lg:flex-row h-screen w-full bg-white font-sans text-sm overflow-hidden text-gray-700">
-            {/* Sidebar */}
-            <Side_app active={activeNav} setActive={setActiveNav} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+    const handlePointerDown = (e) => {
+        setIsDragging(true);
+        const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY ?? (e.touches && e.touches[0].clientY);
+        dragRef.current = { startX: clientX, startY: clientY, initialX: dragPos.x, initialY: dragPos.y, hasMoved: false };
+    };
 
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col bg-white overflow-hidden">
+    // 2. CONDITIONAL RENDERS LAST
+    if (openProfile) {
+        return <Profile setOpenProfile={setOpenProfile} />;
+    }
+
+    if (checkingStatus) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center bg-white">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-[#1b738c] border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-gray-500 font-bold">Verifying Account Status...</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="relative h-screen w-full bg-white overflow-hidden">
+            {/* Blurred Background Wrapper */}
+            <div className={`flex flex-col lg:flex-row h-full w-full font-sans text-sm text-gray-700 transition-all duration-300 ${showPendingModal ? 'blur-[3px] pointer-events-none scale-[0.99]' : ''}`}>
+                {/* Sidebar */}
+                <Side_app active={activeNav} setActive={setActiveNav} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+
+                {/* Main Content */}
+                <main className="flex-1 flex flex-col bg-white overflow-hidden">
                 {/* Top Header */}
                 <header className="h-[74px] flex flex-row items-center justify-between px-4 md:px-8 shrink-0 bg-white border-b border-gray-100">
                     <div className="flex items-center flex-1 max-w-[700px] gap-[10px] md:gap-[15px]">
@@ -192,9 +246,9 @@ const Doctor_dashboard = () => {
                         <div className="flex items-center gap-3">
                             {/* Settings */}
                             <div 
-                                onClick={() => setOpenProfile(true)}
-                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all">
-                                <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                onClick={() => navigate('/Settingpage')}
+                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all hover:scale-105 active:scale-95 group">
+                                <svg className="w-7 h-7 text-gray-700 group-hover:text-[#1b738c] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
@@ -216,15 +270,24 @@ const Doctor_dashboard = () => {
                             {/* Profile Button */}
                             <div
                                 onClick={() => setOpen(!open)}
-                                className="flex items-center gap-4 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1 cursor-pointer hover:bg-gray-50 transition-all"
+                                className="flex items-center gap-3 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-all group"
                             >
-                                <span className="text-[18px] font-semibold text-gray-700">Dasy William</span>
-                                <img src="/assets/ph.png" className="w-11 h-11 rounded-full border-black/50 shadow-[0_2px_6px_rgba(0,0,0,0.12)] object-cover" />
+                                <div className="flex flex-col items-end">
+                                    <span className="text-[17px] font-bold text-gray-800 leading-tight">Dasy William</span>
+                                    <span className="text-[11px] font-bold text-[#1b738c]">Doctor</span>
+                                </div>
+                                <div className="relative">
+                                    <img src="/assets/ph.png" className="w-10 h-10 rounded-full border-2 border-[#1b738c]/20 shadow-sm object-cover" />
+                                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-white"></div>
+                                </div>
+                                <svg className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                                </svg>
                             </div>
 
                             <AnimatePresence>
                                 {open && !openProfile && (
-                                    <DasyWilliam setOpenProfile={setOpenProfile} />
+                                    <DasyWilliam setOpenProfile={setOpenProfile} isDoctor={true} />
                                 )}
                             </AnimatePresence>
 
@@ -638,6 +701,7 @@ const Doctor_dashboard = () => {
                     </div>
                 </Link>
             </main>
+<<<<<<< HEAD
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
             
             {/* Appointment Modal */}
@@ -960,8 +1024,55 @@ const Doctor_dashboard = () => {
                     </div>
                 )}
             </AnimatePresence>
+=======
+>>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
         </div>
-    );
+
+        {/* Notification */}
+        <AnimatePresence>
+            {isNotificationOpen && (
+                <Notification isOpen={isNotificationOpen} setIsOpen={setIsNotificationOpen} />
+            )}
+        </AnimatePresence>
+
+        {/* Pending Approval Modal */}
+        <AnimatePresence>
+            {showPendingModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        className="bg-white rounded-[32px] w-full max-w-md p-8 text-center shadow-2xl relative overflow-hidden"
+                    >
+                        <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#19718A]/10 rounded-full blur-2xl"></div>
+                        <div className="flex justify-center mb-6">
+                            <div className="w-20 h-20 bg-[#F0F9FA] rounded-full flex items-center justify-center relative">
+                                <div className="absolute inset-0 border-2 border-dashed border-[#19718A]/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                                <svg className="w-10 h-10 text-[#19718A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">Verification Pending</h3>
+                        <p className="text-gray-500 mb-8 leading-relaxed">
+                            Your account is currently under review by our Admin team. You will receive an email confirmation once your profile is approved.
+                        </p>
+                        <button
+                            onClick={() => window.location.href = 'https://mail.google.com'}
+                            className="w-full bg-[#19718A] text-white py-4 rounded-2xl font-bold hover:bg-[#0E4A5C] transition-all shadow-lg active:scale-95"
+                        >
+                            Back to Gmail
+                        </button>
+                        <div className="mt-6 text-[12px] text-gray-400 font-medium italic">
+                            Usually takes 24-48 hours
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
+    </div>
+);
 };
 
 export default Doctor_dashboard;
