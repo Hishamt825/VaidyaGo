@@ -51,7 +51,7 @@ const HospitalNavbar = () => {
     { name: "Home", path: "/MainPage" },
     { name: "About", path: "/About" },
     { name: "Our Service", path: "/Service" },
-    { name: "Doctor", path: "/Doctor" },
+    { name: "Doctor", path: "/Makeapp" },
     { name: "FAQ", path: "/FAQ" },
   ];
 

@@ -700,7 +700,6 @@ const Service = () => {
         {/* === Bottom Line === */}
 
       </footer>
-
     </div>
   );
 };

@@ -15,6 +15,7 @@ const Logout = ({ isModal, onClose, onSwitchToLogin }) => {
   };
 
   const handleLogout = () => {
+<<<<<<< HEAD
     // Clear all auth tokens — token is valid until user explicitly logs out
     localStorage.removeItem("token");
     localStorage.removeItem("access");
@@ -25,6 +26,12 @@ const Logout = ({ isModal, onClose, onSwitchToLogin }) => {
     localStorage.removeItem("user_email");
     localStorage.removeItem("user_full_name");
 
+=======
+    // Clear all user data from localStorage
+    localStorage.clear();
+    console.log("User logged out and storage cleared");
+    
+>>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
     if (isModal && onSwitchToLogin) {
       onSwitchToLogin();
     } else {

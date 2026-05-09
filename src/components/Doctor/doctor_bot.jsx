@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import robotImg from '../../assets/patient.png';
+import { useNavigate } from 'react-router-dom';
+import robotImg from '../../assets/doctor_bot.png';
 
-const PatientBot = ({ onOpenChat }) => {
+const DoctorBot = () => {
+    const navigate = useNavigate();
     const isDragging = useRef(false);
 
     return (
@@ -27,25 +29,21 @@ const PatientBot = ({ onOpenChat }) => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9, cursor: "grabbing" }}
             onClick={() => {
-                if (!isDragging.current && onOpenChat) {
-                    onOpenChat();
+                if (!isDragging.current) {
+                    navigate('/Bot');
                 }
             }}
         >
-            {/* Final Clean Structure: Just the character with absolute transparency */}
             <div className="relative w-full h-full flex items-center justify-center overflow-visible z-10">
                 <img 
                     src={robotImg} 
-                    alt="AI Patient Bot" 
+                    alt="AI Doctor Bot" 
                     draggable="false"
-                    className="w-full h-full object-contain scale-[1.4] transition-all duration-300 hover:scale-[1.45] drop-shadow-[0_0_15px_rgba(110,212,212,0.6)] group-hover:drop-shadow-[0_0_25px_rgba(110,212,212,0.8)]"
+                    className="w-full h-full object-contain scale-[1.4] transition-all duration-300 hover:scale-[1.45] drop-shadow-[0_0_15px_rgba(26,115,140,0.6)] group-hover:drop-shadow-[0_0_25px_rgba(26,115,140,0.8)]"
                 />
             </div>
         </motion.div>
     );
 };
 
-export default PatientBot;
-
-
-
+export default DoctorBot;

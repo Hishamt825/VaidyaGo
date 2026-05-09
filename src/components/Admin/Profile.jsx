@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../baseUrl";
+import DoctorBot from "../Doctor/doctor_bot";
 
 /* ✅ ADD THIS (Missing Component) */
 const MenuItem = ({ text, img, active, onClick }) => (
@@ -656,6 +657,7 @@ const Profile = ({ setOpenProfile }) => {
           </div>
         </div>
       )}
+      <DoctorBot />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash, FaArrowRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import VerticalProgressBar from "./VerticalProgressBar";
 import BASE_URL from "../../baseUrl";
 // import { FaUsersGear } from "react-icons/fa6";
@@ -26,6 +26,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [role, setRole] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
 
   // ================================
@@ -35,14 +36,19 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
     e.preventDefault();
 
     if (!role) {
-      alert("Please select a user type (Patient, Doctor, or Admin)");
+      alert("Please select a user type (Patient or Doctor)");
       return;
     }
 
     try {
       // 🌍 Using AWS IP for all roles to avoid local connection errors
+<<<<<<< HEAD
       const fullUrl = `${BASE_URL}/accounts/api/signup/`;
         
+=======
+      const fullUrl = "http://13.60.96.212:8000/accounts/api/signup/";
+
+>>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
       console.log("Submitting Signup to Production:", fullUrl);
 
       const response = await fetch(fullUrl, {
@@ -54,7 +60,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
         body: JSON.stringify({
           usertype: role.toLowerCase(),
           email,
-          phone: `+91${phone}`, 
+          phone: `+91${phone}`,
           password,
           confirm_password,
         }),
@@ -73,6 +79,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
 
       // ✅ Handle success
       if (response.status === 201 || response.status === 200) {
+<<<<<<< HEAD
         // 🚀 Signup successful!
         console.log("Signup Successful!");
         
@@ -92,6 +99,40 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
         if (userType === "doctor") {
           alert("Signup successful! Please complete your profile.");
           navigate("/Form1");
+=======
+        // Clear any leftover data from previous sessions
+        localStorage.removeItem("doctor_id");
+        localStorage.removeItem("professional_info_id");
+        localStorage.removeItem("hospital_info_id");
+        localStorage.removeItem("document_info_id");
+        localStorage.removeItem("prescriptionUploaded");
+
+        if (data?.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        // Save new doctor_id if it's a doctor signup
+        const newDoctorId = data?.doctor_id || data?.id || data?.user?.id;
+        if (newDoctorId) {
+          localStorage.setItem("doctor_id", newDoctorId);
+        }
+
+        // 🚀 Role-based Redirection
+        const targetDashboard =
+          role === "Patient" ? "/Patient_dashboard" :
+            role === "Doctor" ? "/Form1" :
+              "/Finallogin";
+
+        console.log("Signup Successful, navigating to:", targetDashboard);
+
+        // First close the modal to clear overlays, then navigate
+        if (isModal && onClose) {
+          onClose();
+          // Small timeout to ensure state update propagates before unmount
+          setTimeout(() => {
+            navigate(targetDashboard);
+          }, 10);
+>>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
         } else {
           alert("Signup successful! Please log in with your credentials.");
           navigate("/Finallogin");
@@ -158,22 +199,72 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
         <form onSubmit={handleSubmit} className="w-full space-y-2">
 
           {/* User Type Dropdown */}
-          <div className="mb-2">
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
+          <div className="mb-2 relative">
+            <label className="text-[14px] font-medium text-gray-700 mb-1 block ml-1">
               User Type
             </label>
-            <div className="flex items-center rounded-md px-3 py-2.5 bg-white border border-[#19718A] shadow-[0_2px_8px_rgba(25,113,138,0.2)] focus-within:ring-1 focus-within:ring-[#19718A] transition-all">
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                onFocus={() => setActiveStep(1)}
-                className={`w-full text-sm bg-transparent outline-none ${role === "" ? "text-gray-400" : "text-black"}`}
+            <div
+              onClick={() => {
+                setIsOpen(!isOpen);
+                setActiveStep(1);
+              }}
+              className="flex items-center justify-between rounded-md px-4 py-2.5 bg-white border border-[#19718A] shadow-[0_2px_8px_rgba(25,113,138,0.2)] cursor-pointer transition-all"
+            >
+              <span className={`text-[15px] ${role === "" ? "text-gray-400" : "text-black"}`}>
+                {role || "Select Role"}
+              </span>
+              <svg
+                className={`w-4 h-4 text-[#19718A] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
+<<<<<<< HEAD
                 <option value="" disabled>Select Role</option>
                 <option value="Patient">Patient</option>
                 <option value="Doctor">Doctor</option>
               </select>
+=======
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+              </svg>
+>>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
             </div>
+
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-xl z-[100] overflow-hidden"
+                >
+                  <div
+                    onClick={() => {
+                      setRole("");
+                      setIsOpen(false);
+                    }}
+                    className="px-4 py-2.5 text-[15px] text-gray-400 hover:bg-gray-50 cursor-pointer border-b border-gray-100"
+                  >
+                    Select Role
+                  </div>
+                  {["Patient", "Doctor"].map((opt) => (
+                    <div
+                      key={opt}
+                      onClick={() => {
+                        setRole(opt);
+                        setIsOpen(false);
+                      }}
+                      className={`px-4 py-2.5 text-[15px] cursor-pointer transition-colors ${role === opt
+                        ? "bg-[#19718A]/10 text-[#19718A] font-bold border-l-4 border-[#19718A]"
+                        : "hover:bg-gray-50 text-gray-700"
+                        }`}
+                    >
+                      {opt}
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Email */}
@@ -247,7 +338,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
             <div className="flex items-center rounded-md px-3 py-2.5 bg-white border border-[#19718A] shadow-[0_2px_8px_rgba(25,113,138,0.2)] focus-within:ring-1 focus-within:ring-[#19718A] transition-all">
               <input
                 type={showconfirm_password ? "text" : "password"}
-                placeholder="Re-type Password"
+                placeholder="Confirm Password"
                 value={confirm_password}
                 onChange={(e) => setconfirm_password(e.target.value)}
                 onFocus={() => setActiveStep(5)}
@@ -255,9 +346,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
               />
               <button
                 type="button"
-                onClick={() =>
-                  setShowconfirm_password(!showconfirm_password)
-                }
+                onClick={() => setShowconfirm_password(!showconfirm_password)}
                 className="ml-2 text-gray-500"
               >
                 {showconfirm_password ? <FaEye /> : <FaEyeSlash />}
@@ -266,25 +355,23 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
           </div>
 
           {/* Submit Button */}
-          <motion.div whileHover={{ scale: 1.03 }}>
-            <div className="flex justify-center mt-3">
-              <div className="rounded-full border p-1 border-[#89C8D9] bg-white">
-                <button
-                  type="submit"
-                  className="flex items-center pl-1 w-[186px] h-[37px] rounded-full bg-[#89C8D9] text-[#164863] font-semibold hover:bg-[#08374e] hover:text-white transition"
-                >
-                  <div className="w-[36px] h-[36px] flex items-center justify-center rounded-full bg-[#2C7A8C] text-white">
-                    <FaArrowRight size={20} />
-                  </div>
-                  <span className="flex-1 text-center">Create Account</span>
-                </button>
-              </div>
+          <div className="flex justify-center mt-24">
+            <div className="rounded-full border p-1 border-[#89C8D9] bg-white shadow-sm">
+              <button
+                type="submit"
+                className="flex items-center pl-1 w-[200px] h-[42px] rounded-full bg-[#89C8D9] text-[#08374e] font-bold hover:bg-[#08374e] hover:text-white transition-all duration-300 group"
+              >
+                <div className="w-[34px] h-[34px] flex items-center justify-center rounded-full bg-[#2C7A8C] text-white shadow-sm">
+                  <FaArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <span className="flex-1 text-center pr-2">Create Account</span>
+              </button>
             </div>
-          </motion.div>
+          </div>
         </form>
 
-        <p className="text-sm mt-2 text-gray-600">
-          Have an account?{" "}
+        <p className="text-sm mt-8 text-gray-500 flex items-center justify-center gap-2">
+          Have an account?
           <button
             type="button"
             onClick={() => {
@@ -295,7 +382,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
                 navigate("/Finallogin");
               }
             }}
-            className="text-black font-semibold hover:underline bg-transparent border-none cursor-pointer"
+            className="text-[#19718A] font-black hover:underline cursor-pointer ml-1"
           >
             LOGIN
           </button>

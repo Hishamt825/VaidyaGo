@@ -4,6 +4,7 @@ import dashboardIcon from "../../../assets/income.svg";
 import appointmentIcon from "../../../assets/appointment.svg";
 import patientsIcon from "../../../assets/total_patients.svg";
 import consultationIcon from "../../../assets/consultations.svg";
+import DoctorBot from "../../../components/Doctor/doctor_bot";
 
 const Sidebar = ({ active = "Appointment", setActive }) => {
   const menu = [
@@ -20,6 +21,7 @@ const Sidebar = ({ active = "Appointment", setActive }) => {
 
   return (
     <div className="w-[240px] min-h-screen bg-transparent font-sans relative flex flex-col">
+      <DoctorBot />
 
       {/* LOGO CONTAINER */}
       <div className={`relative w-[210px] pb-6 bg-white border-[1.5px] border-[#166E83] border-l-0 ${

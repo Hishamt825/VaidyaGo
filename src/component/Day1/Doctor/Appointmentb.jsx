@@ -8,6 +8,7 @@ import Profile from '../../../components/Admin/Profile';
 import DasyWilliam from '../../../components/Admin/DasyWilliam';
 import Notification from '../../../components/Patient/notification';
 import { AnimatePresence } from 'framer-motion';
+import DoctorBot from '../../../components/Doctor/doctor_bot';
 
 
 const navItems = [
@@ -131,59 +132,7 @@ const Appointmentb = () => {
     }
   }, [activeSubTab]);
 
-  // Draggable logic for the floating bot
-  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragRef = useRef({ startX: 0, startY: 0, initialX: 0, initialY: 0, hasMoved: false });
 
-  const handlePointerDown = (e) => {
-    setIsDragging(true);
-    const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
-    const clientY = e.clientY ?? (e.touches && e.touches[0].clientY);
-    
-    dragRef.current = {
-      startX: clientX,
-      startY: clientY,
-      initialX: dragPos.x,
-      initialY: dragPos.y,
-      hasMoved: false
-    };
-  };
-
-  useEffect(() => {
-    const handlePointerMove = (e) => {
-      if (!isDragging) return;
-      const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
-      const clientY = e.clientY ?? (e.touches && e.touches[0].clientY);
-      
-      const dx = clientX - dragRef.current.startX;
-      const dy = clientY - dragRef.current.startY;
-      
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-         dragRef.current.hasMoved = true;
-      }
-
-      setDragPos({
-        x: dragRef.current.initialX + dx,
-        y: dragRef.current.initialY + dy
-      });
-    };
-
-    const handlePointerUp = () => setIsDragging(false);
-
-    if (isDragging) {
-      window.addEventListener('mousemove', handlePointerMove);
-      window.addEventListener('mouseup', handlePointerUp);
-      window.addEventListener('touchmove', handlePointerMove, { passive: false });
-      window.addEventListener('touchend', handlePointerUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handlePointerMove);
-      window.removeEventListener('mouseup', handlePointerUp);
-      window.removeEventListener('touchmove', handlePointerMove);
-      window.removeEventListener('touchend', handlePointerUp);
-    };
-  }, [isDragging]);
 
   return (
     <div className="flex h-screen w-full bg-[#f4f7fa] font-sans text-sm overflow-hidden text-gray-700">
@@ -423,29 +372,7 @@ const Appointmentb = () => {
                })}
             </div>
 
-            {/* Floating Bot Icon */}
-            <div 
-              className="fixed bottom-10 right-10 z-50 touch-none select-none group"
-              style={{ transform: `translate(${dragPos.x}px, ${dragPos.y}px)`, cursor: isDragging ? 'grabbing' : 'grab' }}
-              onMouseDown={handlePointerDown}
-              onTouchStart={handlePointerDown}
-              onClick={(e) => {
-                if (dragRef.current.hasMoved) {
-                  e.preventDefault();
-                  return;
-                }
-                navigate('/Bot');
-              }}
-            >
-               <div className="w-[54px] h-[54px] bg-[#1a738c] rounded-[24px] flex justify-center items-center shadow-lg border-[2px] border-[#a0cddb] hover:bg-[#155b70] transition-colors relative" style={{ borderRadius: '50% 50% 50% 12px'}}>
-                  <svg className="w-[28px] h-[28px] text-white pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
-                     <path d="M12 2a2 2 0 012 2v2h2a4 4 0 014 4v7a4 4 0 01-4 4H8a4 4 0 01-4-4v-7a4 4 0 014-4h2V4a2 2 0 012-2zm0 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-3.5-5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
-                  </svg>
-                  <div className="absolute top-[0px] right-[-6px] bg-[#65d065] text-white text-[10px] font-extrabold px-[6px] py-[3px] rounded-[6px] rounded-bl-sm tracking-widest shadow-sm border border-[#52af52] leading-none pointer-events-none">
-                     ...
-                  </div>
-               </div>
-            </div>
+            <DoctorBot />
 
         </div>
       </main>

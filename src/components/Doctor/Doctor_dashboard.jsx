@@ -9,6 +9,7 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence, motion } from 'framer-motion';
 import BASE_URL from '../../baseUrl';
+import DoctorBot from './doctor_bot';
 
 import appointmentIcon from '../../assets/appointment.svg';
 import totalPatientsIcon from '../../assets/total_patients.svg';
@@ -79,6 +80,11 @@ const Doctor_dashboard = () => {
     const [open, setOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+    const [isPatientsModalOpen, setIsPatientsModalOpen] = useState(false);
+    const [isConsultationsModalOpen, setIsConsultationsModalOpen] = useState(false);
+    const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
+    const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
     const menuRef = useRef(null);
 
     // Dashboard States
@@ -97,10 +103,7 @@ const Doctor_dashboard = () => {
     // Mobile Sidebar State
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-    // Bot States
-    const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
-    const [isDragging, setIsDragging] = useState(false);
-    const dragRef = useRef({ startX: 0, startY: 0, initialX: 0, initialY: 0, hasMoved: false });
+
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -167,33 +170,9 @@ const Doctor_dashboard = () => {
         return () => clearTimeout(timeoutId);
     }, [activeDateIndex, selectedMonth, selectedYear]);
 
-    useEffect(() => {
-        const handlePointerMove = (e) => {
-            if (!isDragging) return;
-            const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
-            const clientY = e.clientY ?? (e.touches && e.touches[0].clientY);
-            const dx = clientX - dragRef.current.startX;
-            const dy = clientY - dragRef.current.startY;
-            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragRef.current.hasMoved = true;
-            setDragPos({ x: dragRef.current.initialX + dx, y: dragRef.current.initialY + dy });
-        };
-        const handlePointerUp = () => setIsDragging(false);
-        if (isDragging) {
-            window.addEventListener('mousemove', handlePointerMove);
-            window.addEventListener('mouseup', handlePointerUp);
-        }
-        return () => {
-            window.removeEventListener('mousemove', handlePointerMove);
-            window.removeEventListener('mouseup', handlePointerUp);
-        };
-    }, [isDragging]);
 
-    const handlePointerDown = (e) => {
-        setIsDragging(true);
-        const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY ?? (e.touches && e.touches[0].clientY);
-        dragRef.current = { startX: clientX, startY: clientY, initialX: dragPos.x, initialY: dragPos.y, hasMoved: false };
-    };
+
+
 
     // 2. CONDITIONAL RENDERS LAST
     if (openProfile) {
@@ -330,7 +309,17 @@ const Doctor_dashboard = () => {
                                     { name: 'Income', imgUrl: incomeIcon },
                                     { name: 'Emergency', imgUrl: emergencyIcon }
                                 ].map((t, i) => (
-                                    <div key={i} className="flex flex-col items-center justify-between border-[1.5px] border-gray-600 rounded-2xl bg-white aspect-[1/0.85] shadow-sm px-[4px] py-[10px] mt-[4px]">
+                                    <div 
+                                        key={i} 
+                                        onClick={() => {
+                                            if (t.name === 'Appointment') setIsAppointmentModalOpen(true);
+                                            if (t.name === 'Total Patients') setIsPatientsModalOpen(true);
+                                            if (t.name === 'Consultations') setIsConsultationsModalOpen(true);
+                                            if (t.name === 'Income') setIsIncomeModalOpen(true);
+                                            if (t.name === 'Emergency') setIsEmergencyModalOpen(true);
+                                        }}
+                                        className={`flex flex-col items-center justify-between border-[1.5px] border-gray-600 rounded-2xl bg-white aspect-[1/0.85] shadow-sm px-[4px] py-[10px] mt-[4px] ${(t.name === 'Appointment' || t.name === 'Total Patients' || t.name === 'Consultations' || t.name === 'Income' || t.name === 'Emergency') ? 'cursor-pointer hover:bg-gray-50 transition-colors' : ''}`}
+                                    >
                                         <div className="flex-1 flex items-end justify-center w-full">
                                             <img src={t.imgUrl} alt={t.name} className="h-full max-h-[40px] md:max-h-[58px] object-contain" />
                                         </div>
@@ -681,21 +670,342 @@ const Doctor_dashboard = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    <button className="text-[#32869e] text-[13px] font-bold hover:underline mt-[6px] self-end pr-[4px]">View More</button>
+                                    <button 
+                                        onClick={() => navigate('/AppointmentRequests')}
+                                        className="text-[#32869e] text-[13px] font-bold hover:underline mt-[6px] self-end pr-[4px]"
+                                    >
+                                        View More
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Floating Bot Icon */}
-                <Link to="/Bot" className="fixed bottom-10 right-10 z-[60] touch-none select-none group cursor-pointer border-none p-0 bg-transparent outline-none no-underline" style={{ transform: `translate(${dragPos.x}px, ${dragPos.y}px)` }} onMouseDown={handlePointerDown} onClick={(e) => { if (dragRef.current.hasMoved) e.preventDefault(); }}>
-                    <div className="w-[64px] h-[64px] bg-[#1a738c] rounded-[24px] flex flex-col justify-center items-center shadow-2xl border-[2px] border-[#a0cddb] hover:bg-[#155b70] transition-all hover:scale-110 active:scale-95 relative" style={{ borderRadius: '50% 50% 50% 12px' }}>
-                        <svg className="w-[30px] h-[30px] text-white pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 012 2v2h2a4 4 0 014 4v7a4 4 0 01-4 4H8a4 4 0 01-4-4v-7a4 4 0 014-4h2V4a2 2 0 012-2zm0 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-3.5-5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" /></svg>
-                        <span className="text-white text-[8px] font-bold mt-[-2px] uppercase tracking-tighter">ChatBot</span>
-                    </div>
-                </Link>
+                <DoctorBot />
             </main>
+            {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
+            
+            {/* Appointment Modal */}
+            <AnimatePresence>
+                {isAppointmentModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                        >
+                            <div className="p-7">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Appointment Details</h3>
+                                    <button 
+                                        onClick={() => setIsAppointmentModalOpen(false)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    {appRequestsData.slice(0, 3).map((req, idx) => (
+                                        <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0">
+                                                <img src={phImg} alt="" className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-start">
+                                                    <p className="text-[16px] font-bold text-gray-800 leading-tight">{req.name}</p>
+                                                    <span className="text-[11px] font-bold text-[#1b738c] bg-[#1b738c]/10 px-2 py-0.5 rounded-full uppercase tracking-wider">{req.time}</span>
+                                                </div>
+                                                <p className="text-[14px] text-gray-500 font-medium mt-0.5">{req.treatment}</p>
+                                                <p className="text-[12px] text-gray-400 font-bold mt-1">{req.date}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <button 
+                                    onClick={() => setIsAppointmentModalOpen(false)}
+                                    className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Patients Modal */}
+            <AnimatePresence>
+                {isPatientsModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                        >
+                            <div className="p-7">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Total Patients</h3>
+                                    <button 
+                                        onClick={() => setIsPatientsModalOpen(false)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    {recentPatientsData.map((patient, idx) => (
+                                        <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0">
+                                                <img src={phImg} alt="" className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-start">
+                                                    <p className="text-[16px] font-bold text-gray-800 leading-tight">{patient.name}</p>
+                                                    <span className="text-[11px] font-bold text-[#1b738c] bg-[#1b738c]/10 px-2 py-0.5 rounded-full uppercase tracking-wider">{patient.status}</span>
+                                                </div>
+                                                <p className="text-[14px] text-gray-500 font-medium mt-0.5">{patient.disease} • {patient.gender}</p>
+                                                <div className="flex gap-3 mt-1">
+                                                    <span className="text-[12px] text-gray-400 font-bold">Weight: {patient.weight}</span>
+                                                    <span className="text-[12px] text-gray-400 font-bold">Heart: {patient.heartRate}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <button 
+                                    onClick={() => setIsPatientsModalOpen(false)}
+                                    className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Consultations Modal */}
+            <AnimatePresence>
+                {isConsultationsModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                        >
+                            <div className="p-7">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Consultations</h3>
+                                    <button 
+                                        onClick={() => setIsConsultationsModalOpen(false)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    {timelineData.slice(0, 4).map((item, idx) => (
+                                        <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                            <div className="w-3 h-12 rounded-full shrink-0" style={{ backgroundColor: item.color }}></div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-start">
+                                                    <p className="text-[16px] font-bold text-gray-800 leading-tight">{item.label}</p>
+                                                    <span className="text-[11px] font-bold text-gray-400">{item.time}</span>
+                                                </div>
+                                                <p className="text-[14px] text-gray-500 font-medium mt-0.5">{item.patient}</p>
+                                                <p className="text-[12px] text-[#32869e] font-bold mt-1">{item.duration}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <button 
+                                    onClick={() => setIsConsultationsModalOpen(false)}
+                                    className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Income Modal */}
+            <AnimatePresence>
+                {isIncomeModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                        >
+                            <div className="p-7">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Income Summary</h3>
+                                    <button 
+                                        onClick={() => setIsIncomeModalOpen(false)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div className="space-y-6">
+                                    <div className="bg-gray-50 p-5 rounded-2xl border border-gray-300">
+                                        <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider">Total Revenue</p>
+                                        <h2 className="text-[48px] font-normal text-black leading-none mt-2">$142,000</h2>
+                                        <div className="flex items-center gap-2 mt-4 text-green-600">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                            </svg>
+                                            <span className="text-[14px] font-bold">+12.5% from last month</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-4 border border-gray-300 rounded-2xl bg-white">
+                                            <p className="text-[12px] text-gray-400 font-bold uppercase">Consultations</p>
+                                            <p className="text-[20px] font-bold text-gray-800 mt-1">$98,400</p>
+                                        </div>
+                                        <div className="p-4 border border-gray-300 rounded-2xl bg-white">
+                                            <p className="text-[12px] text-gray-400 font-bold uppercase">Treatments</p>
+                                            <p className="text-[20px] font-bold text-gray-800 mt-1">$43,600</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 border border-gray-300 rounded-2xl bg-gray-50/50">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <p className="text-[14px] font-bold text-gray-700">Recent Transactions</p>
+                                            <button className="text-[12px] text-[#32869e] font-bold">View All</button>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {[1, 2].map(i => (
+                                                <div key={i} className="flex justify-between items-center">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                                            <span className="text-[12px] font-bold">$</span>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[14px] font-bold text-gray-800">Patient Payment</p>
+                                                            <p className="text-[11px] text-gray-400">May 12, 2025</p>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-[14px] font-bold text-gray-800">+$250.00</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button 
+                                    onClick={() => setIsIncomeModalOpen(false)}
+                                    className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Emergency Modal */}
+            <AnimatePresence>
+                {isEmergencyModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-red-100"
+                        >
+                            <div className="p-7">
+                                <div className="flex justify-between items-center mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 shadow-sm">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Emergency Alerts</h3>
+                                    </div>
+                                    <button 
+                                        onClick={() => setIsEmergencyModalOpen(false)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    <div className="p-4 border border-red-200 rounded-2xl bg-red-50/50">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <p className="text-[16px] font-bold text-red-700">Active Emergency</p>
+                                            <span className="text-[11px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-full animate-pulse">URGENT</span>
+                                        </div>
+                                        <p className="text-[14px] text-red-600 font-medium">Patient: Rajesh Kumar • Room 302</p>
+                                        <p className="text-[12px] text-red-500 font-bold mt-1">Status: Cardiac Distress • 2 mins ago</p>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <p className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Quick Actions</p>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button className="flex items-center justify-center gap-2 p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                                                <span className="text-[14px] font-bold text-gray-700">Call ER</span>
+                                            </button>
+                                            <button className="flex items-center justify-center gap-2 p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                                                <span className="text-[14px] font-bold text-gray-700">Dispatch Team</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 border border-gray-300 rounded-2xl bg-gray-50/50">
+                                        <p className="text-[14px] font-bold text-gray-700 mb-3">Emergency Contact List</p>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <p className="text-[14px] font-bold text-gray-800">ICU Desk</p>
+                                                <p className="text-[14px] font-bold text-[#1b738c]">Ext: 405</p>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <p className="text-[14px] font-bold text-gray-800">Ambulance Services</p>
+                                                <p className="text-[14px] font-bold text-[#1b738c]">102</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button 
+                                    onClick={() => setIsEmergencyModalOpen(false)}
+                                    className="w-full mt-8 bg-red-600 text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all active:scale-[0.98]"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
 
         {/* Notification */}

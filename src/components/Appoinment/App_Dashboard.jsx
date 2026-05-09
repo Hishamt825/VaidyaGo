@@ -92,6 +92,7 @@ const App_Dashboard = () => {
     }, [activeTab]);
 
     // Mock data arrays matching the screenshot
+<<<<<<< HEAD
     const [appointments, setAppointments] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -142,11 +143,28 @@ const App_Dashboard = () => {
     useEffect(() => {
         fetchAppointments();
     }, [currentDate, activeTab]);
+=======
+    const appointments = Array.from({ length: 15 }).map((_, index) => ({
+        id: index,
+        name: 'Saumya tiwari',
+        gender: 'Female',
+        age: 21,
+        date: '14 feb 26',
+        time: '2:00-3:30 am',
+        status: index % 3 === 0 ? 'Pending' : index % 3 === 1 ? 'Confirmed' : 'Cancelled',
+        img: img1,
+    }));
+>>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
+
+    const filteredAppointments = appointments.filter(appt => {
+        if (activeTab === 'ALL') return true;
+        return appt.status.toUpperCase() === activeTab;
+    });
 
     const handleSelectAll = () => {
         setSelectAll(!selectAll);
         if (!selectAll) {
-            setSelectedRows(appointments.map(a => a.id));
+            setSelectedRows(filteredAppointments.map(a => a.id));
         } else {
             setSelectedRows([]);
         }
@@ -159,7 +177,7 @@ const App_Dashboard = () => {
         } else {
             const newSelected = [...selectedRows, id];
             setSelectedRows(newSelected);
-            if (newSelected.length === appointments.length) setSelectAll(true);
+            if (newSelected.length === filteredAppointments.length) setSelectAll(true);
         }
     };
 
@@ -382,11 +400,9 @@ const App_Dashboard = () => {
 
                             {/* Table Body */}
                             <div className="flex flex-col p-2 gap-[3px] bg-white">
-                                {appointments.map((appt, idx) => {
+                                {filteredAppointments.map((appt, idx) => {
                                     const isSelected = selectedRows.includes(appt.id);
-                                    // First row looks like it is selected with black box, others are white boxes
-                                    const isFirstRow = idx === 0 && selectedRows.length === 0; // mimic initial screenshot look if nothing touched
-                                    const checkActive = isSelected || isFirstRow;
+                                    const checkActive = isSelected;
 
                                     return (
                                         <div key={idx} className={`grid grid-cols-[auto_1.5fr_1fr_1fr_1fr_1.5fr_1fr_auto] gap-4 items-center px-2 py-[7px] min-h-[46px] text-[16px] font-semibold text-gray-800 rounded shadow-sm border border-transparent hover:border-[#bae6fd] bg-[#f2f8f9]`}>
@@ -410,11 +426,15 @@ const App_Dashboard = () => {
                                             <div className="text-center">{appt.date}</div>
                                             <div className="text-center">{appt.time}</div>
 
+<<<<<<< HEAD
                                             <div className={`text-center font-bold ${
                                                 appt.status === 'Confirmed' ? 'text-[#16a34a]' : 
                                                 appt.status === 'Pending' ? 'text-orange-500' : 
                                                 'text-red-500'
                                             }`}>
+=======
+                                            <div className={`text-center font-bold ${appt.status === 'Confirmed' ? 'text-[#16a34a]' : appt.status === 'Pending' ? 'text-[#339eb3]' : 'text-[#f87171]'}`}>
+>>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
                                                 {appt.status}
                                             </div>
 

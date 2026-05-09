@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Dsetting.css';
 import logoUrl from '../../../assets/logo_1.svg';
 import avatarUrl from '../../../assets/Ellipse 211.svg';
+import DoctorBot from '../../../components/Doctor/doctor_bot';
 
 const Dsetting = () => {
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState('Personal Information');
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('Select Country');
+
+
 
   const countries = [
     'India', 'United States', 'United Kingdom', 'Canada', 'Australia', 
@@ -469,6 +472,7 @@ const Dsetting = () => {
 
         </main>
       </div>
+      <DoctorBot />
     </div>
   );
 };

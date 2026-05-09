@@ -7,6 +7,7 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
 import { useRef } from 'react';
+import DoctorBot from "./doctor_bot";
 const Form3 = ({ onNext }) => {
   const navigate = useNavigate();
 
@@ -21,6 +22,8 @@ const [activeStep, setActiveStep] = useState(3);
   const [openProfile, setOpenProfile] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const menuRef = useRef(null);
+
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -414,6 +417,7 @@ return (
                 </div>
 
       </div>
+      <DoctorBot />
     </div>
   </div>
 );
