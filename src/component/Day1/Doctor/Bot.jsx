@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../../assets/logo_1.svg';
+import BASE_URL from '../../../baseUrl';
 import img1 from '../../../assets/Ellipse_139_1.svg'; // Bot avatar
 import img2 from '../../../assets/Frame 226.svg'; // User avatar
 import trashIcon from '../../../assets/image_105.svg';
@@ -80,47 +81,72 @@ const Bot = () => {
 
     };
 
-    const generateBotReply = (text) => {
-        const lowerText = text.toLowerCase();
-        if (/[\u0900-\u097F]/.test(text) || /\b(kaise|kya|hai|kese|haan|nahi|mujhe|dard|doctor|mera|ko)\b/.test(lowerText)) {
-            return "नमस्ते अली! मैं आपकी कैसे मदद कर सकता हूँ? कृपया मुझे अपने लक्षणों के बारे में विस्तार से बताएं।";
+    const [sessionId, setSessionId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSend = async () => {
+        if (!inputText.trim() || isLoading) return;
+        
+        const userMessage = inputText.trim();
+        const token = localStorage.getItem("token");
+        const doctorId = localStorage.getItem("doctor_id");
+
+        if (!token) {
+            navigate("/Finallogin");
+            return;
         }
-        if (/[\u0600-\u06FF]/.test(text)) {
-            return "مرحبا علي! كيف حالك؟ كيف يمكنني مساعدتك اليوم؟";
-        }
-        return "Thank you for sharing. Could you please provide a few more details so I can assist you better?";
-    };
 
-    const handleSend = () => {
-        if (!inputText.trim()) return;
-        const newText = inputText;
-
-        setDynamicMessages(prev => [
-            ...prev,
-            { id: Date.now(), text: newText, sender: 'user' }
-        ]);
-
+        // 1. Add user message to UI
+        const userMsgObj = { id: Date.now(), text: userMessage, sender: 'user' };
+        setDynamicMessages(prev => [...prev, userMsgObj]);
         setChatHistoryList(prev => [
-            { id: Date.now() + '_hist', text: newText, isActive: false },
+            { id: Date.now() + '_hist', text: userMessage, isActive: false },
             ...prev
         ]);
-
         setInputText('');
+        setIsLoading(true);
 
-        if (newText.toLowerCase().includes('hey')) {
-            setTimeout(() => {
-                setDynamicMessages(prev => [
-                    ...prev,
-                    { id: Date.now() + 1, text: "hello ali ,how are you,how can i help you", sender: 'bot' }
-                ]);
-            }, 800);
-        } else {
-            setTimeout(() => {
-                setDynamicMessages(prev => [
-                    ...prev,
-                    { id: Date.now() + 1, text: generateBotReply(newText), sender: 'bot' }
-                ]);
-            }, 1000);
+        try {
+            const response = await fetch(`${BASE_URL}/api/vado-doctor/chat/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    message: userMessage,
+                    session_id: sessionId,
+                    doctor_id: doctorId
+                })
+            });
+
+            if (!response.ok) throw new Error("Chatbot service unavailable");
+
+            const data = await response.json();
+            
+            // 2. Add bot reply to UI
+            setDynamicMessages(prev => [
+                ...prev,
+                { 
+                    id: Date.now() + 1, 
+                    text: data.reply, 
+                    sender: 'bot',
+                    action: data.action,
+                    actionData: data.data
+                }
+            ]);
+
+            // 3. Update session ID for continuity
+            if (data.session_id) setSessionId(data.session_id);
+
+        } catch (error) {
+            console.error("Chat Error:", error);
+            setDynamicMessages(prev => [
+                ...prev,
+                { id: Date.now() + 1, text: "I'm having trouble connecting to the medical service. Please try again later.", sender: 'bot' }
+            ]);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -336,7 +362,8 @@ const Bot = () => {
                             value={inputText}
                             onChange={(e) => setInputText(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                            placeholder="Ask or search anything"
+                            placeholder={isLoading ? "Thinking..." : "Ask or search anything"}
+                            disabled={isLoading}
                             className="flex-1 bg-transparent px-4 py-2 text-[14px] outline-none text-gray-700 placeholder:text-[#999] font-[500]"
                         />
 
@@ -357,9 +384,18 @@ const Bot = () => {
                         {/* Send Button */}
                         <button
                             onClick={handleSend}
-                            className="w-[52px] h-[36px] bg-[#49a0b1] rounded-full flex items-center justify-center text-[#091a1e] shadow-sm hover:bg-[#3d8c9b] transition-colors shrink-0 ml-1 cursor-pointer"
+                            disabled={isLoading}
+                            className={`w-[52px] h-[36px] ${isLoading ? 'bg-gray-300' : 'bg-[#49a0b1] hover:bg-[#3d8c9b]'} rounded-full flex items-center justify-center text-[#091a1e] shadow-sm transition-colors shrink-0 ml-1 cursor-pointer`}
                         >
-                            <svg className="w-[18px] h-[18px] ml-[-2px] mt-[1px] rotate-[-5deg]" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
+                            {isLoading ? (
+                                <div className="flex gap-1">
+                                    <span className="w-1 h-1 bg-white rounded-full animate-bounce"></span>
+                                    <span className="w-1 h-1 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                    <span className="w-1 h-1 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                </div>
+                            ) : (
+                                <svg className="w-[18px] h-[18px] ml-[-2px] mt-[1px] rotate-[-5deg]" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
+                            )}
                         </button>
 
                     </div>

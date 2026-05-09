@@ -489,126 +489,76 @@ const Addslot = () => {
    const month = monthIdx < 10 ? `0${monthIdx}` : monthIdx;
    const formattedApiDate = `${popupSelectedYear}-${month}-${day}`;
 
-    const fetchSlots = async (dateOverride = null, forceJustSaved = false) => {
-       setIsLoadingSlots(true);
-       const isJustSaved = forceJustSaved || hasJustSaved;
-       
-       const endpoint = isBookedView 
-          ? `${BASE_URL}/api/doctor/${doctorId}/slots/booked/`
-          : `${BASE_URL}/api/doctor/${doctorId}/slots/`;
-       
-       try {
-          // Fetch all slots from today onwards to create a continuous list
-          const response = await apiFetch(`${endpoint}`);
-          if (response.ok) {
-             const result = await response.json();
-             let data = result.slots || result || [];
-             
-             if (!Array.isArray(data) && data.results) data = data.results;
+    const fetchSlots = async () => {
+        setIsLoadingSlots(true);
+        
+        // Fetch all slots for this doctor
+        const endpoint = isBookedView 
+           ? `${BASE_URL}/api/doctor/${doctorId}/slots/booked/`
+           : `${BASE_URL}/api/doctor/${doctorId}/slots/`;
+        
+        try {
+           const response = await apiFetch(endpoint);
+           if (response.ok) {
+              const result = await response.json();
+              let data = result.slots || result.booked_slots || (Array.isArray(result) ? result : []);
+              
+              if (!Array.isArray(data) && data.results) data = data.results;
 
-             // If no slots returned from API, but we just saved, generate them locally based on user input
-             if (data.length === 0 && isJustSaved) {
-                console.log('Generating local slots for visualization across range:', fromDate, 'to', toDate);
-                const generated = [];
-                const startTime = fromTime || '09:00';
-                const endTime = toTime || '17:00';
-                const duration = parseInt(slotDuration, 10) || 20;
+              // Map backend TimeSlot objects to frontend format
+              const mappedSlots = data.map(item => {
+                  // Handle backend fields: start_time, end_time, is_booked
+                  const startTimeStr = item.start_time || "";
+                  const endTimeStr = item.end_time || "";
+                  
+                  // Extract date and time parts
+                  // Assuming start_time is "YYYY-MM-DDTHH:MM:SSZ"
+                  let date = "";
+                  let fromTime = "";
+                  let toTime = "";
+                  
+                  if (startTimeStr.includes('T')) {
+                      [date, fromTime] = startTimeStr.split('T');
+                      fromTime = fromTime.slice(0, 5); // Get HH:MM
+                  } else {
+                      date = startTimeStr.split(' ')[0] || formattedApiDate;
+                      fromTime = startTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
+                  }
 
-                const startDate = new Date(fromDate);
-                const endDate = new Date(toDate);
-                
-                // Loop through each date in the range
-                for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-                   const currentDateStr = d.toISOString().split('T')[0];
-                   let currentT = new Date(`2026-01-01T${startTime}`);
-                   const endT = new Date(`2026-01-01T${endTime}`);
-                   
-                   if (isNaN(currentT.getTime()) || isNaN(endT.getTime())) continue;
+                  if (endTimeStr.includes('T')) {
+                      toTime = endTimeStr.split('T')[1].slice(0, 5);
+                  } else {
+                      toTime = endTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
+                  }
 
-                   while (currentT < endT) {
-                      const nextT = new Date(currentT.getTime() + duration * 60000);
-                      if (nextT > endT) break;
-                      
-                      const fTime = currentT.toTimeString().split(' ')[0];
-                      const tTime = nextT.toTimeString().split(' ')[0];
-                      
-                      const uniqueId = 500 + generated.length + Math.floor(Math.random() * 1000000);
-                      
-                      generated.push({
-                         id: uniqueId,
-                         date: currentDateStr,
-                         status: 'available',
-                         from_time: fTime,
-                         to_time: tTime
-                      });
-                      currentT = nextT;
-                   }
-                }
-                data = generated;
-             } else if (data.length === 0 && formattedApiDate === '2026-02-13') {
-                data = [
-                   { id: 101, status: 'available', from_time: '14:00:00', to_time: '14:20:00' },
-                   { id: 102, status: 'break', from_time: '14:20:00', to_time: '15:00:00', title: 'Doctor Break', subtitle: 'Reason: Doctor\'s Break Time' },
-                   { id: 103, status: 'booked', from_time: '15:00:00', to_time: '16:00:00', title: 'Rahul Verma', subtitle: 'Booking ID : #A234B6' }
-                ];
-             }
-
-             // Sort data by Date first, then by Time
-             const sortedData = [...data].sort((a, b) => {
-                const dateA = a.date || '';
-                const dateB = b.date || '';
-                if (dateA !== dateB) return dateA.localeCompare(dateB);
-                
-                const timeA = a.from_time || '';
-                const timeB = b.from_time || '';
-                return timeA.localeCompare(timeB);
-             });
-
-             const mappedSlots = sortedData.map(item => {
+                  // Determine status (type)
+                  let status = 'available';
+                  if (item.is_booked) status = 'booked';
+                  // Some logic for 'break' if needed, though not in model
+                  
                   return {
-                     id: item.id || Math.random(),
-                     type: item.status?.toLowerCase() || 'available',
-                     date: item.date || formattedApiDate,
-                     from_time: item.from_time,
-                     to_time: item.to_time,
-                     time: formatSlotTimeRange(item.from_time, item.to_time),
-                    title: item.title || (item.status === 'break' ? 'Doctor Break' : 'Available'),
-                    subtitle: item.subtitle || (item.status === 'booked' ? `Booking ID : #${item.id}` : (item.status === 'break' ? 'Reason: Doctor\'s Break Time' : ''))
-                };
-             });
-
-              // Merge logic to update existing slots or append new ones
-              setSlots(prev => {
-                 const combined = [...prev];
-                 mappedSlots.forEach(ns => {
-                    // Normalize time to HH:MM for comparison
-                    const nsTime = ns.from_time?.slice(0, 5);
-                    if (!nsTime) return;
-                    
-                    const index = combined.findIndex(s => s.date === ns.date && s.from_time?.slice(0, 5) === nsTime);
-                    
-                    if (index !== -1) {
-                       // Update existing slot (preserves UI state if ID matches)
-                       combined[index] = ns;
-                    } else {
-                       combined.push(ns);
-                    }
-                 });
-                 return combined.sort((a, b) => {
-                    if (a.date !== b.date) return a.date.localeCompare(b.date);
-                    return a.from_time.localeCompare(b.from_time);
-                 });
+                      id: item.id || Math.random(),
+                      type: status,
+                      date: date,
+                      from_time: fromTime,
+                      to_time: toTime,
+                      time: `${fromTime} - ${toTime}`,
+                      title: item.appointment_details?.patient_name || (status === 'booked' ? 'Booked' : 'Available'),
+                      subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : ''
+                  };
               });
-          } else {
-             console.error('Failed to fetch slots:', response.status);
-             // Don't clear slots
-          }
-       } catch (error) {
-          console.error('Error fetching slots:', error);
-          // Don't clear slots
-       } finally {
-          setIsLoadingSlots(false);
-       }
+
+              // Update slots state, sorting by date and time
+              setSlots(mappedSlots.sort((a, b) => {
+                 if (a.date !== b.date) return a.date.localeCompare(b.date);
+                 return a.from_time.localeCompare(b.from_time);
+              }));
+           }
+        } catch (error) {
+           console.error('Error fetching slots:', error);
+        } finally {
+           setIsLoadingSlots(false);
+        }
     };
 
    useEffect(() => {
@@ -683,7 +633,7 @@ const Addslot = () => {
             }
 
             setHasJustSaved(true);
-            fetchSlots(fromDate, true); 
+            fetchSlots(); 
             setTimeout(() => {
                setIsAddSlotModalOpen(false);
                setMessage({ text: '', type: '' });
@@ -968,7 +918,9 @@ const Addslot = () => {
                             className="flex items-center gap-3 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-all group"
                         >
                             <div className="flex flex-col items-end">
-                                <span className="text-[17px] font-bold text-gray-800 leading-tight">Dasy William</span>
+                                <span className="text-[17px] font-bold text-gray-800 leading-tight">
+                                    {localStorage.getItem("user_full_name") || "Doctor"}
+                                </span>
                                 <span className="text-[11px] font-bold text-[#1b738c]">Doctor</span>
                             </div>
                             <div className="relative">
@@ -999,7 +951,9 @@ const Addslot = () => {
 
                      {/* Welcome Banner */}
                      <div className="bg-[#1b738b] rounded-xl p-[22px] flex flex-col justify-center h-[105px]">
-                        <h2 className="text-[22px] font-bold text-white leading-tight">Hello Dr. Iris</h2>
+                        <h2 className="text-[22px] font-bold text-white leading-tight">
+                           Hello Dr. {localStorage.getItem("user_full_name")?.split(' ')[0] || "Doctor"}
+                        </h2>
                         <p className="text-[12px] text-[#86cfe4] font-medium leading-snug mt-[4px]">
                            here are you important tasks and reports.<br />
                            Please check the next appointment

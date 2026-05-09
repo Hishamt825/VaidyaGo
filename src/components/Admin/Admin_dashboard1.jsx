@@ -64,6 +64,11 @@ const Admin_dashboard1 = () => {
     const [showFullActivity, setShowFullActivity] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [expandedApprovalId, setExpandedApprovalId] = useState(1);
+    const [isLoadingDoctors, setIsLoadingDoctors] = useState(true);
+    const [doctors, setDoctors] = useState([]);
+    const [error, setError] = useState("");
+    const [filterStatus, setFilterStatus] = useState("pending");
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const [recentActivities, setRecentActivities] = useState([
         { id: 1, date: "28-01-2026", patient: "Arti yadav", doctor: "Dr. Sumaiya Javed", status: "Completed", type: "Checkup" },
@@ -95,34 +100,106 @@ const Admin_dashboard1 = () => {
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [selectedDoctorForDetail, setSelectedDoctorForDetail] = useState(null);
     const [showRejectedStatusModal, setShowRejectedStatusModal] = useState(false);
+    const [previewDocUrl, setPreviewDocUrl] = useState(null);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    
+    // New states for dynamic counts and specialty filtering
+    const [counts, setCounts] = useState({
+        total: 0,
+        active: 0,
+        pending: 0,
+        rejected: 0
+    });
+    const [approvedDoctorsList, setApprovedDoctorsList] = useState([]);
+    const [activeSpecialtyTab, setActiveSpecialtyTab] = useState("ALL");
+    const [openType, setOpenType] = useState("grid");
     const fileInputRef = useRef(null);
     const approvalRef = useRef(null);
 
-    const [doctors, setDoctors] = useState([]);
-    const [isLoadingDoctors, setIsLoadingDoctors] = useState(true);
+
+
+    const fetchDoctors = async (status = "pending") => {
+        try {
+            setIsLoadingDoctors(true);
+            const endpoint = status === "approved" ? "approved" : status === "rejected" ? "rejected" : "pending";
+            const response = await apiFetch(`${BASE_URL}/accounts/doctors/${endpoint}/`);
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(`${status} Doctors successfully fetched:`, data);
+                setDoctors(data);
+            } else {
+                const errorText = await response.text();
+                console.error(`Failed to fetch ${status} doctors. Status: ${response.status}, Response: ${errorText}`);
+                if (response.status === 403) {
+                    alert(`Access Denied (403): Your account does not have Admin permissions to view ${status} doctors.`);
+                } else {
+                    alert(`Failed to fetch ${status} doctors. Status: ${response.status}`);
+                }
+            }
+        } catch (err) {
+            console.error(`Error fetching ${status} doctors:`, err);
+            alert(`Error fetching ${status} doctors: ${err.message}`);
+        } finally {
+            setIsLoadingDoctors(false);
+        }
+    };
+
+    const fetchAllCountsAndApprovedList = async () => {
+        try {
+            // Fetch All, Pending, Approved, Rejected to calculate counts
+            const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
+                apiFetch(`${BASE_URL}/accounts/doctors/pending/`),
+                apiFetch(`${BASE_URL}/accounts/doctors/approved/`),
+                apiFetch(`${BASE_URL}/accounts/doctors/rejected/`)
+            ]);
+
+            let pending = [], approved = [], rejected = [];
+            if (pendingRes.ok) pending = await pendingRes.json();
+            if (approvedRes.ok) approved = await approvedRes.json();
+            if (rejectedRes.ok) rejected = await rejectedRes.json();
+
+            setCounts({
+                total: pending.length + approved.length + rejected.length,
+                active: approved.length,
+                pending: pending.length,
+                rejected: rejected.length
+            });
+
+            setApprovedDoctorsList(approved);
+        } catch (err) {
+            console.error("Error fetching counts:", err);
+        }
+    };
+
+    const fetchRecentActivities = async () => {
+        try {
+            // Fetch all appointments for today/recently to show in activities
+            const url = `${BASE_URL}/api/appointments/list/`; // No filters to get recent ones
+            const response = await apiFetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                const mapped = data.slice(0, 10).map(appt => ({
+                    id: appt.id,
+                    date: new Date(appt.start_time).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+                    patient: appt.patient_name || 'N/A',
+                    doctor: appt.doctor_name || 'N/A',
+                    status: appt.status.charAt(0).toUpperCase() + appt.status.slice(1),
+                    type: appt.appointment_type || 'General'
+                }));
+                setRecentActivities(mapped);
+            }
+        } catch (error) {
+            console.error("Error fetching recent activities:", error);
+        }
+    };
 
     useEffect(() => {
-        const fetchPendingDoctors = async () => {
-            try {
-                // Fetching doctors from the backend
-                const response = await apiFetch(`${BASE_URL}/accounts/doctors/`);
-                if (response.ok) {
-                    const data = await response.json();
-                    // Filter for pending doctors
-                    const pendingDocs = data.filter(d => d.status === 'pending' || !d.is_approved);
-                    setDoctors(pendingDocs);
-                }
-            } catch (err) {
-                console.error("Failed to fetch doctors:", err);
-            } finally {
-                setIsLoadingDoctors(false);
-            }
-        };
-
-        fetchPendingDoctors();
-    }, []);
-
-    // Logic to restore doctor status
+        fetchDoctors(filterStatus);
+        fetchAllCountsAndApprovedList();
+        fetchRecentActivities();
+    }, [filterStatus]);
+        // Logic to restore doctor status
     const handleRestoreDoctor = (doctorId) => {
         setDoctors(prev => prev.map(doc =>
             doc.id === doctorId ? { ...doc, status: "pending" } : doc
@@ -137,61 +214,114 @@ const Admin_dashboard1 = () => {
         setShowDetailModal(true);
     };
 
-    const handleApproveDoctor = async () => {
-        if (!selectedDoctorForDetail) return;
+    const handleApproveDoctor = async (doctor) => {
+        if (!doctor) return;
 
-        const url = `${BASE_URL}/accounts/doctors/approve/${selectedDoctorForDetail.id}/`;
-        console.log("Approving Doctor at URL:", url);
+        // u_* IDs are doctors who registered but haven't filled their profile forms yet
+        if (String(doctor.id).startsWith('u_')) {
+            alert(`Dr. ${doctor.name} has not completed their profile forms yet. Cannot approve until the profile is submitted.`);
+            return;
+        }
+
+        const url = `${BASE_URL}/accounts/doctors/approve/${doctor.id}/`;
 
         try {
-            // POST request as per curl provided
-            // Using empty string for body as per curl --body ''
-            const response = await apiFetch(url, {
-                method: "POST",
-                body: "" 
-            });
+            const response = await apiFetch(url, { method: "POST" });
 
             if (response.ok) {
-                // Update local state to reflect change
-                setDoctors(prev => prev.map(doc =>
-                    doc.id === selectedDoctorForDetail.id ? { ...doc, status: "active" } : doc
-                ));
-                alert(`Doctor ${selectedDoctorForDetail.name} approved successfully!`);
+                setDoctors(prev => prev.filter(d => d.id !== doctor.id));
+                alert(`Doctor ${doctor.name} approved successfully!`);
                 setShowDetailModal(false);
             } else {
-                let errorMsg = "Failed to approve doctor";
-                try {
-                    const errorData = await response.json();
-                    errorMsg = errorData.detail || errorMsg;
-                } catch (e) {
-                    console.error("Could not parse error response", e);
-                }
-                alert(`Error: ${errorMsg}`);
+                const errData = await response.json().catch(() => ({}));
+                alert(errData?.error || "Failed to approve doctor.");
             }
         } catch (error) {
-            console.error("Approval API Error:", error);
-            alert("Network error: Could not reach the server. Please check your connection and CORS settings.");
+            console.error("Approval Error:", error);
+            alert("Network error occurred.");
         }
     };
 
     // Logic to confirm rejection and update status
-    const handleRejectSubmit = () => {
-        if (selectedDoctorForReject) {
-            setDoctors(prev => prev.map(doc =>
-                doc.id === selectedDoctorForReject.id ? { ...doc, status: "rejected" } : doc
-            ));
+    const handleRejectSubmit = async () => {
+        if (!selectedDoctorForReject) return;
+
+        // u_* IDs are doctors who registered but haven't filled their profile forms yet
+        if (String(selectedDoctorForReject.id).startsWith('u_')) {
+            alert(`Dr. ${selectedDoctorForReject.name} has not completed their profile forms yet. Cannot reject until the profile is submitted.`);
+            setShowReasonModal(false);
+            setShowRejectConfirm(false);
+            return;
         }
-        setShowReasonModal(false);
-        setShowRejectedStatusModal(true);
+
+        const url = `${BASE_URL}/accounts/doctors/reject/${selectedDoctorForReject.id}/`;
+
+        try {
+            const response = await apiFetch(url, {
+                method: "POST",
+                body: JSON.stringify({
+                    reason: rejectionReason,
+                    message: rejectionFeedback
+                })
+            });
+
+            if (response.ok) {
+                setDoctors(prev => prev.filter(d => d.id !== selectedDoctorForReject.id));
+                setShowReasonModal(false);
+                setShowRejectedStatusModal(true);
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                alert(errData?.error || "Failed to reject doctor.");
+            }
+        } catch (error) {
+            console.error("Rejection Error:", error);
+            alert("Network error occurred.");
+        }
     };
 
-    const upcomingDays = [
-        { name: "Wed", date: "2nd", fullDay: "Wednesday", fullDate: "August 2nd 2023" },
-        { name: "Thu", date: "3rd", fullDay: "Thursday", fullDate: "August 3rd 2023" },
-        { name: "Friday", date: "4th", fullDay: "Friday", fullDate: "August 4th 2023" },
-        { name: "Sat", date: "5th", fullDay: "Saturday", fullDate: "August 5th 2023" },
-        { name: "Sun", date: "6th", fullDay: "Sunday", fullDate: "August 6th 2023" }
-    ];
+    const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+    const [isUpcomingLoading, setIsUpcomingLoading] = useState(false);
+
+    const generateUpcomingDays = () => {
+        const days = [];
+        const today = new Date();
+        // Adjust to a reasonable range, e.g., surrounding today
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(today.getDate() + i - 2); 
+            days.push({
+                name: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                date: d.getDate() + (d.getDate() % 10 === 1 && d.getDate() !== 11 ? 'st' : d.getDate() % 10 === 2 && d.getDate() !== 12 ? 'nd' : d.getDate() % 10 === 3 && d.getDate() !== 13 ? 'rd' : 'th'),
+                fullDay: d.toLocaleDateString('en-US', { weekday: 'long' }),
+                fullDate: d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                isoDate: d.toISOString().split('T')[0]
+            });
+        }
+        return days;
+    };
+
+    const [upcomingDays] = useState(generateUpcomingDays());
+
+    const fetchUpcomingAppointments = async () => {
+        setIsUpcomingLoading(true);
+        try {
+            const selectedDay = upcomingDays[activeDayIndex];
+            const url = `${BASE_URL}/api/appointments/list/?date=${selectedDay.isoDate}`;
+            const response = await apiFetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                setUpcomingAppointments(data);
+            }
+        } catch (error) {
+            console.error("Error fetching upcoming appointments:", error);
+        } finally {
+            setIsUpcomingLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUpcomingAppointments();
+    }, [activeDayIndex]);
 
     // Adjusted initial index to match Friday (index 2)
 
@@ -216,7 +346,6 @@ const Admin_dashboard1 = () => {
     const [activeDateIndex, setActiveDateIndex] = useState(17); // Default selection
     const [dateStyle, setDateStyle] = useState({ left: 0, top: 0, width: 0, height: 0, opacity: 0 });
     const dateRefs = useRef([]);
-
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             const activeEl = dateRefs.current[activeDateIndex];
@@ -341,7 +470,7 @@ const Admin_dashboard1 = () => {
                                 onClick={() => setOpen(!open)}
                                 className="flex items-center gap-4 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1 cursor-pointer hover:bg-gray-50 transition-all"
                             >
-                                <span className="text-[18px] font-semibold text-gray-700">Dasy William</span>
+                                <span className="text-[18px] font-semibold text-gray-700">{localStorage.getItem("user_full_name") || "Admin"}</span>
                                 <img src="/assets/ph.png" className="w-11 h-11 rounded-full  border-black/50 
                                  rounded-full  shadow-[0_2px_6px_rgba(0,0,0,0.12)] object-cover" />
                             </div>
@@ -391,11 +520,12 @@ const Admin_dashboard1 = () => {
                                 </div>
                             </motion.div>
 
-                            {/* CARD 2 */}
+                            {/* CARD 2 - PENDING DOCTORS */}
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
+                                onClick={() => navigate('/admin-doctor?view=pending')}
                                 className="bg-[#E542CD]/10 shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <div>
@@ -403,25 +533,23 @@ const Admin_dashboard1 = () => {
                                         <div className="bg-white/80 w-15 h-15 rounded-full flex items-center justify-center shadow-sm border border-[#E542CD]/20">
                                             <img src="/assets/pers.png" className="w-10 h-10" />
                                         </div>
-                                        <h3 className="text-[18px] font-semibold text-black">Patients</h3>
+                                        <h3 className="text-[18px] font-semibold text-black">Pending Doctors</h3>
                                     </div>
 
-                                    <h2 className="text-[48px] font-normal text-black leading-none mt-3">1863</h2>
+                                    <h2 className="text-[48px] font-normal text-black leading-none mt-3">{counts.pending}</h2>
                                 </div>
 
                                 <div className="flex justify-between items-center mt-8">
-                                    <span className="text-[14px] text-gray-600 font-medium">Last 7 days</span>
-                                    <span className="text-[14px] bg-[#FFDAD6] text-red-500 px-3 py-[2px] rounded-full font-bold flex items-center gap-1">
-                                        16% <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M23 18l-9-9-4 4-7-7" /></svg>
-                                    </span>
+                                    <span className="text-[14px] text-gray-600 font-medium">Awaiting Approval</span>
                                 </div>
                             </motion.div>
 
-                            {/* CARD 3 */}
+                            {/* CARD 3 - REJECTED DOCTORS */}
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
+                                onClick={() => navigate('/admin-doctor?view=rejected')}
                                 className="bg-[#1CF0FE]/10 shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden"
                             >
                                 <div>
@@ -429,17 +557,14 @@ const Admin_dashboard1 = () => {
                                         <div className="bg-white/80 w-15 h-15 rounded-full flex items-center justify-center shadow-sm border border-[#1CF0FE]/20">
                                             <img src="/assets/arr.png" className="w-10 h-10" />
                                         </div>
-                                        <h3 className="text-[18px] font-semibold text-gray-700">Income</h3>
+                                        <h3 className="text-[18px] font-semibold text-gray-700">Rejected Doctors</h3>
                                     </div>
 
-                                    <h2 className="text-[48px] font-normal text-black leading-none mt-3">$142k</h2>
+                                    <h2 className="text-[48px] font-normal text-black leading-none mt-3">{counts.rejected}</h2>
                                 </div>
 
                                 <div className="flex justify-between items-center mt-8">
-                                    <span className="text-[14px] text-gray-600 font-medium">Last 7 days</span>
-                                    <span className="text-[14px] bg-[#D1FAE5] text-green-600 px-3 py-[2px] rounded-full font-bold flex items-center gap-1">
-                                        50% <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M23 6l-9 9-4-4-7 7" /></svg>
-                                    </span>
+                                    <span className="text-[14px] text-gray-600 font-medium">Action Required</span>
                                 </div>
                             </motion.div>
 
@@ -455,7 +580,7 @@ const Admin_dashboard1 = () => {
 
                                 <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                     <img src={doImg} className="h-[150px] object-contain -ml-3 mb-[-13px]" />
-                                    <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">100</h2>
+                                    <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">{counts.total}</h2>
                                 </div>
                             </motion.div>
 
@@ -472,7 +597,7 @@ const Admin_dashboard1 = () => {
 
                                 <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                     <img src={active1} className="h-[140px] object-contain -ml-3 mb-[-13px]" />
-                                    <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">50</h2>
+                                    <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">{counts.active}</h2>
                                 </div>
                             </motion.div>
 
@@ -657,7 +782,7 @@ const Admin_dashboard1 = () => {
                             {/* TEXT CONTENT */}
                             <div className="z-10 relative mt-10 h-full flex flex-col justify-end">
                                 <h1 className="text-[30px] font-bold leading-tight tracking-tight">
-                                    Hello MR. Admin
+                                    Hello {localStorage.getItem("user_full_name") || "Admin"}
                                 </h1>
 
                                 <p className="text-[16px] mt-2 font-medium opacity-90 tracking-wide">
@@ -782,67 +907,53 @@ const Admin_dashboard1 = () => {
                             </div>
 
                             {/* APPOINTMENTS */}
-                            <div className="space-y-3 mt-6">
+                            <div className="space-y-3 mt-6 flex-1 overflow-y-auto custom-scrollbar pr-1">
+                                {isUpcomingLoading ? (
+                                    <div className="flex justify-center py-10">
+                                        <div className="w-8 h-8 border-4 border-[#19718A] border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                ) : upcomingAppointments.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-10 opacity-40">
+                                        <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p className="text-[14px] font-bold">No appointments found</p>
+                                    </div>
+                                ) : (
+                                    upcomingAppointments.map((appt, idx) => (
+                                        <div key={appt.id || idx}
+                                            className="flex items-center justify-between px-3 py-2 rounded-[12px] shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 relative overflow-hidden h-[64px]"
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#19718A]/5 to-[#19718A]/10"></div>
 
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i}
-                                        className="flex items-center justify-between px-3 py-2 rounded-[12px] shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 relative overflow-hidden h-[64px]"
-                                    >
-
-                                        {/* RIGHT DARK GRADIENT */}
-                                        <div className="absolute inset-0 
-          bg-gradient-to-r 
-          from-transparent 
-          via-[#19718A]/20 
-          to-[#19718A]/50"></div>
-
-                                        <div className="flex items-center gap-2 relative z-10">
-
-                                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#399CAA]">
-                                                <img src="/assets/admin.png"
-                                                    className="w-full h-full object-cover" />
-                                            </div>
-
-                                            <div>
-                                                <h4 className="text-[14px] font-semibold text-gray-700 leading-none">
-                                                    Shawn Hampton
-                                                </h4>
-
-                                                <p className="text-[12px] font-bold text-black">
-                                                    Emergency Appointment
-                                                </p>
-
-                                                <div className="flex items-center gap-1 
-              bg-[#19718A] text-white 
-              px-2 py-[2px] rounded-md w-fit mt-1">
-
-                                                    <span className="text-[10px] font-bold">
-                                                        10:00AM
-                                                    </span>
+                                            <div className="flex items-center gap-2 relative z-10">
+                                                <div className="w-11 h-11 rounded-lg overflow-hidden bg-[#399CAA]">
+                                                    <img src="/assets/admin.png" className="w-full h-full object-cover" alt="" />
                                                 </div>
 
+                                                <div>
+                                                    <h4 className="text-[14px] font-bold text-gray-800 leading-none mb-1">
+                                                        {appt.patient_name || "Unknown Patient"}
+                                                    </h4>
+                                                    <p className="text-[11px] font-bold text-gray-500">
+                                                        {appt.appointment_type || "Regular Checkup"}
+                                                    </p>
+                                                    <div className="flex items-center gap-1 bg-[#19718A] text-white px-2 py-[2px] rounded-md w-fit mt-1">
+                                                        <span className="text-[9px] font-bold">
+                                                            {new Date(appt.start_time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            <button className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm relative z-10 hover:bg-gray-50 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#19718A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeWidth={2.5} d="M3 5a2 2 0 012-2h3l2 5-2 1a11 11 0 005 5l1-2 5 2v3a2 2 0 01-2 2h-1C9 21 3 15 3 7V5z" />
+                                                </svg>
+                                            </button>
                                         </div>
-
-                                        {/* CALL */}
-                                        <button className="w-8 h-8 bg-white rounded-full 
-          flex items-center justify-center 
-          shadow-sm relative z-10">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                className="h-4 w-4 text-[#19718A]"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path strokeWidth={2}
-                                                    d="M3 5a2 2 0 012-2h3l2 5-2 1a11 11 0 005 5l1-2 5 2v3a2 2 0 01-2 2h-1C9 21 3 15 3 7V5z" />
-                                            </svg>
-
-                                        </button>
-
-                                    </div>
-                                ))}
-
+                                    ))
+                                )}
                             </div>
 
                             {/* VIEW MORE */}
@@ -860,20 +971,49 @@ const Admin_dashboard1 = () => {
 
                     {/* ================= APPROVAL SECTION ================= */}
                     <div className="col-span-12 -mt-3" ref={approvalRef}>
-                        <h3 className="text-[20px] font-bold text-gray-800 mb-3 px-1">
-                            Approval Section
-                        </h3>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-bold text-[20px] text-gray-900 tracking-tight">
+                                Approval Section
+                            </h3>
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 flex items-center gap-2 border border-gray-200">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                    </svg>
+                                    <span className="text-sm font-semibold capitalize">{filterStatus}</span>
+                                </button>
+                                
+                                {isFilterOpen && (
+                                    <div className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-[100]">
+                                        {["pending", "approved", "rejected"].map((status) => (
+                                            <button
+                                                key={status}
+                                                onClick={() => {
+                                                    setFilterStatus(status);
+                                                    setIsFilterOpen(false);
+                                                }}
+                                                className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors ${filterStatus === status ? 'text-[#19718A] bg-[#19718A]/5' : 'text-gray-600 hover:bg-gray-50'}`}
+                                            >
+                                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
 
                         <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.05)] border-[1.2px] border-gray-300 rounded-[16px] p-4 overflow-x-auto">
                             {!showFullApproval ? (
                                 <div className="min-w-[800px]">
                                     {/* HEADER */}
-                                    <div className="grid grid-cols-[2.2fr_1.3fr_1fr_1fr_0.9fr] text-[14px] font-bold text-gray-500 px-4 py-2 mb-2">
+                                    <div className="grid grid-cols-[2.2fr_1.3fr_1fr_0.9fr_1fr] text-[14px] font-bold text-gray-500 px-4 py-2 mb-2">
                                         <div>Doctor Name</div>
                                         <div>Phone Number</div>
                                         <div className="text-center">Experience</div>
-                                        <div className="text-center">Status</div>
                                         <div className="text-center">Action</div>
+                                        <div className="text-center">Status</div>
                                     </div>
 
                                     <div className="space-y-2">
@@ -896,88 +1036,91 @@ const Admin_dashboard1 = () => {
                                             <div className="space-y-3">
                                             <AnimatePresence>
                                                 {doctors.slice(0, 3).map((doctor) => (
-                                                    <motion.div
+                                                        <motion.div
                                                         key={doctor.id}
                                                         layout
                                                         initial={{ opacity: 0, y: 10 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         exit={{ opacity: 0, scale: 0.95 }}
-                                                        className="grid grid-cols-[2.2fr_1.3fr_1fr_1fr_0.9fr] items-center px-4 py-3 border-[1.2px] border-gray-300 rounded-[16px] hover:bg-gray-50 transition-all shadow-sm"
+                                                        onClick={() => {
+                                                            setSelectedDoctorForDetail(doctor);
+                                                            setShowDetailModal(true);
+                                                        }}
+                                                        className="grid grid-cols-[2.2fr_1.3fr_1fr_0.9fr_1fr] items-center px-4 py-3 border-[1.2px] border-gray-300 rounded-[16px] hover:bg-gray-50 transition-all shadow-sm cursor-pointer"
                                                     >
                                                         {/* DOCTOR */}
                                                         <div className="flex items-center gap-3">
-                                                            <div 
-                                                                className="w-11 h-11 rounded-full overflow-hidden border transition-all"
-                                                            >
-                                                                <img
-                                                                    src={doctor.image}
-                                                                    className="w-full h-full object-cover"
-                                                                    alt=""
-                                                                />
+                                                            <div className="w-11 h-11 rounded-full overflow-hidden border transition-all">
+                                                                <img src={person4} className="w-full h-full object-cover" alt="" />
                                                             </div>
                                                             <div>
-                                                                <p className="font-bold text-[16px] text-gray-800 leading-tight">
-                                                                    {doctor.name}
-                                                                </p>
-                                                                <p className="text-[12px] text-gray-500">
-                                                                    {doctor.speciality}
-                                                                </p>
+                                                                <p className="font-bold text-[16px] text-gray-800 leading-tight">{doctor.name || "Unknown Doctor"}</p>
+                                                                <p className="text-[12px] text-gray-500">{doctor.specialization || "General Practitioner"}</p>
                                                             </div>
                                                         </div>
 
                                                         {/* PHONE */}
                                                         <div className="text-[14px] font-semibold text-gray-700">
-                                                            {doctor.phone}
+                                                            {doctor.phone || "1234567890"}
                                                         </div>
 
                                                         {/* EXPERIENCE */}
                                                         <div className="text-[14px] font-semibold text-gray-700 text-center">
-                                                            {doctor.experience}
-                                                        </div>
-
-                                                        {/* STATUS */}
-                                                        <div className="flex justify-center">
-                                                            {doctor.status === "active" ? (
-                                                                <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#22C55E] text-white">
-                                                                    Active
-                                                                </span>
-                                                            ) : doctor.status === "rejected" ? (
-                                                                <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#EF4444] text-white">
-                                                                    Rejected
-                                                                </span>
-                                                            ) : (
-                                                                <span className="px-4 py-1 text-xs font-semibold rounded-full bg-[#3B82F6] text-white">
-                                                                    Pending
-                                                                </span>
-                                                            )}
+                                                            {doctor.experience || "N/A"}
                                                         </div>
 
                                                         {/* ACTION */}
                                                         <div className="flex justify-center gap-2">
-                                                            <button 
-                                                                onClick={(e) => {
-                                                                    handleDoctorClick(doctor);
-                                                                }}
-                                                                className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
-                                                                <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                                                                    <polyline points="20 6 9 17 4 12" />
-                                                                </svg>
-                                                            </button>
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setSelectedDoctorForReject(doctor);
-                                                                    setShowRejectConfirm(true);
-                                                                }}
-                                                                className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
-                                                                <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                                    <polyline points="3 6 5 6 21 6" />
-                                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                                                    <line x1="9" y1="11" x2="9" y2="17" />
-                                                                    <line x1="12" y1="11" x2="12" y2="17" />
-                                                                    <line x1="15" y1="11" x2="15" y2="17" />
-                                                                </svg>
-                                                            </button>
+                                                            {['pending', 'incomplete', 'new_registration'].includes(doctor.status) ? (
+                                                                <>
+                                                                    <button 
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleApproveDoctor(doctor);
+                                                                        }}
+                                                                        className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                                        <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+                                                                            <polyline points="20 6 9 17 4 12" />
+                                                                        </svg>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setSelectedDoctorForReject(doctor);
+                                                                            setShowRejectConfirm(true);
+                                                                        }}
+                                                                        className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                                        <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                            <polyline points="3 6 5 6 21 6" />
+                                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                                            <line x1="9" y1="11" x2="9" y2="17" />
+                                                                            <line x1="12" y1="11" x2="12" y2="17" />
+                                                                            <line x1="15" y1="11" x2="15" y2="17" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <button 
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedDoctorForDetail(doctor);
+                                                                        setShowDetailModal(true);
+                                                                    }}
+                                                                    className="px-3 py-1 bg-white border border-[#19718A] text-[#19718A] text-[12px] font-bold rounded-lg hover:bg-[#19718A] hover:text-white transition-all shadow-sm">
+                                                                    View Detail
+                                                                </button>
+                                                            )}
+                                                        </div>
+
+                                                        {/* STATUS */}
+                                                        <div className="flex justify-center">
+                                                            <span className={`px-4 py-1 text-xs font-semibold rounded-full ${
+                                                                doctor.status === 'active' || doctor.status === 'approved' ? 'bg-[#22C55E]' : 
+                                                                ['pending', 'incomplete', 'new_registration'].includes(doctor.status) ? 'bg-[#3B82F6]' : 'bg-[#EF4444]'
+                                                            } text-white`}>
+                                                                {doctor.status === 'active' || doctor.status === 'approved' ? 'Active' : 
+                                                                 ['pending', 'incomplete', 'new_registration'].includes(doctor.status) ? 'Pending' : 'InActive'}
+                                                            </span>
                                                         </div>
                                                     </motion.div>
                                                 ))}
@@ -995,73 +1138,98 @@ const Admin_dashboard1 = () => {
                             ) : (
                                 <div className="min-w-[800px]">
                                     {/* HEADERS FOR FULL VIEW */}
-                                    <div className="grid grid-cols-[2.2fr_1.3fr_1.2fr_1.1fr_1fr] text-[14px] font-bold text-gray-500 px-6 py-2 mb-2">
+                                    <div className="grid grid-cols-[2.2fr_1.3fr_1.2fr_1fr_1.1fr] text-[14px] font-bold text-gray-500 px-6 py-2 mb-2">
                                         <div>Doctor Name</div>
                                         <div>Phone Number</div>
                                         <div>Experience</div>
-                                        <div className="text-center">Status</div>
                                         <div className="text-center">Action</div>
+                                        <div className="text-center">Status</div>
                                     </div>
 
                                     {/* LIST ITEMS */}
                                     <div className="space-y-4">
                                         {doctors.map((doctor) => (
-                                            <div key={doctor.id} className={`bg-white rounded-[16px] border-[1.2px] border-gray-300 transition-all duration-300 ${expandedApprovalId === doctor.id ? 'shadow-md ring-1 ring-[#19718A]/10' : 'shadow-sm'}`}>
+                                            <div 
+                                                key={doctor.id} 
+                                                onClick={() => {
+                                                    setSelectedDoctorForDetail(doctor);
+                                                    setShowDetailModal(true);
+                                                }}
+                                                className={`bg-white rounded-[16px] border-[1.2px] border-gray-300 transition-all duration-300 cursor-pointer ${expandedApprovalId === doctor.id ? 'shadow-md ring-1 ring-[#19718A]/10' : 'shadow-sm hover:bg-gray-50'}`}
+                                            >
 
                                                 {/* MAIN ROW */}
-                                                <div className="grid grid-cols-[2.2fr_1.3fr_1.2fr_1.1fr_1fr] items-center px-4 py-3 transition-all duration-300">
+                                                <div className="grid grid-cols-[2.2fr_1.3fr_1.2fr_1fr_1.1fr] items-center px-4 py-3 transition-all duration-300">
 
                                                     {/* Doctor Info */}
                                                     <div className="flex items-center gap-3">
-                                                        <div 
-                                                            className="w-11 h-11 rounded-full overflow-hidden border border-gray-100 bg-gray-50 transition-all"
-                                                        >
-                                                            <img src={doctor.image} className="w-full h-full object-cover" alt="" />
+                                                        <div className="w-11 h-11 rounded-full overflow-hidden border border-gray-100 bg-gray-50 transition-all">
+                                                            <img src={person4} className="w-full h-full object-cover" alt="" />
                                                         </div>
                                                         <div>
-                                                            <p className="font-bold text-[15px] text-gray-800 leading-tight">{doctor.name}</p>
-                                                            <p className="text-[12px] text-gray-500 font-medium">{doctor.subTitle}</p>
+                                                            <p className="font-bold text-[15px] text-gray-800 leading-tight">{doctor.name || "Unknown Doctor"}</p>
+                                                            <p className="text-[12px] text-gray-500 font-medium">{doctor.specialization || "General Practitioner"}</p>
                                                         </div>
                                                     </div>
 
                                                     {/* Phone */}
-                                                    <div className="text-[14px] font-semibold text-gray-600">{doctor.phone}</div>
+                                                    <div className="text-[14px] font-semibold text-gray-600">{doctor.phone || "1234567890"}</div>
 
                                                     {/* Experience */}
-                                                    <div className="text-[14px] font-semibold text-gray-600">{doctor.experience}</div>
+                                                    <div className="text-[14px] font-semibold text-gray-600">{doctor.experience || "N/A"}</div>
+
+                                                    {/* Action */}
+                                                    <div className="flex justify-center gap-3">
+                                                        {['pending', 'incomplete', 'new_registration'].includes(doctor.status) ? (
+                                                            <>
+                                                                <button 
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleApproveDoctor(doctor);
+                                                                    }}
+                                                                    className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                                    <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+                                                                        <polyline points="20 6 9 17 4 12" />
+                                                                    </svg>
+                                                                </button>
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedDoctorForReject(doctor);
+                                                                        setShowRejectConfirm(true);
+                                                                    }}
+                                                                    className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
+                                                                    <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                        <polyline points="3 6 5 6 21 6" />
+                                                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                                        <line x1="9" y1="11" x2="9" y2="17" />
+                                                                        <line x1="12" y1="11" x2="12" y2="17" />
+                                                                        <line x1="15" y1="11" x2="15" y2="17" />
+                                                                    </svg>
+                                                                </button>
+                                                            </>
+                                                        ) : (
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedDoctorForDetail(doctor);
+                                                                    setShowDetailModal(true);
+                                                                }}
+                                                                className="px-4 py-1 bg-white border border-[#19718A] text-[#19718A] text-[13px] font-bold rounded-lg hover:bg-[#19718A] hover:text-white transition-all shadow-sm">
+                                                                View Detail
+                                                            </button>
+                                                        )}
+                                                    </div>
 
                                                     {/* Status */}
                                                     <div className="flex justify-center">
-                                                        <span className="px-5 py-1 text-[12px] font-bold rounded-full bg-[#709BFF] text-white shadow-sm">
-                                                            {doctor.status}
+                                                        <span className={`px-5 py-1 text-[12px] font-bold rounded-full ${
+                                                            doctor.status === 'active' || doctor.status === 'approved' ? 'bg-[#22C55E]' : 
+                                                            ['pending', 'incomplete', 'new_registration'].includes(doctor.status) ? 'bg-[#3B82F6]' : 'bg-[#EF4444]'
+                                                        } text-white shadow-sm`}>
+                                                            {doctor.status === 'active' || doctor.status === 'approved' ? 'Active' : 
+                                                             ['pending', 'incomplete', 'new_registration'].includes(doctor.status) ? 'Pending' : 'InActive'}
                                                         </span>
-                                                    </div>
-
-                                                    <div className="flex justify-center gap-3">
-                                                        <button 
-                                                            onClick={(e) => {
-                                                                handleDoctorClick(doctor);
-                                                            }}
-                                                            className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
-                                                            <svg className="w-[22px] h-[22px] text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                                                                <polyline points="20 6 9 17 4 12" />
-                                                            </svg>
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setSelectedDoctorForReject(doctor);
-                                                                setShowRejectConfirm(true);
-                                                            }}
-                                                            className="w-[38px] h-[38px] bg-white border border-gray-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition">
-                                                            <svg className="w-[20px] h-[20px] text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                                <polyline points="3 6 5 6 21 6" />
-                                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                                                <line x1="9" y1="11" x2="9" y2="17" />
-                                                                <line x1="12" y1="11" x2="12" y2="17" />
-                                                                <line x1="15" y1="11" x2="15" y2="17" />
-                                                            </svg>
-                                                        </button>
                                                     </div>
                                                 </div>
 
@@ -1302,6 +1470,144 @@ const Admin_dashboard1 = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* ================= ACTIVE DOCTORS SECTION ================= */}
+                    <div className="col-span-12 mt-10 mb-20">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="font-bold text-[22px] text-gray-900 tracking-tight">Active Doctor Specializations</h3>
+                        </div>
+
+                        {/* Specialty Tabs */}
+                        <div className="flex items-center justify-between bg-white border border-gray-300 rounded-full pl-2 pr-6 py-2 shadow-[0_2px_10px_rgba(0,0,0,0.04)] mb-8">
+                            <div className="flex items-center space-x-2 overflow-x-auto scrollbar-hide flex-1">
+                                {["ALL", "CARDIOLOGIST", "ORTHOPEDICS", "ONCOLOGY", "DERMATOLOGY"].map((tab, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setActiveSpecialtyTab(tab)}
+                                        className={`px-6 py-2.5 rounded-full text-[16px] font-bold tracking-wide transition-all uppercase whitespace-nowrap
+                                            ${activeSpecialtyTab === tab
+                                                ? "bg-[#399CAA] text-white shadow-md"
+                                                : "text-[#B3B3B3] hover:text-gray-600"
+                                            }`}
+                                    >
+                                        {tab}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="flex items-center space-x-3 pl-6 ml-auto border-l border-gray-200">
+                                <button onClick={() => setOpenType("grid")} className="p-1 cursor-pointer transition-all hover:scale-110">
+                                    <svg className={`w-6 h-6 transition-colors ${openType === 'grid' ? 'text-[#399CAA]' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z" />
+                                    </svg>
+                                </button>
+                                <button onClick={() => setOpenType("list")} className="p-1 cursor-pointer transition-all hover:scale-110">
+                                    <svg className={`w-6 h-6 transition-colors ${openType === 'list' ? 'text-[#399CAA]' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Grid View */}
+                        {openType === "grid" && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {approvedDoctorsList
+                                    .filter(doc => activeSpecialtyTab === "ALL" || doc.specialization?.toUpperCase() === activeSpecialtyTab)
+                                    .map((doc, idx) => (
+                                        <motion.div 
+                                            key={idx}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: idx * 0.05 }}
+                                            className="bg-white border border-gray-200 rounded-[20px] flex flex-col items-center pt-6 overflow-hidden hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 relative group"
+                                        >
+                                            {/* Rating Ribbon */}
+                                            <div className="absolute top-4 left-0 bg-[#FFEAC2] text-[#FFA800] text-[12px] font-bold pl-3 pr-4 py-1 rounded-r-full flex items-center shadow-sm">
+                                                <span className="mr-1">★</span> 4.5
+                                            </div>
+                                            
+                                            {/* Avatar */}
+                                            <div className="w-[100px] h-[100px] rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-inner mb-4 mt-2 relative border-[4px] border-[#399CAA]/10 group-hover:border-[#399CAA]/30 transition-colors">
+                                                <img src={doc.image || person4} className="w-full h-full object-cover" alt="Doctor" onError={(e) => { e.target.src = person4 }} />
+                                            </div>
+
+                                            {/* Name */}
+                                            <h3 className="text-[19px] font-bold text-gray-900 leading-tight mb-1">{doc.name}</h3>
+                                            
+                                            {/* Specialty */}
+                                            <span className="bg-[#E4F2F3] text-[#399CAA] font-bold text-[13px] px-5 py-1 rounded-full uppercase tracking-wider mb-6">
+                                                {doc.specialization || "General"}
+                                            </span>
+
+                                            {/* Bottom Actions */}
+                                            <div className="w-full flex border-t border-gray-100">
+                                                <button 
+                                                    onClick={() => handleDoctorClick(doc)}
+                                                    className="flex-1 py-4 text-[#5A5A5A] font-bold text-[14px] hover:bg-gray-50 transition-colors border-r border-gray-100"
+                                                >
+                                                    View Detail
+                                                </button>
+                                                <button className="flex-1 py-4 text-[#399CAA] font-bold text-[14px] hover:bg-teal-50/50 transition-colors">
+                                                    Make a Call
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                {approvedDoctorsList.filter(doc => activeSpecialtyTab === "ALL" || doc.specialization?.toUpperCase() === activeSpecialtyTab).length === 0 && (
+                                    <div className="col-span-full py-20 text-center bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+                                        <p className="text-gray-400 font-bold text-lg">No active doctors found for this specialty.</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* List View */}
+                        {openType === "list" && (
+                            <div className="space-y-3">
+                                {approvedDoctorsList
+                                    .filter(doc => activeSpecialtyTab === "ALL" || doc.specialization?.toUpperCase() === activeSpecialtyTab)
+                                    .map((doc, idx) => (
+                                        <motion.div 
+                                            key={idx}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            className="bg-white border border-gray-200 px-6 py-4 rounded-2xl flex items-center justify-between hover:shadow-lg transition-all duration-300"
+                                        >
+                                            <div className="flex items-center gap-5 w-[300px]">
+                                                <div className="w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-white shadow-sm ring-2 ring-[#399CAA]/20">
+                                                    <img src={doc.image || person4} className="w-full h-full object-cover" alt="" onError={(e) => { e.target.src = person4 }} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-[17px] font-bold text-gray-900 mb-1">{doc.name}</h3>
+                                                    <div className="flex items-center gap-1 text-[#FFA800] text-[12px] font-bold bg-[#FFEAC2] px-2 py-0.5 rounded-md w-fit">
+                                                        <span>★</span> 4.5
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex-1 text-center">
+                                                <span className="bg-[#E4F2F3] text-[#399CAA] font-bold text-[13px] px-6 py-1.5 rounded-full uppercase tracking-wider">
+                                                    {doc.specialization || "General"}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-4">
+                                                <button 
+                                                    onClick={() => handleDoctorClick(doc)}
+                                                    className="px-6 py-2 rounded-xl border border-gray-200 text-gray-600 font-bold text-[14px] hover:bg-gray-50 transition-all"
+                                                >
+                                                    Detail
+                                                </button>
+                                                <button className="px-6 py-2 rounded-xl bg-[#399CAA] text-white font-bold text-[14px] hover:shadow-lg transition-all">
+                                                    Call
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                            </div>
+                        )}
                     </div>
 
 
@@ -1622,10 +1928,10 @@ const Admin_dashboard1 = () => {
                                             {/* Doctor Contact Info */}
                                             <div className="p-5 space-y-3 text-[13px]">
                                                 {[
-                                                    { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: "sumaiya701@gmail.com" },
-                                                    { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", label: "Contact", value: "+91 2134567883" },
-                                                    { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: "Experience", value: "8 Years" },
-                                                    { icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", label: "Registration No", value: "DMC/1234" }
+                                                    { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: selectedDoctorForReject?.email || "N/A" },
+                                                    { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", label: "Contact", value: selectedDoctorForReject?.phone || "N/A" },
+                                                    { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: "Experience", value: selectedDoctorForReject?.experience || "N/A" },
+                                                    { icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", label: "Registration No", value: selectedDoctorForReject?.license_no || "N/A" }
                                                 ].map((item, idx) => (
                                                     <div key={idx} className="flex items-start gap-3">
                                                         <svg className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -1808,12 +2114,12 @@ const Admin_dashboard1 = () => {
                                         </div>
                                         <div className="grid grid-cols-1 gap-4">
                                             <InfoRow label="Full Name" value={selectedDoctorForDetail.name} />
-                                            <InfoRow label="Email" value={selectedDoctorForDetail.email || "sumaiya@gmail.com"} />
+                                            <InfoRow label="Email" value={selectedDoctorForDetail.email || "N/A"} />
                                             <InfoRow label="Phone" value={selectedDoctorForDetail.phone} />
-                                            <InfoRow label="DOB" value="12-05-1992" />
-                                            <InfoRow label="Gender" value="Female" />
-                                            <InfoRow label="City" value="Mumbai" />
-                                            <InfoRow label="Address" value="123 Healthcare Ave, Medical District" />
+                                            <InfoRow label="DOB" value={selectedDoctorForDetail.dob || "N/A"} />
+                                            <InfoRow label="Gender" value={selectedDoctorForDetail.gender || "N/A"} />
+                                            <InfoRow label="City" value={selectedDoctorForDetail.city || "N/A"} />
+                                            <InfoRow label="Address" value={selectedDoctorForDetail.address || "N/A"} />
                                         </div>
                                     </div>
 
@@ -1826,12 +2132,12 @@ const Admin_dashboard1 = () => {
                                             <h3 className="text-[18px] font-bold text-gray-800">Professional Details</h3>
                                         </div>
                                         <div className="grid grid-cols-1 gap-4">
-                                            <InfoRow label="Employee ID" value={`DOC-${selectedDoctorForDetail.id}00${selectedDoctorForDetail.id}`} />
-                                            <InfoRow label="Specialization" value={selectedDoctorForDetail.speciality || "Cardiologist"} />
-                                            <InfoRow label="Qualification" value="MBBS, MD Cardiology" />
+                                            <InfoRow label="Employee ID" value={selectedDoctorForDetail.employee_id || "N/A"} />
+                                            <InfoRow label="Specialization" value={selectedDoctorForDetail.specialization || "N/A"} />
+                                            <InfoRow label="Qualification" value={selectedDoctorForDetail.qualification || "N/A"} />
                                             <InfoRow label="Experience" value={selectedDoctorForDetail.experience} />
-                                            <InfoRow label="License No." value="MC-2023-88991" />
-                                            <InfoRow label="Medical Council" value="Medical Council of India" />
+                                            <InfoRow label="License No." value={selectedDoctorForDetail.license_no || "N/A"} />
+                                            <InfoRow label="Medical Council" value={selectedDoctorForDetail.medical_council || "N/A"} />
                                         </div>
                                     </div>
 
@@ -1844,10 +2150,10 @@ const Admin_dashboard1 = () => {
                                             <h3 className="text-[18px] font-bold text-gray-800">Hospital & Fees</h3>
                                         </div>
                                         <div className="grid grid-cols-1 gap-4">
-                                            <InfoRow label="Joining Date" value="15-01-2024" />
-                                            <InfoRow label="Employment" value="Full-Time" />
-                                            <InfoRow label="Consultation Fee" value="₹ 800" />
-                                            <InfoRow label="Leave Day" value="Sunday" />
+                                            <InfoRow label="Joining Date" value={selectedDoctorForDetail.joining_date || "N/A"} />
+                                            <InfoRow label="Employment" value={selectedDoctorForDetail.employment_type || "N/A"} />
+                                            <InfoRow label="Consultation Fee" value={selectedDoctorForDetail.consultation_fees || "N/A"} />
+                                            <InfoRow label="Leave Day" value={selectedDoctorForDetail.leave_day || "N/A"} />
                                         </div>
                                     </div>
 
@@ -1860,14 +2166,45 @@ const Admin_dashboard1 = () => {
                                             <h3 className="text-[18px] font-bold text-gray-800">Verified Documents</h3>
                                         </div>
                                         <div className="grid grid-cols-2 gap-3">
-                                            {["Aadhaar Card", "PAN Card", "Medical License", "Degree Certificate", "Experience Letter"].map((doc, idx) => (
-                                                <div key={idx} className="flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200">
-                                                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white">
-                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M5 13l4 4L19 7" /></svg>
+                                            {[
+                                                { id: 'aadhaar', label: "Aadhaar Card" },
+                                                { id: 'pan', label: "PAN Card" },
+                                                { id: 'medical_license', label: "Medical License" },
+                                                { id: 'medical_certificate', label: "Degree Certificate" },
+                                                { id: 'experience_letter', label: "Experience Letter" }
+                                            ].map((doc, idx) => {
+                                                const docUrl = selectedDoctorForDetail.documents?.[doc.id];
+                                                return (
+                                                    <div 
+                                                        key={idx} 
+                                                        onClick={() => {
+                                                            if (docUrl) {
+                                                                setPreviewDocUrl(docUrl);
+                                                                setIsPreviewOpen(true);
+                                                            }
+                                                        }}
+                                                        className={`flex items-center gap-2 p-2.5 rounded-xl border transition-all ${
+                                                            docUrl 
+                                                            ? 'bg-white border-[#19718A]/30 cursor-pointer hover:shadow-md hover:border-[#19718A]' 
+                                                            : 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
+                                                        }`}
+                                                    >
+                                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white ${docUrl ? 'bg-green-500' : 'bg-gray-300'}`}>
+                                                            {docUrl ? (
+                                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M5 13l4 4L19 7" /></svg>
+                                                            ) : (
+                                                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M6 18L18 6M6 6l12 12" /></svg>
+                                                            )}
+                                                        </div>
+                                                        <span className={`text-[13px] font-bold truncate ${docUrl ? 'text-[#19718A]' : 'text-gray-400'}`}>
+                                                            {doc.label}
+                                                        </span>
+                                                        {docUrl && (
+                                                            <svg className="w-4 h-4 text-[#19718A] ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                                        )}
                                                     </div>
-                                                    <span className="text-[13px] font-bold text-gray-600 truncate">{doc}</span>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 </div>
@@ -1882,10 +2219,65 @@ const Admin_dashboard1 = () => {
                                     Cancel
                                 </button>
                                 <button 
-                                    onClick={handleApproveDoctor}
+                                    onClick={() => handleApproveDoctor(selectedDoctorForDetail)}
                                     className="px-10 py-3 rounded-xl bg-[#19718A] text-white font-bold text-[16px] hover:bg-[#15616D] transition-all shadow-lg active:scale-95"
                                 >
                                     Approve Doctor
+                                </button>
+                            </div>
+
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* ================= DOCUMENT PREVIEW MODAL ================= */}
+            <AnimatePresence>
+                {isPreviewOpen && previewDocUrl && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="relative bg-white rounded-3xl overflow-hidden max-w-4xl w-full max-h-[90vh] shadow-2xl flex flex-col"
+                        >
+                            {/* Header */}
+                            <div className="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                                <h3 className="text-gray-800 font-bold">Document Preview</h3>
+                                <button 
+                                    onClick={() => setIsPreviewOpen(false)}
+                                    className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                                >
+                                    <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-gray-100">
+                                {previewDocUrl.toLowerCase().endsWith('.pdf') ? (
+                                    <iframe 
+                                        src={previewDocUrl} 
+                                        className="w-full h-full min-h-[600px] border-none rounded-xl"
+                                        title="Document PDF"
+                                    />
+                                ) : (
+                                    <img 
+                                        src={previewDocUrl} 
+                                        alt="Document Preview" 
+                                        className="max-w-full max-h-full object-contain rounded-xl shadow-lg"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="p-4 bg-white border-t border-gray-100 flex justify-end">
+                                <button 
+                                    onClick={() => setIsPreviewOpen(false)}
+                                    className="px-6 py-2 bg-[#19718A] text-white font-bold rounded-xl hover:bg-[#15616D] transition-colors"
+                                >
+                                    Close Preview
                                 </button>
                             </div>
                         </motion.div>

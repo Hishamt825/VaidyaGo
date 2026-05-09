@@ -35,7 +35,7 @@ const Profile = ({ setOpenProfile }) => {
 
   const [formData, setFormData] = useState({
     name: "Tuba Javed",
-    email: "javedtuba@gmail.com",
+    email: "javedtuba1@gmail.com",
     phone_number: "1234567890",
     post: "Admin",
     language: "English (US)",

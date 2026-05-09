@@ -177,12 +177,8 @@ const Form2 = ({ onNext }) => {
       const id = localStorage.getItem("professional_info_id");
       const isChanged = JSON.stringify(initialData) !== JSON.stringify(formData);
 
-      let response;
-      let responseData;
-
-      if (!id) {
-        // ✅ POST new record
-        response = await fetch(
+      const performPost = async () => {
+        const response = await fetch(
           `${BASE_URL}/api/doctor/${doctorId}/professional-info/`,
           {
             method: "POST",
@@ -196,18 +192,59 @@ const Form2 = ({ onNext }) => {
             }),
           }
         );
-        responseData = await response.json();
+        const responseData = await response.json();
         if (response.status === 201) {
           const newId = responseData.id || (responseData.data && responseData.data.id);
           localStorage.setItem("professional_info_id", newId);
           setProfessionalInfoId(newId);
           alert("Form Submitted Successfully ✅");
+          proceedToNext();
         } else {
-          throw new Error(responseData?.detail || "POST Failed");
+          let errMsg = "POST Failed";
+          if (typeof responseData === 'object' && responseData !== null) {
+            if (responseData.detail) errMsg = responseData.detail;
+            else {
+               const firstKey = Object.keys(responseData)[0];
+               if (Array.isArray(responseData[firstKey])) {
+                   errMsg = `${firstKey.replace('_', ' ')}: ${responseData[firstKey][0]}`;
+               } else {
+                   errMsg = responseData[firstKey];
+               }
+            }
+          }
+          throw new Error(errMsg);
         }
+      };
+
+      const proceedToNext = async () => {
+        // ✅ Always GET latest data
+        const stored_professional_info_id = localStorage.getItem("professional_info_id");
+        if (stored_professional_info_id) {
+            const getRes = await fetch(
+                `${BASE_URL}/api/doctor/${doctorId}/professional-info/${stored_professional_info_id}/`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (getRes.ok) {
+                const getData = await getRes.json();
+                setFormData(getData);
+                setInitialData(getData);
+            }
+        }
+        if (onNext) {
+          onNext(3);
+        } else {
+          setActiveStep(3);
+          setTimeout(() => navigate("/Form3"), 500);
+        }
+      };
+
+      if (!id) {
+        // ✅ POST new record
+        await performPost();
+        return;
       } else if (id && isChanged) {
         // ✅ PATCH existing record
-        response = await fetch(
+        let response = await fetch(
           `${BASE_URL}/api/doctor/${doctorId}/professional-info/${id}/`,
           {
             method: "PATCH",
@@ -227,13 +264,13 @@ const Form2 = ({ onNext }) => {
            localStorage.removeItem("professional_info_id");
            setProfessionalInfoId(null);
            setInitialData(null);
-           setLoading(false);
-           return handleSubmit(e);
+           await performPost();
+           return;
         }
 
         if (response.ok) {
-          responseData = await response.json();
           alert("Form Updated Successfully ");
+          proceedToNext();
         } else {
           // ✅ Fallback to PUT if PATCH fails
           response = await fetch(
@@ -250,22 +287,28 @@ const Form2 = ({ onNext }) => {
               }),
             }
           );
-          responseData = await response.json();
+          const responseData = await response.json();
           if (!response.ok) {
-            throw new Error(responseData?.detail || "PUT Fallback Failed");
+            let errMsg = "PUT Fallback Failed";
+            if (typeof responseData === 'object' && responseData !== null) {
+              if (responseData.detail) errMsg = responseData.detail;
+              else {
+                 const firstKey = Object.keys(responseData)[0];
+                 if (Array.isArray(responseData[firstKey])) {
+                     errMsg = `${firstKey.replace('_', ' ')}: ${responseData[firstKey][0]}`;
+                 } else {
+                     errMsg = responseData[firstKey];
+                 }
+              }
+            }
+            throw new Error(errMsg);
           }
           alert("Form Updated Successfully ");
+          proceedToNext();
         }
       } else {
         // No change, skip API call
-        if (onNext) {
-          onNext(3);
-        } else {
-          setActiveStep(3);
-          setTimeout(() => navigate("/Form3"), 500);
-        }
-        setLoading(false);
-        return;
+        proceedToNext();
       }
 
       // ✅ Always GET latest data

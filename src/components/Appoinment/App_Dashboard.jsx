@@ -9,6 +9,8 @@ import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
+import apiFetch from '../../api';
+import BASE_URL from '../../baseUrl';
 
 
 
@@ -90,16 +92,56 @@ const App_Dashboard = () => {
     }, [activeTab]);
 
     // Mock data arrays matching the screenshot
-    const appointments = Array.from({ length: 15 }).map((_, index) => ({
-        id: index,
-        name: 'Saumya tiwari',
-        gender: 'Female',
-        age: 21,
-        date: '14 feb 26',
-        time: '2:00-3:30 am',
-        status: 'Confirmed',
-        img: img1,
-    }));
+    const [appointments, setAppointments] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchAppointments = async () => {
+        setIsLoading(true);
+        try {
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+
+            let url = `${BASE_URL}/api/appointments/list/?date=${dateStr}`;
+            if (activeTab !== 'ALL') {
+                url += `&status=${activeTab.toLowerCase()}`;
+            }
+
+            const response = await apiFetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                const mapped = data.map(appt => {
+                    const startTime = new Date(appt.start_time);
+                    const endTime = new Date(appt.end_time);
+
+                    const timeStr = `${startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+                    const dateStr = startTime.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toLowerCase();
+
+                    return {
+                        id: appt.id,
+                        name: appt.patient_name || 'Unknown',
+                        gender: appt.patient_gender || 'N/A',
+                        age: appt.patient_age || 'N/A',
+                        date: dateStr,
+                        time: timeStr,
+                        status: appt.status.charAt(0).toUpperCase() + appt.status.slice(1),
+                        img: img1,
+                        original: appt
+                    };
+                });
+                setAppointments(mapped);
+            }
+        } catch (error) {
+            console.error("Error fetching appointments:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAppointments();
+    }, [currentDate, activeTab]);
 
     const handleSelectAll = () => {
         setSelectAll(!selectAll);
@@ -368,7 +410,11 @@ const App_Dashboard = () => {
                                             <div className="text-center">{appt.date}</div>
                                             <div className="text-center">{appt.time}</div>
 
-                                            <div className="text-center font-bold text-[#16a34a]">
+                                            <div className={`text-center font-bold ${
+                                                appt.status === 'Confirmed' ? 'text-[#16a34a]' : 
+                                                appt.status === 'Pending' ? 'text-orange-500' : 
+                                                'text-red-500'
+                                            }`}>
                                                 {appt.status}
                                             </div>
 

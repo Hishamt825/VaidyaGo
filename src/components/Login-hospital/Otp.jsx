@@ -41,7 +41,7 @@ const Otp = ({ isModal, onClose, onSwitchToNewPass, onSwitchToLogin }) => {
     }
 
     try {
-      const fullUrl = "http://13.60.96.212:8000/accounts/verify-otp/";
+      const fullUrl = `${BASE_URL}/accounts/verify-otp/`;
       const response = await fetch(fullUrl, {
         method: "POST",
         headers: {

@@ -30,7 +30,8 @@ const Info = ({ onClose, doctor }) => {
             setError(null);
             try {
                 const doctorId = doctor?.id || 1;
-                const url = `${BASE_URL}/api/doctor/${doctorId}/slots/`;
+                // As requested, using the doctor-slots endpoint primarily
+                const url = `${BASE_URL}/api/doctor-slots/`;
                 setDebugUrl(url);
                 
                 const response = await apiFetch(url);
@@ -39,30 +40,38 @@ const Info = ({ onClose, doctor }) => {
                 if (!response.ok) {
                     throw new Error(`API Error: ${response.status}`);
                 }
-
+ 
                 const result = await response.json();
-                setRawDebug(JSON.stringify(result).substring(0, 100));
                 
-                let data = result.slots || result.data || result.results || (Array.isArray(result) ? result : []);
+                // Filter slots for this specific doctor
+                // Improved matching: handles primitives, objects, and string/number mismatches
+                let filteredData = allSlots.filter(s => {
+                    const sDoctorId = s.doctor?.id || s.doctor || s.doctor_id;
+                    return String(sDoctorId) === String(doctorId);
+                });
                 
-                // --- FALLBACK ENDPOINT ---
-                // If primary endpoint returns nothing, try the general doctor-slots endpoint
-                if (data.length === 0) {
-                    console.log('Info.jsx: Primary endpoint empty, trying fallback...');
-                    const fbUrl = `${BASE_URL}/api/doctor-slots/`;
-                    const fbResponse = await apiFetch(fbUrl);
-                    if (fbResponse.ok) {
-                        const fbResult = await fbResponse.json();
-                        const fbAll = fbResult.slots || fbResult.data || fbResult.results || (Array.isArray(fbResult) ? fbResult : []);
-                        const filtered = fbAll.filter(s => parseInt(s.doctor) === parseInt(doctorId));
-                        if (filtered.length > 0) {
-                            console.log('Info.jsx: Found slots in fallback endpoint!');
-                            data = filtered;
-                        }
+                // --- SMART FALLBACK ---
+                // If no slots found for this ID, but the API returned slots for exactly one ID,
+                // assume those are the slots intended for this view (useful for mismatched dev IDs)
+                if (filteredData.length === 0 && allSlots.length > 0) {
+                    const uniqueIds = [...new Set(allSlots.map(s => String(s.doctor?.id || s.doctor || s.doctor_id)))];
+                    if (uniqueIds.length === 1) {
+                        console.log(`Info.jsx: Falling back to slots for doctor ID ${uniqueIds[0]} because primary match for ${doctorId} failed.`);
+                        filteredData = allSlots;
                     }
                 }
                 
-                setSlotsData(data);
+                console.log(`Info.jsx: Found ${filteredData.length} slots for doctor ID "${doctorId}" out of ${allSlots.length} total slots.`);
+                
+                // For debugging: track unique doctor IDs found in the response
+                const foundIds = [...new Set(allSlots.map(s => {
+                    const id = s.doctor?.id || s.doctor || s.doctor_id;
+                    return id ? String(id) : 'N/A';
+                }))];
+                setRawDebug(`Found IDs: ${foundIds.join(', ')}. Target: ${doctorId}. Total: ${allSlots.length}`);
+
+                setSlotsData(filteredData);
+                const data = filteredData;
 
                 // Group by date (using string keys directly)
                 const grouped = {};

@@ -16,6 +16,8 @@ import active1 from "../../assets/active1.png";
 import pen1 from "../../assets/pen1.png";
 import reject1 from "../../assets/reject1.png";
 import add2 from "../../assets/add2.png";
+import apiFetch from "../../api";
+import BASE_URL from "../../baseUrl";
 
 
 const months = [
@@ -31,27 +33,10 @@ const tabsData = [
     "DERMATOLOGY",
 ];
 
-const doctorsData = [
-    { id: 1, name: "Dr.Hifza Javed", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.7, status: "active" },
-    { id: 2, name: "Dr.Sumaiya Javed", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.8, status: "active" },
-    { id: 3, name: "Dr.Ahmad", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.5, status: "pending" },
-    { id: 4, name: "Dr.Varun Mishra", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.9, status: "active" },
-    { id: 5, name: "Dr.sidharth m.", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.6, status: "active" },
-    { id: 6, name: "Dr.priya mehra", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.7, status: "active" },
-    { id: 7, name: "Dr.Aman Verma", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.4, status: "pending" },
-    { id: 8, name: "Dr.Sneha Kapoor", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.6, status: "active" },
-    { id: 9, name: "Dr.Rajesh Khanna", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.8, status: "active" },
-    { id: 10, name: "Dr.Karan Johar", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.3, status: "active" },
-    { id: 11, name: "Dr.Zoya Akhtar", role: "NEUROLOGIST", img: "/assets/ph.png", rating: 4.5, status: "active" },
-    { id: 12, name: "Dr.Farhan Akhtar", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.6, status: "rejected" },
-    { id: 13, name: "Dr.Rohit Shetty", role: "DERMATOLOGY", img: "/assets/ph.png", rating: 4.2, status: "pending" },
-    { id: 14, name: "Dr.Sanjay Leela", role: "ONCOLOGY", img: "/assets/ph.png", rating: 4.9, status: "active" },
-    { id: 15, name: "Dr.Aditya Chopra", role: "CARDIOLOGIST", img: "/assets/ph.png", rating: 4.1, status: "rejected" },
-    { id: 16, name: "Dr.Mahesh Bhatt", role: "ORTHOPEDICS", img: "/assets/ph.png", rating: 4.0, status: "rejected" },
-];
-
-
 const AdminDoctor = () => {
+    const [doctors, setDoctors] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [counts, setCounts] = useState({ total: 0, active: 0, pending: 0, rejected: 0 });
     const [open, setOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -82,6 +67,49 @@ const AdminDoctor = () => {
             setActiveCard("TOTAL_DOCTORS");
         }
     }, [viewQuery]);
+
+    const fetchDoctorsData = async () => {
+        setIsLoading(true);
+        try {
+            const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
+                apiFetch(`${BASE_URL}/accounts/doctors/pending/`),
+                apiFetch(`${BASE_URL}/accounts/doctors/approved/`),
+                apiFetch(`${BASE_URL}/accounts/doctors/rejected/`)
+            ]);
+
+            let pending = [], approved = [], rejected = [];
+            if (pendingRes.ok) pending = await pendingRes.json();
+            if (approvedRes.ok) approved = await approvedRes.json();
+            if (rejectedRes.ok) rejected = await rejectedRes.json();
+
+            const allDoctors = [...pending, ...approved, ...rejected];
+            
+            const mappedDoctors = allDoctors.map(d => ({
+                id: d.id,
+                name: d.name,
+                role: d.specialization?.toUpperCase() || "GENERAL",
+                img: d.image || "/assets/ph.png",
+                rating: 4.5,
+                status: d.status === "approved" ? "active" : d.status
+            }));
+
+            setDoctors(mappedDoctors);
+            setCounts({
+                total: mappedDoctors.length,
+                active: approved.length,
+                pending: pending.length,
+                rejected: rejected.length
+            });
+        } catch (error) {
+            console.error("Error fetching doctors data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDoctorsData();
+    }, []);
 
     const [selectedDate, setSelectedDate] = useState(13);
     const [month, setMonth] = useState(0);
@@ -280,7 +308,7 @@ const AdminDoctor = () => {
                                     <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Total Doctors</h3>
                                     <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                         <img src={doImg} className="h-[140px] object-contain -ml-2 mb-[-12px]" />
-                                        <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">100</h2>
+                                        <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">{counts.total}</h2>
                                     </div>
                                 </motion.div>
 
@@ -302,7 +330,7 @@ const AdminDoctor = () => {
                                     <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Active Doctors</h3>
                                     <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                         <img src={active1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
-                                        <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">50</h2>
+                                        <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">{counts.active}</h2>
                                     </div>
                                 </motion.div>
 
@@ -324,7 +352,7 @@ const AdminDoctor = () => {
                                     <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Pending Doctors</h3>
                                     <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                         <img src={pen1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
-                                        <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">50</h2>
+                                        <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">{counts.pending}</h2>
                                     </div>
                                 </motion.div>
 
@@ -346,7 +374,7 @@ const AdminDoctor = () => {
                                     <h3 className="text-[18px] font-semibold text-gray-700 mt-[-10px]">Rejected Doctors</h3>
                                     <div className="flex items-end justify-between flex-1 mt-1 px-0 relative">
                                         <img src={reject1} className="h-[130px] object-contain -ml-2 mb-[-12px]" />
-                                        <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">100</h2>
+                                        <h2 className="text-[48px] font-normal text-black leading-none mr-4 mb-4">{counts.rejected}</h2>
                                     </div>
                                 </motion.div>
 
@@ -555,7 +583,7 @@ const AdminDoctor = () => {
                             {/* ================= GRID VIEW ================= */}
                             {openType === "grid" && (
                                 <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-2 mb-10 pb-4">
-                                    {doctorsData
+                                    {doctors
                                         .filter(doc => (activeTab === "ALL" || doc.role === activeTab) && (!viewQuery || doc.status === viewQuery))
                                         .map((doc, idx) => (
                                             <div key={idx} className="bg-white border border-gray-300 rounded-[12px] flex flex-col items-center pt-5 overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-2 relative">
@@ -597,7 +625,7 @@ const AdminDoctor = () => {
                             {/* ================= LIST VIEW ================= */}
                             {openType === "list" && (
                                 <div className="mt-4 flex flex-col gap-2 mx-2 mb-10">
-                                    {doctorsData
+                                    {doctors
                                         .filter(doc => (activeTab === "ALL" || doc.role === activeTab) && (!viewQuery || doc.status === viewQuery))
                                         .map((doc, idx) => (
                                             <div key={idx} className="bg-white border border-gray-300 px-6 py-[10px] flex items-center justify-between hover:shadow-md transition-shadow duration-200">

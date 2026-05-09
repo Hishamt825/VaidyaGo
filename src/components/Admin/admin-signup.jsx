@@ -162,9 +162,7 @@ export default function Admin_signup({ isModal, onClose }) {
                 <option value="" disabled>
                   Select User Type
                 </option>
-                <option value="Admin">Admin</option>
                 <option value="Doctor">Doctor</option>
-
               </select>
 
             </div>

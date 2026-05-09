@@ -27,7 +27,7 @@ const handleLogin = async (e) => {
 
   try {
     const response = await fetch(
-      `${BASE_URL}/accounts/api/admin/login/`,
+      `${BASE_URL}/accounts/api/login/`,
       {
         method: "POST",
         headers: {
@@ -47,20 +47,27 @@ const handleLogin = async (e) => {
     console.log("Status code:", response.status);
 
     if (response.ok) {
-      if (!data.access && !data.token) {
-        setError("No token received");
-        return;
+      // Standardization: Store under all common keys
+      const token = data.access || data.token;
+      if (token) {
+        localStorage.setItem("access", token);
+        localStorage.setItem("token", token);
       }
-
-      // If backend returns "access" token
-      if (data.access) {
-        localStorage.setItem("access", data.access);
+      if (data.refresh) {
         localStorage.setItem("refresh", data.refresh);
       }
 
-      // If backend returns just "token"
-      if (data.token) {
-        localStorage.setItem("access", data.token);
+      // Store user metadata
+      localStorage.setItem("user_type", (data.role || "ADMIN").toLowerCase());
+      localStorage.setItem("user_full_name", data.first_name ? `${data.first_name} ${data.last_name || ""}` : (data.username || "Admin"));
+      localStorage.setItem("user_email", data.email || "");
+
+      // Role Check
+      const userRole = (data.role || "").toUpperCase();
+      if (userRole !== "ADMIN") {
+        alert("Access Denied: You do not have administrator privileges.");
+        localStorage.clear();
+        return;
       }
 
       alert("Login successful!");

@@ -41,7 +41,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
 
     try {
       // 🌍 Using AWS IP for all roles to avoid local connection errors
-      const fullUrl = "http://13.60.96.212:8000/accounts/api/signup/";
+      const fullUrl = `${BASE_URL}/accounts/api/signup/`;
         
       console.log("Submitting Signup to Production:", fullUrl);
 
@@ -73,33 +73,31 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
 
       // ✅ Handle success
       if (response.status === 201 || response.status === 200) {
-        if (data?.token) {
-          localStorage.setItem("token", data.token);
-        }
+        // 🚀 Signup successful!
+        console.log("Signup Successful!");
         
-        // Ensure new signups start fresh on the basic dashboard
-        localStorage.removeItem("prescriptionUploaded");
+        const userType = data.role?.toLowerCase() || role.toLowerCase();
+        
+        // Save tokens for auto-login
+        if (data.access) {
+          localStorage.setItem("token", data.access);
+          localStorage.setItem("access", data.access);
+          localStorage.setItem("user_type", userType);
+          if (data.user_id) localStorage.setItem("doctor_id", data.user_id);
+        }
+        if (data.refresh) {
+          localStorage.setItem("refresh", data.refresh);
+        }
 
-        // 🚀 Role-based Redirection
-        const targetDashboard = 
-          role === "Patient" ? "/Patient_dashboard" : 
-          role === "Admin" ? "/Admin_dashboard1" :
-          role === "Doctor" ? "/Form1" : 
-          "/Finallogin";
-
-        console.log("Signup Successful, navigating to:", targetDashboard);
-
-        // First close the modal to clear overlays, then navigate
-        if (isModal && onClose) {
-          onClose();
-          // Small timeout to ensure state update propagates before unmount
-          setTimeout(() => {
-            navigate(targetDashboard);
-          }, 10);
+        if (userType === "doctor") {
+          alert("Signup successful! Please complete your profile.");
+          navigate("/Form1");
         } else {
-          navigate(targetDashboard);
+          alert("Signup successful! Please log in with your credentials.");
+          navigate("/Finallogin");
         }
       }
+
       // ✅ Handle validation errors
       else if (response.status === 400) {
         alert(data?.message || JSON.stringify(data));
@@ -174,7 +172,6 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
                 <option value="" disabled>Select Role</option>
                 <option value="Patient">Patient</option>
                 <option value="Doctor">Doctor</option>
-                <option value="Admin">Admin</option>
               </select>
             </div>
           </div>

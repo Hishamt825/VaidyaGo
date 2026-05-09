@@ -3,7 +3,7 @@ import apiFetch from '../../../api';
 import Logs from './Logs';
 import History from './History';
 
-const BASE_URL = 'http://13.60.96.212:8000';
+import BASE_URL from '../../../baseUrl';
 
 const Update_logs = ({ onClose, initialSchedule = [], refreshSchedule }) => {
     const [isSuccessOpen, setIsSuccessOpen] = useState(false);

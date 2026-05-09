@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import BASE_URL from '../../baseUrl';
 
 const NotificationItem = ({ 
     type, 
@@ -59,7 +60,7 @@ const Notification = ({ onClose }) => {
             if (!token) return;
 
             try {
-                await fetch('http://13.60.96.212:8000/notifications/devices/', {
+                await fetch(`${BASE_URL}/notifications/devices/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

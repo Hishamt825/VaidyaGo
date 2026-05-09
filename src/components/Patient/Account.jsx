@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import apiFetch from '../../api';
 import phImg from '../../assets/ph.png';
 
-const BASE_URL = 'http://13.60.96.212:8000';
+import BASE_URL from '../../baseUrl';
 
 const ToggleSwitch = ({ enabled, setEnabled }) => (
     <button

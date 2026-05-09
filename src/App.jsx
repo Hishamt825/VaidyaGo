@@ -122,135 +122,137 @@ import Share from './components/Patient/Share';
 import ProgressReview from './component/Day1/Patient/ProgressReview';
 import Edit_profile_Patient from './components/Patient/Edit_profile';
 import Chat from './components/Patient/Chat_bot/chat';
+import FloatingChatbot from './components/Patient/Chat_bot/FloatingChatbot';
 
 const App = () => {
   return (
+    <>
+      <Routes>
+        <Route path="/MainPage" element={<MainPage />} />
+        <Route path="/Makeapp" element={<Makeapp />} />
+        <Route path="/About" element={<About />} />
+        <Route path="/ContactUs" element={<ContactUs />} />
+        <Route path="/Section3" element={<Section3 />} />
+        <Route path="/Hos_consultation" element={<Hos_consultation />} />
+        <Route path="/Hos2_consultation" element={<Hos2_consultation />} />
+        <Route path="/Hos_consultation_info" element={<Hos2_consultation />} />
 
-    <Routes>
+        <Route path="/Finallogin" element={<Finallogin />} />
+        <Route path="/Forget" element={<Forget />} />
+        <Route path="/Otp" element={<Otp />} />
+        <Route path="/New_pass" element={<New_pass />} />
+        <Route path="/Logout" element={<Logout />} />
+        <Route path="/Admin-signup" element={<Admin_signup />} />
+        <Route path="/AdminLoginPage" element={<AdminLoginPage />} />
+        <Route path="/Adddoctor" element={<Adddoctor />} />
+        <Route path="/Profile" element={<Profile />} />
+        <Route path="/Accessibility" element={<Accessibility />} />
 
-      <Route path="/MainPage" element={<MainPage />} />
-      <Route path="/Makeapp" element={<Makeapp />} />
-      <Route path="/About" element={<About />} />
-      <Route path="/ContactUs" element={<ContactUs />} />
-      <Route path="/Section3" element={<Section3 />} />
-      <Route path="/Hos_consultation" element={<Hos_consultation />} />
-      <Route path="/Hos2_consultation" element={<Hos2_consultation />} />
-      <Route path="/Hos_consultation_info" element={<Hos2_consultation />} />
+        <Route path="/Admin_dashboard1" element={<Admin_dashboard1 />} />
+        <Route path="/DasyWilliam" element={<DasyWilliam />} />
+        <Route path="/admin-doctor" element={<AdminDoctor />} />
+        <Route path="/AdminSidebar" element={<AdminSidebar />} />
+        <Route path="/ProtectedRoute" element={<ProtectedRoute />} />
+        <Route path="/VerticalProgress1" element={<VerticalProgress1 />} />
+        <Route path="/Signup1" element={<Signup1 />} />
+        <Route path="/VerticalProgressBar" element={<VerticalProgressBar />} />
 
-      <Route path="/Finallogin" element={<Finallogin />} />
-      <Route path="/Forget" element={<Forget />} />
-      <Route path="/Otp" element={<Otp />} />
-      <Route path="/New_pass" element={<New_pass />} />
-      <Route path="/Logout" element={<Logout />} />
-      <Route path="/Admin-signup" element={<Admin_signup />} />
-      <Route path="/AdminLoginPage" element={<AdminLoginPage />} />
-      <Route path="/Adddoctor" element={<Adddoctor />} />
-      <Route path="/Profile" element={<Profile />} />
-      <Route path="/Accessibility" element={<Accessibility />} />
+        <Route path="/Service" element={<Service />} />
+        <Route path="/Doctor" element={<Hos_consultation />} />
+        <Route path="/Hisham" element={<Hisham />} />
 
-      <Route path="/Admin_dashboard1" element={<Admin_dashboard1 />} />
-      <Route path="/DasyWilliam" element={<DasyWilliam />} />
-      <Route path="/admin-doctor" element={<AdminDoctor />} />
-      <Route path="/AdminSidebar" element={<AdminSidebar />} />
-      <Route path="/ProtectedRoute" element={<ProtectedRoute />} />
-      <Route path="/VerticalProgress1" element={<VerticalProgress1 />} />
-      <Route path="/Signup1" element={<Signup1 />} />
-      <Route path="/VerticalProgressBar" element={<VerticalProgressBar />} />
+        <Route path="/Form1" element={<Form1 />} />
+        <Route path="/Form2" element={<Form2 />} />
+        <Route path="/Form3" element={<Form3 />} />
+        <Route path="/Form4" element={<Form4 />} />
+        <Route path="/Vertical" element={<Vertical />} />
+        <Route path="/DoctorCard" element={<div className="flex items-center justify-center min-h-screen bg-gray-100 py-10"><DoctorCard /></div>} />
+        <Route path="/App_Dashboard" element={<App_Dashboard />} />
+        <Route path="/Bot" element={<Bot />} />
+        <Route path="/Addslot" element={<Addslot />} />
+        <Route path="/Doctor_dashboard" element={<Doctor_dashboard />} />
+        <Route path="/Patients" element={<Recent_patient />} />
+        <Route path="/Settingpage" element={<Settingpage />} />
+        <Route path="/reject_doctor" element={<Reject_doctor />} />
+        <Route path="/Disease" element={<Disease />} />
+        <Route path="/FAQ" element={<FAQ />} />
 
-      <Route path="/Service" element={<Service />} />
-      <Route path="/Hisham" element={<Hisham />} />
+        <Route path="/Patient_dashboard" element={<Patient_dashboard />} />
+        <Route path="/Patient_dashboard1" element={<Patient_dashboard1 />} />
+        <Route path="/Symptom" element={<Symptom />} />
+        <Route path="/Account" element={<Account />} />
+        <Route path="/Edit_profile" element={<Edit_profile_Patient />} />
+        <Route path="/notification" element={<Notification />} />
+        <Route path="/Vitals" element={<Vitals />} />
+        <Route path="/Medication" element={<Medication1 />} />
+        <Route path="/Medication1" element={<Medication1 />} />
+        <Route path="/medication1" element={<Medication1 />} />
+        <Route path="/Reminder" element={<Reminder />} />
+        <Route path="/Setting" element={<Setting />} />
+        <Route path="/Appointment" element={<Appointment />} />
+        <Route path="/Appoinment" element={<Appointment />} />
+        <Route path="/Clinic" element={<Clinic />} />
+        <Route path="/Message" element={<Message />} />
+        <Route path="/Vediocall" element={<Vediocall />} />
+        <Route path="/Record" element={<Record />} />
+        <Route path="/Reminder1" element={<Reminder1 />} />
+        <Route path="/Strengthening" element={<Strengthening />} />
+        <Route path="/Guided" element={<Guided />} />
+        <Route path="/Tilt" element={<Tilt />} />
+        <Route path="/VitalsDetail" element={<VitalsDetail />} />
+        <Route path="/VitalsHistory" element={<VitalsHistory />} />
+        <Route path="/View-request" element={<View_request />} />
+        <Route path="/View_request" element={<View_request />} />
+        <Route path="/Order" element={<Order />} />
+        <Route path="/Lisinopril" element={<Lisinopril />} />
+        <Route path="/Metformin" element={<Metformin_detail />} />
+        <Route path="/Atorvastatin" element={<Atorvastatin />} />
+        <Route path="/Amoxicillin" element={<Amoxicillin />} />
+        <Route path="/Schedule" element={<Schedule />} />
+        <Route path="/Request" element={<Request />} />
 
-      <Route path="/Form1" element={<Form1 />} />
-      <Route path="/Form2" element={<Form2 />} />
-      <Route path="/Form3" element={<Form3 />} />
-      <Route path="/Form4" element={<Form4 />} />
-      <Route path="/Vertical" element={<Vertical />} />
-      <Route path="/DoctorCard" element={<div className="flex items-center justify-center min-h-screen bg-gray-100 py-10"><DoctorCard /></div>} />
-      <Route path="/App_Dashboard" element={<App_Dashboard />} />
-      <Route path="/Bot" element={<Bot />} />
-      <Route path="/Addslot" element={<Addslot />} />
-      <Route path="/Doctor_dashboard" element={<Doctor_dashboard />} />
-      <Route path="/Patients" element={<Recent_patient />} />
-      <Route path="/Settingpage" element={<Settingpage />} />
-      <Route path="/reject_doctor" element={<Reject_doctor />} />
-      <Route path="/Disease" element={<Disease />} />
-      <Route path="/FAQ" element={<FAQ />} />
+        <Route path="/Appointment2" element={<Appointment2 />} />
+        <Route path="/Dsetting" element={<Dsetting />} />
+        <Route path="/Dslot" element={<Dslot />} />
+        <Route path="/Editprofile" element={<Editprofile />} />
+        <Route path="/Appointmentb" element={<Appointmentb />} />
+        <Route path="/Reject" element={<Reject />} />
+        <Route path="/Consultation1" element={<Consultation1 />} />
+        <Route path="/Consultation_info" element={<Consultation_info />} />
+        <Route path="/view_profile" element={<ViewProfile />} />
 
-      <Route path="/Patient_dashboard" element={<Patient_dashboard />} />
-      <Route path="/Patient_dashboard1" element={<Patient_dashboard1 />} />
-      <Route path="/Symptom" element={<Symptom />} />
-      <Route path="/Account" element={<Account />} />
-      <Route path="/Edit_profile" element={<Edit_profile_Patient />} />
-      <Route path="/notification" element={<Notification />} />
-      <Route path="/Vitals" element={<Vitals />} />
-      <Route path="/Medication" element={<Medication1 />} />
-      <Route path="/Medication1" element={<Medication1 />} />
-      <Route path="/medication1" element={<Medication1 />} />
-      <Route path="/Reminder" element={<Reminder />} />
-      <Route path="/Setting" element={<Setting />} />
-      <Route path="/Appointment" element={<Appointment />} />
-      <Route path="/Appoinment" element={<Appointment />} />
-      <Route path="/Clinic" element={<Clinic />} />
-      <Route path="/Message" element={<Message />} />
-      <Route path="/Vediocall" element={<Vediocall />} />
-      <Route path="/Record" element={<Record />} />
-      <Route path="/Reminder1" element={<Reminder1 />} />
-      <Route path="/Strengthening" element={<Strengthening />} />
-      <Route path="/Guided" element={<Guided />} />
-      <Route path="/Tilt" element={<Tilt />} />
-      <Route path="/VitalsDetail" element={<VitalsDetail />} />
-      <Route path="/VitalsHistory" element={<VitalsHistory />} />
-      <Route path="/View-request" element={<View_request />} />
-      <Route path="/View_request" element={<View_request />} />
-      <Route path="/Order" element={<Order />} />
-      <Route path="/Lisinopril" element={<Lisinopril />} />
-      <Route path="/Metformin" element={<Metformin_detail />} />
-      <Route path="/Atorvastatin" element={<Atorvastatin />} />
-      <Route path="/Amoxicillin" element={<Amoxicillin />} />
-      <Route path="/Schedule" element={<Schedule />} />
-      <Route path="/Request" element={<Request />} />
+        <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => { }} isMobileOpen={false} setIsMobileOpen={() => { }} /></div>} />
 
-      <Route path="/Appointment2" element={<Appointment2 />} />
-      <Route path="/Dsetting" element={<Dsetting />} />
-      <Route path="/Dslot" element={<Dslot />} />
-      <Route path="/Editprofile" element={<Editprofile />} />
-      <Route path="/Appointmentb" element={<Appointmentb />} />
-      <Route path="/Reject" element={<Reject />} />
-      <Route path="/Consultation1" element={<Consultation1 />} />
-      <Route path="/Consultation_info" element={<Consultation_info />} />
-      <Route path="/view_profile" element={<ViewProfile />} />
-
-      <Route path="/Patient_sidebar" element={<div className="flex bg-[#0B1F4D] min-h-screen"><Patient_sidebar active="" setActive={() => { }} isMobileOpen={false} setIsMobileOpen={() => { }} /></div>} />
-
-      <Route path="/Appointment_Day1" element={<Appointment_Day1 />} />
-      <Route path="/Bot_Day1" element={<Bot_Day1 />} />
-      <Route path="/Service_Day1" element={<Service_Day1 />} />
-      <Route path="/Sidebar_Day1" element={<Sidebar_Day1 />} />
-      <Route path="/Askspecialist" element={<Askspecialist />} />
-      <Route path="/Body" element={<Body />} />
-      <Route path="/Diagnostic" element={<Diagnostic />} />
-      <Route path="/Diagnosticinput" element={<Diagnosticinput />} />
-      <Route path="/Cervicogenic" element={<Cervicogenic />} />
-      <Route path="/Dseasonal" element={<Dseasonal />} />
-      <Route path="/Tthdiagnostic" element={<Tthdiagnostic />} />
-      <Route path="/NeckAlignment" element={<NeckAlignment />} />
-      <Route path="/MUSCLETENSION" element={<MuscleTension />} />
-      <Route path="/LogTriggers" element={<LogTriggers />} />
-      <Route path="/Myrecord" element={<Myrecord />} />
-      <Route path="/Savechange" element={<Savechange />} />
-      <Route path="/PostureAnalysis" element={<PostureAnalysis />} />
-      <Route path="/SteadyAscent" element={<SteadyAscent />} />
-      <Route path="/CarePlan" element={<CarePlan />} />
-      <Route path="/Stabilization" element={<Stabilization />} />
-      <Route path="/Phase2D" element={<Phase2D />} />
-      <Route path="/Phase3D" element={<Phase3D />} />
-      <Route path="/MaintenanceLog" element={<MaintenanceLog />} />
-      <Route path="/RecoveryJourney" element={<RecoveryJourney />} />
-      <Route path="/MonthlyReview" element={<MonthlyReview />} />
-      <Route path="/ProgressReview" element={<ProgressReview />} />
-      <Route path="/chat" element={<Chat />} />
-    </Routes>
-
+        <Route path="/Appointment_Day1" element={<Appointment_Day1 />} />
+        <Route path="/Bot_Day1" element={<Bot_Day1 />} />
+        <Route path="/Service_Day1" element={<Service_Day1 />} />
+        <Route path="/Sidebar_Day1" element={<Sidebar_Day1 />} />
+        <Route path="/Askspecialist" element={<Askspecialist />} />
+        <Route path="/Body" element={<Body />} />
+        <Route path="/Diagnostic" element={<Diagnostic />} />
+        <Route path="/Diagnosticinput" element={<Diagnosticinput />} />
+        <Route path="/Cervicogenic" element={<Cervicogenic />} />
+        <Route path="/Dseasonal" element={<Dseasonal />} />
+        <Route path="/Tthdiagnostic" element={<Tthdiagnostic />} />
+        <Route path="/NeckAlignment" element={<NeckAlignment />} />
+        <Route path="/MUSCLETENSION" element={<MuscleTension />} />
+        <Route path="/LogTriggers" element={<LogTriggers />} />
+        <Route path="/Myrecord" element={<Myrecord />} />
+        <Route path="/Savechange" element={<Savechange />} />
+        <Route path="/PostureAnalysis" element={<PostureAnalysis />} />
+        <Route path="/SteadyAscent" element={<SteadyAscent />} />
+        <Route path="/CarePlan" element={<CarePlan />} />
+        <Route path="/Stabilization" element={<Stabilization />} />
+        <Route path="/Phase2D" element={<Phase2D />} />
+        <Route path="/Phase3D" element={<Phase3D />} />
+        <Route path="/MaintenanceLog" element={<MaintenanceLog />} />
+        <Route path="/RecoveryJourney" element={<RecoveryJourney />} />
+        <Route path="/MonthlyReview" element={<MonthlyReview />} />
+        <Route path="/ProgressReview" element={<ProgressReview />} />
+        <Route path="/chat" element={<Chat isOpen={true} onClose={() => { }} />} />
+      </Routes>
+      <FloatingChatbot />
+    </>
   );
 };
 

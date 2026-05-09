@@ -6,6 +6,8 @@ import AdminSidebar from '../../../components/Admin/AdminSidebar';
 import DasyWilliam from '../../../components/Admin/DasyWilliam';
 import { AnimatePresence } from 'framer-motion';
 import Notification from '../../../components/Patient/notification';
+import apiFetch from '../../../api';
+import BASE_URL from '../../../baseUrl';
 
 
 const navItems = [
@@ -60,6 +62,8 @@ const Appointment2 = () => {
   const [selectedRows, setSelectedRows] = useState([]);
 
   const [selectedPatientForDetails, setSelectedPatientForDetails] = useState(null);
+  const [appointmentsList, setAppointmentsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Date Logic
   const [currentDate, setCurrentDate] = useState(new Date(2026, 1, 13)); // 13 Feb 2026
@@ -101,33 +105,61 @@ const Appointment2 = () => {
 
   // Mock data arrays matching the screenshot
   // Mock data arrays matching the screenshot
-  const appointments = [
-    { id: 0, name: 'Saumya tiwari', gender: 'Female', age: 21, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Hifza Javed' },
-    { id: 1, name: 'Anjali Sharma', gender: 'Female', age: 24, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Sumaiya' },
-    { id: 2, name: 'Vivek Kumar', gender: 'Male', age: 29, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1, doctor: 'Dr. Ahmad' },
-    { id: 3, name: 'Sneha Paul', gender: 'Female', age: 22, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Varun' },
-    { id: 4, name: 'Rahul Singh', gender: 'Male', age: 31, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Sidharth' },
-    { id: 5, name: 'Priya Mehra', gender: 'Female', age: 26, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Priya Mehra' },
-    { id: 6, name: 'Rajesh Khanna', gender: 'Male', age: 45, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1, doctor: 'Dr. Aman Verma' },
-    { id: 7, name: 'Karan Johar', gender: 'Male', age: 38, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Sneha' },
-    { id: 8, name: 'Zoya Akhtar', gender: 'Female', age: 35, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Rajesh' },
-    { id: 9, name: 'Amitabh B.', gender: 'Male', age: 70, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Karan' },
-    { id: 10, name: 'Deepika P.', gender: 'Female', age: 32, date: '15 feb 26', time: '10:00-11:00 am', status: 'Confirmed', img: img1, doctor: 'Dr. Zoya' },
-    { id: 11, name: 'Ranveer S.', gender: 'Male', age: 34, date: '15 feb 26', time: '11:30-12:30 pm', status: 'Pending', img: img1, doctor: 'Dr. Farhan' },
-    { id: 12, name: 'Alia Bhatt', gender: 'Female', age: 28, date: '15 feb 26', time: '1:00-2:00 pm', status: 'Cancelled', img: img1, doctor: 'Dr. Rohit' },
-    { id: 13, name: 'Shah Rukh', gender: 'Male', age: 55, date: '16 feb 26', time: '9:00-10:00 am', status: 'Confirmed', img: img1, doctor: 'Dr. Sanjay' },
-    { id: 14, name: 'Salman Khan', gender: 'Male', age: 54, date: '16 feb 26', time: '4:00-5:00 pm', status: 'Pending', img: img1, doctor: 'Dr. Aditya' },
-  ];
+  const fetchAppointments = async () => {
+    setIsLoading(true);
+    try {
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
 
-  const filteredAppointments = appointments.filter(appt => {
-    if (activeTab === 'ALL') return true;
-    return appt.status.toUpperCase() === activeTab;
-  });
+      let url = `${BASE_URL}/api/appointments/list/?date=${dateStr}`;
+      if (activeTab !== 'ALL') {
+        url += `&status=${activeTab.toLowerCase()}`;
+      }
+
+      const response = await apiFetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        const mapped = data.map(appt => {
+          const startTime = new Date(appt.start_time);
+          const endTime = new Date(appt.end_time);
+          
+          const timeStr = `${startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+          const dateStr = startTime.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toLowerCase();
+
+          return {
+            id: appt.id,
+            name: appt.patient_name || 'Unknown',
+            doctor: appt.doctor_name || 'Unknown Doctor',
+            gender: appt.patient_gender || 'N/A',
+            age: appt.patient_age || 'N/A',
+            date: dateStr,
+            time: timeStr,
+            status: appt.status.charAt(0).toUpperCase() + appt.status.slice(1),
+            img: img1,
+            original: appt
+          };
+        });
+        setAppointmentsList(mapped);
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [currentDate, activeTab]);
+
+  const filteredAppointments = appointmentsList;
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
-      setSelectedRows(appointments.map(a => a.id));
+      setSelectedRows(appointmentsList.map(a => a.id));
     } else {
       setSelectedRows([]);
     }
@@ -140,7 +172,7 @@ const Appointment2 = () => {
     } else {
       const newSelected = [...selectedRows, id];
       setSelectedRows(newSelected);
-      if (newSelected.length === appointments.length) setSelectAll(true);
+      if (newSelected.length === appointmentsList.length) setSelectAll(true);
     }
   };
 

@@ -43,8 +43,8 @@ const Consultation_info = () => {
             setIsLoading(true);
             setError(null);
             try {
-                // Determine department name (stripping 'Care' if present)
-                const dept = specialityName.replace('Care', '').trim();
+                // Use the department name passed from Consultation1 or fallback to stripping 'Care'
+                const dept = location.state?.department || specialityName.replace('Care', '').trim();
                 const url = `${BASE_URL}/api/approved-doctors/?department=${dept}`;
                 
                 const response = await apiFetch(url);
@@ -54,7 +54,7 @@ const Consultation_info = () => {
                 
                 // Map API data to UI structure
                 const mappedDoctors = data.map(doc => ({
-                    id: doc.id,
+                    id: doc.user || doc.doctor_id || doc.id,
                     name: `Dr. ${doc.first_name} ${doc.last_name}`,
                     spec: doc.specialization || doc.department,
                     degree: 'MBBS, MD Physician, Specialization in ' + (doc.specialization || doc.department),

@@ -128,12 +128,18 @@ const Doctor_dashboard = () => {
                 
                 if (response.ok) {
                     const data = await response.json();
-                    const approved = data.is_approved || data.status === 'approved' || data.status === 'active';
+                    const status = data.status ? data.status.toLowerCase() : 'incomplete';
                     
-                    if (!approved) {
+                    if (status === 'approved' || status === 'active') {
+                        setIsApproved(true);
+                        setShowPendingModal(false);
+                    } else if (status === 'pending') {
+                        setIsApproved(false);
                         setShowPendingModal(true);
+                    } else {
+                        // Status is incomplete or other
+                        navigate("/Form1");
                     }
-                    setIsApproved(approved);
                 }
             } catch (err) {
                 console.error("Status check failed:", err);
@@ -265,7 +271,13 @@ const Doctor_dashboard = () => {
                                 className="flex items-center gap-3 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-all group"
                             >
                                 <div className="flex flex-col items-end">
-                                    <span className="text-[17px] font-bold text-gray-800 leading-tight">Dasy William</span>
+                                    <span className="text-[17px] font-bold text-gray-800 leading-tight">
+                                        {(() => {
+                                            const name = localStorage.getItem("user_full_name") || "Doctor";
+                                            if (name.toLowerCase().includes("admin") || name.toLowerCase().includes("javedtuba")) return "Doctor";
+                                            return name;
+                                        })()}
+                                    </span>
                                     <span className="text-[11px] font-bold text-[#1b738c]">Doctor</span>
                                 </div>
                                 <div className="relative">
@@ -296,7 +308,13 @@ const Doctor_dashboard = () => {
                         <div className="flex-1 lg:flex-[6.0] flex flex-col gap-[14px] min-w-0 font-sans">
                             {/* Welcome Banner */}
                             <div className="bg-[#1b738b] rounded-xl p-[22px] flex flex-col justify-center h-[120px]">
-                                <h2 className="text-[30px] font-bold text-white leading-tight">Hello Dr.John</h2>
+                                <h2 className="text-[30px] font-bold text-white leading-tight">
+                                    Hello Dr.{(() => {
+                                        const fullName = localStorage.getItem("user_full_name") || "";
+                                        if (!fullName || fullName.toLowerCase().includes("admin") || fullName.toLowerCase().includes("javedtuba")) return "Doctor";
+                                        return fullName.split(' ')[0];
+                                    })()}
+                                </h2>
                                 <p className="text-[14px] text-[#86cfe4] font-medium leading-snug mt-[4px]">
                                     here are you important tasks and reports.<br />
                                     Please check the next appointment

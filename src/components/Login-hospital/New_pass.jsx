@@ -31,7 +31,7 @@ const New_pass = ({ isModal, onClose, onSwitchToLogout, onSwitchToLogin }) => {
     };
 
     try {
-      const fullUrl = "http://13.60.96.212:8000/accounts/reset-password/";
+      const fullUrl = `${BASE_URL}/accounts/reset-password/`;
       const response = await fetch(fullUrl, {
         method: "POST",
         headers: {

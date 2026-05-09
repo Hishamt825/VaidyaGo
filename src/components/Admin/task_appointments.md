@@ -1,0 +1,6 @@
+- [ ] Update `appointments/views.py` to support `status` filter
+- [ ] Update `appointments/serializers.py` to include `doctor_name`
+- [ ] Update `Appointment2.jsx` to fetch live data from `/api/appointments/list/`
+- [ ] Implement status filtering in `Appointment2.jsx`
+- [ ] Implement date filtering in `Appointment2.jsx`
+- [ ] Verify changes with backend API and manual UI testing
