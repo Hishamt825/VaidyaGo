@@ -36,20 +36,6 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
       password: password
     };
 
-    // 🚀 SPECIAL ADMIN BYPASS LOGIC
-    if (loginId === "khanadiba9746@gmail.com" && password === "admin_password123") {
-      console.log("LOGIN_DEBUG: Admin Bypass Triggered");
-      localStorage.setItem("user_type", "admin");
-      localStorage.setItem("token", "admin_bypass_token"); // Mock token for dashboard access
-      
-      if (isModal && onClose) {
-        onClose();
-      }
-      navigate("/Admin_dashboard1");
-      setIsLoading(false);
-      return;
-    }
-
     try {
       // 🌍 Using AWS Production URL for Login
       const loginUrl = `${BASE_URL}/accounts/api/login/`;
@@ -99,16 +85,12 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
           localStorage.setItem("refresh", refreshToken);
         }
 
-<<<<<<< HEAD
         // Save user info for display
         localStorage.setItem("user_name", data.username || "");
         localStorage.setItem("user_email", data.email || "");
         localStorage.setItem("user_full_name", data.full_name || `${data.first_name || ""} ${data.last_name || ""}`.trim() || data.username || "User");
 
-        // Save doctor_id if it's a doctor login
-=======
         // Save doctor_id and clear old session-specific IDs
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
         const doctorId = data.doctor_id || data.id || data.user?.id;
         if (doctorId) {
           localStorage.removeItem("professional_info_id");

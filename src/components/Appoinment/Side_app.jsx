@@ -4,7 +4,6 @@ import logo from "../../assets/v.png";
 import doctorAvatar from "../../assets/ph.png";
 import settingsIcon from "../../assets/sett.png";
 import logoutIcon from "../../assets/log.png";
-import DoctorBot from "../Doctor/doctor_bot";
 
 const Side_app = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOpen }) => {
   const navigate = useNavigate();
@@ -79,7 +78,6 @@ const Side_app = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOp
 
   return (
     <>
-      <DoctorBot />
       {/* MOBILE OVERLAY */}
       {isMobileOpen && (
         <div

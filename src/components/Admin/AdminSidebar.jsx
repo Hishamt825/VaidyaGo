@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import activeImg from "../../assets/active.png";
 import pendingImg from "../../assets/pending.png";
 import rejectedImg from "../../assets/rejected.png";
-import AdminBot from "./AdminBot";
 import Chat from "./Chat_bot/chat";
 import { AnimatePresence } from "framer-motion";
 
@@ -24,8 +23,6 @@ const AdminSidebar = ({ active = "Dashboard", activeSub: activeSubProp = "Active
 
   return (
     <>
-      {/* AI Chatbot Integration */}
-      <AdminBot onOpenChat={() => setIsChatOpen(true)} />
       <AnimatePresence>
         {isChatOpen && (
           <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />

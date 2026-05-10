@@ -7,7 +7,6 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
 import { useRef } from 'react';
-import DoctorBot from "./doctor_bot";
 
 const Form1 = ({ onNext }) => {
   const navigate = useNavigate();
@@ -541,10 +540,9 @@ return (
 
       </div>
 
-      <DoctorBot />
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 const Input = ({ name, label, value, onChange, type = "text" }) => (

@@ -42,13 +42,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
 
     try {
       // 🌍 Using AWS IP for all roles to avoid local connection errors
-<<<<<<< HEAD
       const fullUrl = `${BASE_URL}/accounts/api/signup/`;
-        
-=======
-      const fullUrl = "http://13.60.96.212:8000/accounts/api/signup/";
-
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
       console.log("Submitting Signup to Production:", fullUrl);
 
       const response = await fetch(fullUrl, {
@@ -79,27 +73,11 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
 
       // ✅ Handle success
       if (response.status === 201 || response.status === 200) {
-<<<<<<< HEAD
         // 🚀 Signup successful!
         console.log("Signup Successful!");
         
         const userType = data.role?.toLowerCase() || role.toLowerCase();
         
-        // Save tokens for auto-login
-        if (data.access) {
-          localStorage.setItem("token", data.access);
-          localStorage.setItem("access", data.access);
-          localStorage.setItem("user_type", userType);
-          if (data.user_id) localStorage.setItem("doctor_id", data.user_id);
-        }
-        if (data.refresh) {
-          localStorage.setItem("refresh", data.refresh);
-        }
-
-        if (userType === "doctor") {
-          alert("Signup successful! Please complete your profile.");
-          navigate("/Form1");
-=======
         // Clear any leftover data from previous sessions
         localStorage.removeItem("doctor_id");
         localStorage.removeItem("professional_info_id");
@@ -107,21 +85,31 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
         localStorage.removeItem("document_info_id");
         localStorage.removeItem("prescriptionUploaded");
 
-        if (data?.token) {
+        // Save tokens for auto-login
+        if (data.access) {
+          localStorage.setItem("token", data.access);
+          localStorage.setItem("access", data.access);
+          localStorage.setItem("user_type", userType);
+        } else if (data?.token) {
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user_type", userType);
+        }
+        
+        if (data.refresh) {
+          localStorage.setItem("refresh", data.refresh);
         }
 
         // Save new doctor_id if it's a doctor signup
-        const newDoctorId = data?.doctor_id || data?.id || data?.user?.id;
+        const newDoctorId = data?.doctor_id || data?.id || data?.user?.id || data?.user_id;
         if (newDoctorId) {
           localStorage.setItem("doctor_id", newDoctorId);
         }
 
         // 🚀 Role-based Redirection
         const targetDashboard =
-          role === "Patient" ? "/Patient_dashboard" :
-            role === "Doctor" ? "/Form1" :
-              "/Finallogin";
+          userType === "patient" ? "/Patient_dashboard" :
+          userType === "doctor" ? "/Form1" :
+          "/Finallogin";
 
         console.log("Signup Successful, navigating to:", targetDashboard);
 
@@ -132,7 +120,6 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
           setTimeout(() => {
             navigate(targetDashboard);
           }, 10);
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
         } else {
           alert("Signup successful! Please log in with your credentials.");
           navigate("/Finallogin");
@@ -219,15 +206,8 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-<<<<<<< HEAD
-                <option value="" disabled>Select Role</option>
-                <option value="Patient">Patient</option>
-                <option value="Doctor">Doctor</option>
-              </select>
-=======
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
               </svg>
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
             </div>
 
             <AnimatePresence>

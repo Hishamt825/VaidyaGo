@@ -92,7 +92,6 @@ const App_Dashboard = () => {
     }, [activeTab]);
 
     // Mock data arrays matching the screenshot
-<<<<<<< HEAD
     const [appointments, setAppointments] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -143,18 +142,6 @@ const App_Dashboard = () => {
     useEffect(() => {
         fetchAppointments();
     }, [currentDate, activeTab]);
-=======
-    const appointments = Array.from({ length: 15 }).map((_, index) => ({
-        id: index,
-        name: 'Saumya tiwari',
-        gender: 'Female',
-        age: 21,
-        date: '14 feb 26',
-        time: '2:00-3:30 am',
-        status: index % 3 === 0 ? 'Pending' : index % 3 === 1 ? 'Confirmed' : 'Cancelled',
-        img: img1,
-    }));
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
 
     const filteredAppointments = appointments.filter(appt => {
         if (activeTab === 'ALL') return true;
@@ -303,7 +290,9 @@ const App_Dashboard = () => {
                                     <span className="text-[11px] font-bold text-[#1b738c]">Doctor</span>
                                 </div>
                                 <div className="relative">
-                                    <img src="/assets/ph.png" className="w-10 h-10 rounded-full border-2 border-[#1b738c]/20 shadow-sm object-cover" />
+                                    <div className="w-10 h-10 rounded-full border-2 border-[#1b738c]/20 shadow-sm bg-[#1b738c] flex items-center justify-center text-white font-bold text-sm">
+                                        DW
+                                    </div>
                                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-white"></div>
                                 </div>
                                 <svg className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -426,15 +415,11 @@ const App_Dashboard = () => {
                                             <div className="text-center">{appt.date}</div>
                                             <div className="text-center">{appt.time}</div>
 
-<<<<<<< HEAD
                                             <div className={`text-center font-bold ${
                                                 appt.status === 'Confirmed' ? 'text-[#16a34a]' : 
                                                 appt.status === 'Pending' ? 'text-orange-500' : 
                                                 'text-red-500'
                                             }`}>
-=======
-                                            <div className={`text-center font-bold ${appt.status === 'Confirmed' ? 'text-[#16a34a]' : appt.status === 'Pending' ? 'text-[#339eb3]' : 'text-[#f87171]'}`}>
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
                                                 {appt.status}
                                             </div>
 

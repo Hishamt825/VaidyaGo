@@ -9,7 +9,6 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence, motion } from 'framer-motion';
 import BASE_URL from '../../baseUrl';
-import DoctorBot from './doctor_bot';
 
 import appointmentIcon from '../../assets/appointment.svg';
 import totalPatientsIcon from '../../assets/total_patients.svg';
@@ -681,8 +680,6 @@ const Doctor_dashboard = () => {
                         </div>
                     </div>
                 </div>
-
-                <DoctorBot />
             </main>
             {isNotificationOpen && <Notification onClose={() => setIsNotificationOpen(false)} />}
             

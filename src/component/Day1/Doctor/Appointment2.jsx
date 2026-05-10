@@ -6,12 +6,9 @@ import AdminSidebar from '../../../components/Admin/AdminSidebar';
 import DasyWilliam from '../../../components/Admin/DasyWilliam';
 import { AnimatePresence } from 'framer-motion';
 import Notification from '../../../components/Patient/notification';
-<<<<<<< HEAD
 import apiFetch from '../../../api';
 import BASE_URL from '../../../baseUrl';
-=======
 import DoctorBot from '../../../components/Doctor/doctor_bot';
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
 
 
 const navItems = [

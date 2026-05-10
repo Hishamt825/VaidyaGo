@@ -7,7 +7,6 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
 import { useRef } from 'react';
-import DoctorBot from "./doctor_bot";
 const Form2 = ({ onNext }) => {
   const navigate = useNavigate();
 
@@ -553,7 +552,6 @@ const Form2 = ({ onNext }) => {
         </div>
 
       </div>
-      <DoctorBot />
     </div>
   </div>
 );

@@ -2,13 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/lo.svg';
 import Side_app from './Side_app';
-<<<<<<< HEAD
 import { AnimatePresence, motion } from 'framer-motion';
-=======
+import { Plus, RefreshCw } from 'lucide-react';
 import './Dsetting.css';
 import apiFetch from '../../api';
 import BASE_URL from '../../baseUrl';
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
 import appointmentIcon from '../../assets/appointment.svg';
 import totalPatientsIcon from '../../assets/total_patients.svg';
@@ -16,14 +14,10 @@ import consultationsIcon from '../../assets/consultations.svg';
 import incomeIcon from '../../assets/income.svg';
 import emergencyIcon from '../../assets/emergency.svg';
 import doctorImg from '../../assets/image_76.svg';
-<<<<<<< HEAD
 import phImg from '../../assets/ph.png';
-=======
 import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
-import { AnimatePresence } from 'framer-motion';
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
 
 // Slots will be fetched from API
@@ -386,15 +380,14 @@ const Addslot = () => {
    const navigate = useNavigate();
    const [activeNav, setActiveNav] = useState('Add Slots');
    const [isMobileOpen, setIsMobileOpen] = useState(false);
-<<<<<<< HEAD
-   const [slotItems, setSlotItems] = useState(slots.map(s => ({ ...s, isBlocked: false })));
+   const [slotItems, setSlotItems] = useState([]); // This will be set from slots after fetch
 
    const toggleBlock = (id) => {
-      setSlotItems(prev => prev.map(item => 
-         item.id === id ? { ...item, isBlocked: !item.isBlocked } : item
+      setSlots(prev => prev.map(item => 
+         String(item.id) === String(id) ? { ...item, type: item.type === 'available' ? 'break' : 'available' } : item
       ));
    };
-=======
+
    const [open, setOpen] = useState(false);
    const [openProfile, setOpenProfile] = useState(false);
    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -413,7 +406,6 @@ const Addslot = () => {
    if (openProfile) {
       return <Profile setOpenProfile={setOpenProfile} />;
    }
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
    // Draggable logic for the floating bot
    const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
@@ -497,17 +489,15 @@ const Addslot = () => {
    const [popupSelectedYear, setPopupSelectedYear] = useState(todayYear); 
    const popupYearScrollRef = useRef(null);
 
-<<<<<<< HEAD
    // Tiles Modals State
    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
    const [isPatientsModalOpen, setIsPatientsModalOpen] = useState(false);
    const [isConsultationsModalOpen, setIsConsultationsModalOpen] = useState(false);
    const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
    const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
-=======
+
    const dateGroupRefs = useRef({});
    const slotContainerRef = useRef(null);
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
 
    // Modal states
    const [isAddSlotModalOpen, setIsAddSlotModalOpen] = useState(false);
@@ -778,31 +768,6 @@ const Addslot = () => {
       return () => clearTimeout(timeoutId);
    }, [activeDateIndex]);
 
-<<<<<<< HEAD
-   const renderSlot = (slot) => {
-      // Shared Unblock toggle component to match image exactly
-      const toggleCircleColor = slot.type === 'available' ? 'bg-[#1a5b6e]' : 'bg-[#4b4b4b]';
-      const UnblockToggle = () => (
-         <div 
-            onClick={() => toggleBlock(slot.id)}
-            className="bg-[#e4e5e7] hover:bg-[#d5d6d8] transition-colors rounded-full flex items-center h-[26px] w-[74px] relative shadow-sm cursor-pointer border border-gray-300/60 overflow-hidden"
-         >
-            <motion.div 
-               className={`w-[19px] h-[19px] ${toggleCircleColor} rounded-full absolute left-0`}
-               initial={false}
-               animate={{ x: slot.isBlocked ? 51 : 3 }}
-               transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            />
-            <motion.span 
-               className="text-[10px] font-bold text-[#5c5e60] absolute w-full text-center pointer-events-none"
-               animate={{ x: slot.isBlocked ? -11 : 9 }}
-               transition={{ duration: 0.2 }}
-            >
-               {slot.isBlocked ? 'Block' : 'Unblock'}
-            </motion.span>
-         </div>
-      );
-=======
     const handleToggleSlotStatus = async (slotId, currentType) => {
         const newStatus = currentType === 'available' ? 'break' : 'available';
         
@@ -832,107 +797,97 @@ const Addslot = () => {
         }
     };
 
-     const renderSlot = (slot) => {
-       const toggleCircleColor = slot.type === 'available' ? 'bg-[#1a5b6e]' : 'bg-[#4b4b4b]';
-       
-       const displayTime = formatSlotTimeRange(slot.time);
+    const renderSlot = (slot) => {
+        const displayTime = formatSlotTimeRange(slot.time);
 
-       const handleToggle = (e) => {
-          e.stopPropagation();
-          handleToggleSlotStatus(slot.id, slot.type);
-       };
+        const handleToggle = (e) => {
+            e.stopPropagation();
+            handleToggleSlotStatus(slot.id, slot.type);
+        };
 
-       const ToggleUI = ({ isDarkHeader }) => (
-          <div 
-             onClick={handleToggle}
-             className={`bg-[#e4e5e7] hover:bg-[#d5d6d8] transition-colors rounded-full flex items-center h-[24px] w-[70px] relative shadow-sm cursor-pointer border ${isDarkHeader ? 'border-white/20' : 'border-gray-300/60'}`}
-          >
-             <div className={`w-[17px] h-[17px] ${toggleCircleColor} rounded-full absolute transition-all duration-300 ${slot.type === 'available' ? 'left-[50px]' : 'left-[3px]'}`}></div>
-             <span className={`text-[9px] font-bold text-[#5c5e60] leading-none pt-[1px] absolute transition-all ${slot.type === 'available' ? 'left-[8px]' : 'right-[8px]'}`}>
-                 {slot.type === 'available' ? 'Unblock' : 'Block'}
-             </span>
-          </div>
-       );
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
+        const ToggleSwitch = ({ active }) => (
+            <div className="flex items-center gap-2 cursor-pointer group" onClick={handleToggle}>
+                <div className="w-[74px] h-[24px] bg-[#E2E4E6] rounded-full relative flex items-center px-1 border border-gray-300 shadow-inner">
+                    <div className={`w-[18px] h-[18px] rounded-full absolute transition-all duration-300 ${active ? 'bg-[#0A1D31] right-1' : 'bg-[#444] left-1'}`}></div>
+                    <span className={`text-[9px] font-extrabold uppercase tracking-tighter absolute transition-all ${active ? 'left-2.5 text-[#0A1D31]' : 'right-2.5 text-gray-500'}`}>
+                        Unblock
+                    </span>
+                </div>
+            </div>
+        );
 
-      if (slot.type === 'available') {
-         return (
-            <div key={slot.id} className="rounded-xl border-[1.5px] border-gray-200 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-shadow">
-               <div className="px-[16px] pt-[12px] pb-[8px] flex justify-between items-center bg-white">
-                  <span className="font-extrabold text-[#444] text-[17px]">{displayTime}</span>
-                  <ToggleUI isDarkHeader={false} />
-               </div>
-               <div className="bg-[#cee6eb] w-full px-[16px] py-[8px] flex items-center gap-[10px]">
-                  <div className="w-[14px] h-[14px] bg-[#a2d2e1] rounded-sm shadow-sm"></div>
-                  <span className="font-bold text-[#1a5b6e] text-[18px]">Available</span>
-               </div>
-<<<<<<< HEAD
-               {/* Bottom area */}
-               <div className="flex-1 bg-white px-[14px] py-[10px] flex justify-end items-end">
-                  <button 
-                     onClick={() => setIsAddSlotModalOpen(true)}
-                     className="bg-[#cee6eb] hover:bg-[#b0d9e2] transition-colors text-[#2c5361] font-bold text-[16px] px-[22px] py-[6px] rounded-md border-[1.5px] border-[#a5cbd4] tracking-wide"
-                  >
-=======
-               <div className="flex-1 bg-white px-[16px] py-[12px] flex justify-end items-end">
-                  <button className="bg-[#cee6eb] hover:bg-[#b0d9e2] transition-all text-[#2c5361] font-bold text-[16px] px-[28px] py-[6px] rounded-lg border-[1.5px] border-[#a5cbd4] tracking-wide shadow-sm active:scale-95">
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
-                     Schedule
-                  </button>
-               </div>
-            </div>
-         );
-      } else if (slot.type === 'break') {
-         return (
-            <div key={slot.id} className="rounded-xl border-[1.5px] border-[#d8cdab] bg-[#fbf5d9] shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-shadow">
-               <div className="px-[16px] pt-[12px] pb-[8px] flex justify-between items-center bg-[#7c775d]">
-                  <span className="font-extrabold text-white text-[17px]">{displayTime}</span>
-                  <ToggleUI isDarkHeader={true} />
-               </div>
-               <div className="flex-1 px-[16px] py-[10px] bg-[#fbf5d9] flex flex-col">
-                  <div className="flex items-center gap-[8px]">
-                     <div className="w-[14px] h-[14px] bg-[#b8b093] rounded-full shadow-sm"></div>
-                     <span className="font-bold text-[#444] text-[19px]">Doctor Break</span>
-                  </div>
-                  <div className="text-[13px] font-bold text-gray-500 mt-[2px] tracking-tight">Reason: Doctor's Break Time</div>
-                  <div className="flex justify-end mt-auto pb-[2px]">
-                     <button className="bg-white hover:bg-gray-50 transition-all text-[#444] font-bold text-[16px] px-[20px] py-[6px] rounded-lg border-[1.5px] border-[#d8cdab] shadow-sm tracking-wide active:scale-95">
-                        ReSchedule
-                     </button>
-                  </div>
-               </div>
-            </div>
-         );
-      } else if (slot.type === 'booked') {
-         return (
-            <div key={slot.id} className="rounded-xl border-[1.5px] border-[#9bcfa3] bg-[#e1eee2] shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-shadow">
-               <div className="px-[16px] pt-[12px] pb-[8px] flex justify-between items-center bg-[#4a9054]">
-                  <span className="font-extrabold text-white text-[17px]">{displayTime}</span>
-                  <ToggleUI isDarkHeader={true} />
-               </div>
-               <div className="flex-1 px-[16px] py-[10px] flex flex-col bg-[#e1eee2]">
-                  <div className="flex items-center gap-[8px]">
-                     <div className="w-[14px] h-[14px] bg-[#75b07d] rounded-full shadow-sm"></div>
-                     <span className="font-bold text-[#333] text-[19px]">{slot.title || 'Patient Name'}</span>
-                  </div>
-                  <div className="text-[13px] font-bold text-gray-500 mt-[2px] tracking-tight">Booking ID : {slot.subtitle || '#A234B6'}</div>
-                  <div className="flex justify-between gap-[6px] mt-auto pb-[2px]">
-                     <button className="flex-1 bg-white hover:bg-gray-50 transition-all text-[#78ae80] font-bold text-[14px] py-[6px] rounded-lg border-[1.5px] border-[#9bcfa3] shadow-sm active:scale-95">
-                        View
-                     </button>
-                     <button className="flex-[1.2] bg-white hover:bg-gray-50 transition-all text-[#666] font-bold text-[14px] py-[6px] rounded-lg border-[1.5px] border-[#cdcdcd] shadow-sm active:scale-95">
-                        ReSchedule
-                     </button>
-                     <button className="flex-[0.9] bg-white hover:bg-red-50 transition-all text-[#ea6b6e] font-bold text-[14px] py-[6px] rounded-lg border-[1.5px] border-[#e8a3a4] shadow-sm active:scale-95">
-                        Cancel
-                     </button>
-                  </div>
-               </div>
-            </div>
-         );
-      }
-      return null;
-   };
+        if (slot.type === 'available') {
+            return (
+                <div key={slot.id} className="rounded-2xl border-[1.5px] border-gray-200 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
+                    <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-white">
+                        <span className="font-bold text-[#444] text-[17px]">{displayTime}</span>
+                        <ToggleSwitch active={true} />
+                    </div>
+                    <div className="bg-[#D0E7ED] w-full px-5 py-2.5 flex items-center gap-3">
+                        <div className="w-4 h-4 bg-[#A2D2E1] rounded-sm"></div>
+                        <span className="font-bold text-[#1A7785] text-[18px]">Available</span>
+                    </div>
+                    <div className="flex-1 bg-white px-4 py-2 flex justify-end items-center">
+                        <button 
+                            onClick={() => setIsAddSlotModalOpen(true)}
+                            className="bg-[#BDD9E0] hover:bg-[#A9CED8] transition-colors text-[#1A7785] font-extrabold text-[15px] px-8 py-2 rounded-xl"
+                        >
+                            Schedule
+                        </button>
+                    </div>
+                </div>
+            );
+        } else if (slot.type === 'break') {
+            return (
+                <div key={slot.id} className="rounded-2xl border-[1.5px] border-[#E8E1C4] bg-[#FBF7E4] shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
+                    <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-[#BBB599]">
+                        <span className="font-bold text-white text-[17px]">{displayTime}</span>
+                        <ToggleSwitch active={false} />
+                    </div>
+                    <div className="flex-1 px-5 py-2.5 flex flex-col">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-4 h-4 bg-[#C9C4AB] rounded-full"></div>
+                            <span className="font-bold text-[#444] text-[19px]">Doctor Break</span>
+                        </div>
+                        <div className="text-[12px] font-bold text-gray-400 mt-0.5">Reason: Doctor's Break Time</div>
+                        <div className="flex justify-end mt-auto pb-1">
+                            <button className="bg-white hover:bg-gray-50 transition-all text-[#444] font-extrabold text-[15px] px-7 py-2 rounded-xl border border-[#E8E1C4] shadow-sm">
+                                ReSchedule
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        } else if (slot.type === 'booked') {
+            return (
+                <div key={slot.id} className="rounded-2xl border-[1.5px] border-[#B8DABF] bg-[#E8F4E9] shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
+                    <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-[#599363]">
+                        <span className="font-bold text-white text-[17px]">{displayTime}</span>
+                        <ToggleSwitch active={false} />
+                    </div>
+                    <div className="flex-1 px-5 py-2.5 flex flex-col">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-4 h-4 bg-[#7CB785] rounded-full"></div>
+                            <span className="font-bold text-[#333] text-[19px]">{slot.title || 'Rahul Verma'}</span>
+                        </div>
+                        <div className="text-[12px] font-bold text-gray-400 mt-0.5">Booking ID : {slot.subtitle || '#A234B6'}</div>
+                        <div className="flex justify-between gap-3 mt-auto pb-1">
+                            <button className="flex-1 bg-white hover:bg-gray-50 transition-all text-[#7CB785] font-extrabold text-[14px] py-2 rounded-xl border border-[#B8DABF] shadow-sm">
+                                View
+                            </button>
+                            <button className="flex-1 bg-white hover:bg-gray-50 transition-all text-gray-500 font-extrabold text-[14px] py-2 rounded-xl border border-gray-200 shadow-sm">
+                                ReSchedule
+                            </button>
+                            <button className="flex-1 bg-white hover:bg-red-50 transition-all text-[#F47C7C] font-extrabold text-[14px] py-2 rounded-xl border border-[#F4B8B8] shadow-sm">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    };
 
    const formattedPopupDate = `${calendarDays[popupActiveDateIndex]}/${popupSelectedMonth.slice(0, 3).toLowerCase()}/${popupSelectedYear}`;
 
@@ -1249,99 +1204,87 @@ const Addslot = () => {
                </div>
 
 
-               {/* View Slot Header */}
-               <div className="flex items-center justify-between mb-2 border-b border-gray-100 pb-3">
-                  <h2 className="text-[22px] font-bold text-gray-800">View Slot</h2>
-                  <div className="flex items-center gap-3">
-                     <span className="text-gray-600 font-bold text-[14px]">Date</span>
-                     <div className="relative">
-                        <select
-                           className="appearance-none bg-[#e2e8f0] px-4 py-2 pr-10 rounded-[8px] font-bold text-[15px] text-[#444] outline-none cursor-pointer border border-gray-300"
-                           value={formattedPopupDate}
-                           onChange={(e) => {
-                              const selectedStr = e.target.value; // Format: DD/mon/YYYY
-                              const [dStr, mon, yStr] = selectedStr.split('/');
-                              const dayVal = parseInt(dStr, 10).toString();
-                              const monthLong = monthsList.find(m => m.toLowerCase().startsWith(mon.toLowerCase()));
-                              const year = parseInt(yStr, 10);
-                              
-                              if (monthLong) {
-                                 setPopupSelectedMonth(monthLong);
-                                 setPopupSelectedYear(year);
-                                 const idx = calendarDays.indexOf(dayVal);
-                                 if (idx !== -1) setPopupActiveDateIndex(idx);
-                              }
-                           }}
-                        >
-                           {(() => {
-                              const dates = new Set();
-                              dates.add(formattedPopupDate);
-                              slots.forEach(s => {
-                                 if (s.date) {
-                                    const [y, m, d] = s.date.split('-');
-                                    const mon = monthsList[parseInt(m)-1].slice(0,3).toLowerCase();
-                                    dates.add(`${parseInt(d)}/${mon}/${y}`);
-                                 }
-                              });
-                              
-                              return [...dates].sort((a, b) => {
-                                 const parse = (s) => {
-                                    const [d, m, y] = s.split('/');
-                                    const mIdx = monthsList.findIndex(ml => ml.toLowerCase().startsWith(m));
-                                    return new Date(y, mIdx, d).getTime();
-                                 };
-                                 return parse(a) - parse(b);
-                              });
-                           })().map(dateStr => {
-                              const isToday = dateStr === `${parseInt(todayDayStr)}/${todayMonthName.slice(0,3).toLowerCase()}/${todayYear}`;
-                              return (
-                                 <option key={dateStr} value={dateStr}>{isToday ? 'Today' : dateStr}</option>
-                              );
-                           })}
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                           <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
-                        </div>
-                     </div>
-                     <button
-                        onClick={fetchSlots}
-                        className="p-2 bg-[#e2e8f0] rounded-[8px] hover:bg-gray-300 transition-colors border border-gray-300"
-                        title="Refresh Slots"
-                     >
-                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                     </button>
-                  </div>
-<<<<<<< HEAD
 
-                  {/* Grid of Slots */}
-                  <div className="grid grid-cols-3 gap-x-[20px] gap-y-[20px] pb-2 overflow-y-auto max-h-[460px] scroll-smooth px-1 pt-1" style={{ scrollbarWidth: 'thin' }}>
-                     {slotItems.map(renderSlot)}
-                  </div>
+               {/* View Slot Main Container */}
+               <div className="bg-white rounded-[24px] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] p-6">
+                   {/* View Slot Header Row */}
+                   <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-[18px] font-bold text-gray-800">View Slot</h2>
+                      <div className="flex items-center gap-3">
+                         <span className="text-gray-600 font-medium text-[15px]">Date</span>
+                         <div className="relative">
+                            <select
+                               className="appearance-none bg-[#D1D5DB] px-5 py-2 pr-10 rounded-[8px] font-bold text-[15px] text-gray-800 outline-none cursor-pointer border-none transition-all shadow-sm"
+                               value={formattedPopupDate}
+                               onChange={(e) => {
+                                   const selectedStr = e.target.value;
+                                   const [dStr, mon, yStr] = selectedStr.split('/');
+                                   const dayVal = parseInt(dStr, 10).toString();
+                                   const monthLong = monthsList.find(m => m.toLowerCase().startsWith(mon.toLowerCase()));
+                                   const year = parseInt(yStr, 10);
+                                   if (monthLong) {
+                                      setPopupSelectedMonth(monthLong);
+                                      setPopupSelectedYear(year);
+                                      const idx = calendarDays.indexOf(dayVal);
+                                      if (idx !== -1) setPopupActiveDateIndex(idx);
+                                   }
+                               }}
+                            >
+                               {(() => {
+                                   const dates = new Set();
+                                   dates.add(formattedPopupDate);
+                                   slots.forEach(s => {
+                                      if (s.date) {
+                                         const [y, m, d] = s.date.split('-');
+                                         const mon = monthsList[parseInt(m)-1].slice(0,3).toLowerCase();
+                                         dates.add(`${parseInt(d)}/${mon}/${y}`);
+                                      }
+                                   });
+                                   return [...dates].sort((a, b) => {
+                                      const parse = (s) => {
+                                         const [d, m, y] = s.split('/');
+                                         const mIdx = monthsList.findIndex(ml => ml.toLowerCase().startsWith(m));
+                                         return new Date(y, mIdx, d).getTime();
+                                      };
+                                      return parse(a) - parse(b);
+                                   });
+                               })().map(dateStr => (
+                                  <option key={dateStr} value={dateStr}>{dateStr}</option>
+                               ))}
+                            </select>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-800">
+                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                         </div>
+                         <button
+                            onClick={fetchSlots}
+                            className="p-2 bg-[#D1D5DB] rounded-[6px] hover:bg-gray-400 transition-all shadow-sm"
+                         >
+                            <RefreshCw size={20} className="text-gray-700" />
+                         </button>
+                      </div>
+                   </div>
 
-=======
->>>>>>> 04a3cf3ddb13967f0b33cd0d8ea23cc8989c5a32
-               </div>
+                   {/* Date Info and Legend Row */}
+                   <div className="flex flex-row items-center gap-10 mb-8 overflow-x-auto pb-2">
+                      <div className="font-bold text-[#555] text-[16px] whitespace-nowrap">
+                         Date : &nbsp; {formattedPopupDate}
+                      </div>
+                      <div className="flex items-center gap-8">
+                         <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
+                            <div className="w-[30px] h-[20px] bg-[#B2D7DD] rounded-[4px]"></div> Available
+                         </div>
+                         <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
+                            <div className="w-[30px] h-[20px] bg-[#7CB785] rounded-[4px]"></div> Booked
+                         </div>
+                         <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
+                            <div className="w-[30px] h-[20px] bg-[#FBF7E4] rounded-[4px]"></div> Blocked/Break
+                         </div>
+                      </div>
+                   </div>
 
-               {/* Legend area */}
-               <div className="flex gap-[40px] mb-6 items-center">
-                  <div className="font-bold text-[#1b738b] text-[15.5px] tracking-tight">
-                     Date : &nbsp; {formattedPopupDate === `${parseInt(todayDayStr)}/${todayMonthName.slice(0,3).toLowerCase()}/${todayYear}` ? 'Today' : formattedPopupDate}
-                  </div>
-                  <div className="flex gap-[28px] ml-[6px]">
-                     <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
-                        <div className="w-[34px] h-[22px] bg-[#a2d2e1] rounded-[4px] opacity-90 shadow-sm"></div> Available
-                     </div>
-                     <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
-                        <div className="w-[34px] h-[22px] bg-[#7bba84] rounded-[4px] opacity-90 shadow-sm"></div> Booked
-                     </div>
-                     <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
-                        <div className="w-[34px] h-[22px] bg-[#f2eaba] rounded-[4px] opacity-90 shadow-sm"></div> Blocked/Break
-                     </div>
-                  </div>
-               </div>
-
-               {/* Grid of Slots */}
-               <div ref={slotContainerRef} className="flex flex-col gap-8 pb-2 overflow-y-auto max-h-[460px] scroll-smooth px-1 pt-1 relative" style={{ scrollbarWidth: 'thin' }}>
+                   {/* Grid of Slots Container */}
+                   <div ref={slotContainerRef} className="flex flex-col gap-8 pb-2 overflow-y-auto max-h-[500px] scroll-smooth px-1 pt-1 relative" style={{ scrollbarWidth: 'thin' }}>
                   {isLoadingSlots && (
                      <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
                         <div className="flex flex-col items-center gap-2">
@@ -1415,8 +1358,8 @@ const Addslot = () => {
                      </div>
                   )}
                </div>
-
             </div>
+         </div>
 
             {/* Floating Bot Icon */}
             <div

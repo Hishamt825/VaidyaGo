@@ -1,28 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-<<<<<<< HEAD
+import { useLanguage } from '../../../context/LanguageContext';
 import { Send, Mic, Plus, Volume2, History, X, Settings, Minimize2, FileText, Image, Camera, BarChart2, RefreshCw, Keyboard } from 'lucide-react';
+
 import robotImage from '../../../assets/869455f37775ce0db978b4ab2fcf8919-Picsart-BackgroundRemover.jpg';
 import voiceIcon from '../../../assets/voice.png';
 import BASE_URL from '../../../baseUrl';
-=======
-import { Send, Mic, Plus, Volume2, History, X, Settings, Minimize2, FileText, Image, Camera, BarChart2 } from 'lucide-react';
-import vaidyaBot from '../../../assets/patient.png';
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
 
 const Chat = ({ isOpen, onClose }) => {
     const userType = localStorage.getItem('user_type');
     const isAdmin = userType === 'admin' && !['/MainPage', '/About', '/ContactUs', '/Service', '/FAQ', '/Disease', '/Hos_consultation', '/Makeapp', '/'].includes(window.location.pathname);
     const isDoctor = userType === 'doctor' && !['/MainPage', '/About', '/ContactUs', '/Service', '/FAQ', '/Disease', '/Hos_consultation', '/Makeapp', '/'].includes(window.location.pathname);
 
+    const { t, language } = useLanguage();
     const [messages, setMessages] = useState([
         {
             id: 1,
             text: isAdmin 
-                ? "Welcome back, Admin. Vado SuperAdmin systems are online. How can I assist with platform operations today?"
+                ? t('adminGreeting')
                 : isDoctor
-                    ? "Hello Doctor! I am your clinical assistant. How can I help with your patients or schedule today?"
-                    : "Hello! I am VaidyaGo AI, your health assistant. How can I assist you today?",
+                    ? t('doctorGreeting')
+                    : t('aiGreeting'),
             sender: 'ai',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
@@ -70,7 +68,12 @@ const Chat = ({ isOpen, onClose }) => {
     };
 
     useEffect(() => {
-        if (isOpen) scrollToBottom();
+        if (isOpen) {
+            scrollToBottom();
+            // Ensure we open in text mode by default, unless explicitly switched
+            setIsVoiceMode(false);
+            setVoiceError(false);
+        }
 
         const handleClickOutside = (event) => {
             if (attachMenuRef.current && !attachMenuRef.current.contains(event.target)) {
@@ -96,7 +99,8 @@ const Chat = ({ isOpen, onClose }) => {
             const recog = new SpeechRecognition();
             recog.continuous = false;
             recog.interimResults = false;
-            recog.lang = 'en-US';
+            // Use current context language for recognition
+            recog.lang = language === 'Hindi' ? 'hi-IN' : 'en-IN';
 
             recog.onstart = () => setIsListening(true);
             recog.onend = () => setIsListening(false);
@@ -117,8 +121,12 @@ const Chat = ({ isOpen, onClose }) => {
                 setIsListening(false);
             };
             setRecognition(recog);
+            
+            return () => {
+                recog.stop();
+            };
         }
-    }, [isVoiceMode]);
+    }, [isVoiceMode, language]);
 
     const handleVoiceSend = async (text) => {
         if (!text.trim()) return;
@@ -126,7 +134,12 @@ const Chat = ({ isOpen, onClose }) => {
         await processChatMessage(text);
     };
 
-    const processChatMessage = async (userText) => {
+    const processChatMessage = async (rawUserText) => {
+        // Filter out special characters, symbols, and emojis - only allow alphabets (any language), digits, and spaces
+        const userText = typeof rawUserText === 'string' 
+            ? rawUserText.replace(/[^\p{L}\p{N}\s]/gu, '').trim()
+            : rawUserText;
+
         const userType = localStorage.getItem('user_type');
         const doctorId = localStorage.getItem('doctor_id');
         const token = localStorage.getItem('token');
@@ -169,8 +182,32 @@ const Chat = ({ isOpen, onClose }) => {
 
             const data = await response.json();
 
-            if (data.reply || data.success === true) {
-                const aiText = data.reply || (data.success ? "Action executed successfully." : "I couldn't find a response.");
+            if (data.reply || data.message || data.success === true) {
+                let aiText = data.reply || data.message || (data.success ? "Action executed successfully." : "I couldn't find a response.");
+
+                // Attempt to parse JSON if the response is a JSON string or wrapped in markdown
+                if (typeof aiText === 'string' && (aiText.trim().startsWith('{') || aiText.trim().startsWith('```'))) {
+                    try {
+                        let cleanText = aiText.trim();
+                        if (cleanText.startsWith('```')) {
+                            // Remove markdown code blocks (e.g., ```json ... ```)
+                            cleanText = cleanText.replace(/^```[a-z]*\n?|```$/g, '').trim();
+                        }
+                        const parsed = JSON.parse(cleanText);
+                        // Extract message, preference for 'message', then 'reply', then 'text'
+                        aiText = parsed.message || parsed.reply || parsed.text || aiText;
+                    } catch (e) {
+                        console.warn('Failed to parse AI response as JSON:', e);
+                    }
+                }
+
+                // Remove only emojis and truly unprintable characters, preserve punctuation for natural speech
+                if (typeof aiText === 'string') {
+                    aiText = aiText.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+                }
+                // Safety net: if empty after filter, use a friendly fallback
+                if (!aiText) aiText = "Hmm, kuch gadbad ho gayi. Ek baar phir try karein.";
+
                 const aiResponse = {
                     id: Date.now() + 1,
                     text: aiText,
@@ -186,7 +223,7 @@ const Chat = ({ isOpen, onClose }) => {
                 // Speak the response if voice mode is active
                 if (isVoiceMode) {
                     speakText(aiText, true, data.audio_url); // Pass true to indicate we want to resume listening after
-                } else if (localStorage.getItem('voice_enabled') === 'true') {
+                } else {
                     speakText(aiText, false, data.audio_url);
                 }
 
@@ -248,9 +285,12 @@ const Chat = ({ isOpen, onClose }) => {
             const targetLang = isHindi ? 'hi-IN' : 'en-IN';
             const voices = window.speechSynthesis.getVoices();
             
-            const preferredVoice = voices.find(v => v.lang === targetLang && (v.name.includes('Google') || v.name.includes('Natural'))) ||
+            // Prioritize higher quality voices (Natural, Google, Neural) for a "normal human accent"
+            const preferredVoice = voices.find(v => v.lang === targetLang && (v.name.includes('Natural') || v.name.includes('Neural'))) ||
+                                 voices.find(v => v.lang === targetLang && v.name.includes('Google')) ||
                                  voices.find(v => v.lang === targetLang) ||
-                                 voices.find(v => (v.name.includes('Google') || v.name.includes('Natural')) && v.lang.startsWith('en')) ||
+                                 voices.find(v => (v.name.includes('Natural') || v.name.includes('Neural')) && v.lang.startsWith('en')) ||
+                                 voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) ||
                                  voices.find(v => v.lang.startsWith('en'));
             
             if (preferredVoice) utterance.voice = preferredVoice;
@@ -297,28 +337,15 @@ const Chat = ({ isOpen, onClose }) => {
         <div className="fixed bottom-10 right-6 z-[10000] pointer-events-none">
             <motion.div
                 layout
-<<<<<<< HEAD
                 initial={{ opacity: 0, y: 50, transformOrigin: 'bottom right' }}
                 animate={{ 
                     opacity: 1, 
                     y: 0,
                     width: showHistory ? '850px' : '480px'
-=======
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                    width: showHistory ? '1000px' : '440px'
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
                 }}
                 exit={{ opacity: 0, y: 50 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-<<<<<<< HEAD
                 className="h-[680px] max-h-[85vh] bg-gradient-to-b from-[#FAD0C4] to-[#F1E1FF] rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/20 overflow-hidden flex pointer-events-auto"
-=======
-                className="h-[650px] max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-[40px] shadow-[0_32px_80px_rgba(0,0,0,0.15)] border border-white/40 overflow-hidden flex pointer-events-auto"
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
             >
                 {/* History Sidebar */}
                 <AnimatePresence>
@@ -331,7 +358,7 @@ const Chat = ({ isOpen, onClose }) => {
                         >
                             <div className="px-8 py-10 border-b border-gray-100/50 shrink-0">
                                 <div className="flex items-center justify-between mb-2">
-                                    <h2 className="text-[26px] font-black text-[#1e293b] tracking-tight">History</h2>
+                                    <h2 className="text-[26px] font-black text-[#1e293b] tracking-tight">{t('history')}</h2>
                                     <button
                                         onClick={() => setShowHistory(false)}
                                         className="p-2 text-gray-400 hover:text-gray-600 transition-all bg-white rounded-full shadow-sm hover:shadow-md"
@@ -339,7 +366,7 @@ const Chat = ({ isOpen, onClose }) => {
                                         <X size={18} />
                                     </button>
                                 </div>
-                                <p className="text-[14px] text-gray-400 font-medium">Your previous health consultations</p>
+                                <p className="text-[14px] text-gray-400 font-medium">{t('previousConsultations')}</p>
                             </div>
 
                             <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
@@ -366,7 +393,7 @@ const Chat = ({ isOpen, onClose }) => {
                                 ) : (
                                     <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                                         <History size={40} className="text-gray-300 mb-3" />
-                                        <p className="text-[15px] font-bold text-gray-400">No sessions yet</p>
+                                        <p className="text-[15px] font-bold text-gray-400">{t('noSessions')}</p>
                                     </div>
                                 )}
                             </div>
@@ -375,7 +402,6 @@ const Chat = ({ isOpen, onClose }) => {
                 </AnimatePresence>
 
                 {/* Main Chat Area */}
-<<<<<<< HEAD
                 <div className="flex-1 flex flex-col min-w-[420px] relative">
                     {/* Voice Mode Overlay */}
                     <AnimatePresence>
@@ -419,17 +445,17 @@ const Chat = ({ isOpen, onClose }) => {
                                 <motion.div 
                                     initial={{ y: 200 }}
                                     animate={{ y: 0 }}
-                                    className="w-[94%] bg-white rounded-[40px] p-8 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] flex flex-col items-center gap-6 mb-4"
+                                    className="w-[94%] bg-white rounded-[40px] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] flex flex-col items-center gap-4 mb-4 shrink-0"
                                 >
                                     <div className="text-center px-2">
-                                        <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">Hi Patient!</p>
+                                        <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">{t('hiPatient')}</p>
                                         {voiceError ? (
                                             <h2 className="text-gray-700 font-bold text-base leading-relaxed max-w-[240px]">
-                                                Unfortunately, we curently cannot connect to the internet. Please try again.
+                                                {t('voiceError')}
                                             </h2>
                                         ) : (
-                                            <h2 className="text-gray-800 font-bold text-2xl tracking-tight max-w-[320px] max-h-[160px] overflow-y-auto custom-scrollbar">
-                                                {isLoading ? "Thinking..." : (messages.length > 0 && messages[messages.length - 1].sender === 'ai' ? messages[messages.length - 1].text : "How can I help you?")}
+                                            <h2 className="text-gray-800 font-bold text-lg tracking-tight max-w-[320px] max-h-[90px] overflow-y-auto custom-scrollbar leading-snug">
+                                                {isLoading ? t('thinking') : (messages.length > 0 && messages[messages.length - 1].sender === 'ai' ? messages[messages.length - 1].text : t('hiPatient'))}
                                             </h2>
                                         )}
                                     </div>
@@ -451,18 +477,24 @@ const Chat = ({ isOpen, onClose }) => {
                                                  </button>
                                              </>
                                          ) : (
-                                             <div className="w-24 h-24 flex items-center justify-center">
-                                                 <div className="w-full h-[2px] bg-gray-100 absolute rotate-45"></div>
-                                             </div>
+                                             <button 
+                                                 onClick={() => setVoiceError(false)}
+                                                 className="relative w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center shadow-inner hover:bg-gray-200 transition-all group"
+                                             >
+                                                 <RefreshCw className="w-8 h-8 text-gray-400 group-hover:rotate-180 transition-transform duration-500" />
+                                                 <div className="w-full h-[2px] bg-gray-300 absolute rotate-45 opacity-50"></div>
+                                             </button>
                                          )}
                                      </div>
 
                                      {!voiceError ? (
                                          <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
-                                             {isLoading ? 'Thinking...' : (isListening ? 'Listening...' : 'Tap to Speak!')}
+                                             {isLoading ? t('thinking') : (isListening ? t('listening') : t('tapToSpeak'))}
                                          </p>
                                      ) : (
-                                         <div className="h-4"></div>
+                                         <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
+                                             {t('tapToRetry')}
+                                         </p>
                                      )}
 
                                      {/* Actions */}
@@ -474,14 +506,14 @@ const Chat = ({ isOpen, onClose }) => {
                                              >
                                                  <Keyboard size={28} className="group-hover:scale-110 transition-transform" />
                                              </button>
-                                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Back to Chat</span>
+                                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('backToChat')}</span>
                                          </div>
                                          
                                          <button 
                                              onClick={() => { setIsVoiceMode(false); setVoiceError(false); }}
                                              className="px-10 py-3.5 bg-gray-50/50 text-gray-500 font-bold text-sm rounded-2xl hover:bg-white hover:shadow-md transition-all border-2 border-gray-100 shadow-sm"
                                          >
-                                             {voiceError ? 'Help' : 'Cancel'}
+                                             {voiceError ? t('help') : t('cancel')}
                                          </button>
                                      </div>
                                  </motion.div>
@@ -504,7 +536,7 @@ const Chat = ({ isOpen, onClose }) => {
                                  </h1>
                                  <div className="flex items-center gap-1.5 mt-0.5">
                                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Online</span>
+                                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('online')}</span>
                                  </div>
                              </div>
                          </div>
@@ -550,7 +582,7 @@ const Chat = ({ isOpen, onClose }) => {
                                                     className="flex items-center gap-1.5 mt-3 text-[9px] font-bold text-[#1A7785] uppercase tracking-wider hover:opacity-80 transition-opacity"
                                                  >
                                                      <Volume2 size={13} />
-                                                     Play Response
+                                                     {t('playResponse')}
                                                  </button>
                                              )}
                                          </div>
@@ -592,9 +624,9 @@ const Chat = ({ isOpen, onClose }) => {
                     />
 
                     <div className="flex items-center justify-between px-2">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Voice Settings</span>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('voiceSettings')}</span>
                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-[#1e293b] uppercase tracking-wider">Voice Mode</span>
+                            <span className="text-[10px] font-bold text-[#1e293b] uppercase tracking-wider">{t('voiceMode')}</span>
                             <button 
                                 onClick={() => {
                                     const newState = !isVoiceMode;
@@ -607,178 +639,6 @@ const Chat = ({ isOpen, onClose }) => {
                             </button>
                         </div>
                     </div>
-
-                {/* Main Input Bar */}
-                <form onSubmit={handleSend} className="relative flex items-center gap-3">
-                    <div className="flex-1 relative flex items-center bg-white/50 border border-gray-200/80 rounded-[24px] px-3 py-1.5 focus-within:border-[#1A7785] focus-within:bg-white transition-all shadow-sm">
-                        
-                        {/* Attachment Menu Pop-up */}
-=======
-                <div className="flex-1 flex flex-col min-w-[440px] bg-gradient-to-b from-white to-[#F8FAFC]">
-                    {/* Header */}
-                    <header className="flex items-center justify-between px-8 py-6 bg-white/50 backdrop-blur-md border-b border-gray-100/80 shrink-0 z-20">
-                        <div className="flex items-center gap-4">
-                            <div className="relative group">
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#1A7785]/10 to-[#1A7785]/5 flex items-center justify-center overflow-visible border border-[#1A7785]/10 shadow-inner"
-                                >
-                                    <img src={vaidyaBot} alt="AI Avatar" className="w-12 h-12 object-contain transform scale-[1.6]" />
-                                </motion.div>
-                                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-[3px] border-white shadow-sm ring-4 ring-green-500/10"></div>
-                            </div>
-                            <div>
-                                <h1 className="text-[18px] font-black text-[#1e293b] tracking-tight">VaidyaGo AI</h1>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <span className="flex h-2 w-2 relative">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                                    </span>
-                                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Active Now</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            {!showHistory && (
-                                <button
-                                    onClick={() => setShowHistory(true)}
-                                    className="p-3 text-gray-400 hover:text-[#19718A] transition-all bg-gray-50 rounded-2xl hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100"
-                                >
-                                    <History size={20} />
-                                </button>
-                            )}
-                            <button onClick={onClose} className="p-3 text-gray-400 hover:text-red-500 transition-all bg-gray-50 rounded-2xl hover:bg-red-50 hover:shadow-md border border-transparent hover:border-red-100">
-                                <X size={20} />
-                            </button>
-                        </div>
-                    </header>
-
-                    {/* Chat Content */}
-                    <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 custom-scrollbar scroll-smooth">
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
-                        <AnimatePresence>
-                            {messages.map((msg, idx) => (
-                                <motion.div
-                                    key={msg.id}
-                                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                                >
-                                    <div className={`flex gap-4 max-w-[88%] ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}>
-                                        {msg.sender === 'ai' && (
-                                            <div className="w-10 h-10 rounded-xl bg-gray-100/50 flex items-center justify-center shrink-0 mt-1 border border-gray-100 shadow-sm">
-                                                <img src={vaidyaBot} alt="AI" className="w-8 h-8 object-contain transform scale-150" />
-                                            </div>
-                                        )}
-
-                                        <div className={`space-y-1.5 ${msg.sender === 'user' ? 'items-end' : 'items-start'} flex flex-col`}>
-                                            <div className={`px-5 py-4 rounded-[24px] text-[15px] font-medium leading-relaxed shadow-sm transition-all duration-300 ${msg.sender === 'user'
-                                                    ? 'bg-[#1e293b] text-white rounded-tr-none hover:shadow-md'
-                                                    : 'bg-white text-[#334155] rounded-tl-none border border-gray-100 hover:shadow-md'
-                                                }`}>
-                                                <p>{msg.text}</p>
-
-                                                {msg.sender === 'ai' && (
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                        className="flex items-center gap-2 mt-4 px-3 py-1.5 bg-[#1A7785]/5 text-[10px] font-black text-[#1A7785] uppercase tracking-wider rounded-lg hover:bg-[#1A7785]/10 transition-colors"
-                                                    >
-                                                        <Volume2 size={14} />
-                                                        Play Response
-                                                    </motion.button>
-                                                )}
-                                            </div>
-                                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-tighter px-1">
-                                                {msg.time}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
-<<<<<<< HEAD
-
-                        <button 
-                            type="button" 
-                            onClick={() => setIsAttachMenuOpen(!isAttachMenuOpen)}
-                            className={`p-1.5 transition-all rounded-full flex items-center justify-center ${
-                                isAttachMenuOpen ? 'bg-[#1A7785] text-white rotate-45 shadow-lg' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                            }`}
-                        >
-                            <Plus size={20} />
-                        </button>
-
-                        <input 
-                            type="text" 
-                            value={inputText}
-                            onChange={(e) => setInputText(e.target.value)}
-                            placeholder="Ask VaidyaGo anything..."
-                            className="flex-1 bg-transparent border-none outline-none px-2 text-[14px] text-[#334155] placeholder:text-gray-400"
-                        />
-                        <div className="flex items-center gap-2">
-                            <button 
-                                type="button" 
-                                onClick={() => { setIsVoiceMode(true); setVoiceError(false); }}
-                                className="p-1.5 bg-red-500/10 rounded-full hover:bg-red-500/20 transition-all flex items-center justify-center"
-                            >
-                                <img src={voiceIcon} alt="Mic" className="w-4 h-4 object-contain" />
-                            </button>
-                            <button 
-                                type="submit"
-                                disabled={!inputText.trim()}
-                                className={`p-2 rounded-full shadow-md transition-all transform active:scale-90 ${
-                                    inputText.trim() 
-                                    ? 'bg-[#1A7785] text-white hover:bg-[#165E68]' 
-                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                }`}
-                            >
-                                <Send size={18} />
-                            </button>
-                        </div>
-=======
-                        <div ref={messagesEndRef} />
->>>>>>> 0dff796a9dc2227c2daca6e9b95626b11c8eae0e
-                    </div>
-
-                    {/* Input Footer */}
-                    <div className="bg-[#F1F5F9] border-t border-gray-200/60 p-4 space-y-3 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] z-20">
-
-                        {/* Hidden Inputs for Functionality */}
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            className="hidden"
-                            onChange={(e) => console.log('File selected:', e.target.files[0])}
-                        />
-                        <input
-                            type="file"
-                            ref={imageInputRef}
-                            accept="image/*,video/*"
-                            className="hidden"
-                            onChange={(e) => console.log('Image/Video selected:', e.target.files[0])}
-                        />
-                        <input
-                            type="file"
-                            ref={cameraInputRef}
-                            accept="image/*"
-                            capture="environment"
-                            className="hidden"
-                            onChange={(e) => console.log('Camera capture:', e.target.files[0])}
-                        />
-
-                        <div className="flex items-center justify-between px-2">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Voice Settings</span>
-                            <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-bold text-[#1e293b] uppercase tracking-wider">Voice Mode</span>
-                                <button
-                                    onClick={() => setIsVoiceMode(!isVoiceMode)}
-                                    className={`w-9 h-5 rounded-full transition-colors relative ${isVoiceMode ? 'bg-[#1A7785]' : 'bg-gray-200'}`}
-                                >
-                                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${isVoiceMode ? 'left-4.5' : 'left-0.5'}`}></div>
-                                </button>
-                            </div>
-                        </div>
 
                         {/* Main Input Bar */}
                         <form onSubmit={handleSend} className="relative flex items-center gap-3">
@@ -868,12 +728,20 @@ const Chat = ({ isOpen, onClose }) => {
                                     type="text"
                                     value={inputText}
                                     onChange={(e) => setInputText(e.target.value)}
-                                    placeholder="Ask VaidyaGo anything..."
+                                    placeholder={t('askAnything')}
                                     className="flex-1 bg-transparent border-none outline-none px-2 text-[14px] text-[#334155] placeholder:text-gray-400"
                                 />
                                 <div className="flex items-center gap-2">
-                                    <button type="button" className="p-1.5 bg-red-500/10 text-red-500 rounded-full hover:bg-red-500/20 transition-all">
-                                        <Mic size={18} />
+                                    <button
+                                        type="button"
+                                        onClick={() => { 
+                                            setIsVoiceMode(true); 
+                                            setVoiceError(false);
+                                            setTimeout(startListening, 500);
+                                        }}
+                                        className="p-1.5 bg-red-500/10 rounded-full hover:bg-red-500/20 transition-all flex items-center justify-center"
+                                    >
+                                        <img src={voiceIcon} alt="Mic" className="w-4 h-4 object-contain" />
                                     </button>
                                     <button
                                         type="submit"
@@ -892,21 +760,7 @@ const Chat = ({ isOpen, onClose }) => {
                             VaidyaGo AI may produce inaccurate information.
                         </p>
                     </div>
-
-                    <style jsx>{`
-                    .custom-scrollbar::-webkit-scrollbar {
-                        width: 4px;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-track {
-                        background: transparent;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background: #cbd5e1;
-                    }
-                `}</style>
                 </div>
-
-                {/* History Overlay removed - now integrated as Sidebar */}
             </motion.div>
         </div>
     );
