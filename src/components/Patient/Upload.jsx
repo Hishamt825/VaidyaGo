@@ -1,19 +1,83 @@
 import React, { useState } from 'react';
 import { X, ArrowLeft, Upload as UploadIcon, Camera, ChevronRight, ShieldCheck, FileText } from 'lucide-react';
+import BASE_URL from '../../baseUrl';
+import { useNavigate } from 'react-router-dom';
 
-const Upload = ({ onClose }) => {
+const Upload = ({ onClose, onSuccess, uploadRestriction }) => {
+    const navigate = useNavigate();
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const isCovidMode = uploadRestriction === 'covid';
+    const modalTitle = isCovidMode ? 'Upload COVID-19 Report' : 'Upload Prescription';
+    const modalSubtitle = isCovidMode
+        ? 'Upload your COVID-19 vaccination certificate or test report to sync results.'
+        : 'Upload your physical prescription to quickly sync medications.';
+    const actionLabel = isCovidMode ? 'Analyze Report' : 'Analyze RX';
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setSelectedFile(file);
+            setAnalysisResult(null);
+            setErrorMessage('');
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreview(reader.result);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleAnalyze = async () => {
+        if (!selectedFile) return;
+        setErrorMessage('');
+        setIsAnalyzing(true);
+
+        const formData = new FormData();
+        if (selectedFile.type.startsWith('image/')) {
+            formData.append('image', selectedFile);
+        } else {
+            formData.append('file', selectedFile);
+        }
+        if (uploadRestriction) {
+            formData.append('restrict_to', uploadRestriction);
+        }
+
+        const token = localStorage.getItem('token') || localStorage.getItem('access');
+        try {
+            const response = await fetch(`${BASE_URL}/api/prescriptions/upload/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            const details = data.extraction_details || data.extraction_details?.[0] || null;
+
+            if (response.ok) {
+                setAnalysisResult(details);
+                localStorage.setItem('prescriptionUploaded', 'true');
+                if (onSuccess) {
+                    onSuccess();
+                } else {
+                    navigate('/Patient_dashboard1');
+                    if (onClose) onClose();
+                }
+            } else {
+                setErrorMessage(data.error || 'Upload failed while analyzing the prescription.');
+                console.error('Upload failed', data);
+            }
+        } catch (error) {
+            setErrorMessage('Error analyzing prescription. Please try again.');
+            console.error('Error:', error);
+        } finally {
+            setIsAnalyzing(false);
         }
     };
 
@@ -34,7 +98,7 @@ const Upload = ({ onClose }) => {
                         <button onClick={onClose} className="text-gray-400 hover:text-[#0D1C2E] transition-colors">
                             <ArrowLeft size={18} />
                         </button>
-                        <h2 className="text-[16px] font-bold text-[#0D1C2E]">Upload Prescription</h2>
+                        <h2 className="text-[16px] font-bold text-[#0D1C2E]">{modalTitle}</h2>
                     </div>
                     <button 
                         onClick={onClose}
@@ -47,9 +111,9 @@ const Upload = ({ onClose }) => {
                 <div className="px-6 pb-6">
                     {/* Title & Description */}
                     <div className="mt-4 mb-4">
-                        <h3 className="text-[20px] font-bold text-[#1A4568] mb-1 tracking-tight">Digitize your RX</h3>
+                        <h3 className="text-[20px] font-bold text-[#1A4568] mb-1 tracking-tight">{modalTitle}</h3>
                         <p className="text-[13px] text-[#5A6F82] font-medium leading-relaxed">
-                            Upload your physical prescription to quickly sync medications.
+                            {modalSubtitle}
                         </p>
                     </div>
 
@@ -83,7 +147,14 @@ const Upload = ({ onClose }) => {
                     {/* Preview Section */}
                     <div className="mb-6">
                         <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-[12px] font-bold text-[#0D1C2E]">Preview</h4>
+                            <div>
+                                <h4 className="text-[12px] font-bold text-[#0D1C2E]">Preview</h4>
+                                {analysisResult?.document_type && (
+                                    <p className="text-[11px] text-[#1A7785] font-semibold mt-1">
+                                        Recognized as: {analysisResult.document_type}
+                                    </p>
+                                )}
+                            </div>
                             <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded truncate max-w-[150px]">
                                 {selectedFile ? selectedFile.name : 'No file'}
                             </span>
@@ -99,6 +170,9 @@ const Upload = ({ onClose }) => {
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#F2F6F8] to-transparent opacity-60" />
                         </div>
+                        {errorMessage && (
+                            <p className="text-[12px] text-[#D84C4C] mt-2">{errorMessage}</p>
+                        )}
                     </div>
 
                     {/* Footer Actions */}
@@ -115,10 +189,11 @@ const Upload = ({ onClose }) => {
                                 Cancel
                             </button>
                             <button 
-                                disabled={!selectedFile}
+                                onClick={handleAnalyze}
+                                disabled={!selectedFile || isAnalyzing}
                                 className={`px-6 py-2.5 rounded-full font-bold text-[13px] transition-all active:scale-95 shadow-lg shadow-[#1A7785]/20 ${selectedFile ? 'bg-gradient-to-r from-[#1A4568] to-[#1A7785] text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
                             >
-                                Analyze RX
+                                {isAnalyzing ? 'Analyzing...' : actionLabel}
                             </button>
                         </div>
                     </div>

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../../baseUrl';
+import apiFetch from '../../../api';
 import './Myrecord.css';
 
 // Imported components
@@ -59,7 +61,87 @@ const Myrecord = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [uploadedDocument, setUploadedDocument] = useState(null);
+  const [prescriptions, setPrescriptions] = useState([]);
+  const [isAnalyzingUpload, setIsAnalyzingUpload] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  const openUploadPicker = () => {
+    setUploadError('');
+    fileInputRef.current?.click();
+  };
+
+  const getPrescriptionUrl = (item) => {
+    const path = item.image || item.file || '';
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+
+  const fetchPrescriptions = async () => {
+    try {
+      const response = await apiFetch(`${BASE_URL}/api/prescriptions/`);
+      if (response.ok) {
+        const data = await response.json();
+        setPrescriptions(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Fetch prescriptions error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrescriptions();
+  }, []);
+
+  const handleUploadFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError('');
+    setUploadedDocument(null);
+    setIsAnalyzingUpload(true);
+
+    const formData = new FormData();
+    if (file.type.startsWith('image/')) {
+      formData.append('image', file);
+    } else {
+      formData.append('file', file);
+    }
+
+    const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+    const token = localStorage.getItem('token') || localStorage.getItem('access');
+    try {
+      const response = await fetch(`${BASE_URL}/api/prescriptions/upload/`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        const details = data.extraction_details || (Array.isArray(data.extraction_details) ? data.extraction_details[0] : data.extraction_details) || null;
+        const name = details?.document_type || details?.summary || file.name || 'Uploaded Scan';
+        setUploadedDocument({
+          document_type: name,
+          document_name: name,
+          preview: previewUrl,
+        });
+        await fetchPrescriptions();
+      } else {
+        setUploadError(data.error || 'Unable to analyze the uploaded document.');
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadError('Error analyzing the upload. Please try again.');
+    } finally {
+      setIsAnalyzingUpload(false);
+    }
+  };
 
   return (
     <div
@@ -210,7 +292,7 @@ const Myrecord = () => {
         </div>
 
         {/* Imaging Section */}
-        <h3 className="m-section-title"><Icon name="imaging" /> Imaging & Radiology</h3>
+        <h3 className="m-section-title"><Icon name="imaging" /> Uploaded Image</h3>
         <div className="m-scan-row">
           <div className="m-scan-card">
             <div className="m-scan-img-box">
@@ -230,20 +312,55 @@ const Myrecord = () => {
               <p>Oct 02, 2023 • Radiance Center</p>
             </div>
           </div>
-          <div className="m-scan-card">
-            <div className="m-scan-img-box" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <Icon name="overview" style={{ opacity: 0.1, transform: 'scale(2)' }} />
-            </div>
-            <div className="m-scan-info">
-              <h4>Dental OPG Scan</h4>
-              <p style={{ color: '#3182ce', fontWeight: 600 }}>Processing Results...</p>
-            </div>
-          </div>
-          <div className="m-request-card">
+          {prescriptions.filter(item => item.image || item.file).map((item) => {
+            const url = getPrescriptionUrl(item);
+            const title = item.document_name || item.document_type || 'Uploaded Scan';
+            const isImage = item.image || (item.file && item.file.match(/\.(jpg|jpeg|png|gif)$/i));
+            return (
+              <div key={item.id} className="m-scan-card">
+                <div className="m-scan-img-box" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {isImage && url ? (
+                    <img src={url} alt={title} className="w-full h-full object-cover" />
+                  ) : (
+                    <Icon name="overview" style={{ opacity: 0.1, transform: 'scale(2)' }} />
+                  )}
+                </div>
+                <div className="m-scan-info">
+                  <h4>{title}</h4>
+                  <p style={{ color: '#3182ce', fontWeight: 600 }}>{item.prescription_date ? item.prescription_date : 'Saved Scan'}</p>
+                </div>
+              </div>
+            );
+          })}
+          <div
+            className="m-request-card"
+            onClick={openUploadPicker}
+            style={{ cursor: 'pointer' }}
+          >
              <Icon name="imaging" style={{ marginBottom: 10, opacity: 0.5 }} />
-             <b style={{ color: '#1e293b', fontSize: 13 }}>Request Older Scans</b>
-             <p style={{ fontSize: 10, marginTop: 5 }}>Archives from 2020-2022 available</p>
+             <b style={{ color: '#1e293b', fontSize: 13 }}>
+               {uploadedDocument ? 'Saved Document' : 'Upload Section'}
+             </b>
+             <p style={{ fontSize: 10, marginTop: 5 }}>
+               {uploadedDocument
+                 ? isAnalyzingUpload
+                   ? 'Analyzing uploaded scan...'
+                   : uploadedDocument.document_type || uploadedDocument.document_name
+                 : 'Archives from 2020-2022 available'}
+             </p>
+             {uploadError && (
+               <p style={{ fontSize: 10, marginTop: 5, color: '#D84C4C' }}>
+                 {uploadError}
+               </p>
+             )}
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf, .jpg, .jpeg, .png"
+            className="hidden"
+            onChange={handleUploadFile}
+          />
         </div>
 
         {/* Timeline Section */}

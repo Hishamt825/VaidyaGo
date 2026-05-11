@@ -1,14 +1,76 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Video, MessageSquare, Calendar, ChevronRight, ArrowLeft, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../baseUrl';
+import apiFetch from '../../api';
 
 const Book = ({ onClose }) => {
     const navigate = useNavigate();
-    const specialists = [
-        { name: 'Dr. Elena Rodriguez', specialty: 'Cardiology', exp: '12 years exp.', rating: '4.9', fee: '$120/session', img: 'https://api.dicebear.com/7.x/notionists/svg?seed=Jessica' },
-        { name: 'Dr. Marcus Chen', specialty: 'Neurology', exp: '8 years exp.', rating: '4.7', fee: '$150/session', img: 'https://api.dicebear.com/7.x/notionists/svg?seed=Marcus' },
-        { name: 'Dr. Sarah Jenkins', specialty: 'Pediatrics', exp: '15 years exp.', rating: '5.0', fee: '$100/session', img: 'https://api.dicebear.com/7.x/notionists/svg?seed=Sarah' },
-    ];
+    const [specialists, setSpecialists] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const [docsRes, prescriptionsRes, apptsRes, activeRes] = await Promise.all([
+                    apiFetch(`${BASE_URL}/api/approved-doctors/`),
+                    apiFetch(`${BASE_URL}/api/prescriptions/`),
+                    apiFetch(`${BASE_URL}/api/appointments/list/`),
+                    apiFetch(`${BASE_URL}/api/prescriptions/active/`)
+                ]);
+
+                if (docsRes.ok && prescriptionsRes.ok && apptsRes.ok) {
+                    const allDoctors = await docsRes.json();
+                    const prescriptions = await prescriptionsRes.json();
+                    const appointments = await apptsRes.json();
+                    const activePrescription = activeRes.ok ? await activeRes.json() : null;
+
+                    const filtered = allDoctors.filter(doc => {
+                        const fullName = `${doc.first_name} ${doc.last_name}`.toLowerCase();
+                        
+                        // 1. Matches name in prescription
+                        const inPrescription = prescriptions.some(p => 
+                            p.doctor_name?.toLowerCase().includes(fullName) || 
+                            fullName.includes(p.doctor_name?.toLowerCase())
+                        );
+
+                        // 2. Has had a consultation (appointment)
+                        const hasConsultation = appointments.some(app => 
+                            app.doctor === doc.id || (app.doctor && app.doctor.id === doc.id)
+                        );
+
+                        // 3. Specialty matches disease (extracted from active prescription)
+                        let diseaseMatched = false;
+                        if (activePrescription && doc.specialization) {
+                            const spec = doc.specialization.toLowerCase();
+                            const summary = (activePrescription.summary || "").toLowerCase();
+                            const findings = (activePrescription.findings || []).join(" ").toLowerCase();
+                            if (summary.includes(spec) || findings.includes(spec)) {
+                                diseaseMatched = true;
+                            }
+                        }
+
+                        return inPrescription || hasConsultation || diseaseMatched;
+                    });
+
+                    setSpecialists(filtered.map(doc => ({
+                        name: `Dr. ${doc.first_name} ${doc.last_name}`,
+                        specialty: doc.specialization || doc.department || 'Specialist',
+                        exp: `${doc.years_of_experience || 0} years exp.`,
+                        rating: '4.8',
+                        fee: '$100/session',
+                        img: `https://api.dicebear.com/7.x/notionists/svg?seed=${doc.first_name}`
+                    })));
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     return (
         <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 animate-in fade-in duration-300">
@@ -104,31 +166,37 @@ const Book = ({ onClose }) => {
                             </button>
                         </div>
                         <div className="space-y-3">
-                            {specialists.map((doc, i) => (
-                                <div key={i} className="bg-white p-4 rounded-[24px] flex items-center justify-between group hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-[#6ED4D4]/30">
-                                    <div className="flex items-center gap-4">
-                                        <div className="relative">
-                                            <div className="w-14 h-14 rounded-full bg-[#F1F6F8] overflow-hidden border-2 border-white shadow-sm flex items-center justify-center pt-2">
-                                                <img src={doc.img} alt={doc.name} className="w-12 h-12" />
-                                            </div>
-                                            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#6ED4D4] border-2 border-white rounded-full" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-[15px] font-bold text-[#0D1C2E]">{doc.name}</h4>
-                                            <p className="text-[12px] text-gray-400 font-medium">{doc.specialty} • {doc.exp}</p>
-                                            <div className="flex items-center gap-3 mt-1">
-                                                <div className="flex items-center gap-1 text-[#1A7785] text-[11px] font-black">
-                                                    ★ {doc.rating}
+                            {isLoading ? (
+                                <div className="text-center py-8 text-gray-400 font-medium">Loading specialists...</div>
+                            ) : specialists.length === 0 ? (
+                                <div className="text-center py-8 text-gray-400 font-medium italic">No specialists found matching your records.</div>
+                            ) : (
+                                specialists.map((doc, i) => (
+                                    <div key={i} className="bg-white p-4 rounded-[24px] flex items-center justify-between group hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-[#6ED4D4]/30">
+                                        <div className="flex items-center gap-4">
+                                            <div className="relative">
+                                                <div className="w-14 h-14 rounded-full bg-[#F1F6F8] overflow-hidden border-2 border-white shadow-sm flex items-center justify-center pt-2">
+                                                    <img src={doc.img} alt={doc.name} className="w-12 h-12" />
                                                 </div>
-                                                <div className="text-gray-300 text-[12px] font-medium">{doc.fee}</div>
+                                                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#6ED4D4] border-2 border-white rounded-full" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-[15px] font-bold text-[#0D1C2E]">{doc.name}</h4>
+                                                <p className="text-[12px] text-gray-400 font-medium">{doc.specialty} • {doc.exp}</p>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <div className="flex items-center gap-1 text-[#1A7785] text-[11px] font-black">
+                                                        ★ {doc.rating}
+                                                    </div>
+                                                    <div className="text-gray-300 text-[12px] font-medium">{doc.fee}</div>
+                                                </div>
                                             </div>
                                         </div>
+                                        <div className="w-10 h-10 rounded-full bg-[#F1F6F8] flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
+                                            <ChevronRight size={20} />
+                                        </div>
                                     </div>
-                                    <div className="w-10 h-10 rounded-full bg-[#F1F6F8] flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
-                                        <ChevronRight size={20} />
-                                    </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>

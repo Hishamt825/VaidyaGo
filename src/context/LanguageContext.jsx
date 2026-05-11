@@ -74,7 +74,8 @@ export const translations = {
     aiGreeting: "Hello! I am VaidyaGo AI, your health assistant. How can I assist you today?",
     doctorGreeting: "Hello Doctor! I am your clinical assistant. How can I help with your patients or schedule today?",
     adminGreeting: "Welcome back, Admin. Vado SuperAdmin systems are online. How can I assist with platform operations today?",
-    voiceError: "Unfortunately, we currently cannot connect to the internet. Please try again.",
+    voiceError: "Unfortunately, we couldn't start voice mode. Please check your internet connection.",
+    micError: "Microphone access is blocked. Please enable it in your browser settings to use voice mode.",
     tapToRetry: "Tap to Retry!"
   },
   Hindi: {
@@ -148,7 +149,8 @@ export const translations = {
     aiGreeting: "नमस्ते! मैं वैद्यगो AI हूँ, आपका स्वास्थ्य सहायक। मैं आज आपकी कैसे मदद कर सकता हूँ?",
     doctorGreeting: "नमस्ते डॉक्टर! मैं आपका नैदानिक सहायक हूँ। मैं आज आपके मरीजों या शेड्यूल में कैसे मदद कर सकता हूँ?",
     adminGreeting: "वापसी पर स्वागत है, एडमिन। वाडो सुपरएडमिन सिस्टम ऑनलाइन हैं। मैं आज प्लेटफॉर्म संचालन में कैसे सहायता कर सकता हूँ?",
-    voiceError: "दुर्भाग्य से, हम वर्तमान में इंटरनेट से नहीं जुड़ पा रहे हैं। कृपया पुन: प्रयास करें।",
+    voiceError: "दुर्भाग्य से, हम वॉयस मोड शुरू नहीं कर सके। कृपया अपना इंटरनेट कनेक्शन जांचें।",
+    micError: "माइक्रोफ़ोन एक्सेस ब्लॉक है। वॉयस मोड का उपयोग करने के लिए कृपया अपनी ब्राउज़र सेटिंग्स में इसे सक्षम करें।",
     tapToRetry: "पुन: प्रयास करने के लिए टैप करें!"
   }
 };

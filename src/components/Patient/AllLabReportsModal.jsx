@@ -1,13 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import BASE_URL from '../../baseUrl';
+import apiFetch from '../../api';
 
 const AllLabReportsModal = ({ onClose, onShareAll }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFilter, setActiveFilter] = useState('Recent');
     const [currentPage, setCurrentPage] = useState(1);
+    const [labReports, setLabReports] = useState([]);
+    const [isLoadingReports, setIsLoadingReports] = useState(true);
 
     const filters = ['Recent', 'Normal', 'Follow-up', 'Pending'];
     
-    const allReports = [
+    useEffect(() => {
+        const fetchLabReports = async () => {
+            setIsLoadingReports(true);
+            try {
+                const response = await apiFetch(`${BASE_URL}/api/prescriptions/`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const reportsData = Array.isArray(data) ? data : [];
+                    const filteredLabReports = reportsData.filter((report) => {
+                        const type = (report.document_type || '').toLowerCase();
+                        const hasAttachment = Boolean(report.image || report.file);
+                        return type.includes('lab report') || type.includes('lab') || (!type && hasAttachment);
+                    });
+                    setLabReports(filteredLabReports);
+                }
+            } catch (error) {
+                console.error('Error fetching lab reports:', error);
+            } finally {
+                setIsLoadingReports(false);
+            }
+        };
+
+        fetchLabReports();
+    }, []);
+
+    const defaultReports = [
         { id: 1, name: 'Thyroid Profile (T3, T4, TSH)', date: 'Oct 15, 2023', lab: 'Metropolis Labs', status: 'Normal', icon: 'lab' },
         { id: 2, name: 'Vitamin D-25 Hydroxy', date: 'Oct 12, 2023', lab: 'Quest Diagnostics', status: 'Follow-up Required', icon: 'blood' },
         { id: 3, name: 'Complete Blood Count (CBC)', date: 'Oct 10, 2023', lab: 'VaidyaGo Internal Lab', status: 'Pending', icon: 'microscope' },
@@ -24,7 +53,20 @@ const AllLabReportsModal = ({ onClose, onShareAll }) => {
         }
     };
 
-    const filteredReports = allReports.filter(report => {
+    const reportList = labReports.length > 0 ? labReports.map((report) => ({
+        id: report.id,
+        name: report.document_name || report.document_type || 'Medical Report',
+        date: report.prescription_date
+            ? new Date(report.prescription_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : report.created_at
+                ? new Date(report.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                : 'Unknown date',
+        lab: report.hospital_name || 'Diagnostic Center',
+        status: report.status === 'completed' ? 'Normal' : report.status === 'active' ? 'Pending' : 'Follow-up Required',
+        icon: 'lab'
+    })) : defaultReports;
+
+    const filteredReports = reportList.filter(report => {
         const matchesSearch = report.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                              report.lab.toLowerCase().includes(searchQuery.toLowerCase());
         

@@ -59,11 +59,11 @@ const miniScheduleData = [
 ];
 
 const appRequestsData = [
-    { name: "Riya madeshiya", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
-    { name: "Riya madeshiya", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
-    { name: "Riya madeshiya", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
-    { name: "Riya madeshiya", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
-    { name: "Riya madeshiya", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
+    { name: "sita", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
+    { name: "sita", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
+    { name: "sita", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
+    { name: "sita", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
+    { name: "sita", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
 ];
 
 const recentPatientsData = [
@@ -84,6 +84,14 @@ const Doctor_dashboard = () => {
     const [isConsultationsModalOpen, setIsConsultationsModalOpen] = useState(false);
     const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
     const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
+    const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
+    const [selectedRescheduleRequest, setSelectedRescheduleRequest] = useState(null);
+    const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+    const [selectedAcceptRequest, setSelectedAcceptRequest] = useState(null);
+    const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+    const [selectedRejectRequest, setSelectedRejectRequest] = useState(null);
+    const [rejectReason, setRejectReason] = useState("");
+    const [rejectNotes, setRejectNotes] = useState("");
     const menuRef = useRef(null);
 
     // Dashboard States
@@ -101,6 +109,104 @@ const Doctor_dashboard = () => {
 
     // Mobile Sidebar State
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [userName, setUserName] = useState(localStorage.getItem("user_full_name") || "Doctor");
+
+    // Appointment Integration States
+    const [appointments, setAppointments] = useState([]);
+    const [loadingAppointments, setLoadingAppointments] = useState(true);
+
+    const fetchAppointments = async () => {
+        const docId = localStorage.getItem("doctor_id");
+        const token = localStorage.getItem("token");
+        if (!docId || !token) return;
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/pending/?doctor_id=${docId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setAppointments(data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch appointments:", err);
+        } finally {
+            setLoadingAppointments(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isApproved) {
+            fetchAppointments();
+        }
+    }, [isApproved]);
+
+    const handleAccept = (req) => {
+        setSelectedAcceptRequest(req);
+        setIsAcceptModalOpen(true);
+    };
+
+    const confirmAccept = async (id) => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/${id}/accept/`, {
+                method: 'PATCH',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}` 
+                }
+            });
+            if (response.ok) {
+                setIsAcceptModalOpen(false);
+                fetchAppointments(); // Refresh list
+            }
+        } catch (err) {
+            console.error("Accept failed:", err);
+        }
+    };
+
+    const handleDecline = (req) => {
+        setSelectedRejectRequest(req);
+        setIsRejectModalOpen(true);
+    };
+
+    const confirmReject = async (id) => {
+        const token = localStorage.getItem("token");
+        const finalReason = rejectReason + (rejectNotes ? `: ${rejectNotes}` : "");
+        if (!finalReason) {
+            alert("Please provide a reason for rejection.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/${id}/reject/`, {
+                method: 'PATCH',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}` 
+                },
+                body: JSON.stringify({ reason: finalReason })
+            });
+            if (response.ok) {
+                setIsRejectModalOpen(false);
+                setRejectReason("");
+                setRejectNotes("");
+                fetchAppointments(); // Refresh list
+            }
+        } catch (err) {
+            console.error("Reject failed:", err);
+        }
+    };
+
+    const formatDate = (dateStr) => {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toLowerCase();
+    };
+
+    const formatTime = (dateStr) => {
+        const d = new Date(dateStr);
+        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
+    };
 
 
 
@@ -132,6 +238,13 @@ const Doctor_dashboard = () => {
                     const data = await response.json();
                     const status = data.status ? data.status.toLowerCase() : 'incomplete';
                     
+                    // Update user_full_name in localStorage from API data
+                    if (data.first_name) {
+                        const fullName = `${data.first_name} ${data.last_name || ""}`.trim();
+                        localStorage.setItem("user_full_name", fullName);
+                        setUserName(fullName);
+                    }
+
                     if (status === 'approved' || status === 'active') {
                         setIsApproved(true);
                         setShowPendingModal(false);
@@ -251,9 +364,8 @@ const Doctor_dashboard = () => {
                                 <div className="flex flex-col items-end">
                                     <span className="text-[17px] font-bold text-gray-800 leading-tight">
                                         {(() => {
-                                            const name = localStorage.getItem("user_full_name") || "Doctor";
-                                            if (name.toLowerCase().includes("admin") || name.toLowerCase().includes("javedtuba")) return "Doctor";
-                                            return name;
+                                            if (userName.toLowerCase().includes("admin") || userName.toLowerCase().includes("javedtuba")) return "Doctor";
+                                            return userName;
                                         })()}
                                     </span>
                                     <span className="text-[11px] font-bold text-[#1b738c]">Doctor</span>
@@ -288,9 +400,8 @@ const Doctor_dashboard = () => {
                             <div className="bg-[#1b738b] rounded-xl p-[22px] flex flex-col justify-center h-[120px]">
                                 <h2 className="text-[30px] font-bold text-white leading-tight">
                                     Hello Dr.{(() => {
-                                        const fullName = localStorage.getItem("user_full_name") || "";
-                                        if (!fullName || fullName.toLowerCase().includes("admin") || fullName.toLowerCase().includes("javedtuba")) return "Doctor";
-                                        return fullName.split(' ')[0];
+                                        if (!userName || userName.toLowerCase().includes("admin") || userName.toLowerCase().includes("javedtuba")) return "Doctor";
+                                        return userName.split(' ')[0];
                                     })()}
                                 </h2>
                                 <p className="text-[14px] text-[#86cfe4] font-medium leading-snug mt-[4px]">
@@ -368,98 +479,6 @@ const Doctor_dashboard = () => {
                                 </div>
                             </div>
 
-                            {/* Activity Section */}
-                            <div className="bg-white border-[1.5px] border-gray-100 rounded-xl p-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col h-[340px]">
-                                <div className="flex items-center justify-between mb-[20px]">
-                                    <h3 className="text-[24px] font-bold text-[#111]">Activity</h3>
-                                    <div className="flex items-center gap-[15px] bg-gray-50 px-3 py-1 rounded-md border border-gray-200">
-                                        <select className="bg-transparent text-[14px] font-bold text-gray-600 outline-none cursor-pointer">
-                                            <option>weekly</option>
-                                            <option>monthly</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="flex-1 w-full ml-[-20px] h-[220px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={activityData} margin={{ top: 10, right: 10, left: 0, bottom: 35 }}>
-                                            <defs>
-                                                <linearGradient id="colorConsultations" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#1e3a8a" stopOpacity={0.15} />
-                                                    <stop offset="95%" stopColor="#1e3a8a" stopOpacity={0} />
-                                                </linearGradient>
-                                                <linearGradient id="colorPatients" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.15} />
-                                                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                                            <XAxis dataKey="month" axisLine={false} tickLine={false} interval={0} tick={{ fontSize: 12, fontWeight: 700, fill: '#64748b' }} dy={15} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 700, fill: '#64748b' }} ticks={[0, 50, 100, 150, 200]} />
-                                            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 16px rgba(0,0,0,0.08)' }} />
-                                            <Area type="monotone" dataKey="Consultations" stroke="#0a1d37" strokeWidth={3} fillOpacity={1} fill="url(#colorConsultations)" />
-                                            <Area type="monotone" dataKey="Patients" stroke="#2c9daf" strokeWidth={3} fillOpacity={1} fill="url(#colorPatients)" />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <div className="flex justify-center gap-[30px] mt-[10px]">
-                                    <div className="flex items-center gap-[8px]">
-                                        <div className="w-[12px] h-[12px] rounded-full bg-[#1e3a8a]"></div>
-                                        <span className="text-[12px] font-bold text-gray-600">Consultations</span>
-                                    </div>
-                                    <div className="flex items-center gap-[8px]">
-                                        <div className="w-[12px] h-[12px] rounded-full bg-[#06b6d4]"></div>
-                                        <span className="text-[12px] font-bold text-gray-600">Patients</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Recent Patients Section */}
-                            <div className="bg-white border-[1.5px] border-gray-300 rounded-xl p-[20px] shadow-sm flex flex-col mb-[20px]">
-                                <h3 className="text-[30px] font-bold text-[#111] mb-[15px]">Recent Patients</h3>
-
-                                {/* Header Labels */}
-                                <div className="overflow-x-auto min-w-full">
-                                    <div className="flex min-w-[800px] px-[10px] mb-[8px] text-[14px] font-bold text-gray-400">
-                                        <div className="w-[180px]">Name</div>
-                                        <div className="w-[100px]">Gender</div>
-                                        <div className="w-[100px]">Weight</div>
-                                        <div className="w-[100px]">Disease</div>
-                                        <div className="w-[80px]">Date</div>
-                                        <div className="w-[120px]">Heart Rate</div>
-                                        <div className="w-[100px]">Blood Type</div>
-                                        <div className="flex-1 text-right">Status</div>
-                                    </div>
-
-                                    {/* Patient Rows */}
-                                    <div className="flex flex-col gap-[8px] min-w-[800px]">
-                                        {recentPatientsData.map((p, i) => (
-                                            <div key={i} className="border border-gray-300 rounded-[4px] p-[8px] flex items-center text-[13.5px] font-semibold text-[#111] bg-white group hover:border-gray-400 transition-colors">
-                                                <div className="w-[180px] flex items-center gap-[10px]">
-                                                    <div className="w-[36px] h-[36px] rounded-full overflow-hidden shrink-0 border border-gray-100">
-                                                        <img src={phImg} alt="" className="w-full h-full object-cover" />
-                                                    </div>
-                                                    <span className="truncate">{p.name}</span>
-                                                </div>
-                                                <div className="w-[100px] text-gray-600">{p.gender}</div>
-                                                <div className="w-[100px] text-gray-600">59kg</div>
-                                                <div className="w-[100px] text-gray-600">Typhoid</div>
-                                                <div className="w-[80px] text-gray-600">14 feb</div>
-                                                <div className="w-[120px] text-gray-600">59 bpm</div>
-                                                <div className="w-[100px] text-gray-600">AB</div>
-                                                <div className="flex-1 text-right">
-                                                    <span className="text-[#111]">OutPatient</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => navigate("/Patients")}
-                                    className="text-[#32869e] text-[14px] font-bold hover:underline mt-[12px] self-end pr-[5px]"
-                                >
-                                    View More
-                                </button>
-                            </div>
                         </div>
 
                         {/* Right Column (Cards) */}
@@ -636,45 +655,176 @@ const Doctor_dashboard = () => {
                                 </div>
                             </div>
 
-                            {/* Card 3: Appointment Request Section */}
-                            <div className="bg-white border-[1.5px] border-gray-300 rounded-xl p-[12px] shadow-sm flex flex-col">
-                                <h3 className="text-[24px] font-bold text-[#111] mb-[10px]">Appointment Request</h3>
-                                <div className="flex flex-col gap-[6px]">
-                                    {appRequestsData.map((req, i) => (
-                                        <div key={i} className="border border-gray-200 rounded-[4px] p-[6px] flex flex-col gap-[2px] relative bg-white hover:border-gray-300 transition-colors">
-                                            {/* Top Row */}
-                                            <div className="flex justify-between items-start">
-                                                <div className="flex gap-[12px] items-center">
-                                                    <div className="w-[52px] h-[52px] rounded-full overflow-hidden shrink-0 border border-gray-100">
-                                                        <img src={phImg} alt="" className="w-full h-full object-cover" />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <div className="text-[16px] font-bold text-[#111] leading-tight">Riya madeshiya</div>
-                                                        <div className="text-[13px] text-gray-400 font-bold mt-[2px]">Female , 30</div>
-                                                    </div>
+                        </div>
+                    </div>
+
+                    {/* Appointment Request Section - Full Width */}
+                    <div className="mt-[25px] pb-[30px]">
+                        <div className="bg-white border-[1.5px] border-gray-300 rounded-2xl p-[30px] shadow-sm flex flex-col">
+                            <h3 className="text-[32px] font-bold text-[#111] mb-[20px]">Appointment Request</h3>
+                            <div className="flex flex-col gap-[15px]">
+                                {loadingAppointments ? (
+                                    <div className="flex items-center justify-center py-12">
+                                        <div className="w-10 h-10 border-4 border-[#1b738c] border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                ) : appointments.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                                        <svg className="w-16 h-16 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p className="text-[16px] font-bold">No pending requests</p>
+                                    </div>
+                                ) : (
+                                    appointments.map((req, i) => (
+                                        <div key={req.id || i} className="border border-gray-200 rounded-xl p-[20px] flex flex-col gap-[4px] relative bg-white hover:border-[#1b738c]/30 transition-all shadow-sm">
+                                            {/* Date at Top Right */}
+                                            <div className="absolute top-[20px] right-[25px] text-[15px] font-bold text-gray-400">{formatDate(req.start_time)}</div>
+                                            
+                                            {/* Top Row: Image and Name/Info */}
+                                            <div className="flex gap-[20px] items-center">
+                                                <div className="w-[75px] h-[75px] rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm">
+                                                    <img src={phImg} alt="" className="w-full h-full object-cover" />
                                                 </div>
-                                                <div className="text-[11px] font-bold text-gray-400 mt-[1px] pr-[2px]">{req.date}</div>
+                                                <div className="flex flex-col">
+                                                    <div className="text-[24px] font-bold text-[#111] leading-tight">{req.patient_name}</div>
+                                                    <div className="text-[15px] text-gray-500 font-bold mt-[2px]">{req.patient_gender || 'Not specified'} , {req.patient_age || '--'}</div>
+                                                </div>
                                             </div>
 
-                                            {/* Bottom Row */}
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-[6px]">
-                                                    <div className="text-[13px] font-bold text-[#32869e]">Treatment -Regular Checkup</div>
-                                                    <div className="bg-[#f3f4f6] border border-gray-300 text-[11px] font-bold px-[8px] py-[2px] rounded-full text-gray-500 uppercase">10 am</div>
+                                            {/* Bottom Row: Treatment, Time, and Buttons */}
+                                            <div className="flex items-center justify-between mt-[4px] pl-[95px]">
+                                                <div className="flex items-center gap-[15px]">
+                                                    <div className="text-[15px] font-bold text-[#32869e] tracking-tight">Treatment -{req.appointment_type || 'General'}</div>
+                                                    <div className="bg-[#e5e7eb] text-[13px] font-bold px-[15px] py-[4px] rounded-full text-gray-600 shadow-sm">{formatTime(req.start_time)}</div>
                                                 </div>
-                                                <div className="flex gap-[6px]">
-                                                    <button className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-[15px] py-[3.5px] rounded-[4px] text-[12px] font-bold shadow-sm transition-all whitespace-nowrap">Accept</button>
-                                                    <button className="bg-[#f87171] hover:bg-[#ef4444] text-white px-[15px] py-[3.5px] rounded-[4px] text-[12px] font-bold shadow-sm transition-all whitespace-nowrap">Decline</button>
+
+                                                <div className="flex gap-[12px]">
+                                                    <button 
+                                                        onClick={() => {
+                                                            setSelectedRescheduleRequest(req);
+                                                            setIsRescheduleModalOpen(true);
+                                                        }}
+                                                        className="bg-[#4391a4] hover:bg-[#367a8a] text-white px-[25px] py-[7px] rounded-[8px] text-[15px] font-bold shadow-sm transition-all min-w-[110px]"
+                                                    >
+                                                        Schedule
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleAccept(req)}
+                                                        className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-[25px] py-[7px] rounded-[8px] text-[15px] font-bold shadow-sm transition-all min-w-[110px]"
+                                                    >
+                                                        Accept
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDecline(req)}
+                                                        className="bg-[#f87171] hover:bg-[#ef4444] text-white px-[25px] py-[7px] rounded-[8px] text-[15px] font-bold shadow-sm transition-all min-w-[110px]"
+                                                    >
+                                                        Decline
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
+                                    ))
+                                )}
+                                <button 
+                                    onClick={() => navigate('/AppointmentRequests')}
+                                    className="text-[#32869e] text-[16px] font-bold hover:underline mt-[15px] self-end pr-[10px]"
+                                >
+                                    View More
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent Patients Section - Full Width */}
+                    <div className="mt-[25px]">
+                        <div className="bg-white border-[1.5px] border-gray-300 rounded-2xl p-[30px] shadow-sm flex flex-col">
+                            <h3 className="text-[32px] font-bold text-[#111] mb-[20px]">Recent Patients</h3>
+                            
+                            <div className="overflow-x-auto min-w-full">
+                                <div className="flex min-w-[800px] px-[10px] mb-[12px] text-[15px] font-bold text-gray-400 border-b border-gray-100 pb-2">
+                                    <div className="w-[200px]">Name</div>
+                                    <div className="w-[120px]">Gender</div>
+                                    <div className="w-[120px]">Weight</div>
+                                    <div className="w-[120px]">Disease</div>
+                                    <div className="w-[100px]">Date</div>
+                                    <div className="w-[140px]">Heart Rate</div>
+                                    <div className="w-[120px]">Blood Type</div>
+                                    <div className="flex-1 text-right">Status</div>
+                                </div>
+
+                                <div className="flex flex-col gap-[10px]">
+                                    {recentPatientsData.map((p, i) => (
+                                        <div key={i} className="border border-gray-200 rounded-xl p-[12px] flex items-center text-[15px] font-bold text-[#111] bg-white group hover:border-[#1b738c]/30 transition-all shadow-sm">
+                                            <div className="w-[200px] flex items-center gap-[12px]">
+                                                <div className="w-[45px] h-[45px] rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm">
+                                                    <img src={phImg} alt="" className="w-full h-full object-cover" />
+                                                </div>
+                                                <span className="truncate">{p.name}</span>
+                                            </div>
+                                            <div className="w-[120px] text-gray-500">{p.gender}</div>
+                                            <div className="w-[120px] text-gray-500">59kg</div>
+                                            <div className="w-[120px] text-gray-500">Typhoid</div>
+                                            <div className="w-[100px] text-gray-500">14 feb</div>
+                                            <div className="w-[140px] text-gray-500">59 bpm</div>
+                                            <div className="w-[120px] text-gray-500">AB</div>
+                                            <div className="flex-1 text-right">
+                                                <span className="text-gray-800">OutPatient</span>
+                                            </div>
+                                        </div>
                                     ))}
-                                    <button 
-                                        onClick={() => navigate('/AppointmentRequests')}
-                                        className="text-[#32869e] text-[13px] font-bold hover:underline mt-[6px] self-end pr-[4px]"
-                                    >
-                                        View More
-                                    </button>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => navigate("/Patients")}
+                                className="text-[#32869e] text-[16px] font-bold hover:underline mt-[20px] self-end pr-[10px]"
+                            >
+                                View More
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Activity Section - Full Width */}
+                    <div className="mt-[25px] pb-[30px]">
+                        <div className="bg-white border-[1.5px] border-gray-300 rounded-2xl p-[30px] shadow-sm flex flex-col h-[450px]">
+                            <div className="flex items-center justify-between mb-[25px]">
+                                <h3 className="text-[32px] font-bold text-[#111]">Activity</h3>
+                                <div className="flex items-center gap-[15px] bg-gray-50 px-4 py-2 rounded-xl border border-gray-200">
+                                    <select className="bg-transparent text-[15px] font-bold text-gray-600 outline-none cursor-pointer">
+                                        <option>weekly</option>
+                                        <option>monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="flex-1 w-full ml-[-20px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={activityData} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
+                                        <defs>
+                                            <linearGradient id="colorConsultations" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#1e3a8a" stopOpacity={0.15} />
+                                                <stop offset="95%" stopColor="#1e3a8a" stopOpacity={0} />
+                                            </linearGradient>
+                                            <linearGradient id="colorPatients" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.15} />
+                                                <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                                        <XAxis dataKey="month" axisLine={false} tickLine={false} interval={0} tick={{ fontSize: 13, fontWeight: 700, fill: '#64748b' }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 13, fontWeight: 700, fill: '#64748b' }} ticks={[0, 50, 100, 150, 200]} />
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 12px 24px rgba(0,0,0,0.1)' }} />
+                                        <Area type="monotone" dataKey="Consultations" stroke="#0a1d37" strokeWidth={4} fillOpacity={1} fill="url(#colorConsultations)" />
+                                        <Area type="monotone" dataKey="Patients" stroke="#2c9daf" strokeWidth={4} fillOpacity={1} fill="url(#colorPatients)" />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <div className="flex justify-center gap-[40px] mt-[20px]">
+                                <div className="flex items-center gap-[10px]">
+                                    <div className="w-[14px] h-[14px] rounded-full bg-[#1e3a8a]"></div>
+                                    <span className="text-[14px] font-bold text-gray-600">Consultations</span>
+                                </div>
+                                <div className="flex items-center gap-[10px]">
+                                    <div className="w-[14px] h-[14px] rounded-full bg-[#06b6d4]"></div>
+                                    <span className="text-[14px] font-bold text-gray-600">Patients</span>
                                 </div>
                             </div>
                         </div>
@@ -997,6 +1147,392 @@ const Doctor_dashboard = () => {
                                     className="w-full mt-8 bg-red-600 text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all active:scale-[0.98]"
                                 >
                                     Close
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+            
+            {/* Reschedule Modal */}
+            <AnimatePresence>
+                {isRescheduleModalOpen && (
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/50 backdrop-blur-[2px]">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[24px] shadow-2xl w-full max-w-[700px] overflow-hidden border border-gray-100 flex flex-col"
+                        >
+                            {/* Modal Header */}
+                            <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-start">
+                                <div>
+                                    <h2 className="text-[24px] font-bold text-[#111] tracking-tight">Reschedule Appointment</h2>
+                                    <p className="text-[14px] text-gray-500 font-medium mt-1">Modify the timing for Patient ID: #MR-{selectedRescheduleRequest?.id || '8821'}</p>
+                                </div>
+                                <button 
+                                    onClick={() => setIsRescheduleModalOpen(false)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="p-8 space-y-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
+                                {/* Current Appointment Info */}
+                                <div className="bg-[#f0f9fa] border-l-[4px] border-[#1b738c] rounded-xl p-5 flex items-center gap-5">
+                                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm text-[#1b738c]">
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-[12px] font-bold text-[#1b738c] uppercase tracking-wider">Current Appointment</p>
+                                        <p className="text-[18px] font-bold text-[#111] mt-1">
+                                            {selectedRescheduleRequest ? formatDate(selectedRescheduleRequest.start_time) : 'Oct 24, 2023'} at {selectedRescheduleRequest ? formatTime(selectedRescheduleRequest.start_time).toUpperCase() : '09:30 AM'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Mini Calendar Side */}
+                                    <div className="flex flex-col gap-4">
+                                        <h3 className="text-[16px] font-bold text-[#111]">Select Date</h3>
+                                        <div className="border border-gray-200 rounded-2xl p-5 shadow-sm bg-white">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <span className="text-[16px] font-bold text-gray-800">November 2023</span>
+                                                <div className="flex gap-2">
+                                                    <button className="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-400">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+                                                    </button>
+                                                    <button className="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-400">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-7 gap-y-4 text-center">
+                                                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
+                                                    <span key={d} className="text-[12px] font-bold text-gray-400">{d}</span>
+                                                ))}
+                                                {[29, 30, 31, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((day, i) => (
+                                                    <div key={i} className={`text-[14px] font-bold h-9 w-9 flex items-center justify-center mx-auto rounded-full cursor-pointer transition-all ${day === 6 ? 'bg-[#1b738c] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'} ${i < 3 ? 'text-gray-300' : ''}`}>
+                                                        {day}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Slots Side */}
+                                    <div className="flex flex-col gap-4">
+                                        <h3 className="text-[16px] font-bold text-[#111]">Available Slots</h3>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {[
+                                                { time: '08:00 AM', status: 'Available' },
+                                                { time: '09:30 AM', status: 'Available' },
+                                                { time: '11:00 AM', status: 'Selected' },
+                                                { time: '12:30 PM', status: 'Reserved' },
+                                                { time: '02:00 PM', status: 'Available' },
+                                                { time: '03:30 PM', status: 'Available' }
+                                            ].map((slot, i) => (
+                                                <div 
+                                                    key={i} 
+                                                    className={`p-3 border rounded-xl flex flex-col gap-0.5 cursor-pointer transition-all ${
+                                                        slot.status === 'Selected' ? 'border-[#1b738c] bg-[#f0f9fa] ring-1 ring-[#1b738c]' : 
+                                                        slot.status === 'Reserved' ? 'border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed' : 
+                                                        'border-gray-200 hover:border-[#1b738c] hover:bg-gray-50'
+                                                    }`}
+                                                >
+                                                    <span className={`text-[14px] font-bold ${slot.status === 'Selected' ? 'text-[#1b738c]' : 'text-[#333]'}`}>{slot.time}</span>
+                                                    <span className={`text-[11px] font-medium ${slot.status === 'Selected' ? 'text-[#1b738c]' : 'text-gray-400'}`}>{slot.status}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Reason Area */}
+                                <div className="flex flex-col gap-4">
+                                    <h3 className="text-[16px] font-bold text-[#111]">Reason for Rescheduling</h3>
+                                    <textarea 
+                                        placeholder="e.g., Patient requested earlier slot..."
+                                        className="w-full h-24 p-5 bg-[#f3f4f6] border border-gray-200 rounded-2xl text-[14px] font-medium outline-none focus:border-[#1b738c] transition-all resize-none"
+                                    ></textarea>
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="px-8 py-6 border-t border-gray-100 flex justify-end items-center gap-6">
+                                <button 
+                                    onClick={() => setIsRescheduleModalOpen(false)}
+                                    className="text-[15px] font-bold text-gray-500 hover:text-[#111] transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button className="bg-[#006977] hover:bg-[#005a66] text-white px-8 py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#006977]/20 flex items-center gap-2 transition-all active:scale-[0.98]">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Propose New Time
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Accept Appointment Modal */}
+            <AnimatePresence>
+                {isAcceptModalOpen && (
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/50 backdrop-blur-[2px]">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[24px] shadow-2xl w-full max-w-[620px] overflow-hidden border border-gray-100 flex flex-col"
+                        >
+                            {/* Header */}
+                            <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
+                                <h2 className="text-[24px] font-bold text-[#111] tracking-tight">Accept Appointment</h2>
+                                <button 
+                                    onClick={() => setIsAcceptModalOpen(false)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="p-8 space-y-7">
+                                {/* Patient Details Card */}
+                                <div className="bg-[#f0f9fa] border border-[#1b738c]/20 rounded-2xl p-6 flex items-center gap-6 shadow-sm">
+                                    <div className="w-[64px] h-[64px] bg-[#c8e2e9] rounded-full flex items-center justify-center text-[#1b738c] shadow-inner">
+                                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[12px] font-bold text-[#1b738c] uppercase tracking-wider mb-1">Patient Details</span>
+                                        <h3 className="text-[22px] font-bold text-[#111] leading-tight">{selectedAcceptRequest?.patient_name || 'Alexander L right'}</h3>
+                                        <div className="flex items-center gap-4 mt-2 text-gray-500 font-bold text-[14px]">
+                                            <div className="flex items-center gap-1.5">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 15.546c.053.164.082.34.082.522 0 1.035-.84 1.875-1.875 1.875H4.792c-1.035 0-1.875-.84-1.875-1.875 0-.182.029-.358.082-.522jM21 15.546V6a2 2 0 00-2-2H5a2 2 0 00-2 2v9.546m18 0l-9 5.25-9-5.25" /></svg>
+                                                <span>{selectedAcceptRequest?.patient_age || '42'} years</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3v8h8a10.003 10.003 0 00-5.456-8.99l-.054-.09A10.003 10.003 0 0012 3" /></svg>
+                                                <span>ID: MRN-{selectedAcceptRequest?.id || '88210'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Appointment Metadata Grid */}
+                                <div className="grid grid-cols-2 gap-5">
+                                    <div className="flex flex-col gap-2">
+                                        <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest ml-1">Appointment Type</span>
+                                        <div className="bg-[#f3f4f6] border border-gray-200 rounded-xl p-4 flex items-center gap-3">
+                                            <div className="text-[#1b738c]">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[16px] font-bold text-gray-800">{selectedAcceptRequest?.appointment_type || 'Follow-up Exam'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest ml-1">Requested Time Slot</span>
+                                        <div className="bg-[#f3f4f6] border border-gray-200 rounded-xl p-4 flex items-center gap-3">
+                                            <div className="text-[#1b738c]">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[16px] font-bold text-gray-800">
+                                                {selectedAcceptRequest ? formatTime(selectedAcceptRequest.start_time) : '14:30'} - {selectedAcceptRequest ? formatTime(selectedAcceptRequest.end_time) : '15:15'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Schedule Detail Card */}
+                                <div className="border-[1.5px] border-dashed border-gray-300 rounded-2xl p-6 relative">
+                                    <div className="absolute top-4 right-4 bg-[#f0f9fa] text-[#1b738c] text-[11px] font-bold px-2 py-0.5 rounded-md">GMT-5</div>
+                                    <div className="flex flex-col gap-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="text-[#1b738c]">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[18px] font-bold text-[#111]">
+                                                {selectedAcceptRequest ? new Date(selectedAcceptRequest.start_time).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'Tuesday, October 24th, 2023'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-3 ml-1">
+                                            <div className="text-gray-400">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[14px] font-bold text-gray-500">Main Surgery Center, Wing B, Room 402</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Automation Notice */}
+                                <div className="flex gap-4 p-1">
+                                    <div className="w-6 h-6 shrink-0 text-gray-400 mt-0.5">
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-[13px] text-gray-500 font-medium leading-relaxed">
+                                        Confirming this appointment will automatically notify the patient via email and update your surgical department calendar.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="px-8 py-6 bg-gray-50/50 border-t border-gray-100 flex justify-end items-center gap-6">
+                                <button 
+                                    onClick={() => setIsAcceptModalOpen(false)}
+                                    className="text-[15px] font-bold text-gray-500 hover:text-[#111] transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={() => confirmAccept(selectedAcceptRequest.id)}
+                                    className="bg-[#006977] hover:bg-[#005a66] text-white px-8 py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#006977]/20 flex items-center gap-2 transition-all active:scale-[0.98]"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Confirm Appointment
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Reject Appointment Modal */}
+            <AnimatePresence>
+                {isRejectModalOpen && (
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/50 backdrop-blur-[2px]">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[24px] shadow-2xl w-full max-w-[620px] overflow-hidden border border-gray-100 flex flex-col"
+                        >
+                            {/* Header */}
+                            <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
+                                <div>
+                                    <h2 className="text-[24px] font-bold text-[#111] tracking-tight">Reject Appointment</h2>
+                                    <p className="text-[14px] text-gray-500 font-medium mt-1">Review request and provide a clinical reason</p>
+                                </div>
+                                <button 
+                                    onClick={() => setIsRejectModalOpen(false)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="p-8 space-y-7">
+                                {/* Request Summary Card */}
+                                <div className="bg-[#f8fafb] border border-gray-200 rounded-2xl p-6 flex flex-col gap-5 shadow-sm">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-[50px] h-[50px] bg-[#3b82f6]/10 rounded-full flex items-center justify-center text-[#3b82f6] shadow-sm">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-[20px] font-bold text-[#111]">{selectedRejectRequest?.patient_name || 'Sarah Jenkins'}</h3>
+                                                <div className="flex items-center gap-2 text-gray-400 font-bold text-[14px] mt-0.5">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                    <span>
+                                                        {selectedRejectRequest ? new Date(selectedRejectRequest.start_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'October 24, 2023'} • {selectedRejectRequest ? formatTime(selectedRejectRequest.start_time).toUpperCase() : '09:15 AM'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span className="text-[11px] font-bold text-red-600 bg-red-100 px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">Urgent Request</span>
+                                    </div>
+                                    
+                                    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                                        <p className="text-[14px] text-gray-600 italic leading-relaxed font-medium">
+                                            "Persistent lower back pain for 3 days. Difficulty sleeping and radiating pain to left leg. Requesting an immediate consultation."
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Rejection Inputs */}
+                                <div className="space-y-5">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[13px] font-bold text-gray-500 uppercase tracking-widest ml-1">Reason for Rejection</label>
+                                        <div className="relative">
+                                            <select 
+                                                value={rejectReason}
+                                                onChange={(e) => setRejectReason(e.target.value)}
+                                                className="w-full p-4 bg-white border border-gray-200 rounded-xl text-[15px] font-bold text-gray-800 outline-none focus:border-[#ef4444] transition-all appearance-none cursor-pointer shadow-sm"
+                                            >
+                                                <option value="" disabled>Select a clinical reason...</option>
+                                                <option value="Schedule Conflict">Schedule Conflict</option>
+                                                <option value="Outside Specialty">Outside Specialty Area</option>
+                                                <option value="Incomplete Records">Incomplete Medical Records</option>
+                                                <option value="Capacity Full">Maximum Patient Capacity Reached</option>
+                                                <option value="Other">Other (Specify below)</option>
+                                            </select>
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <textarea 
+                                            value={rejectNotes}
+                                            onChange={(e) => setRejectNotes(e.target.value.slice(0, 500))}
+                                            placeholder="Provide additional clinical details or specify 'Other' reason..."
+                                            className="w-full h-[120px] p-5 bg-white border border-gray-200 rounded-xl text-[15px] font-medium text-gray-800 outline-none focus:border-[#ef4444] transition-all resize-none shadow-sm"
+                                        ></textarea>
+                                        <div className="flex justify-between items-center px-1">
+                                            <span className="text-[12px] text-gray-400 font-bold">Clinical notes will be shared with the patient.</span>
+                                            <span className={`text-[12px] font-bold ${rejectNotes.length >= 450 ? 'text-red-500' : 'text-gray-400'}`}>
+                                                {rejectNotes.length} / 500
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="px-8 py-6 bg-gray-50/50 border-t border-gray-100 flex justify-between items-center">
+                                <button 
+                                    onClick={() => setIsRejectModalOpen(false)}
+                                    className="flex items-center gap-2 text-[15px] font-bold text-gray-600 hover:text-[#111] transition-all border border-gray-300 px-6 py-3 rounded-xl hover:bg-white"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                                    Go Back
+                                </button>
+                                <button 
+                                    onClick={() => confirmReject(selectedRejectRequest.id)}
+                                    className="bg-[#ff5b5b] hover:bg-[#ef4444] text-white px-8 py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-red-500/20 flex items-center gap-2 transition-all active:scale-[0.98]"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2zM9 13h6" />
+                                    </svg>
+                                    Reject Request
                                 </button>
                             </div>
                         </motion.div>

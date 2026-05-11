@@ -1,10 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Refill from './Refill';
 import Download from './Download';
 
-const Daily_report = ({ onClose }) => {
+const Daily_report = ({ onClose, schedule = [] }) => {
     const [isRefillOpen, setIsRefillOpen] = useState(false);
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+
+    const totalDoses = schedule.length;
+    const takenDoses = schedule.filter(s => s.is_taken).length;
+    const progress = totalDoses > 0 ? Math.round((takenDoses / totalDoses) * 100) : 0;
+    
+    const nextDose = schedule
+        .filter(s => !s.is_taken)
+        .sort((a, b) => a.time.localeCompare(b.time))[0];
+
+    const [timeLeft, setTimeLeft] = useState('00:00:00');
+
+    useEffect(() => {
+        if (!nextDose) {
+            setTimeLeft('00:00:00');
+            return;
+        }
+
+        const updateTimer = () => {
+            const now = new Date();
+            const [hours, minutes] = nextDose.time.split(':');
+            const target = new Date();
+            target.setHours(parseInt(hours), parseInt(minutes), 0);
+
+            if (target < now) {
+                target.setDate(target.getDate() + 1);
+            }
+
+            const diff = target - now;
+            const h = Math.floor(diff / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+            setTimeLeft(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+        };
+
+        updateTimer();
+        const timer = setInterval(updateTimer, 1000);
+        return () => clearInterval(timer);
+    }, [nextDose]);
+
+    const todayDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const statusText = progress === 100 ? 'Completed' : (progress > 50 ? 'On Track' : 'Ongoing');
+
     return (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
             {/* Backdrop Blur */}
@@ -40,13 +83,13 @@ const Daily_report = ({ onClose }) => {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-[9px] font-bold text-white/50 uppercase tracking-[0.2em] mb-1">Date</p>
-                            <p className="text-[15px] font-bold leading-tight tracking-tight">Your Daily Health Summary</p>
+                            <p className="text-[15px] font-bold leading-tight tracking-tight">{todayDate}</p>
                         </div>
                         <div className="border-l border-white/10 pl-4 relative">
                             <p className="text-[9px] font-bold text-white/50 uppercase tracking-[0.2em] mb-1">Status</p>
                             <div className="flex items-start gap-2">
-                                <div className="w-1.5 h-3 rounded-full bg-[#0D1C2E] mt-0.5 shrink-0 opacity-80"></div>
-                                <p className="text-[15px] font-bold leading-tight tracking-tight">Your Daily Health Summary</p>
+                                <div className={`w-1.5 h-3 rounded-full mt-0.5 shrink-0 opacity-80 ${progress === 100 ? 'bg-green-400' : 'bg-[#0D1C2E]'}`}></div>
+                                <p className="text-[15px] font-bold leading-tight tracking-tight">{statusText}</p>
                             </div>
                         </div>
                     </div>
@@ -56,35 +99,42 @@ const Daily_report = ({ onClose }) => {
                 <div className="p-4 md:p-5">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="text-[13px] font-[900] text-[#0D1C2E]">Your Progress Today</h3>
-                        <span className="text-[14px] font-black text-[#1A7785]">92%</span>
+                        <span className="text-[14px] font-black text-[#1A7785]">{progress}%</span>
                     </div>
                     
                     <div className="h-1.5 w-full bg-[#EAEFF2] rounded-full mb-3 overflow-hidden">
                         <div 
                             className="h-full bg-gradient-to-r from-[#0B4A54] to-[#1A7785] rounded-full transition-all duration-1000"
-                            style={{ width: '92%' }}
+                            style={{ width: `${progress}%` }}
                         ></div>
                     </div>
 
                     <p className="text-[#627382] text-[12.5px] leading-relaxed mb-4 font-medium">
-                        You're doing great, Alex! You've taken 11 out of 12 doses on time.
+                        {progress === 100 ? "Amazing! You've completed all your doses for today." : 
+                         `You're doing great! You've taken ${takenDoses} out of ${totalDoses} doses on time.`}
                     </p>
 
                     {/* Next Step Card */}
-                    <div className="bg-[#F8FBFC] rounded-[20px] p-4 border border-[#E9F3F5] relative overflow-hidden shadow-sm">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <span className="inline-block bg-[#006A70] text-white text-[8px] font-bold px-2 py-0.5 rounded-md uppercase tracking-widest mb-2">Next Steps</span>
-                                <h4 className="text-[17px] font-bold text-[#0D1C2E]">Lisinopril</h4>
-                                <p className="text-[12px] text-[#627382] font-medium">10mg Oral Tablet</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-[9px] font-bold text-[#627382] uppercase tracking-wider mb-0.5">Take at 2:00 PM</p>
-                                <p className="text-[20px] font-black text-[#0D1C2E] leading-none mb-0.5 tracking-tight">01:42:08</p>
-                                <p className="text-[8px] font-bold text-[#1A7785] uppercase tracking-wider">Until next dose</p>
+                    {nextDose ? (
+                        <div className="bg-[#F8FBFC] rounded-[20px] p-4 border border-[#E9F3F5] relative overflow-hidden shadow-sm">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <span className="inline-block bg-[#006A70] text-white text-[8px] font-bold px-2 py-0.5 rounded-md uppercase tracking-widest mb-2">Next Steps</span>
+                                    <h4 className="text-[17px] font-bold text-[#0D1C2E]">{nextDose.medication_name}</h4>
+                                    <p className="text-[12px] text-[#627382] font-medium">{nextDose.dosage}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[9px] font-bold text-[#627382] uppercase tracking-wider mb-0.5">Take at {nextDose.time.slice(0, 5)}</p>
+                                    <p className="text-[20px] font-black text-[#0D1C2E] leading-none mb-0.5 tracking-tight">{timeLeft}</p>
+                                    <p className="text-[8px] font-bold text-[#1A7785] uppercase tracking-wider">Until next dose</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="bg-[#F8FBFC] rounded-[20px] p-6 border border-[#E9F3F5] text-center shadow-sm">
+                            <p className="text-[#627382] text-[14px] font-medium italic">No upcoming doses for today.</p>
+                        </div>
+                    )}
 
                     {/* Actions */}
                     <div className="mt-5">

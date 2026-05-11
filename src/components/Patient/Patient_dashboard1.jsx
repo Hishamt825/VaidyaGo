@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import BASE_URL from '../../baseUrl';
+import apiFetch from '../../api';
 import logoUrl from '../../assets/vadyago_pat.png';
 import phImg from '../../assets/ph.png';
 import Sidebar from './Patient_sidebar';
@@ -24,10 +26,45 @@ const Patient_dashboard1 = () => {
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [isRecordOpen, setIsRecordOpen] = useState(false);
 
+    // Data states
+    const [todaySchedule, setTodaySchedule] = useState([]);
+    const [prescriptions, setPrescriptions] = useState([]);
+    const [activePrescription, setActivePrescription] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
     const navigate = useNavigate();
     const location = useLocation();
 
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const [scheduleRes, prescriptionRes, activeRes] = await Promise.all([
+                apiFetch(`${BASE_URL}/today-schedule/today/`),
+                apiFetch(`${BASE_URL}/api/prescriptions/`),
+                apiFetch(`${BASE_URL}/api/prescriptions/active/`)
+            ]);
+
+            if (scheduleRes.ok) {
+                const scheduleData = await scheduleRes.json();
+                setTodaySchedule(Array.isArray(scheduleData) ? scheduleData : []);
+            }
+            if (prescriptionRes.ok) {
+                const prescriptionData = await prescriptionRes.json();
+                setPrescriptions(Array.isArray(prescriptionData) ? prescriptionData : []);
+            }
+            if (activeRes.ok) {
+                const activeData = await activeRes.json();
+                setActivePrescription(activeData);
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
+        fetchData();
         if (location.state?.reopenBook) {
             setIsBookOpen(true);
             window.history.replaceState({}, document.title);
@@ -168,7 +205,9 @@ const Patient_dashboard1 = () => {
                                             </svg>
                                         </div>
                                         <div className="bg-[#F2F7F9] rounded-[18px] rounded-tl-none p-3.5 text-[14px] text-[#425565] leading-relaxed font-medium border border-[#E1EEF2]">
-                                            Based on your recent reports, I've noticed a slight elevation in your glucose levels. Are you experiencing any fatigue or increased thirst today?
+                                            {activePrescription 
+                                                ? `Based on your recent report from ${activePrescription.hospital_name || 'the clinic'}, I've analyzed your ${activePrescription.medicines?.length || 0} prescribed medications. Don't forget to take your ${activePrescription.medicines?.[0]?.name || 'meds'} today.`
+                                                : "I'm ready to analyze your medical records. Upload a prescription to get personalized health insights."}
                                         </div>
                                     </div>
 
@@ -316,28 +355,37 @@ const Patient_dashboard1 = () => {
                                 <div className="flex items-center justify-between mb-4">
                                     <h2 className="text-[18px] font-medium tracking-tight text-[#0D1C2E]">Reminders</h2>
                                     <div className="w-5 h-5 rounded-full bg-[#FFD6D6] flex items-center justify-center">
-                                        <span className="text-[14px] font-medium text-[#E5484D]">2</span>
+                                        <span className="text-[14px] font-medium text-[#E5484D]">{todaySchedule.filter(s => !s.is_taken).length}</span>
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-[12px]">
-                                    {/* Medication */}
-                                    <div className="bg-[#F6FAFB] rounded-[16px] p-[16px] flex items-center justify-between border border-[#EDF5F6]">
-                                        <div className="flex items-center gap-[16px]">
-                                            <div className="w-[42px] h-[42px] bg-[#126478] rounded-[12px] shadow-sm flex items-center justify-center">
-                                                <svg className="w-[20px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 15L15 9" />
-                                                </svg>
+                                <div className="flex flex-col gap-[12px] max-h-[280px] overflow-y-auto pr-1">
+                                    {isLoading ? (
+                                        <p className="text-gray-400 text-sm italic">Loading reminders...</p>
+                                    ) : todaySchedule.length === 0 ? (
+                                        <p className="text-gray-400 text-sm italic">No medications scheduled for today.</p>
+                                    ) : (
+                                        todaySchedule.map((item) => (
+                                            <div key={item.id} className={`bg-[#F6FAFB] rounded-[16px] p-[16px] flex items-center justify-between border border-[#EDF5F6] ${item.is_taken ? 'opacity-60' : ''}`}>
+                                                <div className="flex items-center gap-[16px]">
+                                                    <div className={`w-[42px] h-[42px] rounded-[12px] shadow-sm flex items-center justify-center ${item.is_taken ? 'bg-gray-400' : 'bg-[#126478]'}`}>
+                                                        <svg className="w-[20px] h-[20px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 15L15 9" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[16px] font-[800] text-[#0D1C2E]">{item.medication_name} {item.dosage}</p>
+                                                        <p className={`text-[16px] font-medium tracking-wider uppercase mt-[4px] ${item.is_taken ? 'text-gray-500' : 'text-[#126478]'}`}>
+                                                            {item.frequency} • {item.time.slice(0, 5)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className={`w-[8px] h-[8px] rounded-full ${item.is_taken ? 'bg-gray-300' : 'bg-[#1e8f85] shadow-[0_0_8px_rgba(30,143,133,0.5)]'}`} />
                                             </div>
-                                            <div>
-                                                <p className="text-[16px] font-[800] text-[#0D1C2E]">Metformin 500mg</p>
-                                                <p className="text-[16px] font-medium tracking-wider text-[#126478] uppercase mt-[4px]">After Breakfast • 09:00 AM</p>
-                                            </div>
-                                        </div>
-                                        <div className="w-[8px] h-[8px] rounded-full bg-[#1e8f85] shadow-[0_0_8px_rgba(30,143,133,0.5)]" />
-                                    </div>
+                                        ))
+                                    )}
 
-                                    {/* Hydration */}
+                                    {/* Hydration (Static but kept for aesthetic) */}
                                     <div className="bg-[#F6FAFB] rounded-[16px] p-[16px] flex items-center justify-between border border-[#EDF5F6]">
                                         <div className="flex items-center gap-[16px]">
                                             <div className="w-[42px] h-[42px] bg-[#DCEEEF] rounded-[12px] border border-[#CAE6E8] flex items-center justify-center">
@@ -360,10 +408,36 @@ const Patient_dashboard1 = () => {
 
                                 {/* Upload Box */}
                                 <label className="border-[2px] border-dashed border-[#C5DCE0] bg-[#F9FCFE] rounded-[20px] p-6 flex flex-col items-center justify-center mb-4 cursor-pointer hover:bg-[#F2F8FA] hover:border-[#126478] transition-colors gap-2">
-                                    <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={(e) => {
+                                    <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={async (e) => {
                                         if (e.target.files && e.target.files.length > 0) {
-                                            console.log("File selected:", e.target.files[0].name);
-                                            // Handling file upload logic can go here
+                                            const file = e.target.files[0];
+                                            const formData = new FormData();
+                                            if (file.type.startsWith('image/')) {
+                                                formData.append('image', file);
+                                            } else {
+                                                formData.append('file', file);
+                                            }
+
+                                            const token = localStorage.getItem('token') || localStorage.getItem('access');
+                                            try {
+                                                const response = await fetch(`${BASE_URL}/api/prescriptions/upload/`, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Authorization': `Bearer ${token}`,
+                                                    },
+                                                    body: formData,
+                                                });
+
+                                                if (response.ok) {
+                                                    console.log("Upload successful");
+                                                    // Optionally refresh the list or show success
+                                                    window.location.reload(); 
+                                                } else {
+                                                    console.error('Upload failed');
+                                                }
+                                            } catch (error) {
+                                                console.error('Error:', error);
+                                            }
                                         }
                                     }} />
                                     <div className="w-10 h-10 rounded-full bg-[#E1EFF2] flex items-center justify-center text-[#1A778B] shadow-inner mb-0.5">
@@ -376,29 +450,32 @@ const Patient_dashboard1 = () => {
                                 </label>
 
                                 {/* Files Grid */}
-                                <div className="grid grid-cols-2 gap-[12px]">
-                                    <div className="border border-[#E4EDEF] bg-white rounded-[12px] p-[12px] flex items-center gap-[12px] shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                                        <div className="w-[36px] h-[36px] bg-[#FFF0F0] rounded-[8px] flex items-center justify-center shrink-0">
-                                            <svg className="w-[18px] h-[18px] text-[#E5484D]" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-2 16H8v-2h4v2zm0-4H8v-2h4v2zm2-5V3.5L18.5 9H14z" />
-                                            </svg>
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-[16px] font-medium text-[#0D1C2E] truncate">rx_2024_oct.pdf</p>
-                                            <p className="text-[16px] text-[#8095A6] font-medium mt-[2px]">2.4 MB</p>
-                                        </div>
-                                    </div>
-                                    <div className="border border-[#E4EDEF] bg-white rounded-[12px] p-[12px] flex items-center gap-[12px] shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                                        <div className="w-[36px] h-[36px] bg-[#F2F4FE] rounded-[8px] flex items-center justify-center shrink-0">
-                                            <svg className="w-[18px] h-[18px] text-[#4F69E9]" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-                                            </svg>
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-[16px] font-medium text-[#0D1C2E] truncate">scanned_dr_note.jpg</p>
-                                            <p className="text-[16px] text-[#8095A6] font-medium mt-[2px]">1.1 MB</p>
-                                        </div>
-                                    </div>
+                                <div className="grid grid-cols-2 gap-[12px] max-h-[200px] overflow-y-auto pr-1">
+                                    {isLoading ? (
+                                        <p className="text-gray-400 text-sm italic col-span-2">Loading vault...</p>
+                                    ) : prescriptions.length === 0 ? (
+                                        <p className="text-gray-400 text-sm italic col-span-2">Your vault is empty.</p>
+                                    ) : (
+                                        prescriptions.map((p) => (
+                                            <div key={p.id} className="border border-[#E4EDEF] bg-white rounded-[12px] p-[12px] flex items-center gap-[12px] shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                                <div className={`w-[36px] h-[36px] rounded-[8px] flex items-center justify-center shrink-0 ${p.file ? 'bg-[#FFF0F0]' : 'bg-[#F2F4FE]'}`}>
+                                                    {p.file ? (
+                                                        <svg className="w-[18px] h-[18px] text-[#E5484D]" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-2 16H8v-2h4v2zm0-4H8v-2h4v2zm2-5V3.5L18.5 9H14z" />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg className="w-[18px] h-[18px] text-[#4F69E9]" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+                                                        </svg>
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-[16px] font-medium text-[#0D1C2E] truncate">{p.doctor_name || 'Prescription'}</p>
+                                                    <p className="text-[16px] text-[#8095A6] font-medium mt-[2px]">{p.prescription_date || (p.created_at ? p.created_at.slice(0, 10) : '')}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </div>
 

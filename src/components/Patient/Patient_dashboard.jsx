@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import BASE_URL from '../../baseUrl';
 
 import logoUrl from '../../assets/vadyago_pat.png';
 import phImg from '../../assets/ph.png';
@@ -160,10 +161,41 @@ const Patient_dashboard = () => {
                                 {/* Upload Prescription Button - Positioned on the card's right below illustration */}
                                 <label className="absolute bottom-[8px] right-[80px] z-20 flex items-center gap-[10px] bg-gradient-to-r from-[#0B253D] to-[#175B61]
                     text-white text-[14px] font-semibold px-[24px] py-[12px] rounded-full shadow-[0_10px_25px_rgba(11,37,61,0.3)] hover:scale-[1.05] transition-all cursor-pointer">
-                                    <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={(e) => {
+                                    <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={async (e) => {
                                         if (e.target.files && e.target.files.length > 0) {
-                                            localStorage.setItem('prescriptionUploaded', 'true');
-                                            navigate('/Patient_dashboard1');
+                                            const file = e.target.files[0];
+                                            const formData = new FormData();
+                                            if (file.type.startsWith('image/')) {
+                                                formData.append('image', file);
+                                            } else {
+                                                formData.append('file', file);
+                                            }
+
+                                            const token = localStorage.getItem('token') || localStorage.getItem('access');
+                                            try {
+                                                const response = await fetch(`${BASE_URL}/api/prescriptions/upload/`, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Authorization': `Bearer ${token}`,
+                                                    },
+                                                    body: formData,
+                                                });
+
+                                                if (response.ok) {
+                                                    localStorage.setItem('prescriptionUploaded', 'true');
+                                                    navigate('/Patient_dashboard1');
+                                                } else {
+                                                    console.error('Upload failed');
+                                                    // Fallback to navigate anyway if desired, or show error
+                                                    localStorage.setItem('prescriptionUploaded', 'true');
+                                                    navigate('/Patient_dashboard1');
+                                                }
+                                            } catch (error) {
+                                                console.error('Error:', error);
+                                                // Fallback
+                                                localStorage.setItem('prescriptionUploaded', 'true');
+                                                navigate('/Patient_dashboard1');
+                                            }
                                         }
                                     }} />
                                     <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

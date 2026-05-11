@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import apiFetch from '../../../api';
+import BASE_URL from '../../../baseUrl';
 import patientPhoto from '../../../assets/Patient Photo.svg';
 import './Diagnostic.css';
 import Sidebar from '../../../components/Patient/Patient_sidebar';
@@ -94,14 +96,53 @@ const Diagnostic = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
-
-  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal || showDiagnosticInput || showSaveSuccess;
-
-  const conditions = [
+  const [conditions, setConditions] = useState([
     { title: 'Tension-Type Headache', match: 85, desc: 'Most common primary headache disorder, often characterized by a pressing or tightening sensation around the head of mild to moderate intensity.' },
     { title: 'Seasonal Allergies (Rhinitis)', match: 62, desc: 'Hypersensitivity reaction to environmental triggers such as pollen or mold, contributing to sinus pressure and subsequent cephalalgia.' },
     { title: 'Cervicogenic Headache', match: 48, desc: 'Pain referred from a source in the cervical spine and its component bony, disc and/or soft tissue elements, usually accompanied by neck pain.' }
-  ];
+  ]);
+  const [inputSummary, setInputSummary] = useState({
+    complaints: [
+      { symptom: 'Persistent Headache', duration: '48 hrs', severity: 'Severe' },
+      { symptom: 'Fatigue', duration: 'Moderate', severity: 'Moderate' },
+      { symptom: 'Eye Strain', duration: 'New', severity: 'Mild' }
+    ],
+    vitals: { temp: '98.6°', bpm: '72' }
+  });
+  const [aiSummary, setAiSummary] = useState("The clinical engine has synthesized patient data with 99.8% computational accuracy. Review the conditions below for immediate action.");
+  const [precautions, setPrecautions] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+
+  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal || showDiagnosticInput || showSaveSuccess;
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.diagnosis) {
+      const diag = location.state.diagnosis;
+      
+      // Update conditions from AI results
+      const newConditions = diag.possible_diseases.map((disease, index) => ({
+        title: disease,
+        match: index === 0 ? diag.confidence_score : Math.max(diag.confidence_score - (index * 15), 10),
+        desc: diag.recommendations[index] || "Condition based on reported symptoms and AI analysis."
+      }));
+      setConditions(newConditions);
+
+      // Update input summary
+      const newComplaints = (diag.symptoms || []).map(s => ({
+        symptom: s,
+        duration: diag.duration || "2 days",
+        severity: (diag.severity || "moderate").charAt(0).toUpperCase() + (diag.severity || "moderate").slice(1)
+      }));
+      setInputSummary(prev => ({ ...prev, complaints: newComplaints }));
+
+      // Update AI metadata
+      setAiSummary(diag.summary || diag.consultation_advice || "Analysis complete based on reported symptoms.");
+      setPrecautions(diag.precautions || []);
+      setRecommendations(diag.recommendations || []);
+    }
+  }, [location.state]);
 
   return (
     <>
@@ -183,10 +224,7 @@ const Diagnostic = () => {
         <section className="results-header-card">
           <span className="phase-badge">Phase : Complete</span>
           <h1>Diagnostics Results</h1>
-          <p>
-            The clinical engine has synthesized patient data with 99.8% computational accuracy. 
-            Review the conditions below for immediate action.
-          </p>
+          <p>{aiSummary}</p>
           <div className="analysis-ref">
             <span>Analysis Reference</span>
             <h3>#VG-7822-XP</h3>
@@ -206,18 +244,12 @@ const Diagnostic = () => {
               <div className="info-section">
                 <label>PRIMARY COMPLAINTS</label>
                 <div className="complaints-list">
-                  <div className="complaint-item">
-                    <span>Persistent Headache</span>
-                    <span className="value">48 hrs</span>
-                  </div>
-                  <div className="complaint-item">
-                    <span>Fatigue</span>
-                    <span className="value">Moderate</span>
-                  </div>
-                  <div className="complaint-item">
-                    <span>Eye Strain</span>
-                    <span className="value">New</span>
-                  </div>
+                  {inputSummary.complaints.map((item, idx) => (
+                    <div key={idx} className="complaint-item">
+                      <span>{item.symptom}</span>
+                      <span className="value">{item.duration}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -225,11 +257,11 @@ const Diagnostic = () => {
                 <label>VITALS (REPORTED)</label>
                 <div className="vitals-grid">
                   <div className="vital-mini-box">
-                    <h4>98.6°</h4>
+                    <h4>{inputSummary.vitals.temp}</h4>
                     <span>Temp</span>
                   </div>
                   <div className="vital-mini-box">
-                    <h4>72</h4>
+                    <h4>{inputSummary.vitals.bpm}</h4>
                     <span>BPM</span>
                   </div>
                 </div>
@@ -265,8 +297,8 @@ const Diagnostic = () => {
               <div className="symptoms-section">
                 <label>PRIMARY SYMPTOMS</label>
                 <div className="symptom-tags">
-                  {['Persistent Headache', 'Photophobia', 'Fatigue'].map(tag => (
-                    <span key={tag} className="symptom-tag">{tag}</span>
+                  {inputSummary.complaints.map(item => (
+                    <span key={item.symptom} className="symptom-tag">{item.symptom}</span>
                   ))}
                 </div>
               </div>
@@ -317,6 +349,32 @@ const Diagnostic = () => {
                 </div>
               </div>
             ))}
+
+            {(precautions.length > 0 || recommendations.length > 0) && (
+              <div className="ai-advice-section">
+                <h2 className="conditions-section-title" style={{ marginTop: 32 }}>
+                  AI PRECAUTIONS & ADVICE
+                </h2>
+                <div className="advice-grid">
+                  {precautions.length > 0 && (
+                    <div className="advice-card precaution">
+                      <h4>Precautions</h4>
+                      <ul>
+                        {precautions.slice(0, 3).map((p, i) => <li key={i}>{p}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  {recommendations.length > 0 && (
+                    <div className="advice-card recommendation">
+                      <h4>Recommendations</h4>
+                      <ul>
+                        {recommendations.slice(0, 3).map((r, i) => <li key={i}>{r}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <h2 className="conditions-section-title" style={{ marginTop: 32 }}>
               ACTIONABLE NEXT STEPS

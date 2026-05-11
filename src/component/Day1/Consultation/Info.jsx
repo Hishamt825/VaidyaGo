@@ -20,6 +20,7 @@ const Info = ({ onClose, doctor }) => {
     const [fetchStatus, setFetchStatus] = useState(null);
     const [debugUrl, setDebugUrl] = useState('');
     const [rawDebug, setRawDebug] = useState('');
+    const [isBooking, setIsBooking] = useState(false);
 
     const monthsFull = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const daysFull = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -30,8 +31,7 @@ const Info = ({ onClose, doctor }) => {
             setError(null);
             try {
                 const doctorId = doctor?.id || 1;
-                // As requested, using the doctor-slots endpoint primarily
-                const url = `${BASE_URL}/api/doctor-slots/`;
+                const url = `${BASE_URL}/api/doctor/${doctorId}/slots/`;
                 setDebugUrl(url);
                 
                 const response = await apiFetch(url);
@@ -41,34 +41,38 @@ const Info = ({ onClose, doctor }) => {
                     throw new Error(`API Error: ${response.status}`);
                 }
  
-                const result = await response.json();
+                const resultObj = await response.json();
+                const rawSlots = resultObj.slots || [];
+                
+                // Map start_time to the properties expected by Info.jsx
+                const result = rawSlots.map(s => {
+                    if (s.start_time) {
+                        const d = new Date(s.start_time);
+                        return {
+                            ...s,
+                            date: d.toISOString().split('T')[0],
+                            from_time: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+                            status: s.is_booked ? 'booked' : 'available'
+                        };
+                    }
+                    return s;
+                });
                 
                 // Filter slots for this specific doctor
-                // Improved matching: handles primitives, objects, and string/number mismatches
-                let filteredData = allSlots.filter(s => {
-                    const sDoctorId = s.doctor?.id || s.doctor || s.doctor_id;
+                let filteredData = result.filter(s => {
+                    const sDoctorId = s.doctor?.id || s.doctor || s.doctor_id || doctorId;
                     return String(sDoctorId) === String(doctorId);
                 });
                 
                 // --- SMART FALLBACK ---
-                // If no slots found for this ID, but the API returned slots for exactly one ID,
-                // assume those are the slots intended for this view (useful for mismatched dev IDs)
-                if (filteredData.length === 0 && allSlots.length > 0) {
-                    const uniqueIds = [...new Set(allSlots.map(s => String(s.doctor?.id || s.doctor || s.doctor_id)))];
-                    if (uniqueIds.length === 1) {
-                        console.log(`Info.jsx: Falling back to slots for doctor ID ${uniqueIds[0]} because primary match for ${doctorId} failed.`);
-                        filteredData = allSlots;
-                    }
+                if (filteredData.length === 0 && result.length > 0) {
+                    filteredData = result; // API already scoped by doctor_id in the URL
                 }
                 
-                console.log(`Info.jsx: Found ${filteredData.length} slots for doctor ID "${doctorId}" out of ${allSlots.length} total slots.`);
+                console.log(`Info.jsx: Found ${filteredData.length} slots for doctor ID "${doctorId}".`);
                 
-                // For debugging: track unique doctor IDs found in the response
-                const foundIds = [...new Set(allSlots.map(s => {
-                    const id = s.doctor?.id || s.doctor || s.doctor_id;
-                    return id ? String(id) : 'N/A';
-                }))];
-                setRawDebug(`Found IDs: ${foundIds.join(', ')}. Target: ${doctorId}. Total: ${allSlots.length}`);
+                const foundIds = [...new Set(result.map(s => String(s.doctor?.id || s.doctor || s.doctor_id || doctorId)))];
+                setRawDebug(`Found IDs: ${foundIds.join(', ')}. Target: ${doctorId}. Total: ${result.length}`);
 
                 setSlotsData(filteredData);
                 const data = filteredData;
@@ -163,6 +167,45 @@ const Info = ({ onClose, doctor }) => {
 
     const currentDayCategorized = getTimeCategorizedSlots(activeDateStr);
 
+    const handleBookAppointment = async () => {
+        if (!selectedSlot) {
+            alert("Please select a time slot first.");
+            return;
+        }
+        
+        setIsBooking(true);
+        try {
+            // Provide default demo details if auth context isn't available
+            const payload = {
+                slot: selectedSlot,
+                patient_name: "Demo Patient", 
+                patient_phone: "9876543210",
+                appointment_type: activeTab
+            };
+            
+            const response = await apiFetch(`${BASE_URL}/api/appointments/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            if (response.ok) {
+                alert("Appointment request sent to doctor successfully!");
+                onClose(); // close the modal and go back
+            } else {
+                const err = await response.json();
+                alert("Failed to book: " + (err.error || JSON.stringify(err)));
+            }
+        } catch (error) {
+            console.error("Booking error:", error);
+            alert("An error occurred while booking.");
+        } finally {
+            setIsBooking(false);
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-[100] flex justify-end">
             {/* Backdrop */}
@@ -171,7 +214,11 @@ const Info = ({ onClose, doctor }) => {
             {/* Slide-over Content */}
             <div className="relative w-full max-w-[420px] h-full shadow-2xl flex flex-col overflow-hidden animate-slide-in"
                  style={{ background: 'linear-gradient(180deg, #0B1F4D 0%, #1a6e78 33%, #49AAB3 67%, #a8bec5 100%)' }}>
-                
+                 
+                 {/* ... header and main content ... */}
+                 
+                 {/* Rest is exactly as before, until the footer */}
+                 
                 {/* Header */}
                 <div className="px-6 py-5 flex items-center gap-4 text-white shrink-0">
                     <button onClick={onClose} className="hover:bg-white/10 p-1.5 rounded-full transition-colors">
@@ -362,8 +409,12 @@ const Info = ({ onClose, doctor }) => {
                     <div className="flex items-baseline gap-1">
                         <span className="text-[24px] font-black text-[#0B1F4D] tracking-tight">{doctor?.offlinePrice || 500}</span>
                     </div>
-                    <button className="bg-[#1A7785] text-white px-10 py-3 rounded-xl font-bold text-[15px] hover:bg-[#15616D] transition-all shadow-lg active:scale-95">
-                        Continue
+                    <button 
+                        onClick={handleBookAppointment}
+                        disabled={isBooking || !selectedSlot}
+                        className={`px-10 py-3 rounded-xl font-bold text-[15px] transition-all shadow-lg ${isBooking || !selectedSlot ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-[#1A7785] text-white hover:bg-[#15616D] active:scale-95'}`}
+                    >
+                        {isBooking ? 'Booking...' : 'Continue'}
                     </button>
                 </div>
             </div>

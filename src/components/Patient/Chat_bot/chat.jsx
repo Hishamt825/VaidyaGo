@@ -8,11 +8,13 @@ import voiceIcon from '../../../assets/voice.png';
 import BASE_URL from '../../../baseUrl';
 
 const Chat = ({ isOpen, onClose }) => {
-    const userType = localStorage.getItem('user_type');
-    const isAdmin = userType === 'admin' && !['/MainPage', '/About', '/ContactUs', '/Service', '/FAQ', '/Disease', '/Hos_consultation', '/Makeapp', '/'].includes(window.location.pathname);
-    const isDoctor = userType === 'doctor' && !['/MainPage', '/About', '/ContactUs', '/Service', '/FAQ', '/Disease', '/Hos_consultation', '/Makeapp', '/'].includes(window.location.pathname);
-
     const { t, language } = useLanguage();
+    const currentPath = window.location.pathname;
+
+    const isAdmin = currentPath.includes('/Admin_dashboard') || currentPath.includes('/admin-doctor') || currentPath.includes('/DasyWilliam');
+    const isDoctor = currentPath.includes('/Doctor_dashboard') || currentPath.includes('/App_Dashboard') || currentPath.includes('/Addslot') || currentPath.includes('/Patients');
+    const isPatient = currentPath.includes('/Patient_dashboard') || currentPath.includes('/Symptom') || currentPath.includes('/Appointment') || currentPath.includes('/Clinic') || currentPath.includes('/Record');
+
     const [messages, setMessages] = useState([
         {
             id: 1,
@@ -113,11 +115,11 @@ const Chat = ({ isOpen, onClose }) => {
                 }
             };
             recog.onerror = (event) => {
-                // 'aborted' usually happens when we stop/start manually, so it's not a real error
                 if (event.error === 'aborted') return;
                 
                 console.error('Speech recognition error:', event.error);
-                setVoiceError(true);
+                // Store the specific error code to show a better message
+                setVoiceError(event.error); 
                 setIsListening(false);
             };
             setRecognition(recog);
@@ -451,7 +453,7 @@ const Chat = ({ isOpen, onClose }) => {
                                         <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">{t('hiPatient')}</p>
                                         {voiceError ? (
                                             <h2 className="text-gray-700 font-bold text-base leading-relaxed max-w-[240px]">
-                                                {t('voiceError')}
+                                                {voiceError === 'not-allowed' ? t('micError') : t('voiceError')}
                                             </h2>
                                         ) : (
                                             <h2 className="text-gray-800 font-bold text-lg tracking-tight max-w-[320px] max-h-[90px] overflow-y-auto custom-scrollbar leading-snug">
