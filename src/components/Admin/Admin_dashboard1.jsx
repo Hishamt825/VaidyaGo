@@ -8,6 +8,7 @@ import BASE_URL from "../../baseUrl";
 
 import AdminSidebar from "./AdminSidebar";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLanguage } from "../../context/LanguageContext";
 // import plus from "../../assets/plus.png";
 import ap from "../../assets/ap.png";
 import admin1 from "../../assets/admin1.png";
@@ -89,6 +90,7 @@ const Admin_dashboard1 = () => {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isMonthOpen, setIsMonthOpen] = useState(false);
     const [isYearOpen, setIsYearOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const monthsList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const yearsList = Array.from({ length: 26 }, (_, i) => 2005 + i);
     const [showRejectConfirm, setShowRejectConfirm] = useState(false);
@@ -460,6 +462,14 @@ const Admin_dashboard1 = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                 </svg>
                                 <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#9367D8] rounded-full flex items-center justify-center text-white text-[11px] font-bold border-2 border-white shadow-sm">1</div>
+                            </div>
+
+                            {/* Language Switcher */}
+                            <div
+                                onClick={toggleLanguage}
+                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all text-[#9367D8] font-bold"
+                            >
+                                {language === 'English' ? 'EN' : 'HI'}
                             </div>
                         </div>
 

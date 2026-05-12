@@ -5,8 +5,10 @@ import appointmentIcon from "../../../assets/appointment.svg";
 import patientsIcon from "../../../assets/total_patients.svg";
 import consultationIcon from "../../../assets/consultations.svg";
 import DoctorBot from "../../../components/Doctor/doctor_bot";
+import { useLanguage } from "../../../context/LanguageContext";
 
 const Sidebar = ({ active = "Appointment", setActive }) => {
+  const { t, toggleLanguage, language } = useLanguage();
   const menu = [
     { name: "Dashboard", icon: dashboardIcon },
     { name: "Appointment", icon: appointmentIcon },
@@ -107,6 +109,20 @@ const Sidebar = ({ active = "Appointment", setActive }) => {
           <div className={`w-[210px] h-full bg-white border-r-[1.5px] border-[#166E83] transition-all duration-300 ${
             activeIndex === menu.length - 1 ? "border-t-[1.5px] rounded-tr-[22px]" : ""
           }`}></div>
+        </div>
+
+        {/* Language Switcher */}
+        <div className="px-6 py-4 border-t border-gray-100 mt-auto relative z-20 bg-white">
+          <button
+            onClick={toggleLanguage}
+            className="w-full flex items-center gap-3 px-4 py-2 rounded-xl
+                       text-[#166E83]/70 hover:text-[#166E83] hover:bg-gray-50 transition-all duration-300"
+          >
+            <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 11.37 9.183 16.518 5 20" />
+            </svg>
+            <span className="text-[14px] font-bold">{language === 'English' ? 'English' : 'Hindi'}</span>
+          </button>
         </div>
 
       </div>

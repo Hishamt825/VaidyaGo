@@ -10,6 +10,7 @@ import Account from '../../../components/Patient/Account';
 import Notification from '../../../components/Patient/notification';
 import apiFetch from '../../../api';
 import BASE_URL from '../../../baseUrl';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -86,6 +87,7 @@ const Body = () => {
   const [activeModal, setActiveModal] = React.useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
   const [isFront, setIsFront] = React.useState(true);
+  const { t, toggleLanguage, language } = useLanguage();
 
   const toggleView = () => setIsFront(!isFront);
 
@@ -316,7 +318,12 @@ const Body = () => {
             </div>
 
             <div className="flex items-center gap-[32px] ml-auto">
-                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <span 
+                    onClick={toggleLanguage}
+                    className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                >
+                    {language === 'English' ? 'EN' : 'HI'}
+                </span>
                 <div className="flex items-center gap-[20px]">
                     <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                         <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -340,7 +347,7 @@ const Body = () => {
         <main className="flex-1 overflow-y-auto pb-[64px]">
 
         <div className="welcome-text-container">
-           <h1>Welcome to VaidyaGo</h1>
+           <h1>{t('welcome')}</h1>
         </div>
 
         <section className="welcome-banner">
@@ -348,7 +355,7 @@ const Body = () => {
              <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           </div>
           <div className="banner-text">
-            <p>Welcome back, Dr. Thorne. Please select the anatomical region where the patient reports discomfort to begin the diagnostic mapping.</p>
+            <p>{t('bodyBannerText')}</p>
           </div>
         </section>
 
@@ -456,14 +463,14 @@ const Body = () => {
       <div className="diagnostics-panel-wrapper">
         <aside className="diagnostics-panel">
           <div className="panel-header">
-            <h3>Diagnostics</h3>
+            <h3>{t('diagnosticsHeader')}</h3>
             <div className="upload-icon-btn">
               <Icon name="upload" />
             </div>
           </div>
 
           <div>
-            <div className="section-label">Selected Areas</div>
+            <div className="section-label">{t('selectedAreas')}</div>
             <div className="areas-row">
               {activeRegion ? (
                 <>
@@ -482,13 +489,13 @@ const Body = () => {
                   ))}
                 </>
               ) : (
-                <div className="area-tag opacity-40">No Region Selected</div>
+                <div className="area-tag opacity-40">{t('noRegionSelected')}</div>
               )}
             </div>
           </div>
 
           <div className="diseases-section">
-            <div className="section-label">Related Diseases</div>
+            <div className="section-label">{t('relatedDiseases')}</div>
             <div className="diseases-scroll-area">
               {activeRegion ? regionData[activeRegion].diseases.map((disease, idx) => (
                 <div key={`${activeRegion}-disease-${idx}`} className="disease-card scroll-reveal">
@@ -496,14 +503,14 @@ const Body = () => {
                 </div>
               )) : (
                 <p style={{ fontSize: '11px', opacity: 0.4, fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>
-                  Select a body region to view related diseases
+                  {t('selectRegionDiseases')}
                 </p>
               )}
             </div>
           </div>
 
           <div className="symptoms-section">
-            <div className="section-label">Reported Symptoms</div>
+            <div className="section-label">{t('reportedSymptomsBody')}</div>
             <div className="symptoms-scroll-area">
               {activeRegion ? regionData[activeRegion].symptoms.map((symptom, idx) => (
                 <div key={`${activeRegion}-${idx}`} className="symptom-card scroll-reveal">
@@ -517,14 +524,14 @@ const Body = () => {
                 </div>
               )) : (
                 <p style={{ fontSize: '11px', opacity: 0.4, fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>
-                  Select a body region to view symptoms
+                  {t('selectRegionSymptoms')}
                 </p>
               )}
             </div>
           </div>
 
           <button className="start-diagnostic-btn" onClick={handleStartDiagnostic}>
-            START DIAGNOSTIC <Icon name="chevronRight" />
+            {t('startDiagnostic')} <Icon name="chevronRight" />
           </button>
         </aside>
 

@@ -11,6 +11,7 @@ import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
 import apiFetch from '../../api';
 import BASE_URL from '../../baseUrl';
+import { useLanguage } from '../../context/LanguageContext';
 
 
 
@@ -26,6 +27,7 @@ const App_Dashboard = () => {
     const [open, setOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const menuRef = useRef(null);
 
     useEffect(() => {
@@ -276,6 +278,14 @@ const App_Dashboard = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                 </svg>
                                 <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#9367D8] rounded-full flex items-center justify-center text-white text-[11px] font-bold border-2 border-white shadow-sm">1</div>
+                            </div>
+
+                            {/* Language Switcher */}
+                            <div
+                                onClick={toggleLanguage}
+                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all text-[#1b738c] font-bold"
+                            >
+                                {language === 'English' ? 'EN' : 'HI'}
                             </div>
                         </div>
 
