@@ -510,6 +510,7 @@ const Addslot = () => {
    const [fromDate, setFromDate] = useState(todayFormattedDate);
    const [toDate, setToDate] = useState(todayFormattedDate);
    const [slots, setSlots] = useState([]);
+   const [pendingAppointments, setPendingAppointments] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
    const [isLoadingSlots, setIsLoadingSlots] = useState(false);
    const [message, setMessage] = useState({ text: '', type: '' });
@@ -523,75 +524,117 @@ const Addslot = () => {
    const month = monthIdx < 10 ? `0${monthIdx}` : monthIdx;
    const formattedApiDate = `${popupSelectedYear}-${month}-${day}`;
 
+    const applyPendingAppointmentsToSlots = (mappedSlots, appointments) => {
+        if (!appointments || !Array.isArray(appointments)) return mappedSlots;
+
+        return mappedSlots.map(slot => {
+            if (slot.type === 'booked') return slot;
+
+            const matchingAppointment = appointments.find(appt => {
+                if (!appt.start_time || !appt.end_time) return false;
+                const apptDate = appt.start_time.slice(0, 10);
+                const apptFrom = appt.start_time.slice(11, 16);
+                const apptTo = appt.end_time.slice(11, 16);
+                return apptDate === slot.date && apptFrom === slot.from_time && apptTo === slot.to_time;
+            });
+
+            if (!matchingAppointment) return slot;
+
+            return {
+                ...slot,
+                type: 'booked',
+                title: matchingAppointment.patient_name || 'Booked',
+                subtitle: `Booking ID : #${matchingAppointment.id}`
+            };
+        });
+    };
+
+    const fetchPendingAppointments = async () => {
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/appointments/list/?doctor_id=${doctorId}&status=pending&date=${formattedApiDate}`);
+            if (response.ok) {
+                const data = await response.json();
+                const appointmentsData = Array.isArray(data) ? data : data.results || [];
+                setPendingAppointments(appointmentsData);
+                return appointmentsData;
+            }
+        } catch (error) {
+            console.error('Error fetching pending appointments:', error);
+        }
+        setPendingAppointments([]);
+        return [];
+    };
+
     const fetchSlots = async () => {
         setIsLoadingSlots(true);
         
-        // Fetch all slots for this doctor
-        const endpoint = isBookedView 
-           ? `${BASE_URL}/api/doctor/${doctorId}/slots/booked/`
-           : `${BASE_URL}/api/doctor/${doctorId}/slots/`;
+        const endpoint = `${BASE_URL}/api/doctor/${doctorId}/slots/?${isBookedView ? 'booked=true&' : ''}date=${formattedApiDate}`;
         
         try {
-           const response = await apiFetch(endpoint);
-           if (response.ok) {
-              const result = await response.json();
-              let data = result.slots || result.booked_slots || (Array.isArray(result) ? result : []);
-              
-              if (!Array.isArray(data) && data.results) data = data.results;
+            const [slotsResponse, appointmentsForDate] = await Promise.all([
+                apiFetch(endpoint),
+                fetchPendingAppointments()
+            ]);
 
-              // Map backend TimeSlot objects to frontend format
-              const mappedSlots = data.map(item => {
-                  // Handle backend fields: start_time, end_time, is_booked
-                  const startTimeStr = item.start_time || "";
-                  const endTimeStr = item.end_time || "";
-                  
-                  // Extract date and time parts
-                  // Assuming start_time is "YYYY-MM-DDTHH:MM:SSZ"
-                  let date = "";
-                  let fromTime = "";
-                  let toTime = "";
-                  
-                  if (startTimeStr.includes('T')) {
-                      [date, fromTime] = startTimeStr.split('T');
-                      fromTime = fromTime.slice(0, 5); // Get HH:MM
-                  } else {
-                      date = startTimeStr.split(' ')[0] || formattedApiDate;
-                      fromTime = startTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
-                  }
+            if (slotsResponse.ok) {
+                const result = await slotsResponse.json();
+                let data = result.slots || result.booked_slots || (Array.isArray(result) ? result : []);
+                
+                if (!Array.isArray(data) && data.results) data = data.results;
 
-                  if (endTimeStr.includes('T')) {
-                      toTime = endTimeStr.split('T')[1].slice(0, 5);
-                  } else {
-                      toTime = endTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
-                  }
+                const mappedSlots = data.map(item => {
+                    const startTimeStr = item.start_time || "";
+                    const endTimeStr = item.end_time || "";
+                    let date = "";
+                    let fromTime = "";
+                    let toTime = "";
+                    
+                    if (startTimeStr.includes('T')) {
+                        [date, fromTime] = startTimeStr.split('T');
+                        fromTime = fromTime.slice(0, 5);
+                    } else {
+                        date = startTimeStr.split(' ')[0] || formattedApiDate;
+                        fromTime = startTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
+                    }
 
-                  // Determine status (type)
-                  let status = 'available';
-                  if (item.is_booked) status = 'booked';
-                  // Some logic for 'break' if needed, though not in model
-                  
-                  return {
-                      id: item.id || Math.random(),
-                      type: status,
-                      date: date,
-                      from_time: fromTime,
-                      to_time: toTime,
-                      time: `${fromTime} - ${toTime}`,
-                      title: item.appointment_details?.patient_name || (status === 'booked' ? 'Booked' : 'Available'),
-                      subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : ''
-                  };
-              });
+                    if (endTimeStr.includes('T')) {
+                        toTime = endTimeStr.split('T')[1].slice(0, 5);
+                    } else {
+                        toTime = endTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
+                    }
 
-              // Update slots state, sorting by date and time
-              setSlots(mappedSlots.sort((a, b) => {
-                 if (a.date !== b.date) return a.date.localeCompare(b.date);
-                 return a.from_time.localeCompare(b.from_time);
-              }));
-           }
+                    let status = 'available';
+                    if (item.is_booked) status = 'booked';
+
+                    return {
+                        id: item.id || Math.random(),
+                        type: status,
+                        date: date,
+                        from_time: fromTime,
+                        to_time: toTime,
+                        time: `${fromTime} - ${toTime}`,
+                        title: item.appointment_details?.patient_name || (status === 'booked' ? 'Booked' : 'Available'),
+                        subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : ''
+                    };
+                });
+
+                const futureSlots = mappedSlots.filter(slot => {
+                    if (!slot.date || !slot.from_time) return true;
+                    const slotDateTime = new Date(`${slot.date}T${slot.from_time}:00`);
+                    return slotDateTime > new Date();
+                });
+
+                const finalSlots = applyPendingAppointmentsToSlots(futureSlots, appointmentsForDate);
+
+                setSlots(finalSlots.sort((a, b) => {
+                    if (a.date !== b.date) return a.date.localeCompare(b.date);
+                    return a.from_time.localeCompare(b.from_time);
+                }));
+            }
         } catch (error) {
-           console.error('Error fetching slots:', error);
+            console.error('Error fetching slots:', error);
         } finally {
-           setIsLoadingSlots(false);
+            setIsLoadingSlots(false);
         }
     };
 

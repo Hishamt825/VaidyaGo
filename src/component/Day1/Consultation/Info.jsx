@@ -57,9 +57,16 @@ const Info = ({ onClose, doctor }) => {
                     }
                     return s;
                 });
+
+                const now = new Date();
+                const futureSlotsOnly = result.filter(s => {
+                    if (!s.start_time) return true;
+                    const slotTime = new Date(s.start_time);
+                    return slotTime > now;
+                });
                 
                 // Filter slots for this specific doctor
-                let filteredData = result.filter(s => {
+                let filteredData = futureSlotsOnly.filter(s => {
                     const sDoctorId = s.doctor?.id || s.doctor || s.doctor_id || doctorId;
                     return String(sDoctorId) === String(doctorId);
                 });
@@ -175,10 +182,12 @@ const Info = ({ onClose, doctor }) => {
         
         setIsBooking(true);
         try {
-            // Provide default demo details if auth context isn't available
             const payload = {
-                slot: selectedSlot,
-                patient_name: "Demo Patient", 
+                doctor: doctor?.id,
+                slot: selectedSlot.id,
+                start_time: selectedSlot.start_time,
+                end_time: selectedSlot.end_time,
+                patient_name: "Demo Patient",
                 patient_phone: "9876543210",
                 appointment_type: activeTab
             };
@@ -314,9 +323,9 @@ const Info = ({ onClose, doctor }) => {
                                             {currentDayCategorized.morning.map((slot, i) => (
                                                 <button 
                                                     key={slot.id}
-                                                    onClick={() => setSelectedSlot(slot.id)}
+                                                    onClick={() => setSelectedSlot(slot)}
                                                     disabled={slot.status !== 'available'}
-                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
+                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
                                                 >
                                                     {slot.displayTime}
                                                     {slot.status !== 'available' && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
@@ -340,9 +349,9 @@ const Info = ({ onClose, doctor }) => {
                                             {currentDayCategorized.afternoon.map((slot, i) => (
                                                 <button 
                                                     key={slot.id}
-                                                    onClick={() => setSelectedSlot(slot.id)}
+                                                    onClick={() => setSelectedSlot(slot)}
                                                     disabled={slot.status !== 'available'}
-                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
+                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
                                                 >
                                                     {slot.displayTime}
                                                     {slot.status !== 'available' && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
@@ -366,9 +375,9 @@ const Info = ({ onClose, doctor }) => {
                                             {currentDayCategorized.evening.map((slot, i) => (
                                                 <button 
                                                     key={slot.id}
-                                                    onClick={() => setSelectedSlot(slot.id)}
+                                                    onClick={() => setSelectedSlot(slot)}
                                                     disabled={slot.status !== 'available'}
-                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
+                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
                                                 >
                                                     {slot.displayTime}
                                                     {slot.status !== 'available' && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
