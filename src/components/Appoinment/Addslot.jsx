@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/lo.svg';
 import Side_app from './Side_app';
@@ -519,6 +519,8 @@ const Addslot = () => {
    const [doctorId, setDoctorId] = useState(localStorage.getItem('doctor_id') || '1');
    const [hasJustSaved, setHasJustSaved] = useState(false);
 
+   const bookedSlots = useMemo(() => slots.filter(slot => slot.type === 'booked'), [slots]);
+
    const day = (calendarDays[popupActiveDateIndex] || '').padStart(2, '0');
    const monthIdx = monthsList.indexOf(popupSelectedMonth) + 1;
    const month = monthIdx < 10 ? `0${monthIdx}` : monthIdx;
@@ -614,7 +616,8 @@ const Addslot = () => {
                         to_time: toTime,
                         time: `${fromTime} - ${toTime}`,
                         title: item.appointment_details?.patient_name || (status === 'booked' ? 'Booked' : 'Available'),
-                        subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : ''
+                        subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : '',
+                        appointment_details: item.appointment_details || null
                     };
                 });
 
@@ -1323,6 +1326,49 @@ const Addslot = () => {
                          <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
                             <div className="w-[30px] h-[20px] bg-[#FBF7E4] rounded-[4px]"></div> Blocked/Break
                          </div>
+                      </div>
+                   </div>
+
+                   {/* Booked Patients Summary */}
+                   <div className="grid gap-4 lg:grid-cols-[1.2fr_1.8fr] mb-8">
+                      <div className="rounded-[24px] border border-[#cfe6ec] bg-[#f4fbfd] p-5">
+                         <div className="text-[13px] font-bold text-[#1b738b] uppercase tracking-[0.18em] mb-3">Booked Patients</div>
+                         <div className="text-[34px] font-black text-[#0f3c4c]">{bookedSlots.length}</div>
+                         <p className="mt-2 text-[13px] text-gray-600">Total booked patients for {formattedPopupDate}.</p>
+                      </div>
+                      <div className="rounded-[24px] border border-[#e2edf0] bg-white p-5">
+                         <div className="flex items-center justify-between mb-4">
+                            <div className="text-[15px] font-bold text-[#21313d]">Booked patient list</div>
+                            <span className="text-[12px] font-semibold text-[#4a6f7f]">{bookedSlots.length} booked</span>
+                         </div>
+                         {bookedSlots.length > 0 ? (
+                            <div className="space-y-3">
+                               {bookedSlots.map((slot) => (
+                                  <div key={slot.id} className="rounded-[18px] border border-[#d8e7ea] bg-[#f8fcfd] p-4">
+                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                        <div>
+                                           <p className="text-[15px] font-bold text-[#15343f]">{slot.title}</p>
+                                           <p className="text-[12px] text-[#586d75] mt-1">{slot.subtitle || 'Booking ID unavailable'}</p>
+                                        </div>
+                                        <div className="text-[12px] font-semibold text-[#1b738b]">{slot.time}</div>
+                                     </div>
+                                     {slot.appointment_details?.patient_phone && (
+                                        <p className="text-[12px] text-[#556b72] mt-3">Phone: {slot.appointment_details.patient_phone}</p>
+                                     )}
+                                     {slot.appointment_details?.status && (
+                                        <div className="mt-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#225e71] bg-[#d8f2f8] px-3 py-1 rounded-full">
+                                           <span>Status</span>
+                                           <span>{slot.appointment_details.status}</span>
+                                        </div>
+                                     )}
+                                  </div>
+                               ))}
+                            </div>
+                         ) : (
+                            <div className="rounded-[18px] border border-dashed border-[#cfd8dd] bg-[#f9fcfd] p-5 text-[#60727a] text-sm">
+                               No booked patients found for this date. Please add slots or wait for patient bookings.
+                            </div>
+                         )}
                       </div>
                    </div>
 

@@ -25,6 +25,8 @@ const Info = ({ onClose, doctor }) => {
     const monthsFull = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const daysFull = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
+
+
     useEffect(() => {
         const fetchSlots = async () => {
             setIsLoading(true);
@@ -44,54 +46,30 @@ const Info = ({ onClose, doctor }) => {
                 const resultObj = await response.json();
                 const rawSlots = resultObj.slots || [];
                 
-                // Map start_time to the properties expected by Info.jsx
-                const result = rawSlots.map(s => {
-                    if (s.start_time) {
-                        const d = new Date(s.start_time);
-                        return {
-                            ...s,
-                            date: d.toISOString().split('T')[0],
-                            from_time: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-                            status: s.is_booked ? 'booked' : 'available'
-                        };
-                    }
-                    return s;
-                });
-
+                // Filter for available slots only
+                const availableSlots = rawSlots.filter(slot => !slot.is_booked);
+                
                 const now = new Date();
-                const futureSlotsOnly = result.filter(s => {
+                const futureSlotsOnly = availableSlots.filter(s => {
                     if (!s.start_time) return true;
                     const slotTime = new Date(s.start_time);
                     return slotTime > now;
                 });
-                
-                // Filter slots for this specific doctor
-                let filteredData = futureSlotsOnly.filter(s => {
-                    const sDoctorId = s.doctor?.id || s.doctor || s.doctor_id || doctorId;
-                    return String(sDoctorId) === String(doctorId);
-                });
-                
-                // --- SMART FALLBACK ---
-                if (filteredData.length === 0 && result.length > 0) {
-                    filteredData = result; // API already scoped by doctor_id in the URL
-                }
-                
-                console.log(`Info.jsx: Found ${filteredData.length} slots for doctor ID "${doctorId}".`);
-                
-                const foundIds = [...new Set(result.map(s => String(s.doctor?.id || s.doctor || s.doctor_id || doctorId)))];
-                setRawDebug(`Found IDs: ${foundIds.join(', ')}. Target: ${doctorId}. Total: ${result.length}`);
 
-                setSlotsData(filteredData);
-                const data = filteredData;
+                if (futureSlotsOnly.length === 0 && availableSlots.length > 0) {
+                    setRawDebug(`Available slots returned ${availableSlots.length} slots, but none are future slots.`);
+                }
+
+                setSlotsData(futureSlotsOnly);
+                const data = futureSlotsOnly;
 
                 // Group by date (using string keys directly)
                 const grouped = {};
                 if (Array.isArray(data)) {
                     data.forEach(slot => {
-                        const d = slot.date;
-                        if (!d) return;
-                        if (!grouped[d]) grouped[d] = [];
-                        grouped[d].push(slot);
+                        const dateStr = new Date(slot.start_time).toISOString().slice(0, 10);
+                        if (!grouped[dateStr]) grouped[dateStr] = [];
+                        grouped[dateStr].push(slot);
                     });
                 }
 
@@ -100,13 +78,7 @@ const Info = ({ onClose, doctor }) => {
                 // Generate date list for selector
                 const sortedDates = Object.keys(grouped).sort();
                 const formattedDates = sortedDates.map((dateStr, index) => {
-                    let dObj;
-                    if (dateStr.includes('-')) {
-                        const [y, m, d] = dateStr.split('-');
-                        dObj = new Date(y, m - 1, d);
-                    } else {
-                        dObj = new Date(dateStr);
-                    }
+                    let dObj = new Date(dateStr);
 
                     return {
                         id: index + 1,
@@ -138,31 +110,30 @@ const Info = ({ onClose, doctor }) => {
         const result = { morning: [], afternoon: [], evening: [] };
 
         daySlots.forEach(slot => {
-            const timeStr = slot.from_time; // Could be HH:MM:SS or HH:MM AM/PM
+            const timeStr = slot.start_time; // ISO string like "2024-01-15T10:00:00Z"
             if (!timeStr) return;
 
+            // Parse time directly from ISO string (UTC) to match AddSlot display
             let hour = 0;
-            let displayTime = '';
-
-            if (timeStr.toUpperCase().includes('AM') || timeStr.toUpperCase().includes('PM')) {
-                // Handle AM/PM format
-                const [timePart, modifier] = timeStr.split(' ');
-                let [h, m] = timePart.split(':');
+            let minutes = '00';
+            if (timeStr.includes('T')) {
+                const timePart = timeStr.split('T')[1];
+                const [h, m] = timePart.split(':');
                 hour = parseInt(h, 10);
-                if (hour === 12) hour = 0;
-                if (modifier?.toUpperCase() === 'PM') hour += 12;
-                displayTime = timeStr; // Keep as is for display
-            } else {
-                // Handle 24h format (HH:MM:SS)
-                const parts = timeStr.split(':');
-                hour = parseInt(parts[0], 10);
-                const m = parts[1] || '00';
-                const period = hour >= 12 ? 'PM' : 'AM';
-                const displayH = hour % 12 || 12;
-                displayTime = `${displayH}:${m} ${period}`;
+                minutes = m;
             }
 
-            const slotWithDisplay = { ...slot, displayTime };
+            // Create display time
+            const displayHours = hour % 12 || 12;
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayTime = `${displayHours}:${minutes} ${ampm}`;
+
+            const slotWithDisplay = { 
+                ...slot, 
+                displayTime,
+                from_time: `${hour.toString().padStart(2, '0')}:${minutes}`,
+                date: dateStr
+            };
 
             if (hour < 12) result.morning.push(slotWithDisplay);
             else if (hour < 17) result.afternoon.push(slotWithDisplay);
@@ -174,24 +145,29 @@ const Info = ({ onClose, doctor }) => {
 
     const currentDayCategorized = getTimeCategorizedSlots(activeDateStr);
 
+
+
     const handleBookAppointment = async () => {
         if (!selectedSlot) {
             alert("Please select a time slot first.");
             return;
         }
-        
+
         setIsBooking(true);
         try {
+            const doctorId = doctor?.id || 1;
+            const actualSlotId = selectedSlot.id; // Use the actual TimeSlot ID directly
+
             const payload = {
-                doctor: doctor?.id,
-                slot: selectedSlot.id,
+                doctor: doctorId,
+                slot: actualSlotId,
                 start_time: selectedSlot.start_time,
                 end_time: selectedSlot.end_time,
                 patient_name: "Demo Patient",
                 patient_phone: "9876543210",
                 appointment_type: activeTab
             };
-            
+
             const response = await apiFetch(`${BASE_URL}/api/appointments/`, {
                 method: 'POST',
                 headers: {
@@ -199,7 +175,7 @@ const Info = ({ onClose, doctor }) => {
                 },
                 body: JSON.stringify(payload)
             });
-            
+
             if (response.ok) {
                 alert("Appointment request sent to doctor successfully!");
                 onClose(); // close the modal and go back
@@ -324,11 +300,11 @@ const Info = ({ onClose, doctor }) => {
                                                 <button 
                                                     key={slot.id}
                                                     onClick={() => setSelectedSlot(slot)}
-                                                    disabled={slot.status !== 'available'}
-                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
+                                                    disabled={slot.is_booked}
+                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.is_booked ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
                                                 >
                                                     {slot.displayTime}
-                                                    {slot.status !== 'available' && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
+                                                    {slot.is_booked && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
                                                 </button>
                                             ))}
                                         </div>
@@ -350,11 +326,11 @@ const Info = ({ onClose, doctor }) => {
                                                 <button 
                                                     key={slot.id}
                                                     onClick={() => setSelectedSlot(slot)}
-                                                    disabled={slot.status !== 'available'}
-                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
+                                                    disabled={slot.is_booked}
+                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.is_booked ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
                                                 >
                                                     {slot.displayTime}
-                                                    {slot.status !== 'available' && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
+                                                    {slot.is_booked && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
                                                 </button>
                                             ))}
                                         </div>
@@ -376,11 +352,11 @@ const Info = ({ onClose, doctor }) => {
                                                 <button 
                                                     key={slot.id}
                                                     onClick={() => setSelectedSlot(slot)}
-                                                    disabled={slot.status !== 'available'}
-                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.status !== 'available' ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
+                                                    disabled={slot.is_booked}
+                                                    className={`py-2.5 rounded-lg border font-bold text-[13px] transition-all relative ${selectedSlot?.id === slot.id ? 'bg-white border-white text-[#0B1F4D] scale-95 shadow-inner' : slot.is_booked ? 'opacity-40 cursor-not-allowed border-white/5 bg-black/10 text-white/20' : 'border-white/20 text-white hover:border-white/50 bg-white/5'}`}
                                                 >
                                                     {slot.displayTime}
-                                                    {slot.status !== 'available' && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
+                                                    {slot.is_booked && <Clock className="absolute top-1 right-1 w-2.5 h-2.5 opacity-40" />}
                                                 </button>
                                             ))}
                                         </div>

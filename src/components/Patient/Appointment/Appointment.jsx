@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     ChevronLeft,
@@ -15,6 +15,8 @@ import {
     User as ProfileIcon,
     XCircle
 } from 'lucide-react';
+import apiFetch from '../../../api';
+import BASE_URL from '../../../baseUrl';
 import Sidebar from '../Patient_sidebar';
 import Profile from '../Profile';
 import Account from '../Account';
@@ -34,10 +36,69 @@ const Appointment = () => {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
+    const [appointments, setAppointments] = useState([]);
+    const [loadingAppointments, setLoadingAppointments] = useState(true);
+    const [appointmentsError, setAppointmentsError] = useState(null);
 
     // Calendar State
-    const [currentDate, setCurrentDate] = useState(new Date(2023, 9, 1)); // October 2023
-    const [selectedDay, setSelectedDay] = useState(23);
+    const [currentDate, setCurrentDate] = useState(() => {
+        const today = new Date();
+        return new Date(today.getFullYear(), today.getMonth(), 1);
+    });
+    const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+
+    useEffect(() => {
+        const fetchAppointments = async () => {
+            setLoadingAppointments(true);
+            setAppointmentsError(null);
+
+            try {
+                const response = await apiFetch(`${BASE_URL}/api/appointments/patient/appointments/`);
+                if (!response.ok) {
+                    throw new Error(`Unable to load appointments (${response.status})`);
+                }
+
+                const data = await response.json();
+                setAppointments(Array.isArray(data.appointments) ? data.appointments : []);
+            } catch (error) {
+                setAppointmentsError(error.message || 'Unable to load appointments');
+            } finally {
+                setLoadingAppointments(false);
+            }
+        };
+
+        fetchAppointments();
+    }, []);
+
+    const appointmentEvents = appointments.map((appointment) => {
+        const eventDate = new Date(appointment.start_time);
+        return {
+            ...appointment,
+            eventDate,
+            day: eventDate.getDate(),
+            month: eventDate.getMonth(),
+            year: eventDate.getFullYear(),
+            timeLabel: eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            doctorName: appointment.doctor_details?.full_name || 'Unknown Doctor',
+        };
+    });
+
+    const visibleEvents = appointmentEvents.filter((event) =>
+        event.year === currentDate.getFullYear() && event.month === currentDate.getMonth()
+    );
+
+    const eventsByDay = visibleEvents.reduce((acc, event) => {
+        acc[event.day] = acc[event.day] || [];
+        acc[event.day].push(event);
+        return acc;
+    }, {});
+
+    const upcomingAppointments = appointmentEvents
+        .filter((event) => event.eventDate >= new Date())
+        .sort((a, b) => a.eventDate - b.eventDate);
+
+    const nextAppointment = upcomingAppointments[0];
+    const secondaryAppointments = upcomingAppointments.slice(1, 3);
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -156,32 +217,51 @@ const Appointment = () => {
                                     {/* Calendar Grid */}
                                     <div className="grid grid-cols-7 flex-1 content-start gap-y-4">
                                         {offsetDays.map((_, i) => <div key={`offset-${i}`} />)}
-                                        {days.map(day => (
-                                            <div key={day} className="relative flex flex-col items-center">
-                                                <div
-                                                    onClick={() => setSelectedDay(day)}
-                                                    className={`
-                                                        w-12 h-12 flex items-center justify-center rounded-full text-[18px] font-medium cursor-pointer transition-all
-                                                        ${selectedDay === day
-                                                            ? 'bg-[#93f2f2] text-[#0B1F4D] shadow-lg scale-110'
-                                                            : 'text-gray-400 hover:text-[#0B1F4D] hover:bg-gray-50'
-                                                        }
-                                                    `}
-                                                >
-                                                    {day}
-                                                </div>
+                                        {days.map(day => {
+                                            const dayEvents = eventsByDay[day] || [];
+                                            const isSelected = selectedDay === day;
+                                            const hasEvent = dayEvents.length > 0;
 
-                                                {/* Popover for selected day (Elena Sterling) */}
-                                                {day === 23 && (
-                                                    <div className="absolute top-[110%] left-1/2 -translate-x-1/2 z-20 w-[180px] bg-[#0B1F4D] p-3 rounded-2xl shadow-2xl animate-in zoom-in-95 duration-200">
-                                                        <div className="text-[10px] text-white/60 uppercase font-bold tracking-wider mb-1">Neurology Consult</div>
-                                                        <div className="text-[12px] font-bold text-white">02:00 PM • Elena Sterling</div>
-                                                        {/* Arrow */}
-                                                        <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#0B1F4D] rotate-45"></div>
+                                            return (
+                                                <div key={day} className="relative flex flex-col items-center">
+                                                    <div
+                                                        onClick={() => setSelectedDay(day)}
+                                                        className={`
+                                                            w-12 h-12 flex items-center justify-center rounded-full text-[18px] font-medium cursor-pointer transition-all
+                                                            ${isSelected
+                                                                ? 'bg-[#93f2f2] text-[#0B1F4D] shadow-lg scale-110'
+                                                                : hasEvent
+                                                                    ? 'text-[#0B1F4D] bg-[#E6F3F5] hover:bg-[#D7F0F1]'
+                                                                    : 'text-gray-400 hover:text-[#0B1F4D] hover:bg-gray-50'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {day}
                                                     </div>
-                                                )}
-                                            </div>
-                                        ))}
+
+                                                    {hasEvent && (
+                                                        <span className="absolute bottom-1 w-2 h-2 rounded-full bg-[#0B1F4D]" />
+                                                    )}
+
+                                                    {isSelected && dayEvents.length > 0 && (
+                                                        <div className="absolute top-[110%] left-1/2 -translate-x-1/2 z-20 w-[220px] bg-[#0B1F4D] p-3 rounded-2xl shadow-2xl animate-in zoom-in-95 duration-200">
+                                                            {dayEvents.slice(0, 2).map((event, idx) => (
+                                                                <div key={event.id || idx} className="mb-3 last:mb-0">
+                                                                    <div className="text-[10px] text-white/60 uppercase font-bold tracking-wider mb-1">{event.appointment_type || event.location || 'Appointment'}</div>
+                                                                    <div className="text-[12px] font-bold text-white">
+                                                                        {event.timeLabel} • {event.doctorName}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                            {dayEvents.length > 2 && (
+                                                                <div className="text-[10px] text-white/60 mt-2">+{dayEvents.length - 2} more appointment(s)</div>
+                                                            )}
+                                                            <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#0B1F4D] rotate-45"></div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
@@ -211,46 +291,84 @@ const Appointment = () => {
 
                                 <div className="flex flex-col gap-4">
                                     {/* Featured Session Card */}
-                                    <div className="bg-[#1a6e78] rounded-[32px] p-6 shadow-xl border border-white/10 flex flex-col gap-6">
-                                        <div className="flex items-center justify-between">
-                                            <span className="bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md">Confirmed Clinical</span>
-                                            <Video 
-                                                onClick={() => navigate('/Vediocall', { state: { from: '/Appointment' } })} 
-                                                className="text-white/60 w-6 h-6 cursor-pointer hover:text-white transition-colors" 
-                                            />
-                                        </div>
+                                    {nextAppointment ? (
+                                        <div className="bg-[#1a6e78] rounded-[32px] p-6 shadow-xl border border-white/10 flex flex-col gap-6">
+                                            <div className="flex items-center justify-between">
+                                                <span className="bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md">{nextAppointment.status?.toUpperCase() || 'UPCOMING'}</span>
+                                                <Video 
+                                                    onClick={() => navigate('/Vediocall', { state: { from: '/Appointment' } })} 
+                                                    className="text-white/60 w-6 h-6 cursor-pointer hover:text-white transition-colors" 
+                                                />
+                                            </div>
 
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-16 h-16 rounded-full border-2 border-[#93f2f2] overflow-hidden p-1">
-                                                <div className="w-full h-full rounded-full overflow-hidden">
-                                                    <img src="https://i.pravatar.cc/150?u=elena" alt="Dr. Elena Sterling" className="w-full h-full object-cover" />
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-16 h-16 rounded-full border-2 border-[#93f2f2] overflow-hidden p-1">
+                                                    <div className="w-full h-full rounded-full overflow-hidden">
+                                                        <img src={`https://i.pravatar.cc/150?u=${encodeURIComponent(nextAppointment.doctorName)}`} alt={nextAppointment.doctorName} className="w-full h-full object-cover" />
+                                                    </div>
+                                                </div>
+                                                <div className="text-white">
+                                                    <h3 className="text-[20px] font-bold">{nextAppointment.doctorName}</h3>
+                                                    <p className="text-white/60 text-[14px]">{nextAppointment.appointment_type || 'Appointment'}</p>
                                                 </div>
                                             </div>
-                                            <div className="text-white">
-                                                <h3 className="text-[20px] font-bold">Dr. Elena Sterling</h3>
-                                                <p className="text-white/60 text-[14px]">Neurology Specialist</p>
-                                            </div>
-                                        </div>
 
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
-                                                <Calendar size={18} className="text-[#93f2f2]" /> Monday, Oct 23
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
+                                                    <Calendar size={18} className="text-[#93f2f2]" /> {new Date(nextAppointment.start_time).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                                                </div>
+                                                <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
+                                                    <Clock size={18} className="text-[#93f2f2]" /> {nextAppointment.timeLabel}
+                                                </div>
+                                                <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
+                                                    <MapPin size={18} className="text-[#93f2f2]" /> {nextAppointment.location || 'Location not set'}
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
-                                                <Clock size={18} className="text-[#93f2f2]" /> 02:00 PM
-                                            </div>
-                                            <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
-                                                <MapPin size={18} className="text-[#93f2f2]" /> Sanctuary West Wing
-                                            </div>
-                                        </div>
 
-                                        <button
-                                            onClick={() => setIsManageOpen(true)}
-                                            className="w-full bg-white text-[#0B1F4D] py-3.5 rounded-2xl font-bold hover:bg-white/90 transition-all text-[15px] shadow-lg"
-                                        >
-                                            Manage Session
-                                        </button>
-                                    </div>
+                                            <button
+                                                onClick={() => setIsManageOpen(true)}
+                                                className="w-full bg-white text-[#0B1F4D] py-3.5 rounded-2xl font-bold hover:bg-white/90 transition-all text-[15px] shadow-lg"
+                                            >
+                                                Manage Session
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="bg-[#1a6e78] rounded-[32px] p-6 shadow-xl border border-white/10 flex flex-col gap-6">
+                                            <div className="flex items-center justify-between">
+                                                <span className="bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md">No Appointments</span>
+                                                <Video className="text-white/60 w-6 h-6" />
+                                            </div>
+
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-16 h-16 rounded-full border-2 border-[#93f2f2] overflow-hidden p-1">
+                                                    <div className="w-full h-full rounded-full overflow-hidden bg-white/10"></div>
+                                                </div>
+                                                <div className="text-white">
+                                                    <h3 className="text-[20px] font-bold">No upcoming sessions</h3>
+                                                    <p className="text-white/60 text-[14px]">Book a new appointment to see it here.</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
+                                                    <Calendar size={18} className="text-[#93f2f2]" /> --
+                                                </div>
+                                                <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
+                                                    <Clock size={18} className="text-[#93f2f2]" /> --
+                                                </div>
+                                                <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
+                                                    <MapPin size={18} className="text-[#93f2f2]" /> --
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={() => navigate('/Consultation1', { state: { from: 'Appointment' } })}
+                                                className="w-full bg-white text-[#0B1F4D] py-3.5 rounded-2xl font-bold hover:bg-white/90 transition-all text-[15px] shadow-lg"
+                                            >
+                                                Book Session
+                                            </button>
+                                        </div>
+                                    )}
 
                                     {/* Compact Cards */}
                                     {[
