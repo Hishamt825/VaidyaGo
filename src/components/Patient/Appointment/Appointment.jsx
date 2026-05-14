@@ -29,6 +29,7 @@ import phImg from '../../../assets/ph.png';
 
 const Appointment = () => {
     const navigate = useNavigate();
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const [active, setActive] = useState('Appointments');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const { t, toggleLanguage, language } = useLanguage();
@@ -71,14 +72,46 @@ const Appointment = () => {
     }, []);
 
     const appointmentEvents = appointments.map((appointment) => {
-        const eventDate = new Date(appointment.start_time);
+        const timeStr = appointment.start_time;
+        let eventDate = new Date(timeStr);
+        let day = eventDate.getDate();
+        let month = eventDate.getMonth();
+        let year = eventDate.getFullYear();
+        let timeLabel = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        // Parse directly from ISO string to avoid timezone shift (matching Info.jsx/AddSlot)
+        let dateLabel = '';
+        if (timeStr && timeStr.includes('T')) {
+            const [datePart, timePart] = timeStr.split('T');
+            const [y, m, d] = datePart.split('-').map(Number);
+            const [h, min] = timePart.split(':').map(Number);
+            
+            year = y;
+            month = m - 1;
+            day = d;
+            
+            const displayHour = h % 12 || 12;
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            timeLabel = `${displayHour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')} ${ampm}`;
+            
+            // Create a "neutral" date object for comparisons that doesn't shift
+            eventDate = new Date(year, month, day, h, min);
+
+            // Pre-format date label
+            const tempDate = new Date(year, month, day);
+            const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][tempDate.getDay()];
+            const monthName = monthNames[month];
+            dateLabel = `${weekday}, ${monthName} ${day}`;
+        }
+
         return {
             ...appointment,
             eventDate,
-            day: eventDate.getDate(),
-            month: eventDate.getMonth(),
-            year: eventDate.getFullYear(),
-            timeLabel: eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            day,
+            month,
+            year,
+            timeLabel,
+            dateLabel,
             doctorName: appointment.doctor_details?.full_name || 'Unknown Doctor',
         };
     });
@@ -100,7 +133,6 @@ const Appointment = () => {
     const nextAppointment = upcomingAppointments[0];
     const secondaryAppointments = upcomingAppointments.slice(1, 3);
 
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
     const getFirstDayOfMonth = (year, month) => {
@@ -175,9 +207,9 @@ const Appointment = () => {
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
                             <div>
                                 <h1 className="text-[32px] font-bold text-white flex items-center gap-3">
-                                    Clinical Schedule <span className="text-white/40 font-normal text-[24px]">Alex Rivera</span>
+                                    Clinical Schedule <span className="text-white/40 font-normal text-[24px]">{localStorage.getItem('user_full_name') || 'Patient'}</span>
                                 </h1>
-                                <p className="text-white/60 text-[14px] mt-1 uppercase tracking-wider font-medium">October 2023 Overview</p>
+                                <p className="text-white/60 text-[14px] mt-1 uppercase tracking-wider font-medium">{monthNames[new Date().getMonth()]} {new Date().getFullYear()} Overview</p>
                             </div>
                             <button
                                 onClick={() => navigate('/Consultation1', { state: { from: 'Appointment' } })}
@@ -286,7 +318,9 @@ const Appointment = () => {
                             <div className="flex flex-col gap-6">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-[18px] font-bold uppercase tracking-widest text-white/80">Upcoming Sessions</h2>
-                                    <span className="text-[12px] font-bold text-white/40 uppercase">OCT 2023</span>
+                                    <span className="text-[12px] font-bold text-white/40 uppercase">
+                                        {monthNames[new Date().getMonth()].slice(0, 3)} {new Date().getFullYear()}
+                                    </span>
                                 </div>
 
                                 <div className="flex flex-col gap-4">
@@ -315,7 +349,7 @@ const Appointment = () => {
 
                                             <div className="space-y-3">
                                                 <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
-                                                    <Calendar size={18} className="text-[#93f2f2]" /> {new Date(nextAppointment.start_time).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                                                    <Calendar size={18} className="text-[#93f2f2]" /> {nextAppointment.dateLabel}
                                                 </div>
                                                 <div className="flex items-center gap-3 text-[14px] text-white/80 font-medium">
                                                     <Clock size={18} className="text-[#93f2f2]" /> {nextAppointment.timeLabel}
@@ -370,27 +404,24 @@ const Appointment = () => {
                                         </div>
                                     )}
 
-                                    {/* Compact Cards */}
-                                    {[
-                                        { id: 'marcus', name: 'Dr. Marcus Chen', specialty: 'Cardiology • Oct 25', img: 'https://i.pravatar.cc/150?u=marcus' },
-                                        { id: 'physio', name: 'Physiotherapy Lab', specialty: 'Full Assessment • Oct 28', icon: <Plus size={24} className="text-[#1A7785]" />, isIcon: true }
-                                    ].map((session, i) => (
-                                        <div key={i} className="relative">
+                                    {/* Dynamic Upcoming Sessions */}
+                                    {secondaryAppointments.map((session, i) => (
+                                        <div key={session.id || i} className="relative">
                                             <div
                                                 className="bg-white rounded-[24px] p-4 flex items-center gap-4 group hover:bg-[#E6F3F5] transition-all cursor-pointer"
                                             >
-                                                {session.isIcon ? (
-                                                    <div className="w-12 h-12 bg-[#E6F3F5] rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
-                                                        {session.icon}
-                                                    </div>
-                                                ) : (
-                                                    <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100">
-                                                        <img src={session.img} alt={session.name} className="w-full h-full object-cover" />
-                                                    </div>
-                                                )}
+                                                <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100">
+                                                    <img 
+                                                        src={`https://i.pravatar.cc/150?u=${encodeURIComponent(session.doctorName)}`} 
+                                                        alt={session.doctorName} 
+                                                        className="w-full h-full object-cover" 
+                                                    />
+                                                </div>
                                                 <div className="flex-1">
-                                                    <h4 className="text-[#0B1F4D] font-bold text-[15px]">{session.name}</h4>
-                                                    <p className="text-gray-400 text-[12px] font-medium uppercase tracking-tight">{session.specialty}</p>
+                                                    <h4 className="text-[#0B1F4D] font-bold text-[15px]">{session.doctorName}</h4>
+                                                    <p className="text-gray-400 text-[12px] font-medium uppercase tracking-tight">
+                                                        {session.appointment_type || 'Consultation'} • {session.dateLabel}
+                                                    </p>
                                                 </div>
                                                 <button
                                                     onClick={(e) => {
@@ -408,21 +439,17 @@ const Appointment = () => {
                                                 <div className="absolute right-0 top-[calc(100%+6px)] z-40 w-[240px] bg-white rounded-[24px] shadow-2xl border border-gray-100 py-2 animate-in slide-in-from-top-2 duration-200">
                                                     <button 
                                                         onClick={() => {
-                                                            if (session.id !== 'physio') {
-                                                                setActiveDropdown(null);
-                                                                navigate('/view_profile', { state: { from: 'Appointment' } });
-                                                            }
+                                                            setActiveDropdown(null);
+                                                            navigate('/view_profile', { state: { from: 'Appointment' } });
                                                         }}
                                                         className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group"
                                                     >
                                                         <div className="w-10 h-10 bg-[#F1F6F8] rounded-xl flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
-                                                            {session.id === 'physio' ? <BarChart3 size={18} /> : <ProfileIcon size={18} />}
+                                                            <ProfileIcon size={18} />
                                                         </div>
-                                                        <span className="text-[14px] font-bold text-[#0D1C2E]">
-                                                            {session.id === 'physio' ? 'View Full Assessment' : 'View Profile'}
-                                                        </span>
+                                                        <span className="text-[14px] font-bold text-[#0D1C2E]">View Profile</span>
                                                     </button>
-
+                                                    
                                                     <div className="mx-4 border-t border-gray-100"></div>
 
                                                     <button 
@@ -437,30 +464,15 @@ const Appointment = () => {
                                                         </div>
                                                         <span className="text-[14px] font-bold text-[#0D1C2E]">Reschedule Session</span>
                                                     </button>
-
-                                                    <div className="mx-4 border-t border-gray-100"></div>
-
-                                                    <button className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group">
-                                                        <div className="w-10 h-10 bg-[#F1F6F8] rounded-xl flex items-center justify-center text-[#1A7785] group-hover:bg-[#1A7785] group-hover:text-white transition-all">
-                                                            <MessageSquare size={18} />
-                                                        </div>
-                                                        <span className="text-[14px] font-bold text-[#0D1C2E]">
-                                                            {session.id === 'physio' ? 'Message Lab' : 'Message Doctor'}
-                                                        </span>
-                                                    </button>
-
-                                                    <div className="mx-4 border-t border-gray-100"></div>
-
-                                                    <button className="w-full px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors text-left group">
-                                                        <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
-                                                            <XCircle size={18} />
-                                                        </div>
-                                                        <span className="text-[14px] font-bold text-red-600">Cancel Appointment</span>
-                                                    </button>
                                                 </div>
                                             )}
                                         </div>
                                     ))}
+
+                                    {/* Fallback if no more appointments */}
+                                    {secondaryAppointments.length === 0 && nextAppointment && (
+                                        <p className="text-white/20 text-[12px] text-center italic py-4">No other scheduled sessions</p>
+                                    )}
                                 </div>
                             </div>
                         </div>

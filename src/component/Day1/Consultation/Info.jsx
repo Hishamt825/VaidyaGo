@@ -156,15 +156,23 @@ const Info = ({ onClose, doctor }) => {
         setIsBooking(true);
         try {
             const doctorId = doctor?.id || 1;
-            const actualSlotId = selectedSlot.id; // Use the actual TimeSlot ID directly
+            const actualSlotId = selectedSlot.id;
+
+            // Get logged-in user info from localStorage
+            const userId = localStorage.getItem('user_id');
+            const userEmail = localStorage.getItem('user_email');
+            const userName = localStorage.getItem('user_full_name');
+            const userPhone = localStorage.getItem('user_phone');
 
             const payload = {
                 doctor: doctorId,
                 slot: actualSlotId,
                 start_time: selectedSlot.start_time,
                 end_time: selectedSlot.end_time,
-                patient_name: "Demo Patient",
-                patient_phone: "9876543210",
+                user: userId ? parseInt(userId) : null,
+                patient_name: userName || "Demo Patient",
+                patient_phone: userPhone || "9876543210",
+                patient_email: userEmail || null,
                 appointment_type: activeTab
             };
 
