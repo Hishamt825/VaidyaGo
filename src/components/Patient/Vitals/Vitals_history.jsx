@@ -4,6 +4,7 @@ import Sidebar from '../Patient_sidebar';
 import phImg from '../../../assets/ph.png';
 import { ChevronRight, Download, Filter, Search, ChevronLeft, Activity, Heart, Wind, Thermometer } from 'lucide-react';
 import CSV from './CSV';
+import { useLanguage } from '../../../context/LanguageContext';
 import BASE_URL from '../../../baseUrl';
 import apiFetch from '../../../api';
 
@@ -34,6 +35,7 @@ const VitalsHistory = () => {
     const [filterType, setFilterType] = useState('Last 3 Months');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isCSVOpen, setIsCSVOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     
     const [prescriptions, setPrescriptions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -170,7 +172,12 @@ const VitalsHistory = () => {
                     </div>
 
                     <div className="flex items-center gap-[32px] ml-auto">
-                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                        <div
+                            onClick={toggleLanguage}
+                            className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                        >
+                            {language === 'English' ? 'EN' : 'HI'}
+                        </div>
                         <div className="flex items-center gap-[20px]">
                             <button className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                 <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

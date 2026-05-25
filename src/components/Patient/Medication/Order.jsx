@@ -4,6 +4,7 @@ import Sidebar from '../Patient_sidebar';
 import Profile from '../Profile';
 import Account from '../Account';
 import Notification from '../notification';
+import { useLanguage } from '../../../context/LanguageContext';
 import phImg from '../../../assets/ph.png';
 import mapImg from '../../../assets/map.png';
 import Message from './Message';
@@ -13,6 +14,7 @@ const Order = () => {
     const navigate = useNavigate();
     const [active, setActive] = useState('Medications');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const [activeModal, setActiveModal] = useState(null);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isMessageOpen, setIsMessageOpen] = useState(false);
@@ -49,8 +51,13 @@ const Order = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-[32px]">
-                            <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block cursor-pointer transition-colors">Language</span>
+                        <div className="flex items-center gap-[32px] ml-auto">
+                            <div
+                                onClick={toggleLanguage}
+                                className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                            >
+                                {language === 'English' ? 'EN' : 'HI'}
+                            </div>
                             <div className="flex items-center gap-[20px]">
                                 <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                     <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

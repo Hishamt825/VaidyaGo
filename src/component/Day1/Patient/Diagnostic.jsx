@@ -12,8 +12,8 @@ import Tthdiagnostic from './Tthdiagnostic';
 import Cervicogenic from './Cervicogenic';
 import Dseasonal from './Dseasonal';
 import ConnectPopup from './ConnectPopup';
-import PharmacyPopup from './PharmacyPopup';
 import HealthGuidePopup from './HealthGuidePopup';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import Diagnosticinput from './Diagnosticinput';
 
@@ -93,9 +93,9 @@ const Diagnostic = () => {
   const [showDiagnosticInput, setShowDiagnosticInput] = useState(false);
   const [active, setActive] = useState('Symptom Checker');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const { t, toggleLanguage, language } = useLanguage();
   const [conditions, setConditions] = useState([
     { title: 'Tension-Type Headache', match: 85, desc: 'Most common primary headache disorder, often characterized by a pressing or tightening sensation around the head of mild to moderate intensity.' },
     { title: 'Seasonal Allergies (Rhinitis)', match: 62, desc: 'Hypersensitivity reaction to environmental triggers such as pollen or mold, contributing to sinus pressure and subsequent cephalalgia.' },
@@ -196,7 +196,12 @@ const Diagnostic = () => {
             </div>
 
             <div className="flex items-center gap-[32px] ml-auto">
-                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <span 
+                    onClick={toggleLanguage}
+                    className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                >
+                    {language === 'English' ? 'EN' : 'HI'}
+                </span>
                 <div className="flex items-center gap-[20px]">
                     <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                         <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,11 +227,11 @@ const Diagnostic = () => {
         <div className="diagnostic-content">
         {/* Diagnostic Hero Section */}
         <section className="results-header-card">
-          <span className="phase-badge">Phase : Complete</span>
-          <h1>Diagnostics Results</h1>
+          <span className="phase-badge">{t('phaseComplete')}</span>
+          <h1>{t('diagnosticsResults')}</h1>
           <p>{aiSummary}</p>
           <div className="analysis-ref">
-            <span>Analysis Reference</span>
+            <span>{t('analysisReference')}</span>
             <h3>#VG-7822-XP</h3>
           </div>
         </section>
@@ -238,11 +243,11 @@ const Diagnostic = () => {
             <div className="summary-card dark info-card">
               <div className="card-title">
                 <Icon name="clipboard" />
-                Input Summary
+                {t('inputSummary')}
               </div>
               
               <div className="info-section">
-                <label>PRIMARY COMPLAINTS</label>
+                <label>{t('primaryComplaints')}</label>
                 <div className="complaints-list">
                   {inputSummary.complaints.map((item, idx) => (
                     <div key={idx} className="complaint-item">
@@ -254,38 +259,38 @@ const Diagnostic = () => {
               </div>
 
               <div className="info-section">
-                <label>VITALS (REPORTED)</label>
+                <label>{t('vitalsReported')}</label>
                 <div className="vitals-grid">
                   <div className="vital-mini-box">
                     <h4>{inputSummary.vitals.temp}</h4>
-                    <span>Temp</span>
+                    <span>{t('tempLabel')}</span>
                   </div>
                   <div className="vital-mini-box">
                     <h4>{inputSummary.vitals.bpm}</h4>
-                    <span>BPM</span>
+                    <span>{t('bpmLabel')}</span>
                   </div>
                 </div>
               </div>
 
               <div className="card-footer">
-                <span onClick={() => setShowDiagnosticInput(true)} className="edit-link" style={{ cursor: 'pointer' }}>Edit details ✎</span>
+                <span onClick={() => setShowDiagnosticInput(true)} className="edit-link" style={{ cursor: 'pointer' }}>{t('editDetails')}</span>
               </div>
             </div>
 
             <div className="summary-card patient-card">
               <div className="card-subtitle">
                 <Icon name="stethoscope" className="mini-card-icon" />
-                PATIENT SUMMARY
+                {t('patientSummary')}
               </div>
               <div className="patient-vitals-list">
                 <div className="patient-vital-row">
                   <div className="v-icon-wrap"><Icon name="pulse" /></div>
-                  <span className="v-label">Temperature</span>
+                  <span className="v-label">{t('temperatureLabel')}</span>
                   <span className="v-value">98.6°F</span>
                 </div>
                 <div className="patient-vital-row">
                   <div className="v-icon-wrap heart"><Icon name="pulse" /></div>
-                  <span className="v-label">Heart Rate</span>
+                  <span className="v-label">{t('heartRateLabel')}</span>
                   <span className="v-value">72 BPM</span>
                 </div>
                 <div className="patient-vital-row">
@@ -295,7 +300,7 @@ const Diagnostic = () => {
                 </div>
               </div>
               <div className="symptoms-section">
-                <label>PRIMARY SYMPTOMS</label>
+                <label>{t('primarySymptomsLabel')}</label>
                 <div className="symptom-tags">
                   {inputSummary.complaints.map(item => (
                     <span key={item.symptom} className="symptom-tag">{item.symptom}</span>
@@ -306,10 +311,10 @@ const Diagnostic = () => {
 
             <div className="summary-card history-card">
               <div className="history-content">
-                <h4>Analysis History</h4>
-                <p>Compare current results with previous 6 months of diagnostic data.</p>
+                <h4>{t('analysisHistory')}</h4>
+                <p>{t('compareResultsText')}</p>
                 <a href="#trends" className="trends-link">
-                  View Trends 
+                  {t('viewTrends')} 
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 </a>
               </div>
@@ -319,8 +324,8 @@ const Diagnostic = () => {
           {/* Right Potential Conditions Column */}
           <div className="conditions-section">
             <h2 className="conditions-section-title">
-              POTENTIAL CONDITIONS
-              <span className="sort-label">Sort by Confidence ▾</span>
+              {t('potentialConditions')}
+              <span className="sort-label">{t('sortByConfidence')}</span>
             </h2>
             
             {conditions.map((c, i) => (
@@ -340,11 +345,11 @@ const Diagnostic = () => {
                   </div>
                   <div className="match-area">
                     <span className="match-num">{c.match}%</span>
-                    <span className="match-label">MATCH</span>
+                    <span className="match-label">{t('matchLabel')}</span>
                   </div>
                 </div>
                 <div className="condition-footer">
-                  <span className="clinical-data"><Icon name="info" className="mini-icon" /> Clinical Data</span>
+                  <span className="clinical-data"><Icon name="info" className="mini-icon" /> {t('clinicalData')}</span>
                   <span className="arrow">›</span>
                 </div>
               </div>
@@ -353,12 +358,12 @@ const Diagnostic = () => {
             {(precautions.length > 0 || recommendations.length > 0) && (
               <div className="ai-advice-section">
                 <h2 className="conditions-section-title" style={{ marginTop: 32 }}>
-                  AI PRECAUTIONS & ADVICE
+                  {t('aiPrecautionsAdvice')}
                 </h2>
                 <div className="advice-grid">
                   {precautions.length > 0 && (
                     <div className="advice-card precaution">
-                      <h4>Precautions</h4>
+                      <h4>{t('precautionsLabel')}</h4>
                       <ul>
                         {precautions.slice(0, 3).map((p, i) => <li key={i}>{p}</li>)}
                       </ul>
@@ -366,7 +371,7 @@ const Diagnostic = () => {
                   )}
                   {recommendations.length > 0 && (
                     <div className="advice-card recommendation">
-                      <h4>Recommendations</h4>
+                      <h4>{t('recommendationsLabel')}</h4>
                       <ul>
                         {recommendations.slice(0, 3).map((r, i) => <li key={i}>{r}</li>)}
                       </ul>
@@ -377,40 +382,40 @@ const Diagnostic = () => {
             )}
 
             <h2 className="conditions-section-title" style={{ marginTop: 32 }}>
-              ACTIONABLE NEXT STEPS
+              {t('actionableNextSteps')}
             </h2>
             <div className="actionable-row">
               <div className="action-card">
                 <div className="action-icon-wrap video"><Icon name="video" /></div>
-                <h4>Book a Consultation</h4>
-                <p>Speak with a General Practitioner via telehealth in &lt; 15 mins.</p>
+                <h4>{t('bookConsultation')}</h4>
+                <p>{t('telehealthDesc')}</p>
                 <span 
                   onClick={() => setShowConnect(true)} 
                   className="action-link"
                 >
-                  Connect Now →
+                  {t('connectNow')}
                 </span>
               </div>
               <div className="action-card">
                 <div className="action-icon-wrap pharmacy"><Icon name="pharmacy" /></div>
-                <h4>Find a Pharmacy</h4>
-                <p>Locate pharmacies nearby for immediate relief medications.</p>
+                <h4>{t('findPharmacy')}</h4>
+                <p>{t('locatePharmacies')}</p>
                 <span 
                   onClick={() => setShowPharmacy(true)} 
                   className="action-link"
                 >
-                  Open Map →
+                  {t('openMap')}
                 </span>
               </div>
               <div className="action-card">
                 <div className="action-icon-wrap book"><Icon name="book" /></div>
-                <h4>Health Guide</h4>
-                <p>Deep dive into managed care strategies for these conditions.</p>
+                <h4>{t('healthGuide')}</h4>
+                <p>{t('deepDive')}</p>
                 <span 
                   onClick={() => setShowGuide(true)} 
                   className="action-link"
                 >
-                  Read More →
+                  {t('readMore')}
                 </span>
               </div>
             </div>
@@ -423,7 +428,7 @@ const Diagnostic = () => {
               </div>
               <div className="map-badge">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" strokeWidth="1"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>
-                 <span>2 Clinics Nearby</span>
+                 <span>{t('clinicsNearby')}</span>
               </div>
             </div>
           </div>

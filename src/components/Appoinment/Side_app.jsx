@@ -43,16 +43,6 @@ const Side_app = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOp
       path: "/Patients"
     },
     {
-      name: "Consultation",
-      icon: (
-        <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 11v6m-3-3h6" />
-        </svg>
-      ),
-      path: "/Consultation"
-    },
-    {
       name: "Add Slots",
       icon: (
         <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -61,15 +51,6 @@ const Side_app = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOp
         </svg>
       ),
       path: "/Addslot"
-    },
-    {
-      name: "Chatbot",
-      icon: (
-        <svg className="w-[19px] h-[19px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-        </svg>
-      ),
-      path: "/Bot"
     },
   ];
 
@@ -153,53 +134,6 @@ const Side_app = ({ active = "Dashboard", setActive, isMobileOpen, setIsMobileOp
             );
           })}
 
-          {/* PROFILE CARD (Integrated below menu) */}
-          <div className="w-full px-[20px] md:px-[25px] pt-[65px] pb-[20px] bg-white border-r-[1.8px] border-[#166E83]">
-            <div className="relative bg-white border border-gray-200 rounded-[24px] pt-[30px] pb-[12px] flex flex-col items-center shadow-sm">
-              
-              {/* Overlapping Avatar (Clickable) */}
-              <div 
-                onClick={() => {
-                  navigate('/Settingpage');
-                  if (setIsMobileOpen) setIsMobileOpen(false);
-                }}
-                className="absolute -top-[35px] left-1/2 -translate-x-1/2 w-[60px] md:w-[65px] h-[60px] md:h-[65px] rounded-full border-[3px] border-white shadow-sm overflow-hidden bg-white cursor-pointer hover:shadow-md transition-all"
-              >
-                <img src={doctorAvatar} alt="Dr. Adiba" className="w-full h-full object-cover" />
-              </div>
-
-              {/* Profile Info (Name Clickable) */}
-              <div className="text-center px-2">
-                <h3 
-                  onClick={() => {
-                    navigate('/Settingpage');
-                    if (setIsMobileOpen) setIsMobileOpen(false);
-                  }}
-                  className="text-[16px] md:text-[18px] font-bold text-[#222] cursor-pointer hover:text-[#166E83] transition-colors leading-tight truncate max-w-[120px]"
-                >
-                  Dr. Adiba
-                </h3>
-                <p className="text-[13px] md:text-[14px] font-semibold text-gray-500 leading-tight mt-1">Dermatologist</p>
-                <p className="text-[12px] md:text-[14px] font-medium text-gray-400 mt-[1px]">Doctor</p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-[8px] mt-[8px]">
-                <button 
-                  onClick={() => {
-                    navigate('/Settingpage');
-                    if (setIsMobileOpen) setIsMobileOpen(false);
-                  }}
-                  className="w-[26px] md:w-[28px] h-[26px] md:h-[28px] bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <img src={settingsIcon} alt="Settings" className="w-[12px] md:w-[14px] h-[12px] md:h-[14px] opacity-70" />
-                </button>
-                <button className="w-[26px] md:w-[28px] h-[26px] md:h-[28px] bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
-                  <img src={logoutIcon} alt="Logout" className="w-[10px] md:w-[12px] h-[10px] md:h-[12px] opacity-70" />
-                </button>
-              </div>
-            </div>
-          </div>
 
           {/* BOTTOM FILLER TO CONTINUE RIGHT BORDER TILL SCREEN BOTTOM */}
           <div className={`flex-1 w-full bg-white border-r-[1.8px] border-[#166E83] ${activeIndex === menu.length - 1 ? "border-t-[1.8px] rounded-tr-[20px] mt-[4px]" : ""

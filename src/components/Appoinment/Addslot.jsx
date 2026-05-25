@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/lo.svg';
 import Side_app from './Side_app';
@@ -501,6 +501,7 @@ const Addslot = () => {
    const [fromDate, setFromDate] = useState(todayFormattedDate);
    const [toDate, setToDate] = useState(todayFormattedDate);
    const [slots, setSlots] = useState([]);
+   const [pendingAppointments, setPendingAppointments] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
    const [isLoadingSlots, setIsLoadingSlots] = useState(false);
    const [message, setMessage] = useState({ text: '', type: '' });
@@ -509,82 +510,124 @@ const Addslot = () => {
    const [doctorId, setDoctorId] = useState(localStorage.getItem('doctor_id') || '1');
    const [hasJustSaved, setHasJustSaved] = useState(false);
 
+   const bookedSlots = useMemo(() => slots.filter(slot => slot.type === 'booked'), [slots]);
+
    const day = (calendarDays[popupActiveDateIndex] || '').padStart(2, '0');
    const monthIdx = monthsList.indexOf(popupSelectedMonth) + 1;
    const month = monthIdx < 10 ? `0${monthIdx}` : monthIdx;
    const formattedApiDate = `${popupSelectedYear}-${month}-${day}`;
 
+    const applyPendingAppointmentsToSlots = (mappedSlots, appointments) => {
+        if (!appointments || !Array.isArray(appointments)) return mappedSlots;
+
+        return mappedSlots.map(slot => {
+            if (slot.type === 'booked') return slot;
+
+            const matchingAppointment = appointments.find(appt => {
+                if (!appt.start_time || !appt.end_time) return false;
+                const apptDate = appt.start_time.slice(0, 10);
+                const apptFrom = appt.start_time.slice(11, 16);
+                const apptTo = appt.end_time.slice(11, 16);
+                return apptDate === slot.date && apptFrom === slot.from_time && apptTo === slot.to_time;
+            });
+
+            if (!matchingAppointment) return slot;
+
+            return {
+                ...slot,
+                type: 'booked',
+                title: matchingAppointment.patient_name || 'Booked',
+                subtitle: `Booking ID : #${matchingAppointment.id}`
+            };
+        });
+    };
+
+    const fetchPendingAppointments = async () => {
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/appointments/list/?doctor_id=${doctorId}&status=pending&date=${formattedApiDate}`);
+            if (response.ok) {
+                const data = await response.json();
+                const appointmentsData = Array.isArray(data) ? data : data.results || [];
+                setPendingAppointments(appointmentsData);
+                return appointmentsData;
+            }
+        } catch (error) {
+            console.error('Error fetching pending appointments:', error);
+        }
+        setPendingAppointments([]);
+        return [];
+    };
+
     const fetchSlots = async () => {
         setIsLoadingSlots(true);
-
-        // Fetch all slots for this doctor
-        const endpoint = isBookedView
-           ? `${BASE_URL}/api/doctor/${doctorId}/slots/booked/`
-           : `${BASE_URL}/api/doctor/${doctorId}/slots/`;
-
+        const endpoint = `${BASE_URL}/api/doctor/${doctorId}/slots/?${isBookedView ? 'booked=true&' : ''}date=${formattedApiDate}`;
+        
         try {
-           const response = await apiFetch(endpoint);
-           if (response.ok) {
-              const result = await response.json();
-              let data = result.slots || result.booked_slots || (Array.isArray(result) ? result : []);
+            const [slotsResponse, appointmentsForDate] = await Promise.all([
+                apiFetch(endpoint),
+                fetchPendingAppointments()
+            ]);
 
-              if (!Array.isArray(data) && data.results) data = data.results;
+            if (slotsResponse.ok) {
+                const result = await slotsResponse.json();
+                let data = result.slots || result.booked_slots || (Array.isArray(result) ? result : []);
+                
+                if (!Array.isArray(data) && data.results) data = data.results;
 
-              // Map backend TimeSlot objects to frontend format
-              const mappedSlots = data.map(item => {
-                  // Handle backend fields: start_time, end_time, is_booked
-                  const startTimeStr = item.start_time || "";
-                  const endTimeStr = item.end_time || "";
+                const mappedSlots = data.map(item => {
+                    const startTimeStr = item.start_time || "";
+                    const endTimeStr = item.end_time || "";
+                    let date = "";
+                    let fromTime = "";
+                    let toTime = "";
+                    
+                    if (startTimeStr.includes('T')) {
+                        [date, fromTime] = startTimeStr.split('T');
+                        fromTime = fromTime.slice(0, 5);
+                    } else {
+                        date = startTimeStr.split(' ')[0] || formattedApiDate;
+                        fromTime = startTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
+                    }
 
-                  // Extract date and time parts
-                  // Assuming start_time is "YYYY-MM-DDTHH:MM:SSZ"
-                  let date = "";
-                  let fromTime = "";
-                  let toTime = "";
+                    if (endTimeStr.includes('T')) {
+                        toTime = endTimeStr.split('T')[1].slice(0, 5);
+                    } else {
+                        toTime = endTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
+                    }
 
-                  if (startTimeStr.includes('T')) {
-                      const parts = startTimeStr.split('T');
-                      date = parts[0];
-                      fromTime = (parts[1] || "").slice(0, 5);
-                  } else {
-                      const parts = startTimeStr.split(' ');
-                      date = parts[0] || formattedApiDate;
-                      fromTime = (parts[1] || "").slice(0, 5) || "00:00";
-                  }
-                  
-                  if (endTimeStr.includes('T')) {
-                      toTime = (endTimeStr.split('T')[1] || "").slice(0, 5);
-                  } else {
-                      toTime = (endTimeStr.split(' ')[1] || "").slice(0, 5) || "00:00";
-                  }
+                    let status = 'available';
+                    if (item.is_booked) status = 'booked';
 
-                  // Determine status (type)
-                  let status = 'available';
-                  if (item.is_booked) status = 'booked';
-                  // Some logic for 'break' if needed, though not in model
+                    return {
+                        id: item.id || Math.random(),
+                        type: status,
+                        date: date,
+                        from_time: fromTime,
+                        to_time: toTime,
+                        time: `${fromTime} - ${toTime}`,
+                        title: item.appointment_details?.patient_name || (status === 'booked' ? 'Booked' : 'Available'),
+                        subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : '',
+                        appointment_details: item.appointment_details || null
+                    };
+                });
 
-                  return {
-                      id: item.id || Math.random(),
-                      type: status,
-                      date: date,
-                      from_time: fromTime,
-                      to_time: toTime,
-                      time: `${fromTime} - ${toTime}`,
-                      title: item.appointment_details?.patient_name || (status === 'booked' ? 'Booked' : 'Available'),
-                      subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : ''
-                  };
-              });
+                const futureSlots = mappedSlots.filter(slot => {
+                    if (!slot.date || !slot.from_time) return true;
+                    const slotDateTime = new Date(`${slot.date}T${slot.from_time}:00`);
+                    return slotDateTime > new Date();
+                });
 
-              // Update slots state, sorting by date and time
-              setSlots(mappedSlots.sort((a, b) => {
-                 if (a.date !== b.date) return a.date.localeCompare(b.date);
-                 return a.from_time.localeCompare(b.from_time);
-              }));
-           }
+                const finalSlots = applyPendingAppointmentsToSlots(futureSlots, appointmentsForDate);
+
+                setSlots(finalSlots.sort((a, b) => {
+                    if (a.date !== b.date) return a.date.localeCompare(b.date);
+                    return a.from_time.localeCompare(b.from_time);
+                }));
+            }
         } catch (error) {
-           console.error('Error fetching slots:', error);
+            console.error('Error fetching slots:', error);
         } finally {
-           setIsLoadingSlots(false);
+            setIsLoadingSlots(false);
         }
     };
 
@@ -1235,6 +1278,7 @@ return (
                               }
                            });
 
+<<<<<<< HEAD
                            return [...dates].sort((a, b) => {
                               const parse = (s) => {
                                  const [d, m, y] = s.split('/');
@@ -1332,6 +1376,58 @@ return (
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-[20px] gap-y-[20px]">
                            {grouped[date].sort((a, b) => a.from_time.localeCompare(b.from_time)).map(renderSlot)}
+=======
+                   {/* Booked Patients Summary */}
+                   <div className="grid gap-4 lg:grid-cols-[1.2fr_1.8fr] mb-8">
+                      <div className="rounded-[24px] border border-[#cfe6ec] bg-[#f4fbfd] p-5">
+                         <div className="text-[13px] font-bold text-[#1b738b] uppercase tracking-[0.18em] mb-3">Booked Patients</div>
+                         <div className="text-[34px] font-black text-[#0f3c4c]">{bookedSlots.length}</div>
+                         <p className="mt-2 text-[13px] text-gray-600">Total booked patients for {formattedPopupDate}.</p>
+                      </div>
+                      <div className="rounded-[24px] border border-[#e2edf0] bg-white p-5">
+                         <div className="flex items-center justify-between mb-4">
+                            <div className="text-[15px] font-bold text-[#21313d]">Booked patient list</div>
+                            <span className="text-[12px] font-semibold text-[#4a6f7f]">{bookedSlots.length} booked</span>
+                         </div>
+                         {bookedSlots.length > 0 ? (
+                            <div className="space-y-3">
+                               {bookedSlots.map((slot) => (
+                                  <div key={slot.id} className="rounded-[18px] border border-[#d8e7ea] bg-[#f8fcfd] p-4">
+                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                        <div>
+                                           <p className="text-[15px] font-bold text-[#15343f]">{slot.title}</p>
+                                           <p className="text-[12px] text-[#586d75] mt-1">{slot.subtitle || 'Booking ID unavailable'}</p>
+                                        </div>
+                                        <div className="text-[12px] font-semibold text-[#1b738b]">{slot.time}</div>
+                                     </div>
+                                     {slot.appointment_details?.patient_phone && (
+                                        <p className="text-[12px] text-[#556b72] mt-3">Phone: {slot.appointment_details.patient_phone}</p>
+                                     )}
+                                     {slot.appointment_details?.status && (
+                                        <div className="mt-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#225e71] bg-[#d8f2f8] px-3 py-1 rounded-full">
+                                           <span>Status</span>
+                                           <span>{slot.appointment_details.status}</span>
+                                        </div>
+                                     )}
+                                  </div>
+                               ))}
+                            </div>
+                         ) : (
+                            <div className="rounded-[18px] border border-dashed border-[#cfd8dd] bg-[#f9fcfd] p-5 text-[#60727a] text-sm">
+                               No booked patients found for this date. Please add slots or wait for patient bookings.
+                            </div>
+                         )}
+                      </div>
+                   </div>
+
+                   {/* Grid of Slots Container */}
+                   <div ref={slotContainerRef} className="flex flex-col gap-8 pb-2 overflow-y-auto max-h-[500px] scroll-smooth px-1 pt-1 relative" style={{ scrollbarWidth: 'thin' }}>
+                  {isLoadingSlots && (
+                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+                        <div className="flex flex-col items-center gap-2">
+                           <div className="w-8 h-8 border-4 border-[#1b738b] border-t-transparent rounded-full animate-spin"></div>
+                           <span className="text-[#1b738b] font-bold text-sm">Loading slots...</span>
+>>>>>>> 4b186811801e64e8dde8f428510fd59bfcc96a9a
                         </div>
                      </div>
                   ))}

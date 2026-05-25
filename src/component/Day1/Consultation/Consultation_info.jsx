@@ -54,7 +54,7 @@ const Consultation_info = () => {
                 
                 // Map API data to UI structure
                 const mappedDoctors = data.map(doc => ({
-                    id: doc.user || doc.doctor_id || doc.id,
+                    id: doc.id,
                     name: `Dr. ${doc.first_name} ${doc.last_name}`,
                     spec: doc.specialization || doc.department,
                     degree: 'MBBS, MD Physician, Specialization in ' + (doc.specialization || doc.department),
