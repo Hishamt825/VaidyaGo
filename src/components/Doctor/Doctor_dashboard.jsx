@@ -26,31 +26,9 @@ const calendarDays = ['27', '28', '29', '30', '31', '1', '2',
     '17', '18', '19', '20', '21', '22', '23',
     '24', '25', '26', '27', '28', '29', '30'];
 
-const timelineData = [
-    { time: "10:30 am", label: "Patient Checkup", patient: "Natalia khan", duration: "10:30 am - 11:00 am", color: "#facc15" },
-    { time: "12:00 am", label: "Treatment", patient: "Natalia khan", duration: "12:00 am - 11:00 am", color: "#f87171" },
-    { time: "02:00 am", label: "Round in Patient wards", patient: "Hall no - 6", duration: "02:00 am - 03:00 am", color: "#38bdf8" },
-    { time: "02:00 am", label: "Round in Patient wards", patient: "Hall no - 6", duration: "02:00 am - 03:00 am", color: "#f87171" },
-    { time: "02:00 am", label: "Patient Checkup", patient: "Natalia khan", duration: "10:30 am - 11:00 am", color: "#bef264" },
-    { time: "02:00 am", label: "Treatment", patient: "Natalia khan", duration: "12:00 am - 11:00 am", color: "#f87171" },
-    { time: "02:00 am", label: "Round in Patient wards", patient: "Hall no - 6", duration: "02:00 am - 03:00 am", color: "#38bdf8" },
-    { time: "02:00 am", label: "Treatment", patient: "Natalia khan", duration: "12:00 am - 11:00 am", color: "#f87171" },
-];
 
-const activityData = [
-    { month: "Jan", Consultations: 70, Patients: 50 },
-    { month: "Feb", Consultations: 140, Patients: 120 },
-    { month: "Mar", Consultations: 100, Patients: 80 },
-    { month: "Apr", Consultations: 80, Patients: 90 },
-    { month: "May", Consultations: 198, Patients: 60 },
-    { month: "Jun", Consultations: 80, Patients: 70 },
-    { month: "Jul", Consultations: 120, Patients: 110 },
-    { month: "Aug", Consultations: 90, Patients: 100 },
-    { month: "Sep", Consultations: 140, Patients: 130 },
-    { month: "Oct", Consultations: 110, Patients: 105 },
-    { month: "Nov", Consultations: 125, Patients: 135 },
-    { month: "Dec", Consultations: 160, Patients: 150 },
-];
+
+// activityData moved to component state
 
 const miniScheduleData = [
     { time: "2pm", label: "Meeting with chief physician Dr.William", completed: true },
@@ -67,11 +45,7 @@ const appRequestsData = [
     { name: "sita", gender: "Female", age: 30, treatment: "Regular Checkup", time: "10 am", date: "13 feb 2026" },
 ];
 
-const recentPatientsData = [
-    { name: "Riya madeshiya", gender: "Female", weight: "50kg", disease: "Typhoid", date: "14 feb", heartRate: "70 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "50kg", disease: "Typhoid", date: "14 feb", heartRate: "70 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "50kg", disease: "Typhoid", date: "14 feb", heartRate: "70 bpm", bloodType: "AB", status: "OutPatient" },
-];
+
 
 const Doctor_dashboard = () => {
     // 1. ALL HOOKS FIRST
@@ -113,9 +87,76 @@ const Doctor_dashboard = () => {
     const [userName, setUserName] = useState(localStorage.getItem("user_full_name") || "Doctor");
     const { t, toggleLanguage, language } = useLanguage();
 
+    // Activity Data State
+    const [activityData, setActivityData] = useState([]);
+    const [loadingActivity, setLoadingActivity] = useState(true);
+
+    const fetchActivityData = async () => {
+        const docId = localStorage.getItem("doctor_id");
+        const token = localStorage.getItem("token");
+        if (!docId || !token) return;
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/stats/?doctor_id=${docId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setActivityData(data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch activity data:", err);
+        } finally {
+            setLoadingActivity(false);
+        }
+    };
+
     // Appointment Integration States
     const [appointments, setAppointments] = useState([]);
     const [loadingAppointments, setLoadingAppointments] = useState(true);
+    const [timeline, setTimeline] = useState([]);
+    const [loadingTimeline, setLoadingTimeline] = useState(true);
+
+    const getStatusColor = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'confirmed': return "#22c55e";
+            case 'pending': return "#facc15";
+            case 'cancelled': return "#f87171";
+            case 'outpatient': return "#38bdf8";
+            default: return "#38bdf8";
+        }
+    };
+
+    const fetchTimeline = async () => {
+        const docId = localStorage.getItem("doctor_id");
+        const token = localStorage.getItem("token");
+        if (!docId || !token) return;
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/list/?doctor_id=${docId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Format data for timeline
+                const formatted = data.map(appt => ({
+                    id: appt.id,
+                    status: appt.status,
+                    time: formatTime(getAppointmentStartTime(appt)),
+                    label: appt.appointment_type || "Appointment",
+                    patient: appt.patient_name,
+                    duration: `${formatTime(getAppointmentStartTime(appt))} - ${formatTime(getAppointmentEndTime(appt))}`,
+                    color: getStatusColor(appt.status)
+                }));
+                setTimeline(formatted);
+            }
+        } catch (err) {
+            console.error("Failed to fetch timeline:", err);
+        } finally {
+            setLoadingTimeline(false);
+        }
+    };
 
     const fetchAppointments = async () => {
         const docId = localStorage.getItem("doctor_id");
@@ -137,9 +178,35 @@ const Doctor_dashboard = () => {
         }
     };
 
+    const [recentPatients, setRecentPatients] = useState([]);
+    const [loadingRecent, setLoadingRecent] = useState(true);
+
+    const fetchRecentPatients = async () => {
+        const docId = localStorage.getItem("doctor_id");
+        const token = localStorage.getItem("token");
+        if (!docId || !token) return;
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/recent/?doctor_id=${docId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setRecentPatients(data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch recent patients:", err);
+        } finally {
+            setLoadingRecent(false);
+        }
+    };
+
     useEffect(() => {
         if (isApproved) {
             fetchAppointments();
+            fetchTimeline();
+            fetchRecentPatients();
+            fetchActivityData();
         }
     }, [isApproved]);
 
@@ -161,9 +228,34 @@ const Doctor_dashboard = () => {
             if (response.ok) {
                 setIsAcceptModalOpen(false);
                 fetchAppointments(); // Refresh list
+                window.dispatchEvent(new CustomEvent('chatbot-action-executed', {
+                    detail: {
+                        action: 'accept_appointment',
+                        data: { id }
+                    }
+                }));
             }
         } catch (err) {
             console.error("Accept failed:", err);
+        }
+    };
+
+    const handleComplete = async (id) => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/${id}/complete/`, {
+                method: 'PATCH',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}` 
+                }
+            });
+            if (response.ok) {
+                fetchTimeline();
+                fetchRecentPatients();
+            }
+        } catch (err) {
+            console.error("Complete failed:", err);
         }
     };
 
@@ -200,12 +292,24 @@ const Doctor_dashboard = () => {
         }
     };
 
+    const getAppointmentStartTime = (req) => {
+        if (!req) return null;
+        return req.start_time || req.slot_details?.start_time || null;
+    };
+
+    const getAppointmentEndTime = (req) => {
+        if (!req) return null;
+        return req.end_time || req.slot_details?.end_time || null;
+    };
+
     const formatDate = (dateStr) => {
+        if (!dateStr) return '';
         const d = new Date(dateStr);
         return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toLowerCase();
     };
 
     const formatTime = (dateStr) => {
+        if (!dateStr) return '';
         const d = new Date(dateStr);
         return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
     };
@@ -461,29 +565,47 @@ const Doctor_dashboard = () => {
                                         <div className="absolute left-[94px] top-0 bottom-0 w-[1.5px] bg-gray-100"></div>
 
                                         <div className="flex flex-col">
-                                            {timelineData.map((item, idx) => (
-                                                <div key={idx} className="flex items-center gap-[15px] mb-[12px] last:mb-0 relative">
-                                                    {/* Time label */}
-                                                    <div className="w-[85px] text-[15px] font-bold text-gray-500 shrink-0 text-right pr-[5px] truncate">{item.time}</div>
-
-                                                    {/* Divider (invisible but providing space correctly relative to absolute line) */}
-                                                    <div className="w-[20px] shrink-0 flex justify-center z-10">
-                                                        <div className="w-[10px] h-[10px] rounded-full border-[2px] border-white shadow-sm" style={{ backgroundColor: item.color }}></div>
-                                                    </div>
-
-                                                    {/* Content Block */}
-                                                    <div className="flex-1 bg-[#eef7f9] rounded-xl px-[18px] py-[10px] flex justify-between items-center group hover:bg-[#e4eff1] transition-colors shadow-sm">
-                                                        <div>
-                                                            <div className="text-[15px] font-bold text-[#333] leading-tight">{item.label}</div>
-                                                            <div className="text-[13px] text-gray-500 font-bold mt-[2px]">{item.patient}</div>
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <div className="text-[12px] text-gray-400 font-bold tracking-tight">{item.duration}</div>
-                                                            <button className="text-[#32869e] text-[12px] font-bold hover:underline mt-[1px]">View Detail</button>
-                                                        </div>
-                                                    </div>
+                                            {loadingTimeline ? (
+                                                <div className="flex items-center justify-center py-10">
+                                                    <div className="w-8 h-8 border-4 border-[#1b738c] border-t-transparent rounded-full animate-spin"></div>
                                                 </div>
-                                            ))}
+                                            ) : timeline.length === 0 ? (
+                                                <div className="text-center py-10 text-gray-400 font-bold">No appointments for today</div>
+                                            ) : (
+                                                timeline.map((item, idx) => (
+                                                    <div key={idx} className="flex items-center gap-[15px] mb-[12px] last:mb-0 relative">
+                                                        {/* Time label */}
+                                                        <div className="w-[85px] text-[15px] font-bold text-gray-500 shrink-0 text-right pr-[5px] truncate">{item.time}</div>
+
+                                                        {/* Divider */}
+                                                        <div className="w-[20px] shrink-0 flex justify-center z-10">
+                                                            <div className="w-[10px] h-[10px] rounded-full border-[2px] border-white shadow-sm" style={{ backgroundColor: item.color }}></div>
+                                                        </div>
+
+                                                        {/* Content Block */}
+                                                        <div className="flex-1 bg-[#eef7f9] rounded-xl px-[18px] py-[10px] flex justify-between items-center group hover:bg-[#e4eff1] transition-colors shadow-sm">
+                                                            <div>
+                                                                <div className="text-[15px] font-bold text-[#333] leading-tight">{item.label}</div>
+                                                                <div className="text-[13px] text-gray-500 font-bold mt-[2px]">{item.patient}</div>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <div className="text-[12px] text-gray-400 font-bold tracking-tight">{item.duration}</div>
+                                                                <div className="flex gap-2 justify-end mt-[2px]">
+                                                                    {item.status === 'confirmed' && (
+                                                                        <button 
+                                                                            onClick={() => handleComplete(item.id)}
+                                                                            className="text-[#10b981] text-[12px] font-bold hover:underline"
+                                                                        >
+                                                                            Complete
+                                                                        </button>
+                                                                    )}
+                                                                    <button className="text-[#32869e] text-[12px] font-bold hover:underline">View Detail</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -688,7 +810,7 @@ const Doctor_dashboard = () => {
                                     appointments.map((req, i) => (
                                         <div key={req.id || i} className="border border-gray-200 rounded-xl p-[20px] flex flex-col gap-[4px] relative bg-white hover:border-[#1b738c]/30 transition-all shadow-sm">
                                             {/* Date at Top Right */}
-                                            <div className="absolute top-[20px] right-[25px] text-[15px] font-bold text-gray-400">{formatDate(req.start_time)}</div>
+                                            <div className="absolute top-[20px] right-[25px] text-[15px] font-bold text-gray-400">{formatDate(getAppointmentStartTime(req))}</div>
                                             
                                             {/* Top Row: Image and Name/Info */}
                                             <div className="flex gap-[20px] items-center">
@@ -705,7 +827,7 @@ const Doctor_dashboard = () => {
                                             <div className="flex items-center justify-between mt-[4px] pl-[95px]">
                                                 <div className="flex items-center gap-[15px]">
                                                     <div className="text-[15px] font-bold text-[#32869e] tracking-tight">Treatment -{req.appointment_type || 'General'}</div>
-                                                    <div className="bg-[#e5e7eb] text-[13px] font-bold px-[15px] py-[4px] rounded-full text-gray-600 shadow-sm">{formatTime(req.start_time)}</div>
+                                                    <div className="bg-[#e5e7eb] text-[13px] font-bold px-[15px] py-[4px] rounded-full text-gray-600 shadow-sm">{formatTime(getAppointmentStartTime(req))}</div>
                                                 </div>
 
                                                 <div className="flex gap-[12px]">
@@ -763,25 +885,33 @@ const Doctor_dashboard = () => {
                                 </div>
 
                                 <div className="flex flex-col gap-[10px]">
-                                    {recentPatientsData.map((p, i) => (
-                                        <div key={i} className="border border-gray-200 rounded-xl p-[12px] flex items-center text-[15px] font-bold text-[#111] bg-white group hover:border-[#1b738c]/30 transition-all shadow-sm">
-                                            <div className="w-[200px] flex items-center gap-[12px]">
-                                                <div className="w-[45px] h-[45px] rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm">
-                                                    <img src={phImg} alt="" className="w-full h-full object-cover" />
-                                                </div>
-                                                <span className="truncate">{p.name}</span>
-                                            </div>
-                                            <div className="w-[120px] text-gray-500">{p.gender}</div>
-                                            <div className="w-[120px] text-gray-500">59kg</div>
-                                            <div className="w-[120px] text-gray-500">Typhoid</div>
-                                            <div className="w-[100px] text-gray-500">14 feb</div>
-                                            <div className="w-[140px] text-gray-500">59 bpm</div>
-                                            <div className="w-[120px] text-gray-500">AB</div>
-                                            <div className="flex-1 text-right">
-                                                <span className="text-gray-800">OutPatient</span>
-                                            </div>
+                                    {loadingRecent ? (
+                                        <div className="flex items-center justify-center py-12">
+                                            <div className="w-10 h-10 border-4 border-[#1b738c] border-t-transparent rounded-full animate-spin"></div>
                                         </div>
-                                    ))}
+                                    ) : recentPatients.length === 0 ? (
+                                        <div className="text-center py-12 text-gray-400 font-bold">No recent patients found</div>
+                                    ) : (
+                                        recentPatients.map((p, i) => (
+                                            <div key={p.id || i} className="border border-gray-200 rounded-xl p-[12px] flex items-center text-[15px] font-bold text-[#111] bg-white group hover:border-[#1b738c]/30 transition-all shadow-sm">
+                                                <div className="w-[200px] flex items-center gap-[12px]">
+                                                    <div className="w-[45px] h-[45px] rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm">
+                                                        <img src={p.patient_photo || phImg} alt="" className="w-full h-full object-cover" />
+                                                    </div>
+                                                    <span className="truncate">{p.patient_name}</span>
+                                                </div>
+                                                <div className="w-[120px] text-gray-500">{p.patient_gender || 'Not specified'}</div>
+                                                <div className="w-[120px] text-gray-500">{p.patient_weight || '--'}</div>
+                                                <div className="w-[120px] text-gray-500">{p.patient_disease || 'N/A'}</div>
+                                                <div className="w-[100px] text-gray-500">{formatDate(p.start_time)}</div>
+                                                <div className="w-[140px] text-gray-500">{p.patient_heart_rate || '--'}</div>
+                                                <div className="w-[120px] text-gray-500">{p.patient_blood_type || '--'}</div>
+                                                <div className="flex-1 text-right">
+                                                    <span className="text-gray-800 capitalize">{p.status}</span>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </div>
                             <button
@@ -976,19 +1106,27 @@ const Doctor_dashboard = () => {
                                 </div>
                                 
                                 <div className="space-y-4">
-                                    {timelineData.slice(0, 4).map((item, idx) => (
-                                        <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                                            <div className="w-3 h-12 rounded-full shrink-0" style={{ backgroundColor: item.color }}></div>
-                                            <div className="flex-1">
-                                                <div className="flex justify-between items-start">
-                                                    <p className="text-[16px] font-bold text-gray-800 leading-tight">{item.label}</p>
-                                                    <span className="text-[11px] font-bold text-gray-400">{item.time}</span>
-                                                </div>
-                                                <p className="text-[14px] text-gray-500 font-medium mt-0.5">{item.patient}</p>
-                                                <p className="text-[12px] text-[#32869e] font-bold mt-1">{item.duration}</p>
-                                            </div>
+                                    {loadingTimeline ? (
+                                        <div className="flex items-center justify-center py-6">
+                                            <div className="w-8 h-8 border-4 border-[#1b738c] border-t-transparent rounded-full animate-spin"></div>
                                         </div>
-                                    ))}
+                                    ) : timeline.length === 0 ? (
+                                        <div className="text-center py-6 text-gray-400 font-bold italic">No recent consultations</div>
+                                    ) : (
+                                        timeline.slice(0, 4).map((item, idx) => (
+                                            <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                                <div className="w-3 h-12 rounded-full shrink-0" style={{ backgroundColor: item.color }}></div>
+                                                <div className="flex-1">
+                                                    <div className="flex justify-between items-start">
+                                                        <p className="text-[16px] font-bold text-gray-800 leading-tight">{item.label}</p>
+                                                        <span className="text-[11px] font-bold text-gray-400">{item.time}</span>
+                                                    </div>
+                                                    <p className="text-[14px] text-gray-500 font-medium mt-0.5">{item.patient}</p>
+                                                    <p className="text-[12px] text-[#32869e] font-bold mt-1">{item.duration}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                                 
                                 <button 
@@ -1326,15 +1464,15 @@ const Doctor_dashboard = () => {
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[12px] font-bold text-[#1b738c] uppercase tracking-wider mb-1">Patient Details</span>
-                                        <h3 className="text-[22px] font-bold text-[#111] leading-tight">{selectedAcceptRequest?.patient_name || 'Alexander L right'}</h3>
+                                        <h3 className="text-[22px] font-bold text-[#111] leading-tight">{selectedAcceptRequest?.patient_name || 'Patient Name'}</h3>
                                         <div className="flex items-center gap-4 mt-2 text-gray-500 font-bold text-[14px]">
                                             <div className="flex items-center gap-1.5">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 15.546c.053.164.082.34.082.522 0 1.035-.84 1.875-1.875 1.875H4.792c-1.035 0-1.875-.84-1.875-1.875 0-.182.029-.358.082-.522jM21 15.546V6a2 2 0 00-2-2H5a2 2 0 00-2 2v9.546m18 0l-9 5.25-9-5.25" /></svg>
-                                                <span>{selectedAcceptRequest?.patient_age || '42'} years</span>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                                <span>{selectedAcceptRequest?.patient_age || '--'} years</span>
                                             </div>
                                             <div className="flex items-center gap-1.5">
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3v8h8a10.003 10.003 0 00-5.456-8.99l-.054-.09A10.003 10.003 0 0012 3" /></svg>
-                                                <span>ID: MRN-{selectedAcceptRequest?.id || '88210'}</span>
+                                                <span>ID: {selectedAcceptRequest?.patient_mrn || `MRN-${selectedAcceptRequest?.id || '---'}`}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1362,7 +1500,7 @@ const Doctor_dashboard = () => {
                                                 </svg>
                                             </div>
                                             <span className="text-[16px] font-bold text-gray-800">
-                                                {selectedAcceptRequest ? formatTime(selectedAcceptRequest.start_time) : '14:30'} - {selectedAcceptRequest ? formatTime(selectedAcceptRequest.end_time) : '15:15'}
+                                                {selectedAcceptRequest ? formatTime(getAppointmentStartTime(selectedAcceptRequest)) : '14:30'} - {selectedAcceptRequest ? formatTime(getAppointmentEndTime(selectedAcceptRequest)) : '15:15'}
                                             </span>
                                         </div>
                                     </div>
@@ -1379,7 +1517,7 @@ const Doctor_dashboard = () => {
                                                 </svg>
                                             </div>
                                             <span className="text-[18px] font-bold text-[#111]">
-                                                {selectedAcceptRequest ? new Date(selectedAcceptRequest.start_time).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'Tuesday, October 24th, 2023'}
+                                                {selectedAcceptRequest ? new Date(getAppointmentStartTime(selectedAcceptRequest)).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'Tuesday, October 24th, 2023'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3 ml-1">
@@ -1389,7 +1527,9 @@ const Doctor_dashboard = () => {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                             </div>
-                                            <span className="text-[14px] font-bold text-gray-500">Main Surgery Center, Wing B, Room 402</span>
+                                            <span className="text-[14px] font-bold text-gray-500">
+                                                {selectedAcceptRequest?.location || 'Main Surgery Center, Wing B, Room 402'}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

@@ -1,8 +1,44 @@
+import React, { useState, useEffect } from 'react';
 import phImg from '../../assets/ph.png';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../baseUrl';
  
 const Profile = ({ onClose, onAccountSettings }) => {
     const navigate = useNavigate();
+    const [profileData, setProfileData] = useState({
+        full_name: 'Loading...',
+        email: '',
+        profile_photo: null
+    });
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${BASE_URL}/profile/edit-profile/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setProfileData({
+                        full_name: data.full_name || 'User',
+                        email: data.email || '',
+                        profile_photo: data.profile_photo ? (data.profile_photo.startsWith('http') ? data.profile_photo : `${BASE_URL}${data.profile_photo}`) : null
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching profile in popup:", error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -38,7 +74,7 @@ const Profile = ({ onClose, onAccountSettings }) => {
                 <div className="flex flex-col items-center -mt-[55px] pb-6 px-6">
                     <div className="relative">
                         <div className="w-[110px] h-[110px] rounded-full border-[5px] border-white overflow-hidden shadow-xl bg-white">
-                            <img src={phImg} alt="Profile" className="w-full h-full object-cover" />
+                            <img src={profileData.profile_photo || phImg} alt="Profile" className="w-full h-full object-cover" />
                         </div>
                         <button className="absolute bottom-1 right-1 w-9 h-9 bg-[#1A7785] rounded-full border-[3.5px] border-white flex items-center justify-center text-white shadow-lg cursor-pointer hover:scale-110 transition-transform">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,13 +86,15 @@ const Profile = ({ onClose, onAccountSettings }) => {
 
                     {/* User Info */}
                     <div className="text-center mt-4 mb-6">
-                        <h2 className="text-[24px] font-medium text-[#0D1C2E] tracking-tight">Dr. Ananya Sharma</h2>
-                        <p className="text-[#1A7785] font-medium text-[14px] uppercase tracking-widest mt-1 opacity-90">Senior Clinician</p>
+                        <h2 className="text-[24px] font-medium text-[#0D1C2E] tracking-tight">{profileData.full_name}</h2>
+                        <p className="text-[#1A7785] font-medium text-[14px] uppercase tracking-widest mt-1 opacity-90">
+                            {localStorage.getItem('role')?.toUpperCase() || localStorage.getItem('user_type')?.toUpperCase() || 'VAIDYAGO USER'}
+                        </p>
                         <div className="flex items-center justify-center gap-2 mt-2.5 text-[#627382] font-medium text-[13.5px]">
                             <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
-                            ananya.sharma@vaidyago.com
+                            {profileData.email}
                         </div>
                     </div>
 

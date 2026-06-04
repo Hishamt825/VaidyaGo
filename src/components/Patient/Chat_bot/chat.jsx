@@ -220,6 +220,18 @@ const Chat = ({ isOpen, onClose }) => {
                     actionData: data.data,
                     audioUrl: data.audio_url
                 };
+
+                // Dispatch global event for other components to listen (e.g. AddSlot, Dashboard)
+                if (data.action) {
+                    window.dispatchEvent(new CustomEvent('chatbot-action-executed', { 
+                        detail: { 
+                            action: data.action, 
+                            data: data.data,
+                            message: aiText
+                        } 
+                    }));
+                }
+
                 setMessages(prev => [...prev, aiResponse]);
                 
                 // Speak the response if voice mode is active

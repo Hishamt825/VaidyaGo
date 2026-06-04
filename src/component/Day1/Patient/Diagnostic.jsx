@@ -16,6 +16,8 @@ import HealthGuidePopup from './HealthGuidePopup';
 import { useLanguage } from '../../../context/LanguageContext';
 
 import Diagnosticinput from './Diagnosticinput';
+import PharmacyPopup from './PharmacyPopup';
+
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -95,6 +97,8 @@ const Diagnostic = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
+
   const { t, toggleLanguage, language } = useLanguage();
   const [conditions, setConditions] = useState([
     { title: 'Tension-Type Headache', match: 85, desc: 'Most common primary headache disorder, often characterized by a pressing or tightening sensation around the head of mild to moderate intensity.' },

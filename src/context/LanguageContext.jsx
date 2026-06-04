@@ -377,7 +377,8 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const t = (key) => {
-    return translations[language][key] || key;
+    const langData = translations[language] || translations['English'] || {};
+    return langData[key] || translations['English'][key] || key;
   };
 
   return (
@@ -387,4 +388,15 @@ export const LanguageProvider = ({ children }) => {
   );
 };
 
-export const useLanguage = () => useContext(LanguageContext);
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    return {
+      language: 'English',
+      toggleLanguage: () => {},
+      t: (key) => translations['English'][key] || key,
+      isLoading: false,
+    };
+  }
+  return context;
+};

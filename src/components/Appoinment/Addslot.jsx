@@ -467,27 +467,80 @@ const Addslot = () => {
    const todayYear = todayObj.getFullYear();
    const todayFormattedDate = todayObj.toISOString().split('T')[0];
 
-   const [activeDateIndex, setActiveDateIndex] = useState(calendarDays.indexOf(todayDayStr) === -1 ? 17 : calendarDays.indexOf(todayDayStr));
+   const getSavedCalendarState = () => {
+      try {
+         const saved = JSON.parse(localStorage.getItem('addslot_calendarState'));
+         if (!saved) return null;
+
+         const {
+            activeDateIndex: savedActiveDateIndex,
+            selectedMonth: savedSelectedMonth,
+            selectedYear: savedSelectedYear,
+            popupActiveDateIndex: savedPopupActiveDateIndex,
+            popupSelectedMonth: savedPopupSelectedMonth,
+            popupSelectedYear: savedPopupSelectedYear
+         } = saved;
+
+         const isValidIndex = Number.isInteger(savedActiveDateIndex) && savedActiveDateIndex >= 0 && savedActiveDateIndex < calendarDays.length;
+         const isValidPopupIndex = Number.isInteger(savedPopupActiveDateIndex) && savedPopupActiveDateIndex >= 0 && savedPopupActiveDateIndex < calendarDays.length;
+         const isValidMonth = monthsList.includes(savedSelectedMonth) && monthsList.includes(savedPopupSelectedMonth);
+         const isValidYear = Number.isInteger(savedSelectedYear) && Number.isInteger(savedPopupSelectedYear);
+
+         if (isValidIndex && isValidPopupIndex && isValidMonth && isValidYear) {
+            return {
+               activeDateIndex: savedActiveDateIndex,
+               selectedMonth: savedSelectedMonth,
+               selectedYear: savedSelectedYear,
+               popupActiveDateIndex: savedPopupActiveDateIndex,
+               popupSelectedMonth: savedPopupSelectedMonth,
+               popupSelectedYear: savedPopupSelectedYear
+            };
+         }
+      } catch (error) {
+         console.warn('Unable to restore Addslot calendar state:', error);
+      }
+      return null;
+   };
+
+   const savedCalendarState = getSavedCalendarState();
+   const defaultDateIndex = savedCalendarState?.activeDateIndex ?? (calendarDays.indexOf(todayDayStr) === -1 ? 17 : calendarDays.indexOf(todayDayStr));
+   const defaultMonth = savedCalendarState?.selectedMonth ?? todayMonthName;
+   const defaultYear = savedCalendarState?.selectedYear ?? todayYear;
+   const defaultPopupDateIndex = savedCalendarState?.popupActiveDateIndex ?? defaultDateIndex;
+   const defaultPopupMonth = savedCalendarState?.popupSelectedMonth ?? defaultMonth;
+   const defaultPopupYear = savedCalendarState?.popupSelectedYear ?? defaultYear;
+
+   const [activeDateIndex, setActiveDateIndex] = useState(defaultDateIndex);
    const [isMonthOpen, setIsMonthOpen] = useState(false);
-   const [selectedMonth, setSelectedMonth] = useState(todayMonthName);
+   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
    const [dateStyle, setDateStyle] = useState({ left: 0, top: 0, width: 0, height: 0, opacity: 0 });
    const dateRefs = useRef([]);
 
    const [isYearOpen, setIsYearOpen] = useState(false);
-   const [selectedYear, setSelectedYear] = useState(todayYear);
+   const [selectedYear, setSelectedYear] = useState(defaultYear);
    const yearScrollRef = useRef(null);
 
    const [isPopupCalendarOpen, setIsPopupCalendarOpen] = useState(false);
-   const [popupActiveDateIndex, setPopupActiveDateIndex] = useState(calendarDays.indexOf(todayDayStr) === -1 ? 17 : calendarDays.indexOf(todayDayStr));
+   const [popupActiveDateIndex, setPopupActiveDateIndex] = useState(defaultPopupDateIndex);
    const [popupDateStyle, setPopupDateStyle] = useState({ left: 0, top: 0, width: 0, height: 0, opacity: 0 });
    const popupDateRefs = useRef([]);
 
    const [isPopupMonthOpen, setIsPopupMonthOpen] = useState(false);
-   const [popupSelectedMonth, setPopupSelectedMonth] = useState(todayMonthName);
+   const [popupSelectedMonth, setPopupSelectedMonth] = useState(defaultPopupMonth);
 
    const [isPopupYearOpen, setIsPopupYearOpen] = useState(false);
-   const [popupSelectedYear, setPopupSelectedYear] = useState(todayYear); 
+   const [popupSelectedYear, setPopupSelectedYear] = useState(defaultPopupYear); 
    const popupYearScrollRef = useRef(null);
+
+   const getValidDateIndexForMonth = (dateIndex, monthName, year) => {
+      const selectedDay = parseInt(calendarDays[dateIndex] || '1', 10);
+      const monthIndex = monthsList.indexOf(monthName);
+      if (monthIndex === -1 || Number.isNaN(selectedDay)) return dateIndex;
+      const maxDay = new Date(year, monthIndex + 1, 0).getDate();
+      const normalizedDay = Math.min(selectedDay, maxDay).toString();
+      const clampIndex = calendarDays.indexOf(normalizedDay);
+      return clampIndex !== -1 ? clampIndex : dateIndex;
+   };
 
    // Tiles Modals State
    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
@@ -509,6 +562,22 @@ const Addslot = () => {
    const [toTime, setToTime] = useState('14:00');
    const [fromDate, setFromDate] = useState(todayFormattedDate);
    const [toDate, setToDate] = useState(todayFormattedDate);
+
+   useEffect(() => {
+      try {
+         localStorage.setItem('addslot_calendarState', JSON.stringify({
+            activeDateIndex,
+            selectedMonth,
+            selectedYear,
+            popupActiveDateIndex,
+            popupSelectedMonth,
+            popupSelectedYear
+         }));
+      } catch (error) {
+         console.warn('Unable to persist Addslot calendar state:', error);
+      }
+   }, [activeDateIndex, selectedMonth, selectedYear, popupActiveDateIndex, popupSelectedMonth, popupSelectedYear]);
+
    const [slots, setSlots] = useState([]);
    const [pendingAppointments, setPendingAppointments] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
@@ -525,6 +594,10 @@ const Addslot = () => {
    const monthIdx = monthsList.indexOf(popupSelectedMonth) + 1;
    const month = monthIdx < 10 ? `0${monthIdx}` : monthIdx;
    const formattedApiDate = `${popupSelectedYear}-${month}-${day}`;
+
+   const isBookedValue = (value) => {
+       return value === true || value === 'true' || value === 1 || value === '1';
+   };
 
     const applyPendingAppointmentsToSlots = (mappedSlots, appointments) => {
         if (!appointments || !Array.isArray(appointments)) return mappedSlots;
@@ -605,12 +678,17 @@ const Addslot = () => {
                         toTime = endTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
                     }
 
-                    let status = 'available';
-                    if (item.is_booked) status = 'booked';
+                    const booked = isBookedValue(item.is_booked);
+                    let status = booked ? 'booked' : 'available';
+
+                    // Check if the slot time has passed for available slots only
+                    const slotDateTime = new Date(`${date}T${fromTime}:00`);
+                    const isPassed = !booked && slotDateTime < new Date();
 
                     return {
                         id: item.id || Math.random(),
-                        type: status,
+                        type: isPassed ? 'passed' : status,
+                        originalType: status, // Keep track of whether it was booked or available
                         date: date,
                         from_time: fromTime,
                         to_time: toTime,
@@ -621,13 +699,7 @@ const Addslot = () => {
                     };
                 });
 
-                const futureSlots = mappedSlots.filter(slot => {
-                    if (!slot.date || !slot.from_time) return true;
-                    const slotDateTime = new Date(`${slot.date}T${slot.from_time}:00`);
-                    return slotDateTime > new Date();
-                });
-
-                const finalSlots = applyPendingAppointmentsToSlots(futureSlots, appointmentsForDate);
+                const finalSlots = applyPendingAppointmentsToSlots(mappedSlots, appointmentsForDate);
 
                 setSlots(finalSlots.sort((a, b) => {
                     if (a.date !== b.date) return a.date.localeCompare(b.date);
@@ -641,9 +713,59 @@ const Addslot = () => {
         }
     };
 
-   useEffect(() => {
-      fetchSlots();
-   }, [popupActiveDateIndex, popupSelectedMonth, popupSelectedYear, isBookedView]);
+    useEffect(() => {
+       fetchSlots();
+    }, [popupActiveDateIndex, popupSelectedMonth, popupSelectedYear, isBookedView]);
+
+    useEffect(() => {
+        const handleChatbotAction = (e) => {
+            const { action, data } = e.detail;
+            // List of actions that modify slots or appointments on this page
+            const relevantActions = [
+                'generate_slots', 
+                'create_appointment', 
+                'cancel_appointment', 
+                'reschedule_appointment', 
+                'accept_appointment', 
+                'reject_appointment'
+            ];
+
+            if (relevantActions.includes(action)) {
+                console.log(`Chatbot action ${action} detected, refreshing slots...`);
+                
+                // If slots were generated for a specific date, switch view to that date
+                if (action === 'generate_slots' && data.start_date) {
+                    try {
+                        const [y, m, d] = data.start_date.split('-');
+                        const mIdx = parseInt(m, 10) - 1;
+                        if (monthsList[mIdx]) {
+                            setPopupSelectedMonth(monthsList[mIdx]);
+                            setPopupSelectedYear(parseInt(y, 10));
+                            const dayStr = parseInt(d, 10).toString();
+                            const dayIndex = calendarDays.findIndex((val, idx) => val === dayStr && idx >= 5);
+                            if (dayIndex !== -1) setPopupActiveDateIndex(dayIndex);
+                        }
+                    } catch (err) {
+                        console.error('Error parsing chatbot date:', err);
+                    }
+                }
+                
+                fetchSlots();
+            }
+        };
+
+        window.addEventListener('chatbot-action-executed', handleChatbotAction);
+        return () => window.removeEventListener('chatbot-action-executed', handleChatbotAction);
+    }, [doctorId, formattedApiDate]); // Dependency on doctorId to ensure fetchSlots has correct context
+
+    useEffect(() => {
+        const handleWindowFocus = () => {
+            fetchSlots();
+        };
+
+        window.addEventListener('focus', handleWindowFocus);
+        return () => window.removeEventListener('focus', handleWindowFocus);
+    }, [doctorId, formattedApiDate]);
 
    useEffect(() => {
       // Auto-scroll to selected date in slots list
@@ -861,6 +983,28 @@ const Addslot = () => {
                 </div>
             </div>
         );
+
+        if (slot.type === 'passed') {
+            const wasBooked = slot.originalType === 'booked';
+            return (
+                <div key={slot.id} className="rounded-2xl border-[1.5px] border-gray-200 bg-gray-50/50 shadow-none flex flex-col overflow-hidden h-[155px] opacity-70 grayscale-[0.3]">
+                    <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-gray-100">
+                        <span className="font-bold text-gray-500 text-[17px]">{displayTime}</span>
+                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Passed</div>
+                    </div>
+                    <div className={`${wasBooked ? 'bg-green-50' : 'bg-gray-100'} w-full px-5 py-2.5 flex items-center gap-3`}>
+                        <div className={`w-4 h-4 ${wasBooked ? 'bg-green-200' : 'bg-gray-300'} rounded-sm`}></div>
+                        <span className={`font-bold ${wasBooked ? 'text-green-700' : 'text-gray-500'} text-[18px]`}>
+                            {wasBooked ? 'Completed' : 'Expired'}
+                        </span>
+                    </div>
+                    <div className="flex-1 px-5 py-2 flex flex-col justify-center">
+                        <span className="text-[14px] font-bold text-gray-400">{wasBooked ? (slot.title || 'Patient Consulted') : 'Time window closed'}</span>
+                        {wasBooked && <span className="text-[11px] text-gray-400">ID: {slot.subtitle || '#N/A'}</span>}
+                    </div>
+                </div>
+            );
+        }
 
         if (slot.type === 'available') {
             return (
@@ -1087,7 +1231,14 @@ const Addslot = () => {
                            onClick={() => {
                               const currentIndex = monthsList.indexOf(selectedMonth);
                               const prevIndex = currentIndex === 0 ? 11 : currentIndex - 1;
+                              const nextYear = currentIndex === 0 ? selectedYear - 1 : selectedYear;
+                              const alignedIndex = getValidDateIndexForMonth(activeDateIndex, monthsList[prevIndex], nextYear);
                               setSelectedMonth(monthsList[prevIndex]);
+                              setSelectedYear(nextYear);
+                              setPopupSelectedMonth(monthsList[prevIndex]);
+                              setPopupSelectedYear(nextYear);
+                              setActiveDateIndex(alignedIndex);
+                              setPopupActiveDateIndex(alignedIndex);
                            }}
                            className="text-[#32869e] hover:text-[#166378] transition-colors"
                         >
@@ -1126,7 +1277,14 @@ const Addslot = () => {
                                     {monthsList.filter(m => m !== selectedMonth).map(m => (
                                        <div
                                           key={m}
-                                          onClick={() => { setSelectedMonth(m); setIsMonthOpen(false); }}
+                                          onClick={() => {
+                                             const alignedIndex = getValidDateIndexForMonth(activeDateIndex, m, selectedYear);
+                                             setSelectedMonth(m);
+                                             setPopupSelectedMonth(m);
+                                             setActiveDateIndex(alignedIndex);
+                                             setPopupActiveDateIndex(alignedIndex);
+                                             setIsMonthOpen(false);
+                                          }}
                                           className="px-4 py-[4px] text-[14px] cursor-pointer hover:bg-gray-50 text-gray-600 font-[400]"
                                        >
                                           {m}
@@ -1164,7 +1322,14 @@ const Addslot = () => {
                                                 key={y}
                                                 data-selected="true"
                                                 className="px-[12px] w-full my-[1px]"
-                                                onClick={() => { setSelectedYear(y); setIsYearOpen(false); }}
+                                                onClick={() => {
+                                                   const alignedIndex = getValidDateIndexForMonth(activeDateIndex, selectedMonth, y);
+                                                   setSelectedYear(y);
+                                                   setPopupSelectedYear(y);
+                                                   setActiveDateIndex(alignedIndex);
+                                                   setPopupActiveDateIndex(alignedIndex);
+                                                   setIsYearOpen(false);
+                                                }}
                                              >
                                                 <div className="border-[1px] border-[#555] rounded-full flex items-center justify-between pl-[14px] pr-[10px] py-[3px] shadow-sm bg-white cursor-pointer relative">
                                                    <span className="text-[#444] font-[500] text-[15px] tracking-wide">{y}</span>
@@ -1178,7 +1343,14 @@ const Addslot = () => {
                                        return (
                                           <div
                                              key={y}
-                                             onClick={() => { setSelectedYear(y); setIsYearOpen(false); }}
+                                             onClick={() => {
+                                                const alignedIndex = getValidDateIndexForMonth(activeDateIndex, selectedMonth, y);
+                                                setSelectedYear(y);
+                                                setPopupSelectedYear(y);
+                                                setActiveDateIndex(alignedIndex);
+                                                setPopupActiveDateIndex(alignedIndex);
+                                                setIsYearOpen(false);
+                                             }}
                                              className="w-full pl-[28px] py-[3px] cursor-pointer hover:bg-gray-50 transition-colors"
                                           >
                                              <span className="text-[#666] font-[400] text-[15px] tracking-wide">{y}</span>
@@ -1193,7 +1365,14 @@ const Addslot = () => {
                            onClick={() => {
                               const currentIndex = monthsList.indexOf(selectedMonth);
                               const nextIndex = currentIndex === 11 ? 0 : currentIndex + 1;
+                              const nextYear = currentIndex === 11 ? selectedYear + 1 : selectedYear;
+                              const alignedIndex = getValidDateIndexForMonth(activeDateIndex, monthsList[nextIndex], nextYear);
                               setSelectedMonth(monthsList[nextIndex]);
+                              setSelectedYear(nextYear);
+                              setPopupSelectedMonth(monthsList[nextIndex]);
+                              setPopupSelectedYear(nextYear);
+                              setActiveDateIndex(alignedIndex);
+                              setPopupActiveDateIndex(alignedIndex);
                            }}
                            className="text-[#32869e] hover:text-[#166378] transition-colors"
                         >
@@ -1232,7 +1411,10 @@ const Addslot = () => {
                                     <div key={i} className="flex justify-center items-center">
                                        <span
                                           ref={el => dateRefs.current[i] = el}
-                                          onClick={() => setActiveDateIndex(i)}
+                                          onClick={() => {
+                                             setActiveDateIndex(i);
+                                             setPopupActiveDateIndex(i);
+                                          }}
                                           className={`w-[29px] h-[29px] flex items-center justify-center rounded-full transition-colors cursor-pointer
                                   ${isPrevMonth && !isSelected ? 'text-gray-300 font-medium' : ''}
                                   ${isSelected ? 'text-[#09151c]' : 'hover:bg-gray-100'}
@@ -1271,8 +1453,13 @@ const Addslot = () => {
                                    if (monthLong) {
                                       setPopupSelectedMonth(monthLong);
                                       setPopupSelectedYear(year);
+                                      setSelectedMonth(monthLong);
+                                      setSelectedYear(year);
                                       const idx = calendarDays.indexOf(dayVal);
-                                      if (idx !== -1) setPopupActiveDateIndex(idx);
+                                      if (idx !== -1) {
+                                         setPopupActiveDateIndex(idx);
+                                         setActiveDateIndex(idx);
+                                      }
                                    }
                                }}
                             >
@@ -1316,7 +1503,7 @@ const Addslot = () => {
                       <div className="font-bold text-[#555] text-[16px] whitespace-nowrap">
                          Date : &nbsp; {formattedPopupDate}
                       </div>
-                      <div className="flex items-center gap-8">
+                      <div className="flex items-center gap-6">
                          <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
                             <div className="w-[30px] h-[20px] bg-[#B2D7DD] rounded-[4px]"></div> Available
                          </div>

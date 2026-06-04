@@ -26,8 +26,8 @@ const Reminder1 = () => {
     const [reminders, setReminders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const fetchReminders = async () => {
-        setIsLoading(true);
+    const fetchReminders = async (isInitial = false) => {
+        if (isInitial) setIsLoading(true);
         try {
             const response = await apiFetch(`${BASE_URL}/reminder/`);
             if (response.ok) {
@@ -37,7 +37,7 @@ const Reminder1 = () => {
         } catch (error) {
             console.error("Fetch Error:", error);
         } finally {
-            setIsLoading(false);
+            if (isInitial) setIsLoading(false);
         }
     };
 
@@ -56,10 +56,10 @@ const Reminder1 = () => {
     };
 
     useEffect(() => {
-        fetchReminders();
+        fetchReminders(true); // Initial load shows spinner
         
         // Polling: Refresh reminders every 5 seconds to catch updates from the chatbot
-        const pollInterval = setInterval(fetchReminders, 5000);
+        const pollInterval = setInterval(() => fetchReminders(false), 5000); // Background refresh
         
         return () => clearInterval(pollInterval);
     }, []);
@@ -103,7 +103,7 @@ const Reminder1 = () => {
     useEffect(() => {
         if (!nextDose) return;
 
-        const timer = setInterval(() => {
+        const calculateTime = () => {
             const now = new Date();
             const target = new Date(nextDose.next_trigger);
             const diff = target - now;
@@ -115,7 +115,10 @@ const Reminder1 = () => {
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 setTimeLeft(`${h > 0 ? h + 'h ' : ''}${m}m`);
             }
-        }, 1000);
+        };
+
+        calculateTime(); // Run immediately to avoid --:-- flicker
+        const timer = setInterval(calculateTime, 1000);
 
         return () => clearInterval(timer);
     }, [nextDose]);

@@ -411,15 +411,6 @@ const Form2 = ({ onNext }) => {
             {/* Grid with 2 columns */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
 
-              {/* Doctor Id */}
-              <Input
-                name="doctor_employee_id"
-                label="Doctor Id"
-                value={formData.doctor_employee_id}
-                onChange={handleChange}
-                placeholder=""
-              />
-
               {/* Department */}
               <Select
                 name="department"
