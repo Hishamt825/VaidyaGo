@@ -95,10 +95,10 @@ const Service = () => {
         {/* Blue Overlay */}
         <div className="absolute inset-0 bg-[#19718A]/80"></div>
 
-        <div className="relative max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between px-6 md:px-20 pt-10 pb-24 overflow-visible">
+        <div className="relative max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between px-6 md:px-12 lg:px-20 pt-10 pb-24 overflow-visible">
 
           {/* Left Content */}
-          <div className="md:w-1/2 text-black space-y-6 -ml-40 -mt-1 relative z-20">
+          <div className="md:w-1/2 text-black space-y-6 ml-0 lg:-ml-20 xl:-ml-40 -mt-1 relative z-20">
             <h1 className="text-4xl md:text-6xl font-bold leading-tight">
               What Makes Us <br />
               Better, Makes <br />
@@ -113,38 +113,38 @@ const Service = () => {
           </div>
 
           {/* Right Side */}
-          <div className="md:w-1/2 relative flex justify-center md:justify-end mt-12 md:mt-0 h-[500px] overflow-visible">
+          <div className="hidden sm:flex md:w-1/2 relative justify-center md:justify-end mt-12 md:mt-0 h-[400px] md:h-[500px] overflow-visible">
 
             {/* Floating Badges */}
-            <div className="absolute top-[18%] left-[5%] md:left-[45%] bg-white rounded-full pl-5 pr-1.5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300">
+            <div className="absolute top-[18%] left-[5%] md:left-[45%] bg-white rounded-full pl-5 pr-1.5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300 hidden md:flex">
               <span className="font-bold text-[#1a3a44] text-[15px] tracking-tight">Cardiac Care</span>
               <div className="w-9 h-9 rounded-full bg-rose-500 flex items-center justify-center shadow-inner">
                 <img src={cardi} alt="" className="w-6 h-6 object-contain brightness-0 invert" />
               </div>
             </div>
 
-            <div className="absolute top-[8%] right-[-60px] md:right-[-120px] bg-white rounded-full pl-1.5 pr-5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300">
+            <div className="absolute top-[8%] right-[-60px] md:right-[-120px] bg-white rounded-full pl-1.5 pr-5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300 hidden lg:flex">
               <div className="w-9 h-9 rounded-full bg-[#19718A] flex items-center justify-center shadow-inner">
                 <img src={renal} alt="" className="w-6 h-6 object-contain brightness-0 invert" />
               </div>
               <span className="font-bold text-[#1a3a44] text-[15px] tracking-tight">Renal Care</span>
             </div>
 
-            <div className="absolute top-[32%] right-[-80px] md:right-[-150px] bg-white rounded-full pl-1.5 pr-5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300">
+            <div className="absolute top-[32%] right-[-80px] md:right-[-150px] bg-white rounded-full pl-1.5 pr-5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300 hidden lg:flex">
               <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center shadow-inner">
                 <img src={liver} alt="" className="w-6 h-6 object-contain brightness-0 invert" />
               </div>
               <span className="font-bold text-[#1a3a44] text-[15px] tracking-tight">Liver Care</span>
             </div>
 
-            <div className="absolute top-[48%] left-[-15%] md:left-[32%] bg-white rounded-full pl-5 pr-1.5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300">
+            <div className="absolute top-[48%] left-[-15%] md:left-[32%] bg-white rounded-full pl-5 pr-1.5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300 hidden md:flex">
               <span className="font-bold text-[#1a3a44] text-[15px] tracking-tight">Neuroscience</span>
               <div className="w-9 h-9 rounded-full bg-[#0C6173] flex items-center justify-center shadow-inner">
                 <img src={neuro} alt="" className="w-6 h-6 object-contain brightness-0 invert" />
               </div>
             </div>
 
-            <div className="absolute top-[60%] right-[-100px] md:right-[-180px] bg-white rounded-full pl-1.5 pr-5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300">
+            <div className="absolute top-[60%] right-[-100px] md:right-[-180px] bg-white rounded-full pl-1.5 pr-5 py-1.5 shadow-2xl z-40 flex items-center gap-3 border border-white/50 backdrop-blur-sm transform hover:scale-110 transition-all duration-300 hidden lg:flex">
               <div className="w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center shadow-inner">
                 <img src={dental} alt="" className="w-6 h-6 object-contain brightness-0 invert" />
               </div>
@@ -155,7 +155,7 @@ const Service = () => {
             <img
               src="/assets/bbg1.svg"
               alt="Doctor"
-              className="absolute bottom-[45px] right-[-80px] z-50 h-[500px] object-contain pointer-events-none"
+              className="absolute bottom-[45px] right-[-40px] md:right-[-80px] z-50 h-[350px] md:h-[500px] object-contain pointer-events-none"
             />
           </div>
         </div>
@@ -163,7 +163,7 @@ const Service = () => {
 
       {/* ======================= FEATURES SECTION ======================= */}
       <section className="relative -mt-24 z-40">
-        <div className="max-w-6xl ml-4 md:ml-10 lg:ml-16 bg-white rounded-t-[60px] shadow-lg px-10 py-10">
+        <div className="max-w-6xl mx-auto w-[90%] bg-white rounded-[30px] sm:rounded-t-[60px] shadow-lg px-6 sm:px-10 py-10">
           <div className="grid md:grid-cols-3 gap-8 items-center text-center md:text-left">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 flex items-center justify-center rounded-full bg-blue-100">
@@ -314,7 +314,7 @@ const Service = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="group relative rounded-[32px] p-8 flex flex-col items-center shadow-[0_15px_35px_rgba(0,0,0,0.05)] border border-gray-200/50 bg-white/80 backdrop-blur-sm text-[#0B2132] transition-all duration-500 w-full h-[420px] hover:bg-[#8ABFCB] hover:border-[#8ABFCB] hover:-translate-y-3"
+                className="group relative rounded-[32px] p-6 sm:p-8 flex flex-col items-center shadow-[0_15px_35px_rgba(0,0,0,0.05)] border border-gray-200/50 bg-white/80 backdrop-blur-sm text-[#0B2132] transition-all duration-500 w-full min-h-[420px] pb-8 h-auto hover:bg-[#8ABFCB] hover:border-[#8ABFCB] hover:-translate-y-3"
               >
                 <h3 className="font-extrabold text-[22px] mb-6 text-center h-[60px] flex items-center group-hover:text-white transition-colors">{service.title}</h3>
 
@@ -351,22 +351,22 @@ const Service = () => {
           <div className="w-full lg:w-3/5 relative flex items-center justify-center lg:justify-start">
 
             {/* Soft Background Shape behind card */}
-            <div className="absolute -left-10 top-0 w-[450px] h-[400px] bg-[#E8F3F4] rounded-[40px] -z-10"></div>
+            <div className="absolute left-0 xs:-left-10 top-0 w-full max-w-[450px] h-[400px] bg-[#E8F3F4] rounded-[40px] -z-10"></div>
 
             {/* Vertical Teal Line with Dot */}
-            <div className="absolute left-[5%] md:left-[10%] top-[10%] bottom-[10%] w-[2px] bg-[#1a718a] z-20">
+            <div className="absolute left-[5%] md:left-[10%] top-[10%] bottom-[10%] w-[2px] bg-[#1a718a] z-20 hidden sm:block">
               <div className="absolute top-[60%] left-[-6px] w-3.5 h-3.5 bg-[#1a718a] rounded-full border-2 border-white"></div>
             </div>
 
             {/* Floating Expand Badge */}
-            <div className="absolute left-[0%] md:left-[2%] top-[30%] w-14 h-14 bg-[#8ABFCB] rounded-xl flex items-center justify-center shadow-lg z-30 transform -translate-x-1/2">
+            <div className="absolute left-[0%] md:left-[2%] top-[30%] w-14 h-14 bg-[#8ABFCB] rounded-xl flex items-center justify-center shadow-lg z-30 transform -translate-x-1/2 hidden sm:flex">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4855" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
               </svg>
             </div>
 
             {/* MAIN CARD */}
-            <div className="bg-white rounded-[24px] p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-teal-50/50 w-full max-w-md ml-12 md:ml-20 relative z-10">
+            <div className="bg-white rounded-[24px] p-6 sm:p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-teal-50/50 w-full max-w-md ml-0 sm:ml-12 md:ml-20 relative z-10">
 
               {/* Header with Circle Decoration */}
               <div className="flex items-center gap-3 mb-10 relative">
@@ -506,7 +506,7 @@ const Service = () => {
           </div>
 
           {/* Right Graphical Area */}
-          <div className="lg:w-3/5 relative h-[550px] w-full flex justify-center items-center overflow-visible">
+          <div className="lg:w-3/5 relative lg:h-[550px] w-full flex flex-col sm:flex-row lg:block justify-center items-center gap-6 lg:gap-0 mt-12 lg:mt-0 overflow-visible">
 
             {/* Card 1: Professional Doctors */}
             <motion.div
@@ -515,7 +515,7 @@ const Service = () => {
               viewport={{ once: true }}
               whileHover={{ y: -15, scale: 1.02 }}
               transition={{ duration: 0.5 }}
-              className="absolute top-[0%] left-[5%] md:left-[10%] z-30"
+              className="relative lg:absolute lg:top-[0%] lg:left-[5%] xl:left-[10%] z-30"
             >
               <div className="bg-white/80 backdrop-blur-md rounded-[40px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)] w-[240px] text-center border border-gray-300 hover:border-[#8ABFCB]/50 transition-all duration-500 group relative">
                 <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#19718A] text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg transform -rotate-12 group-hover:rotate-0 transition-transform">1</div>
@@ -534,7 +534,7 @@ const Service = () => {
               viewport={{ once: true }}
               whileHover={{ y: -15, scale: 1.02 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="absolute top-[20%] right-[0%] md:right-[5%] z-20"
+              className="relative lg:absolute lg:top-[20%] lg:right-[0%] xl:right-[5%] z-20"
             >
               <div className="bg-white/80 backdrop-blur-md rounded-[40px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)] w-[240px] text-center border border-gray-300 hover:border-[#19718A]/30 transition-all duration-500 group relative">
                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#19718A] text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform">2</div>
@@ -553,7 +553,7 @@ const Service = () => {
               viewport={{ once: true }}
               whileHover={{ y: -15, scale: 1.02 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="absolute bottom-[0%] left-[25%] md:left-[30%] z-30"
+              className="relative lg:absolute lg:bottom-[0%] lg:left-[20%] xl:left-[30%] z-30"
             >
               <div className="bg-white/80 backdrop-blur-md rounded-[40px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)] w-[240px] text-center border border-gray-300 hover:border-[#8ABFCB]/50 transition-all duration-500 group relative">
                 <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-[#19718A] text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform">3</div>

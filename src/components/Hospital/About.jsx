@@ -73,7 +73,7 @@ const Hero1 = () => {
             transition={{ duration: 1 }}
             src="/assets/bbg1.svg"
             alt="Doctor"
-            className="relative z-10 w-[260px] sm:w-[310px] md:w-[320px] drop-shadow-2xl md:-mr-[95px] -mt-2 md:-mt-10 mx-auto md:mx-0"
+            className="relative z-10 order-last md:order-none w-[260px] sm:w-[310px] md:w-[320px] drop-shadow-2xl md:-mr-[95px] -mt-2 md:-mt-10 mx-auto md:mx-0"
           />
 
           {/* Left Text */}
@@ -81,7 +81,7 @@ const Hero1 = () => {
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 1 }}
-            className="absolute left-4 sm:left-10 md:left-24 top-[20%] md:top-[50%] -translate-y-1/2 max-w-lg z-20 text-center md:text-left w-[90%] md:w-auto"
+            className="relative md:absolute order-first md:order-none left-0 md:left-24 top-0 md:top-[50%] md:-translate-y-1/2 max-w-lg z-20 text-center md:text-left w-full md:w-auto mt-6 md:mt-0 px-4"
           >
             <h2 className="text-[20px] md:text-[24px] mt-0 md:-mt-16 font-extrabold text-[#08334A] leading-snug">
               Premium Treatments <br className="hidden md:block" /> for a Healthy Lifestyle

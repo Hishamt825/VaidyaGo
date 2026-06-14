@@ -30,7 +30,7 @@ const ContactUs = () => {
 
         {/* TOP BANNER */}
         <div
-          className=" h-[420px] bg-cover bg-center flex flex-col  items-center justify-center text-center px-4"
+          className="h-[280px] sm:h-[350px] md:h-[420px] bg-cover bg-center flex flex-col items-center justify-center text-center px-4"
           style={{
             backgroundImage: "url('/assets/contact.png')",
             backgroundPosition: "center -60px"
@@ -42,18 +42,18 @@ const ContactUs = () => {
             alt="Overlay"
             className="absolute -top-1 w-full h-full object-cover opacity-90"
           />
-          <h1 className=" z-10 -translate-y-10 md:-translate-y-16 text-4xl md:text-6xl font-extrabold text-[#08334A]">
+          <h1 className="z-10 -translate-y-4 sm:-translate-y-10 md:-translate-y-16 text-3xl sm:text-4xl md:text-6xl font-extrabold text-[#08334A]">
             Contact us
           </h1>
 
-          <p className=" z-10 -translate-y-10 md:-translate-y-16 max-w-3xl text-[16px] text-gray-700 mt-3">
+          <p className="z-10 -translate-y-4 sm:-translate-y-10 md:-translate-y-16 max-w-3xl text-[13px] sm:text-[15px] md:text-[16px] text-gray-700 mt-3">
             Our service can refer to a company’s specific category of offerings,
             a physical pipe for utilities like water, or a line on a sports court.
           </p>
         </div>
 
         {/* INFO CARD (OVERLAPPING BANNER) */}
-        <div className="relative -mt-32 z-20">
+        <div className="relative -mt-16 sm:-mt-24 md:-mt-32 z-20">
 
           {/* faint background heading */}
           <h2
@@ -241,7 +241,7 @@ const ContactUs = () => {
         <h2 className="text-[20px] md:text-[22px] font-[800] text-black mb-4 uppercase tracking-wide">
           LOCATION
         </h2>
-        <div className="relative border border-gray-200 rounded-[24px] overflow-hidden shadow-sm h-[380px]">
+        <div className="relative border border-gray-200 rounded-[24px] overflow-hidden shadow-sm h-[260px] sm:h-[320px] md:h-[380px]">
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d57002.327668612!2d83.33230635!3d26.757041749999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3991446a0c332127%3A0x81de3d9633298193!2sGorakhpur%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1714399000000!5m2!1sen!2sin"
             width="100%"
@@ -252,8 +252,8 @@ const ContactUs = () => {
             referrerPolicy="no-referrer-when-downgrade"
           ></iframe>
 
-          <div className="absolute bottom-6 right-6 flex items-center gap-3">
-            <button className="bg-white p-2.5 rounded-md shadow-md hover:bg-gray-50 flex items-center justify-center">
+          <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 flex items-center gap-2 sm:gap-3">
+            <button className="bg-white p-2 rounded-md shadow-md hover:bg-gray-50 flex items-center justify-center">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#19718A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -263,7 +263,7 @@ const ContactUs = () => {
               href="https://www.google.com/maps/place/Gorakhpur,+Uttar+Pradesh/@26.7570417,83.3323063,13z"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#19718A] text-white font-medium px-6 py-2.5 rounded-lg shadow-md hover:bg-[#08334A] transition-all text-[16px]"
+              className="bg-[#19718A] text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg shadow-md hover:bg-[#08334A] transition-all text-[14px] sm:text-[16px]"
             >
               View in Google Map
             </a>

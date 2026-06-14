@@ -139,7 +139,7 @@ const Hos_consultation = () => {
 
       {/* Footer copied from About.jsx for consistency */}
       <footer className="bg-[#19718A] text-white py-16">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
           <div className="flex flex-col items-start -mt-6">
             <img src="/assets/logo.png" alt="VaidyaGo Logo" className="w-56 mb-4 -ml-5" />
             <p className="text-[14px] leading-relaxed max-w-xs font-serif">

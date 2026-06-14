@@ -62,62 +62,64 @@ const MainPage = () => {
 
           {/* RIGHT IMAGE */}
           <div className="relative flex justify-center mt-10 md:mt-0">
-            <img
-              src="/assets/hero2.png"
-              alt="Doctor"
-              className="relative md:-top-12 h-[350px] md:h-[600px] w-auto lg:mr-40"
-            />
-
-            {/* Floating Cards */}
-            <div className="absolute top-[10px] md:top-[20px] right-[5%] sm:right-[10%] md:right-[10%] lg:right-[60px] bg-[#ACD0D6] pr-[20px] sm:pr-[40px] md:pr-[60px] pl-[10px] py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
-              {/* Icon */}
+            <div className="relative">
               <img
-                src="/assets/but.png"
-                alt="icon"
-                className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1"
+                src="/assets/hero2.png"
+                alt="Doctor"
+                className="relative md:-top-12 h-[300px] sm:h-[450px] md:h-[550px] lg:h-[600px] w-auto lg:mr-20 xl:mr-40"
               />
-              {/* 20k */}
-              <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
-                20k
-              </span>
-              {/* reviews */}
-              <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
-                reviews
-              </span>
-            </div>
 
-            <div className="absolute top-[60px] md:top-[86px] right-0 sm:right-[5%] md:right-[5%] lg:-right-[10px] bg-[#ACD0D6] pr-[20px] sm:pr-[30px] md:pr-[50px] pl-[10px] py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
-              {/* Icon */}
-              <img
-                src="/assets/but.png"
-                alt="icon"
-                className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1"
-              />
-              {/* 20k */}
-              <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
-                20k
-              </span>
-              {/* reviews */}
-              <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
-                reviews
-              </span>
-            </div>
+              {/* Floating Cards */}
+              <div className="absolute top-[10px] md:top-[20px] -right-2 sm:right-[5%] md:right-[10%] lg:right-[60px] bg-[#ACD0D6] pr-[20px] sm:pr-[40px] md:pr-[60px] pl-[10px] py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
+                {/* Icon */}
+                <img
+                  src="/assets/but.png"
+                  alt="icon"
+                  className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1"
+                />
+                {/* 20k */}
+                <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
+                  20k
+                </span>
+                {/* reviews */}
+                <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
+                  reviews
+                </span>
+              </div>
 
-            <div className="absolute top-[110px] md:top-[166px] right-0 md:right-0 lg:-right-[60px] bg-[#ACD0D6] pr-[10px] sm:pr-[30px] md:pr-[50px] pl-[5px] md:pl-0 py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
-              {/* Icon */}
-              <img
-                src="/assets/but.png"
-                alt="icon"
-                className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1 md:ml-2"
-              />
-              {/* 100+ */}
-              <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
-                100+
-              </span>
-              {/* reviews */}
-              <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
-                Happy Client
-              </span>
+              <div className="absolute top-[60px] md:top-[86px] -right-4 sm:right-0 bg-[#ACD0D6] pr-[20px] sm:pr-[30px] md:pr-[50px] pl-[10px] py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
+                {/* Icon */}
+                <img
+                  src="/assets/but.png"
+                  alt="icon"
+                  className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1"
+                />
+                {/* 20k */}
+                <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
+                  20k
+                </span>
+                {/* reviews */}
+                <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
+                  reviews
+                </span>
+              </div>
+
+              <div className="absolute top-[110px] md:top-[166px] -right-6 sm:-right-6 lg:-right-[60px] bg-[#ACD0D6] pr-[10px] sm:pr-[30px] md:pr-[50px] pl-[5px] md:pl-0 py-[8px] md:py-[11px] rounded-xl shadow-lg flex items-center scale-75 sm:scale-90 md:scale-100 origin-right">
+                {/* Icon */}
+                <img
+                  src="/assets/but.png"
+                  alt="icon"
+                  className="w-5 md:w-6 h-5 md:h-6 object-contain ml-1 md:ml-2"
+                />
+                {/* 100+ */}
+                <span className="text-xl md:text-3xl font-bold text-black leading-none ml-2">
+                  100+
+                </span>
+                {/* reviews */}
+                <span className="text-sm md:text-base text-gray-700 lowercase ml-2 md:ml-6 whitespace-nowrap">
+                  Happy Client
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -270,7 +272,7 @@ const MainPage = () => {
                 />
 
                 {/* Floating Badge */}
-                <div className="absolute -right-6 bottom-12 z-20 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce" style={{ animationDuration: '3s' }}>
+                <div className="absolute -right-2 sm:-right-6 bottom-12 z-20 bg-white p-3 sm:p-4 rounded-2xl shadow-xl flex items-center gap-3 sm:gap-4 animate-bounce" style={{ animationDuration: '3s' }}>
                   <div className="w-12 h-12 bg-[#E9F3F6] rounded-full flex items-center justify-center text-[#19718A]">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                   </div>
@@ -411,19 +413,19 @@ const MainPage = () => {
                 />
 
                 {/* Overlapping Floating Card */}
-                <div className="absolute -bottom-8 -left-4 md:-bottom-12 md:-left-16 bg-white p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-50 flex items-center gap-5 animate-pulse" style={{ animationDuration: '4s' }}>
-                  <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center text-green-500 shrink-0">
-                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="absolute -bottom-8 left-2 xs:-left-4 md:-left-16 bg-white p-4 sm:p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-50 flex items-center gap-3 sm:gap-5 animate-pulse" style={{ animationDuration: '4s' }}>
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 bg-green-50 rounded-full flex items-center justify-center text-green-500 shrink-0">
+                    <svg className="w-5 h-5 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                     </svg>
                   </div>
                   <div>
-                    <div className="text-[#0B2132] font-black text-[24px] leading-none mb-1">98%</div>
-                    <div className="text-gray-500 text-[13px] font-bold uppercase tracking-widest leading-tight">Patient<br />Satisfaction</div>
+                    <div className="text-[#0B2132] font-black text-xl sm:text-[24px] leading-none mb-1">98%</div>
+                    <div className="text-gray-500 text-[11px] sm:text-[13px] font-bold uppercase tracking-widest leading-tight">Patient<br />Satisfaction</div>
                   </div>
                 </div>
 
-                <div className="absolute top-4 -right-4 md:top-6 md:-right-12 bg-white px-5 py-4 rounded-[20px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-50 flex items-center gap-4">
+                <div className="absolute top-4 right-2 xs:-right-4 md:-right-12 bg-white px-4 sm:px-5 py-3 sm:py-4 rounded-[20px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-50 flex items-center gap-3 sm:gap-4">
                   <div className="flex -space-x-3 shrink-0">
                     <img src="/assets/person2.png" alt="user" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
                     <img src="/assets/person3.png" alt="user" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
@@ -444,7 +446,7 @@ const MainPage = () => {
 
 
       <section className="py-8">
-        <div className="max-w-7xl mx-auto text-center px-2">
+        <div className="max-w-7xl mx-auto text-center px-6 md:px-12">
           {/* Section Heading */}
           <h2 className="text-[32px] md:text-[44px] font-bold text-[#0B2132] mb-12 font-serif">
             Top Three <span className="text-[#19718A]">Testimonials</span>
@@ -478,8 +480,8 @@ const MainPage = () => {
             ].map((item, index) => (
               <div
                 key={index}
-                className="relative bg-white w-full h-[420px] max-w-sm p-12 shadow-lg rounded-2xl overflow-hidden
-                     transition-all duration-500 ease-out transform hover:scale-110 hover:-translate-y-3
+                className="relative bg-white w-full min-h-[420px] pb-8 max-w-sm p-6 sm:p-8 lg:p-12 shadow-lg rounded-2xl overflow-hidden
+                     transition-all duration-500 ease-out transform hover:scale-105 hover:-translate-y-2
                      border-2 border-transparent"
               >
 

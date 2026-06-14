@@ -101,7 +101,7 @@ const Hos2_consultation = () => {
                     {/* Doctor List */}
                     <div className="space-y-4">
                         {doctors.map(doc => (
-                            <div key={doc.id} className="bg-white rounded-[28px] p-5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-[#1A7785]/20 group flex flex-col md:flex-row gap-6 relative overflow-hidden">
+                            <div key={doc.id} className="bg-white rounded-[28px] p-5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-[#1A7785]/20 group flex flex-col sm:flex-row gap-4 sm:gap-6 relative overflow-hidden">
                                 
                                 {/* Doctor Avatar */}
                                 <div className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-2xl bg-[#F0F7F8] flex items-center justify-center shrink-0 overflow-hidden relative">
@@ -123,7 +123,7 @@ const Hos2_consultation = () => {
                                 </div>
 
                                 {/* Pricing & Actions */}
-                                <div className="flex flex-col md:flex-row items-center gap-4 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 md:min-w-[340px]">
+                                <div className="flex flex-row sm:flex-col xl:flex-row items-center gap-4 border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6 w-full sm:w-auto xl:min-w-[340px]">
                                     <div className="flex-1 w-full text-center md:text-right">
                                         <div className="mb-2">
                                             <span className="text-[24px] font-bold text-[#0D1C2E]">{doc.onlinePrice}</span>
@@ -175,7 +175,7 @@ const Hos2_consultation = () => {
             
             {/* Simple footer for consistency */}
             <footer className="bg-[#19718A] text-white py-12 mt-20">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
                     <div>
                         <img src="/assets/logo.png" alt="Logo" className="w-48 mb-4 -ml-4" />
                         <p className="text-[14px] opacity-80">Serving your health needs since 1989.</p>

@@ -78,7 +78,7 @@ const HealthCheckupModal = ({ isOpen, onClose }) => {
                
                <button
                  onClick={onClose}
-                 className="p-3 bg-gray-50 hover:bg-gray-100 rounded-full transition-all text-gray-400 hover:text-gray-900 border border-gray-100"
+                 className="absolute top-4 right-4 md:relative md:top-auto md:right-auto p-3 bg-gray-50 hover:bg-gray-100 rounded-full transition-all text-gray-400 hover:text-gray-900 border border-gray-100"
                >
                  <X size={24} />
                </button>

@@ -65,7 +65,7 @@ const Specialities = () => {
       {/* Grid of Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
 
-        {specialties.map((item, index) => (
+        {Section3.map((item, index) => (
           <div
             key={index}
             className="flex items-center gap-4 p-4 border rounded-xl shadow-sm hover:shadow-md transition bg-white"

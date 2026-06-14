@@ -66,12 +66,15 @@ const HospitalNavbar = () => {
     <>
       <section className="relative overflow-hidden w-full">
         {/* Navbar */}
-        <header className="relative flex items-center justify-between px-8 py-2.5 bg-[#19718A] border-b border-white/30 w-full z-50">
-          {/* Empty Left Space (Balance Maintain Karne Ke Liye) */}
-          <div className="w-[280px]"></div>
+        <header className="relative flex items-center justify-between px-4 sm:px-8 py-2.5 bg-[#19718A] border-b border-white/30 w-full z-50">
+          {/* Logo Section */}
+          <div className="flex items-center gap-2 cursor-pointer w-auto lg:w-[280px]" onClick={() => navigate("/MainPage")}>
+            <img src="/assets/logo.png" alt="VaidyaGo Logo" className="h-8 sm:h-9 w-auto shrink-0" />
+            <span className="text-white font-black text-lg sm:text-xl tracking-wider select-none hidden xs:inline-block">VaidyaGo</span>
+          </div>
 
           {/* CENTER NAVIGATION */}
-          <nav className="absolute left-[420px] xl:left-[460px] text-[18px] -translate-x-1/2 hidden lg:flex items-center gap-10 xl:gap-[60px]">
+          <nav className="flex-1 hidden lg:flex items-center justify-center gap-6 xl:gap-[45px] text-[16px] xl:text-[18px]">
             {navItems.map((item) => (
               <button
                 key={item.name}
@@ -86,9 +89,8 @@ const HospitalNavbar = () => {
           </nav>
 
           {/* RIGHT SECTION (Icons + Contact) */}
-          <div className="flex items-center justify-end w-full lg:w-auto lg:mr-8 xl:mr-16">
+          <div className="flex items-center justify-end gap-4 w-auto lg:min-w-[280px]">
             <div className="hidden lg:flex items-center gap-4 xl:gap-6">
-              <div className="w-px h-6 bg-white/40"></div>
 
               <button 
                 onClick={() => setShowSearch(true)}
@@ -200,10 +202,16 @@ const HospitalNavbar = () => {
           </div>
 
           <div className="flex gap-6 mt-auto pt-6 border-t border-white/20 justify-center">
-            <button className="p-3 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+            <button 
+              onClick={() => { setShowSearch(true); setIsMobileMenuOpen(false); }}
+              className="p-3 hover:bg-[#0C6173] rounded-full transition-all duration-300"
+            >
               <img src="/assets/search.svg" alt="Search" className="w-5 h-5 invert" />
             </button>
-            <button className="p-3 hover:bg-[#0C6173] rounded-full transition-all duration-300">
+            <button 
+              onClick={() => { setShowNotifications(true); setIsMobileMenuOpen(false); }}
+              className="p-3 hover:bg-[#0C6173] rounded-full transition-all duration-300"
+            >
               <img src="/assets/Bell.png" alt="Bell" className="w-5 h-5 invert" />
             </button>
           </div>

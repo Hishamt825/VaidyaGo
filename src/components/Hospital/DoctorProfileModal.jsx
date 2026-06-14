@@ -36,7 +36,7 @@ const DoctorProfileModal = ({ doctor, isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0 }}
-            className="relative w-full max-w-4xl bg-white rounded-none md:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-screen md:max-h-[90vh]"
+            className="relative w-full max-w-4xl bg-white rounded-none md:rounded-[2.5rem] shadow-2xl overflow-y-auto md:overflow-hidden flex flex-col md:flex-row max-h-screen md:max-h-[90vh]"
           >
             {/* Close Button */}
             <button
@@ -47,7 +47,7 @@ const DoctorProfileModal = ({ doctor, isOpen, onClose }) => {
             </button>
 
             {/* Left Side: Photo & Quick Stats */}
-            <div className="md:w-2/5 bg-gradient-to-b from-[#F0F7F9] to-white p-8 flex flex-col items-center text-center border-r border-gray-100">
+            <div className="md:w-2/5 bg-gradient-to-b from-[#F0F7F9] to-white p-8 flex flex-col items-center text-center border-b md:border-b-0 md:border-r border-gray-100">
               <div className="w-48 h-48 rounded-[2rem] overflow-hidden border-4 border-white shadow-xl mb-6 mt-4">
                 <img src={doctor.image} alt={doctor.name} className="w-full h-full object-cover" />
               </div>
@@ -73,7 +73,7 @@ const DoctorProfileModal = ({ doctor, isOpen, onClose }) => {
             </div>
 
             {/* Right Side: Details */}
-            <div className="md:w-3/5 p-8 md:p-12 overflow-y-auto custom-scrollbar">
+            <div className="md:w-3/5 p-8 md:p-12 md:overflow-y-auto custom-scrollbar">
               <div className="mb-8">
                 <h3 className="text-lg font-black text-[#0B2132] mb-4 flex items-center gap-2">
                   <Award size={20} className="text-[#19718A]" />

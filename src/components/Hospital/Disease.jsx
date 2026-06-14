@@ -136,8 +136,8 @@ const HospitalDisease = () => {
       </section>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="bg-white rounded-[32px] shadow-xl p-8 md:p-12 -mt-24 relative z-10 border border-gray-100">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="bg-white rounded-[32px] shadow-xl p-4 sm:p-8 md:p-12 -mt-24 relative z-10 border border-gray-100">
           
           {/* Alphabet Buttons */}
           <div className="mb-12 text-center">
@@ -171,15 +171,15 @@ const HospitalDisease = () => {
 
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-16">
-            <div className="flex items-center w-full bg-[#F8FAFC] p-2 rounded-full border-2 border-gray-200 focus-within:border-[#19718A]/40 transition-all duration-300">
+            <div className="flex items-center w-full bg-[#F8FAFC] p-1.5 sm:p-2 rounded-full border-2 border-gray-200 focus-within:border-[#19718A]/40 transition-all duration-300">
               <input
                 type="text"
                 placeholder="Search for a disease..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full outline-none text-gray-700 bg-transparent text-[16px] px-6 py-2"
+                className="w-full outline-none text-gray-700 bg-transparent text-[14px] sm:text-[16px] px-3 sm:px-6 py-2"
               />
-              <button className="bg-[#19718A] text-white px-10 py-3 rounded-full font-bold hover:bg-[#0C6173] transition-colors shadow-md">
+              <button className="bg-[#19718A] text-white px-4 sm:px-10 py-2.5 sm:py-3 rounded-full font-bold hover:bg-[#0C6173] transition-colors shadow-md text-[14px] sm:text-[16px]">
                 Search
               </button>
             </div>

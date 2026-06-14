@@ -2403,23 +2403,23 @@ const Makeapp = () => {
       <HospitalNavbar />
 
       <div className="border-b border-gray-200 bg-[#F6F9FA] py-3 shadow-sm">
-        <div className="max-w-[1280px] w-[90%] md:w-[85%] mx-auto flex justify-center items-center gap-4 text-[14px]">
+        <div className="max-w-[1280px] w-[95%] md:w-[85%] mx-auto flex flex-wrap justify-center items-center gap-2 sm:gap-4 text-[13px] sm:text-[14px]">
           <button 
             onClick={() => setShowRequestModal(true)}
-            className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]"
+            className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-3 sm:px-5 py-1.5 sm:py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[13px] sm:text-[14px]"
           >
-            <Phone size={16} className="text-[#64A3E3]" strokeWidth={2.5} />
+            <Phone size={14} className="text-[#64A3E3] shrink-0" strokeWidth={2.5} />
             <span className="text-[#5190a0]">Request Callback</span>
           </button>
-          <button className="flex items-center gap-2 border border-[#19718A] bg-[#19718A] text-white rounded-full px-5 py-2 font-semibold transition-colors shadow-md text-[14px]">
-            <Calendar size={16} className="text-white" strokeWidth={2.5} />
+          <button className="flex items-center gap-2 border border-[#19718A] bg-[#19718A] text-white rounded-full px-3 sm:px-5 py-1.5 sm:py-2 font-semibold transition-colors shadow-md text-[13px] sm:text-[14px]">
+            <Calendar size={14} className="text-white shrink-0" strokeWidth={2.5} />
             <span className="text-white">Make Appointment</span>
           </button>
           <button 
             onClick={() => setShowHealthCheckupModal(true)}
-            className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-5 py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[14px]"
+            className="flex items-center gap-2 border border-[#8DC3CD] bg-white text-[#19718A] rounded-full px-3 sm:px-5 py-1.5 sm:py-2 font-semibold hover:bg-[#E8F3F4] transition-colors shadow-sm text-[13px] sm:text-[14px]"
           >
-            <Stethoscope size={16} className="text-[#19718A]" strokeWidth={2.5} />
+            <Stethoscope size={14} className="text-[#19718A] shrink-0" strokeWidth={2.5} />
             <span className="text-[#5190a0]">Get Health Checkup</span>
           </button>
         </div>
@@ -2439,7 +2439,7 @@ const Makeapp = () => {
         </div>
 
         {/* Dropdown Filters */}
-        <div className="flex gap-4 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full md:w-auto">
           <div className="relative w-full md:w-[220px]">
             <select
               value={selectedHospital}
@@ -2485,19 +2485,19 @@ const Makeapp = () => {
               onClick={() => setActiveCard(index)}
             >
               {/* Card Body: Profile Info */}
-              <div className="p-8 flex-grow flex flex-col">
+              <div className="p-5 sm:p-8 flex-grow flex flex-col">
                 {/* Top Row: Photo & Titles */}
-                <div className="flex gap-6 mb-6">
-                  <div className="w-28 h-28 rounded-[2rem] overflow-hidden shrink-0 border-4 border-white shadow-md flex items-center justify-center bg-gray-50">
+                <div className="flex flex-col xs:flex-row gap-4 sm:gap-6 mb-6 items-center xs:items-start text-center xs:text-left">
+                  <div className="w-24 h-24 xs:w-28 xs:h-28 rounded-[2rem] overflow-hidden shrink-0 border-4 border-white shadow-md flex items-center justify-center bg-gray-50">
                     <img src={doctor.image} alt={doctor.name} className="w-full h-full object-cover" />
                   </div>
 
-                  <div className="flex flex-col justify-center">
-                    <h3 className="text-[22px] font-bold text-[#0B2132] leading-tight mb-1.5 tracking-tight">{doctor.name}</h3>
-                    <p className="text-[14px] font-semibold text-[#19718A] uppercase tracking-wider leading-none mb-2">
+                  <div className="flex flex-col justify-center items-center xs:items-start">
+                    <h3 className="text-[20px] sm:text-[22px] font-bold text-[#0B2132] leading-tight mb-1.5 tracking-tight">{doctor.name}</h3>
+                    <p className="text-[13px] sm:text-[14px] font-semibold text-[#19718A] uppercase tracking-wider leading-none mb-2">
                       {doctor.title}
                     </p>
-                    <p className="text-[15px] font-semibold text-gray-500 flex items-center gap-1.5">
+                    <p className="text-[14px] sm:text-[15px] font-semibold text-gray-500 flex items-center gap-1.5">
                        <Hospital size={14} />
                        {doctor.department}
                     </p>
@@ -2514,27 +2514,27 @@ const Makeapp = () => {
                 </div>
 
                 {/* Stats Row: Experience & Fees */}
-                <div className="flex items-center gap-12 mb-2">
+                <div className="flex items-center justify-around xs:justify-start gap-4 sm:gap-12 mb-2">
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2 mb-1">
                       <div className="p-1.5 bg-blue-50 rounded-lg">
                         <CalendarClock className="w-5 h-5 text-[#19718A]" />
                       </div>
-                      <span className="text-[20px] font-bold text-[#0B2132]">{doctor.experience}</span>
+                      <span className="text-[18px] sm:text-[20px] font-bold text-[#0B2132]">{doctor.experience}</span>
                     </div>
-                    <span className="text-[12px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Experience</span>
+                    <span className="text-[11px] sm:text-[12px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Experience</span>
                   </div>
 
-                  <div className="w-px h-10 bg-gray-100"></div>
+                  <div className="w-px h-10 bg-gray-100 shrink-0"></div>
 
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2 mb-1">
                       <div className="p-1.5 bg-green-50 rounded-lg text-[#19718A]">
-                        <span className="font-bold text-[18px]">₹</span>
+                        <span className="font-bold text-[16px] sm:text-[18px]">₹</span>
                       </div>
-                      <span className="text-[22px] font-bold text-[#0B2132]">{doctor.fees}</span>
+                      <span className="text-[20px] sm:text-[22px] font-bold text-[#0B2132]">{doctor.fees}</span>
                     </div>
-                    <span className="text-[12px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Consultation Fees</span>
+                    <span className="text-[11px] sm:text-[12px] font-semibold text-gray-400 uppercase tracking-widest ml-1">Consultation Fees</span>
                   </div>
                 </div>
 
@@ -2574,12 +2574,12 @@ const Makeapp = () => {
         </div>
 
         {/* 5. PAGINATION SECTION */}
-        <div className="mt-12 flex flex-col items-end gap-2 pr-4 font-sans">
-          <div className="flex items-center gap-2 md:gap-4 text-[14px]">
+        <div className="mt-12 flex flex-col items-center sm:items-end gap-3 pr-0 sm:pr-4 font-sans w-full">
+          <div className="flex flex-wrap justify-center sm:justify-end items-center gap-2 sm:gap-4 text-[13px] sm:text-[14px] w-full">
             <button 
               onClick={() => setCurrentPage(1)}
               disabled={currentPage === 1}
-              className={`px-3 py-1 hover:text-[#19718A] transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-2 py-1 hover:text-[#19718A] transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               First
             </button>
@@ -2587,33 +2587,35 @@ const Makeapp = () => {
             <button 
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className={`px-[19px] py-[7px] border border-[#F4D7D0] rounded-md text-[12px] font-medium hover:bg-[#FDF4F2] transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-3 py-1.5 border border-[#F4D7D0] rounded-md text-[12px] font-medium hover:bg-[#FDF4F2] transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               Newer
             </button>
 
-            {renderPageNumbers().map((page, i) => (
-              <button
-                key={i}
-                disabled={page === '...'}
-                onClick={() => typeof page === 'number' && setCurrentPage(page)}
-                className={`w-[32px] h-[32px] flex items-center justify-center rounded-[6px] transition-all font-medium
-                  ${currentPage === page 
-                    ? 'bg-[#313131] text-white shadow-md' 
-                    : page === '...'
-                      ? 'text-gray-400 cursor-default'
-                      : 'text-[#313131] hover:bg-gray-100'
-                  }
-                `}
-              >
-                {page}
-              </button>
-            ))}
+            <div className="flex flex-wrap justify-center items-center gap-1.5">
+              {renderPageNumbers().map((page, i) => (
+                <button
+                  key={i}
+                  disabled={page === '...'}
+                  onClick={() => typeof page === 'number' && setCurrentPage(page)}
+                  className={`w-8 h-8 flex items-center justify-center rounded-[6px] transition-all font-medium text-[13px] sm:text-[14px]
+                    ${currentPage === page 
+                      ? 'bg-[#313131] text-white shadow-md' 
+                      : page === '...'
+                        ? 'text-gray-400 cursor-default'
+                        : 'text-[#313131] hover:bg-gray-100'
+                    }
+                  `}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
 
             <button 
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(doctors.length / itemsPerPage)))}
               disabled={currentPage === Math.ceil(doctors.length / itemsPerPage)}
-              className={`px-[19px] py-[7px] border border-[#F4D7D0] rounded-md text-[12px] font-medium hover:bg-[#FDF4F2] transition-colors ${currentPage === Math.ceil(doctors.length / itemsPerPage) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-3 py-1.5 border border-[#F4D7D0] rounded-md text-[12px] font-medium hover:bg-[#FDF4F2] transition-colors ${currentPage === Math.ceil(doctors.length / itemsPerPage) ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               Older
             </button>
@@ -2621,13 +2623,13 @@ const Makeapp = () => {
             <button 
               onClick={() => setCurrentPage(Math.ceil(doctors.length / itemsPerPage))}
               disabled={currentPage === Math.ceil(doctors.length / itemsPerPage)}
-              className={`px-3 py-1 hover:text-[#19718A] transition-colors ${currentPage === Math.ceil(doctors.length / itemsPerPage) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-2 py-1 hover:text-[#19718A] transition-colors ${currentPage === Math.ceil(doctors.length / itemsPerPage) ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               Last
             </button>
           </div>
 
-          <div className="text-[12px] text-black font-normal mr-1">
+          <div className="text-[12px] text-black font-normal mr-1 text-center sm:text-right">
             Showing results {Math.min((currentPage - 1) * itemsPerPage + 1, doctors.length)} - {Math.min(currentPage * itemsPerPage, doctors.length)} of {doctors.length}
           </div>
         </div>
@@ -2638,7 +2640,7 @@ const Makeapp = () => {
 
       {/* ===== Footer Section ===== */}
       <footer className="bg-[#19718A] text-white py-16 -mb-20 mt-20">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
 
           {/* === Logo + Description === */}
           <div className="flex flex-col items-start -mt-6">
