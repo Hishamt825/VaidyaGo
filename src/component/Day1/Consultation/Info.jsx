@@ -161,8 +161,11 @@ const Info = ({ onClose, doctor }) => {
             // Get logged-in user info from localStorage
             const userId = localStorage.getItem('user_id');
             const userEmail = localStorage.getItem('user_email');
-            const userName = localStorage.getItem('user_full_name');
+            const storedUserType = localStorage.getItem('user_type')?.toLowerCase();
+            const userFullName = localStorage.getItem('user_full_name');
+            const userName = storedUserType === 'patient' ? userFullName : localStorage.getItem('user_name');
             const userPhone = localStorage.getItem('user_phone');
+            const fallbackName = userEmail ? userEmail.split('@')[0].replace(/[._]/g, ' ') : "Demo Patient";
 
             const payload = {
                 doctor: doctorId,
@@ -170,7 +173,7 @@ const Info = ({ onClose, doctor }) => {
                 start_time: selectedSlot.start_time,
                 end_time: selectedSlot.end_time,
                 user: userId ? parseInt(userId) : null,
-                patient_name: userName || "Demo Patient",
+                patient_name: userName || userFullName || fallbackName,
                 patient_phone: userPhone || "9876543210",
                 patient_email: userEmail || null,
                 appointment_type: activeTab

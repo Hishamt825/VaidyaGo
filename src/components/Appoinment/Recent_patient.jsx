@@ -6,29 +6,9 @@ import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
+import BASE_URL from '../../baseUrl';
 
-const recentPatientsData = [
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-    { name: "Riya madeshiya", gender: "Female", weight: "59kg", disease: "Typhoid", date: "14 feb", heartRate: "59 bpm", bloodType: "AB", status: "OutPatient" },
-];
+
 
 const Recent_patient = () => {
     const navigate = useNavigate();
@@ -37,10 +17,39 @@ const Recent_patient = () => {
     const [open, setOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-    const menuRef = useRef(React.createRef()); // Use React.createRef if useRef is not imported from react, but it is in line 1.
-    // Wait, useRef is imported in line 1? Let me check.
-    // Line 1: import React, { useState } from 'react';
-    // Ah, useRef is NOT imported. I'll add it.
+    const menuRef = useRef(null);
+
+    const [recentPatients, setRecentPatients] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const formatDate = (dateStr) => {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    };
+
+    const fetchRecentPatients = async () => {
+        const docId = localStorage.getItem("doctor_id");
+        const token = localStorage.getItem("token");
+        if (!docId || !token) return;
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/recent/?doctor_id=${docId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setRecentPatients(data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch recent patients:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchRecentPatients();
+    }, []);
 
     return (
         <div className="flex h-screen w-full bg-white font-sans text-sm overflow-hidden text-gray-700">
@@ -132,24 +141,32 @@ const Recent_patient = () => {
                             </div>
 
                             {/* Patient Rows (From App1_Dashboard, repeated multiple times) */}
-                            <div className="flex flex-col gap-[8px]">
-                                {Array.from({ length: 40 }).map((_, i) => (
-                                    <div key={i} className="border border-gray-200 rounded-xl p-[10px] flex items-center text-[16px] font-semibold text-[#333] bg-white group hover:border-[#32869e]/30 hover:shadow-md hover:shadow-[#32869e]/5 transition-all duration-300">
-                                        <div className="flex-[2] min-w-[200px] flex items-center gap-[12px]">
-                                            <div className="w-[40px] h-[40px] rounded-full overflow-hidden shrink-0 border-2 border-gray-50">
-                                                <img src={phImg} alt="" className="w-full h-full object-cover" />
-                                            </div>
-                                            <span className="truncate group-hover:text-[#32869e] transition-colors">Riya madeshiya</span>
-                                        </div>
-                                        <div className="flex-1 text-center text-gray-500 font-medium">Female</div>
-                                        <div className="flex-1 text-center text-gray-500 font-medium">59kg</div>
-                                        <div className="flex-1 text-center text-gray-500 font-medium">Typhoid</div>
-                                        <div className="flex-1 text-center text-gray-500 font-medium">14 feb</div>
-                                        <div className="flex-1 text-center text-gray-500 font-medium">59 bpm</div>
-                                        <div className="flex-1 text-center text-gray-500 font-medium">AB</div>
-                                        <div className="flex-1 text-right text-[#111] font-bold">OutPatient</div>
+                             <div className="flex flex-col gap-[8px]">
+                                {loading ? (
+                                    <div className="flex items-center justify-center py-20">
+                                        <div className="w-12 h-12 border-4 border-[#1b738c] border-t-transparent rounded-full animate-spin"></div>
                                     </div>
-                                ))}
+                                ) : recentPatients.length === 0 ? (
+                                    <div className="text-center py-20 text-gray-400 font-bold text-[20px]">No recent patients records available</div>
+                                ) : (
+                                    recentPatients.map((p, i) => (
+                                        <div key={p.id || i} className="border border-gray-200 rounded-xl p-[10px] flex items-center text-[16px] font-semibold text-[#333] bg-white group hover:border-[#32869e]/30 hover:shadow-md hover:shadow-[#32869e]/5 transition-all duration-300">
+                                            <div className="flex-[2] min-w-[200px] flex items-center gap-[12px]">
+                                                <div className="w-[40px] h-[40px] rounded-full overflow-hidden shrink-0 border-2 border-gray-50">
+                                                    <img src={p.patient_photo || phImg} alt="" className="w-full h-full object-cover" />
+                                                </div>
+                                                <span className="truncate group-hover:text-[#32869e] transition-colors">{p.patient_name}</span>
+                                            </div>
+                                            <div className="flex-1 text-center text-gray-500 font-medium">{p.patient_gender || 'Not specified'}</div>
+                                            <div className="flex-1 text-center text-gray-500 font-medium">{p.patient_weight || '--'}</div>
+                                            <div className="flex-1 text-center text-gray-500 font-medium">{p.patient_disease || 'N/A'}</div>
+                                            <div className="flex-1 text-center text-gray-500 font-medium">{formatDate(p.start_time)}</div>
+                                            <div className="flex-1 text-center text-gray-500 font-medium">{p.patient_heart_rate || '--'}</div>
+                                            <div className="flex-1 text-center text-gray-500 font-medium">{p.patient_blood_type || '--'}</div>
+                                            <div className="flex-1 text-right text-[#111] font-bold capitalize">{p.status}</div>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>

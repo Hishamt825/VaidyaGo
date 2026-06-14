@@ -32,30 +32,7 @@ const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
-const monthlyData = [
-    { month: "Jan", male: 40, female: 30 },
-    { month: "Feb", male: 15, female: 20 },
-    { month: "Mar", male: 30, female: 15 },
-    { month: "Apr", male: 60, female: 25 },
-    { month: "May", male: 30, female: 50 },
-    { month: "Jun", male: 15, female: 20 },
-    { month: "Jul", male: 10, female: 15 },
-    { month: "Aug", male: 40, female: 38 },
-    { month: "Sep", male: 25, female: 42 },
-    { month: "Oct", male: 38, female: 55 },
-    { month: "Nov", male: 20, female: 35 },
-    { month: "Dec", male: 35, female: 45 },
-];
-
-const weeklyData = [
-    { day: "Mon", value: 20 },
-    { day: "Tue", value: 35 },
-    { day: "Wed", value: 25 },
-    { day: "Thu", value: 40 },
-    { day: "Fri", value: 30 },
-    { day: "Sat", value: 45 },
-    { day: "Sun", value: 28 },
-];
+// Data moved to component state
 const Admin_dashboard1 = () => {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -117,6 +94,36 @@ const Admin_dashboard1 = () => {
     const [openType, setOpenType] = useState("grid");
     const fileInputRef = useRef(null);
     const approvalRef = useRef(null);
+
+    // Patients Analytics States
+    const [monthlyData, setMonthlyData] = useState([]);
+    const [summary, setSummary] = useState({
+        male_pct: 0,
+        female_pct: 0,
+        weekly_male: [],
+        weekly_female: []
+    });
+
+    const fetchPatientAnalytics = async () => {
+        try {
+            const [statsRes, summaryRes] = await Promise.all([
+                apiFetch(`${BASE_URL}/appointments/gender-stats/`),
+                apiFetch(`${BASE_URL}/appointments/analytics-summary/`)
+            ]);
+
+            if (statsRes.ok) {
+                const statsData = await statsRes.json();
+                setMonthlyData(statsData);
+            }
+
+            if (summaryRes.ok) {
+                const summaryData = await summaryRes.json();
+                setSummary(summaryData);
+            }
+        } catch (error) {
+            console.error("Error fetching patient analytics:", error);
+        }
+    };
 
 
 
@@ -200,6 +207,7 @@ const Admin_dashboard1 = () => {
         fetchDoctors(filterStatus);
         fetchAllCountsAndApprovedList();
         fetchRecentActivities();
+        fetchPatientAnalytics();
     }, [filterStatus]);
         // Logic to restore doctor status
     const handleRestoreDoctor = (doctorId) => {
@@ -1350,12 +1358,12 @@ const Admin_dashboard1 = () => {
 
                                     <div className="absolute top-[32px] left-[52%] flex items-end z-10">
                                         <div className="border-l-[1.5px] border-t-[1.5px] border-gray-400 h-[24px] w-[35px] rounded-tl-sm"></div>
-                                        <span className="font-bold text-gray-800 text-[20px] ml-1 -translate-y-[15px] bg-white/80 px-1 leading-none tracking-tight">40.05%</span>
+                                        <span className="font-bold text-gray-800 text-[20px] ml-1 -translate-y-[15px] bg-white/80 px-1 leading-none tracking-tight">{summary.male_pct}%</span>
                                     </div>
 
                                     <div className="flex-1 mt-2">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                                            <AreaChart data={summary.weekly_male} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                                                 <defs>
                                                     <linearGradient id="miniMale" x1="0" y1="0" x2="0" y2="1">
                                                         <stop offset="0%" stopColor="#2A8496" stopOpacity={0.6} />
@@ -1381,12 +1389,12 @@ const Admin_dashboard1 = () => {
 
                                     <div className="absolute top-[32px] left-[52%] flex items-end z-10">
                                         <div className="border-l-[1.5px] border-t-[1.5px] border-gray-400 h-[24px] w-[35px] rounded-tl-sm"></div>
-                                        <span className="font-bold text-gray-800 text-[20px] ml-1 -translate-y-[15px] bg-white/80 px-1 leading-none tracking-tight">58.08%</span>
+                                        <span className="font-bold text-gray-800 text-[20px] ml-1 -translate-y-[15px] bg-white/80 px-1 leading-none tracking-tight">{summary.female_pct}%</span>
                                     </div>
 
                                     <div className="flex-1 mt-2">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                                            <AreaChart data={summary.weekly_female} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                                                 <defs>
                                                     <linearGradient id="miniFemale" x1="0" y1="0" x2="0" y2="1">
                                                         <stop offset="0%" stopColor="#0B1A42" stopOpacity={0.6} />
