@@ -1278,184 +1278,172 @@ return (
                               }
                            });
 
-<<<<<<< HEAD
-                           return [...dates].sort((a, b) => {
-                              const parse = (s) => {
-                                 const [d, m, y] = s.split('/');
-                                 const mIdx = monthsList.findIndex(ml => ml.toLowerCase().startsWith(m));
-                                 return new Date(y, mIdx, d).getTime();
-                              };
-                              return parse(a) - parse(b);
-                           });
-                        })().map(dateStr => {
-                           const isToday = dateStr === `${parseInt(todayDayStr)}/${todayMonthName.slice(0, 3).toLowerCase()}/${todayYear}`;
-                           return (
-                              <option key={dateStr} value={dateStr}>{isToday ? 'Today' : dateStr}</option>
-                           );
-                        })}
-                     </select>
-                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
-                     </div>
-                  </div>
-                  <button
-                     onClick={fetchSlots}
-                     className="p-2 bg-[#e2e8f0] rounded-[8px] hover:bg-gray-300 transition-colors border border-gray-300"
-                     title="Refresh Slots"
-                  >
-                     <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                  </button>
-               </div>
-               </div>
-
-   {/* Legend area */ }
-   <div className="flex gap-[40px] mb-6 items-center">
-                  <div className="font-bold text-[#1b738b] text-[15.5px] tracking-tight">
-                     Date : &nbsp; {formattedPopupDate === `${parseInt(todayDayStr)}/${todayMonthName.slice(0,3).toLowerCase()}/${todayYear}` ? 'Today' : formattedPopupDate}
-                  </div>
-                  <div className="flex gap-[28px] ml-[6px]">
-                     <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
-                        <div className="w-[34px] h-[22px] bg-[#a2d2e1] rounded-[4px] opacity-90 shadow-sm"></div> Available
-                     </div>
-                     <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
-                        <div className="w-[34px] h-[22px] bg-[#7bba84] rounded-[4px] opacity-90 shadow-sm"></div> Booked
-                     </div>
-                     <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
-                        <div className="w-[34px] h-[22px] bg-[#f2eaba] rounded-[4px] opacity-90 shadow-sm"></div> Blocked/Break
-                     </div>
-                  </div>
-               </div>
-
-   {/* Grid of Slots Container */ }
-   <div ref={slotContainerRef} className="flex flex-col gap-8 pb-2 overflow-y-auto max-h-[500px] scroll-smooth px-1 pt-1 relative" style={{ scrollbarWidth: 'thin' }}>
-      { isLoadingSlots && (
-         <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-            <div className="flex flex-col items-center gap-2">
-               <div className="w-8 h-8 border-4 border-[#1b738b] border-t-transparent rounded-full animate-spin"></div>
-               <span className="text-[#1b738b] font-bold text-sm">Loading slots...</span>
-            </div>
-         </div>
-      )}
-{
-   slots.length > 0 ? (
-      (() => {
-         const grouped = slots.reduce((acc, slot) => {
-            const d = slot.date || 'No Date';
-            if (!acc[d]) acc[d] = [];
-            acc[d].push(slot);
-            return acc;
-         }, {});
-
-         const sortedDates = Object.keys(grouped).sort();
-         const todayStr = todayFormattedDate;
-
-         const todayDates = sortedDates.filter(d => d === todayStr);
-         const futureDates = sortedDates.filter(d => d > todayStr);
-         const pastDates = sortedDates.filter(d => d < todayStr && d !== 'No Date');
-
-         const renderGroup = (dateList, sectionTitle) => {
-            if (dateList.length === 0) return null;
-            return (
-               <div className="flex flex-col gap-6">
-                  {dateList.map(date => (
-                     <div key={date} ref={el => dateGroupRefs.current[date] = el} className="flex flex-col gap-4 mb-4">
-                        <div className="flex items-center gap-4 py-1">
-                           <div className="h-[2px] flex-1 bg-gray-200"></div>
-                           <div className="relative">
-                              <span className="text-[13px] font-extrabold text-[#1b738b] bg-[#e2f2f7] px-6 py-[6px] rounded-full border border-[#c0dfec] shadow-sm tracking-wide">
-                                 {(() => {
-                                    if (date === 'No Date') return 'Schedule';
-                                    if (date === todayStr) return 'Today';
-                                    const [y, m, d] = date.split('-');
-                                    const mon = monthsList[parseInt(m) - 1]?.slice(0, 3).toLowerCase();
-                                    return `${parseInt(d)}/${mon}/${y}`;
-                                 })()}
-                              </span>
-                           </div>
-                           <div className="h-[2px] flex-1 bg-gray-200"></div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-[20px] gap-y-[20px]">
-                           {grouped[date].sort((a, b) => a.from_time.localeCompare(b.from_time)).map(renderSlot)}
-=======
-                   {/* Booked Patients Summary */}
-                   <div className="grid gap-4 lg:grid-cols-[1.2fr_1.8fr] mb-8">
-                      <div className="rounded-[24px] border border-[#cfe6ec] bg-[#f4fbfd] p-5">
-                         <div className="text-[13px] font-bold text-[#1b738b] uppercase tracking-[0.18em] mb-3">Booked Patients</div>
-                         <div className="text-[34px] font-black text-[#0f3c4c]">{bookedSlots.length}</div>
-                         <p className="mt-2 text-[13px] text-gray-600">Total booked patients for {formattedPopupDate}.</p>
-                      </div>
-                      <div className="rounded-[24px] border border-[#e2edf0] bg-white p-5">
-                         <div className="flex items-center justify-between mb-4">
-                            <div className="text-[15px] font-bold text-[#21313d]">Booked patient list</div>
-                            <span className="text-[12px] font-semibold text-[#4a6f7f]">{bookedSlots.length} booked</span>
-                         </div>
-                         {bookedSlots.length > 0 ? (
-                            <div className="space-y-3">
-                               {bookedSlots.map((slot) => (
-                                  <div key={slot.id} className="rounded-[18px] border border-[#d8e7ea] bg-[#f8fcfd] p-4">
-                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                        <div>
-                                           <p className="text-[15px] font-bold text-[#15343f]">{slot.title}</p>
-                                           <p className="text-[12px] text-[#586d75] mt-1">{slot.subtitle || 'Booking ID unavailable'}</p>
-                                        </div>
-                                        <div className="text-[12px] font-semibold text-[#1b738b]">{slot.time}</div>
-                                     </div>
-                                     {slot.appointment_details?.patient_phone && (
-                                        <p className="text-[12px] text-[#556b72] mt-3">Phone: {slot.appointment_details.patient_phone}</p>
-                                     )}
-                                     {slot.appointment_details?.status && (
-                                        <div className="mt-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#225e71] bg-[#d8f2f8] px-3 py-1 rounded-full">
-                                           <span>Status</span>
-                                           <span>{slot.appointment_details.status}</span>
-                                        </div>
-                                     )}
-                                  </div>
-                               ))}
-                            </div>
-                         ) : (
-                            <div className="rounded-[18px] border border-dashed border-[#cfd8dd] bg-[#f9fcfd] p-5 text-[#60727a] text-sm">
-                               No booked patients found for this date. Please add slots or wait for patient bookings.
-                            </div>
-                         )}
+                            return [...dates].sort((a, b) => {
+                               const parse = (s) => {
+                                  const [d, m, y] = s.split('/');
+                                  const mIdx = monthsList.findIndex(ml => ml.toLowerCase().startsWith(m));
+                                  return new Date(y, mIdx, d).getTime();
+                               };
+                               return parse(a) - parse(b);
+                            });
+                         })().map(dateStr => {
+                            const isToday = dateStr === `${parseInt(todayDayStr)}/${todayMonthName.slice(0, 3).toLowerCase()}/${todayYear}`;
+                            return (
+                               <option key={dateStr} value={dateStr}>{isToday ? 'Today' : dateStr}</option>
+                            );
+                         })}
+                      </select>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                         <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                       </div>
                    </div>
+                   <button
+                      onClick={fetchSlots}
+                      className="p-2 bg-[#e2e8f0] rounded-[8px] hover:bg-gray-300 transition-colors border border-gray-300"
+                      title="Refresh Slots"
+                   >
+                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                   </button>
+                </div>
+                </div>
 
-                   {/* Grid of Slots Container */}
-                   <div ref={slotContainerRef} className="flex flex-col gap-8 pb-2 overflow-y-auto max-h-[500px] scroll-smooth px-1 pt-1 relative" style={{ scrollbarWidth: 'thin' }}>
-                  {isLoadingSlots && (
-                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-                        <div className="flex flex-col items-center gap-2">
-                           <div className="w-8 h-8 border-4 border-[#1b738b] border-t-transparent rounded-full animate-spin"></div>
-                           <span className="text-[#1b738b] font-bold text-sm">Loading slots...</span>
->>>>>>> 4b186811801e64e8dde8f428510fd59bfcc96a9a
-                        </div>
-                     </div>
-                  ))}
-               </div>
-            );
-         };
+                {/* Legend area */}
+                <div className="flex gap-[40px] mb-6 items-center">
+                   <div className="font-bold text-[#1b738b] text-[15.5px] tracking-tight">
+                      Date : &nbsp; {formattedPopupDate === `${parseInt(todayDayStr)}/${todayMonthName.slice(0,3).toLowerCase()}/${todayYear}` ? 'Today' : formattedPopupDate}
+                   </div>
+                   <div className="flex gap-[28px] ml-[6px]">
+                      <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
+                         <div className="w-[34px] h-[22px] bg-[#a2d2e1] rounded-[4px] opacity-90 shadow-sm"></div> Available
+                      </div>
+                      <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
+                         <div className="w-[34px] h-[22px] bg-[#7bba84] rounded-[4px] opacity-90 shadow-sm"></div> Booked
+                      </div>
+                      <div className="flex items-center gap-[10px] font-bold text-gray-500 text-[14px]">
+                         <div className="w-[34px] h-[22px] bg-[#f2eaba] rounded-[4px] opacity-90 shadow-sm"></div> Blocked/Break
+                      </div>
+                   </div>
+                </div>
 
-         return (
-            <div className="flex flex-col gap-10">
-               {renderGroup(todayDates, "Today's Slots")}
-               {renderGroup(futureDates, "Future Slots")}
-               {renderGroup(pastDates, "Past Slots")}
-               {grouped['No Date'] && renderGroup(['No Date'], "General Schedule")}
+                {/* Booked Patients Summary */}
+                <div className="grid gap-4 lg:grid-cols-[1.2fr_1.8fr] mb-8">
+                   <div className="rounded-[24px] border border-[#cfe6ec] bg-[#f4fbfd] p-5">
+                      <div className="text-[13px] font-bold text-[#1b738b] uppercase tracking-[0.18em] mb-3">Booked Patients</div>
+                      <div className="text-[34px] font-black text-[#0f3c4c]">{bookedSlots.length}</div>
+                      <p className="mt-2 text-[13px] text-gray-600">Total booked patients for {formattedPopupDate}.</p>
+                   </div>
+                   <div className="rounded-[24px] border border-[#e2edf0] bg-white p-5">
+                      <div className="flex items-center justify-between mb-4">
+                         <div className="text-[15px] font-bold text-[#21313d]">Booked patient list</div>
+                         <span className="text-[12px] font-semibold text-[#4a6f7f]">{bookedSlots.length} booked</span>
+                      </div>
+                      {bookedSlots.length > 0 ? (
+                         <div className="space-y-3">
+                            {bookedSlots.map((slot) => (
+                               <div key={slot.id} className="rounded-[18px] border border-[#d8e7ea] bg-[#f8fcfd] p-4">
+                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                     <div>
+                                        <p className="text-[15px] font-bold text-[#15343f]">{slot.title}</p>
+                                        <p className="text-[12px] text-[#586d75] mt-1">{slot.subtitle || 'Booking ID unavailable'}</p>
+                                     </div>
+                                     <div className="text-[12px] font-semibold text-[#1b738b]">{slot.time}</div>
+                                  </div>
+                                  {slot.appointment_details?.patient_phone && (
+                                     <p className="text-[12px] text-[#556b72] mt-3">Phone: {slot.appointment_details.patient_phone}</p>
+                                  )}
+                                  {slot.appointment_details?.status && (
+                                     <div className="mt-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#225e71] bg-[#d8f2f8] px-3 py-1 rounded-full">
+                                        <span>Status</span>
+                                        <span>{slot.appointment_details.status}</span>
+                                     </div>
+                                  )}
+                               </div>
+                            ))}
+                         </div>
+                      ) : (
+                         <div className="rounded-[18px] border border-dashed border-[#cfd8dd] bg-[#f9fcfd] p-5 text-[#60727a] text-sm">
+                            No booked patients found for this date. Please add slots or wait for patient bookings.
+                         </div>
+                      )}
+                   </div>
+                </div>
+
+                {/* Grid of Slots Container */}
+                <div ref={slotContainerRef} className="flex flex-col gap-8 pb-2 overflow-y-auto max-h-[500px] scroll-smooth px-1 pt-1 relative" style={{ scrollbarWidth: 'thin' }}>
+                   {isLoadingSlots && (
+                      <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+                         <div className="flex flex-col items-center gap-2">
+                            <div className="w-8 h-8 border-4 border-[#1b738b] border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-[#1b738b] font-bold text-sm">Loading slots...</span>
+                         </div>
+                      </div>
+                   )}
+                   {slots.length > 0 ? (
+                      (() => {
+                         const grouped = slots.reduce((acc, slot) => {
+                            const d = slot.date || 'No Date';
+                            if (!acc[d]) acc[d] = [];
+                            acc[d].push(slot);
+                            return acc;
+                         }, {});
+
+                         const sortedDates = Object.keys(grouped).sort();
+                         const todayStr = todayFormattedDate;
+
+                         const todayDates = sortedDates.filter(d => d === todayStr);
+                         const futureDates = sortedDates.filter(d => d > todayStr);
+                         const pastDates = sortedDates.filter(d => d < todayStr && d !== 'No Date');
+
+                         const renderGroup = (dateList, sectionTitle) => {
+                            if (dateList.length === 0) return null;
+                            return (
+                               <div className="flex flex-col gap-6">
+                                  {dateList.map(date => (
+                                     <div key={date} ref={el => dateGroupRefs.current[date] = el} className="flex flex-col gap-4 mb-4">
+                                        <div className="flex items-center gap-4 py-1">
+                                           <div className="h-[2px] flex-1 bg-gray-200"></div>
+                                           <div className="relative">
+                                              <span className="text-[13px] font-extrabold text-[#1b738b] bg-[#e2f2f7] px-6 py-[6px] rounded-full border border-[#c0dfec] shadow-sm tracking-wide">
+                                                 {(() => {
+                                                    if (date === 'No Date') return 'Schedule';
+                                                    if (date === todayStr) return 'Today';
+                                                    const [y, m, d] = date.split('-');
+                                                    const mon = monthsList[parseInt(m) - 1]?.slice(0, 3).toLowerCase();
+                                                    return `${parseInt(d)}/${mon}/${y}`;
+                                                 })()}
+                                              </span>
+                                           </div>
+                                           <div className="h-[2px] flex-1 bg-gray-200"></div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-[20px] gap-y-[20px]">
+                                           {grouped[date].sort((a, b) => a.from_time.localeCompare(b.from_time)).map(renderSlot)}
+                                        </div>
+                                     </div>
+                                  ))}
+                               </div>
+                            );
+                         };
+
+                         return (
+                            <div className="flex flex-col gap-10">
+                               {renderGroup(todayDates, "Today's Slots")}
+                               {renderGroup(futureDates, "Future Slots")}
+                               {renderGroup(pastDates, "Past Slots")}
+                               {grouped['No Date'] && renderGroup(['No Date'], "General Schedule")}
+                            </div>
+                         );
+                      })()
+                   ) : (
+                      <div className="col-span-3 flex flex-col items-center justify-center py-[80px] text-gray-400 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                         <svg className="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                         </svg>
+                         <p className="text-[16px] font-bold">No slots added yet.</p>
+                         <p className="text-[12px] mt-1">Click "Add Slots" to create your schedule.</p>
+                      </div>
+                   )}
+                </div>
             </div>
-         );
-      })()
-   ) : (
-   <div className="col-span-3 flex flex-col items-center justify-center py-[80px] text-gray-400 bg-white rounded-xl border-2 border-dashed border-gray-200">
-      <svg className="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <p className="text-[16px] font-bold">No slots added yet.</p>
-      <p className="text-[12px] mt-1">Click "Add Slots" to create your schedule.</p>
-   </div>
-)
-}
-            </div>
-         </div>
 
    {/* Floating Bot Icon */}
    <div
