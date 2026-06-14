@@ -1562,6 +1562,7 @@ const Addslot = () => {
                      )}
                   </div>
                </div>
+            </div>
 
                {/* Floating Bot Icon */}
                <div
