@@ -1,0 +1,8 @@
+- [ ] Fetch approved doctors from API in `Admin_dashboard1.jsx`
+- [ ] Update "Active Doctors" stat card count in `Admin_dashboard1.jsx`
+- [ ] Add specialty filter bar to `Admin_dashboard1.jsx`
+- [ ] Add doctor cards grid to `Admin_dashboard1.jsx`
+- [ ] Implement specialty filtering logic in `Admin_dashboard1.jsx`
+- [ ] Integrate `approved_doctors` API in `admin-doctor.jsx`
+- [ ] Update "Active Doctors" stat card in `admin-doctor.jsx`
+- [ ] Verify changes in browser

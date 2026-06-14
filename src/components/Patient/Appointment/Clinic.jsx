@@ -23,6 +23,7 @@ import Notification from '../notification';
 import Manage from './Manage';
 import Pdf from './Pdf';
 import Clinic_request from './Clinic_request';
+import { useLanguage } from '../../../context/LanguageContext';
 
 // Assets
 import phImg from '../../../assets/ph.png';
@@ -31,6 +32,7 @@ const Clinic = () => {
     const navigate = useNavigate();
     const [active, setActive] = useState('Appointments');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const [activeModal, setActiveModal] = useState(null);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isManageOpen, setIsManageOpen] = useState(false);
@@ -75,7 +77,12 @@ const Clinic = () => {
                         </div>
 
                         <div className="flex items-center gap-[32px] ml-auto">
-                            <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                            <div
+                                onClick={toggleLanguage}
+                                className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                            >
+                                {language === 'English' ? 'EN' : 'HI'}
+                            </div>
                             <div className="flex items-center gap-[20px]">
                                 <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                     <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -7,7 +7,6 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
 import { useRef } from 'react';
-import DoctorBot from "./doctor_bot";
 
 const Form4 = ({ onNext }) => {
   const navigate = useNavigate();
@@ -403,10 +402,9 @@ const Form4 = ({ onNext }) => {
           </div>
         </div>
       </div>
-      <DoctorBot />
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 const DocumentUploadRow = ({

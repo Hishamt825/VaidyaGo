@@ -1,54 +1,127 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Patient_sidebar';
 import Profile from './Profile';
 import Account from './Account';
 import Notification from './notification';
 import Metformin from './Medication/Metformin';
+import EditReminder from './Medication/EditReminder';
 import Refill from './Medication/Refill';
 import phImg from '../../assets/ph.png';
+import BASE_URL from '../../baseUrl';
+import apiFetch from '../../api';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Reminder1 = () => {
+    const navigate = useNavigate();
     const [active, setActive] = useState('Reminder');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isMorningScheduleOpen, setIsMorningScheduleOpen] = useState(false);
+    const [editingReminder, setEditingReminder] = useState(null);
     const [isRefillSuccessOpen, setIsRefillSuccessOpen] = useState(false);
     const [scheduleType, setScheduleType] = useState('Morning');
+    const [reminders, setReminders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const navigate = useNavigate();
+    const fetchReminders = async (isInitial = false) => {
+        if (isInitial) setIsLoading(true);
+        try {
+            const response = await apiFetch(`${BASE_URL}/reminder/`);
+            if (response.ok) {
+                const data = await response.json();
+                setReminders(data);
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        } finally {
+            if (isInitial) setIsLoading(false);
+        }
+    };
+
+    const handleDismiss = async (e, id) => {
+        e.stopPropagation();
+        try {
+            const response = await apiFetch(`${BASE_URL}/reminder/${id}/dismiss/`, {
+                method: 'PATCH'
+            });
+            if (response.ok) {
+                fetchReminders();
+            }
+        } catch (error) {
+            console.error("Dismiss Error:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchReminders(true); // Initial load shows spinner
+        
+        // Polling: Refresh reminders every 5 seconds to catch updates from the chatbot
+        const pollInterval = setInterval(() => fetchReminders(false), 5000); // Background refresh
+        
+        return () => clearInterval(pollInterval);
+    }, []);
+
+    const getTimeSlotMeds = (slotName) => {
+        return reminders.filter(r => 
+            r.status !== 'done' && 
+            r.times.some(t => t.toLowerCase() === slotName.toLowerCase())
+        );
+    };
 
     const timeSlots = [
         {
             time: 'Morning',
             label: '08:00 AM',
-            meds: [
-                { name: 'Amoxicillin', desc: '500mg • After Food', taken: true },
-                { name: 'Vitamin D3', desc: '2000 IU • Daily', taken: true }
-            ]
+            meds: getTimeSlotMeds('morning')
         },
         {
             time: 'Afternoon',
             label: '01:00 PM',
-            meds: [
-                { name: 'Lisinopril', desc: '10mg • Heart Health', taken: true }
-            ]
+            meds: getTimeSlotMeds('afternoon')
         },
         {
             time: 'Evening',
             label: '07:00 PM',
-            meds: [],
-            emptyLabel: 'No doses scheduled'
+            meds: getTimeSlotMeds('evening')
         },
         {
             time: 'Night',
             label: '10:00 PM',
-            meds: [
-                { name: 'Melatonin', desc: '5mg • Sleep Support', taken: false }
-            ]
+            meds: getTimeSlotMeds('night')
         }
     ];
+
+    const nextDose = reminders
+        .filter(r => r.status !== 'done')
+        .sort((a, b) => new Date(a.next_trigger) - new Date(b.next_trigger))[0];
+
+    const [timeLeft, setTimeLeft] = useState('--:--');
+
+    useEffect(() => {
+        if (!nextDose) return;
+
+        const calculateTime = () => {
+            const now = new Date();
+            const target = new Date(nextDose.next_trigger);
+            const diff = target - now;
+
+            if (diff <= 0) {
+                setTimeLeft('Now');
+            } else {
+                const h = Math.floor(diff / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                setTimeLeft(`${h > 0 ? h + 'h ' : ''}${m}m`);
+            }
+        };
+
+        calculateTime(); // Run immediately to avoid --:-- flicker
+        const timer = setInterval(calculateTime, 1000);
+
+        return () => clearInterval(timer);
+    }, [nextDose]);
 
     const weeklyData = [
         { day: 'MON', val: 60, active: true },
@@ -66,7 +139,7 @@ const Reminder1 = () => {
 
             <Sidebar active={active} setActive={setActive} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
-            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || isMorningScheduleOpen || isRefillSuccessOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
+            <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${activeModal || isNotificationOpen || isMorningScheduleOpen || editingReminder || isRefillSuccessOpen ? 'blur-[4px] scale-[0.98] pointer-events-none' : ''}`}>
                 {/* Top Navbar */}
                 <header className="h-[76px] flex items-center justify-between px-[24px] md:px-[48px] shrink-0 border-b border-white/5 mb-[8px]">
                     
@@ -93,7 +166,12 @@ const Reminder1 = () => {
                     </div>
 
                     <div className="flex items-center gap-[32px]">
-                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block cursor-pointer transition-colors">Language</span>
+                        <div
+                            onClick={toggleLanguage}
+                            className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                        >
+                            {language === 'English' ? 'EN' : 'HI'}
+                        </div>
                         <div className="flex items-center gap-[20px]">
                             <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                 <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +204,7 @@ const Reminder1 = () => {
                                 Daily Medication Schedule
                             </h1>
                             <p className="text-white/70 text-[16px] font-medium tracking-wide">
-                                Today is Monday, Oct 23rd
+                                Today is {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                             </p>
                         </div>
                         <button
@@ -139,7 +217,12 @@ const Reminder1 = () => {
 
                     {/* Time Slots Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-[20px]">
-                        {timeSlots.map((slot, idx) => (
+                        {isLoading ? (
+                            <div className="col-span-full py-20 flex flex-col items-center justify-center text-white/60">
+                                <div className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin mb-4"></div>
+                                <p>Loading schedule...</p>
+                            </div>
+                        ) : timeSlots.map((slot, idx) => (
                             <div key={idx} className="bg-white/20 backdrop-blur-md rounded-[28px] p-[20px] border border-white/10 flex flex-col min-h-[260px] shadow-sm">
                                 <div className="flex items-center justify-between mb-[24px]">
                                     <span className="text-[16px] font-medium text-[#14424B]">{slot.time}</span>
@@ -151,17 +234,17 @@ const Reminder1 = () => {
                                         slot.meds.map((med, mIdx) => (
                                             <div 
                                                 key={mIdx} 
-                                                onClick={() => {
-                                                    setScheduleType(slot.time);
-                                                    setIsMorningScheduleOpen(true);
-                                                }}
+                                                onClick={() => setEditingReminder(med)}
                                                 className="bg-white rounded-[20px] p-[16px] flex items-center justify-between shadow-sm border border-white/40 cursor-pointer hover:bg-gray-50 transition-colors"
                                             >
                                                 <div>
-                                                    <h3 className="text-[16px] font-medium text-[#0D1C2E] mb-[2px]">{med.name}</h3>
-                                                    <p className="text-[12px] text-[#627382] font-medium">{med.desc}</p>
+                                                    <h3 className="text-[16px] font-medium text-[#0D1C2E] mb-[2px]">{med.medicine_name}</h3>
+                                                    <p className="text-[12px] text-[#627382] font-medium">{med.dosage} • {med.frequency}</p>
                                                 </div>
-                                                <div className={`w-[24px] h-[24px] rounded-full flex items-center justify-center border-[2px] ${med.taken ? 'bg-[#1a7785] border-[#1a7785] text-white' : 'border-gray-200 text-transparent'}`}>
+                                                <div 
+                                                    onClick={(e) => handleDismiss(e, med.id)}
+                                                    className={`w-[24px] h-[24px] rounded-full flex items-center justify-center border-[2px] transition-all ${med.status === 'done' ? 'bg-[#1a7785] border-[#1a7785] text-white' : 'border-gray-200 text-transparent hover:border-[#1a7785]/50'}`}
+                                                >
                                                     <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7" />
                                                     </svg>
@@ -171,7 +254,7 @@ const Reminder1 = () => {
                                     ) : (
                                         <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-8">
                                             <p className="text-[#14424B] text-[16px] font-medium opacity-60 italic leading-relaxed">
-                                                {slot.emptyLabel}
+                                                No doses scheduled
                                             </p>
                                         </div>
                                     )}
@@ -183,44 +266,34 @@ const Reminder1 = () => {
                     {/* Refill Alerts & Upcoming Dose */}
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-[32px] items-start mt-[40px]">
 
-                        {/* Refill Alerts */}
+                        {/* Refill Alerts - Placeholder logic for now */}
                         <div className="flex flex-col gap-[24px]">
                             <h2 className="text-[20px] font-medium text-white px-2">Refill Alerts</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px]">
-                                <div className="bg-white rounded-[28px] p-[16px] flex items-center gap-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] border border-white">
-                                    <div className="w-[64px] h-[64px] rounded-2xl bg-[#FFE5E5] flex items-center justify-center text-[#E5484D] shrink-0">
-                                        <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                        </svg>
+                                {reminders.filter(r => r.duration_days <= 3).map((r, idx) => (
+                                    <div key={idx} className="bg-white rounded-[28px] p-[16px] flex items-center gap-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] border border-white">
+                                        <div className="w-[64px] h-[64px] rounded-2xl bg-[#FFE5E5] flex items-center justify-center text-[#E5484D] shrink-0">
+                                            <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-[16px] font-medium text-[#0D1C2E]">{r.medicine_name}</h3>
+                                            <p className="text-[16px] font-medium text-[#E5484D]">{r.duration_days} days left</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => setIsRefillSuccessOpen(true)}
+                                            className="bg-[#1a7785] hover:bg-[#125863] text-white px-[20px] py-[10px] rounded-full font-medium text-[16px] transition-all"
+                                        >
+                                            Refill
+                                        </button>
                                     </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-[16px] font-medium text-[#0D1C2E]">Amoxicillin</h3>
-                                        <p className="text-[16px] font-medium text-[#E5484D]">3 pills left</p>
+                                ))}
+                                {reminders.filter(r => r.duration_days <= 3).length === 0 && (
+                                    <div className="col-span-full bg-white/10 backdrop-blur-sm rounded-[28px] p-6 text-center text-white/60 italic border border-white/5">
+                                        No critical refill alerts
                                     </div>
-                                    <button 
-                                        onClick={() => setIsRefillSuccessOpen(true)}
-                                        className="bg-[#1a7785] hover:bg-[#125863] text-white px-[20px] py-[10px] rounded-full font-medium text-[16px] transition-all"
-                                    >
-                                        Refill
-                                    </button>
-                                </div>
-                                <div className="bg-white rounded-[28px] p-[16px] flex items-center gap-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] border border-white">
-                                    <div className="w-[64px] h-[64px] rounded-2xl bg-[#DFEEF0] flex items-center justify-center text-[#1A7785] shrink-0">
-                                        <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                        </svg>
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-[16px] font-medium text-[#0D1C2E]">Lisinopril</h3>
-                                        <p className="text-[16px] font-medium text-[#627382]">7 pills left</p>
-                                    </div>
-                                    <button 
-                                        onClick={() => setIsRefillSuccessOpen(true)}
-                                        className="bg-[#1a7785] hover:bg-[#125863] text-white px-[20px] py-[10px] rounded-full font-medium text-[16px] transition-all"
-                                    >
-                                        Refill
-                                    </button>
-                                </div>
+                                )}
                             </div>
                         </div>
 
@@ -236,19 +309,30 @@ const Reminder1 = () => {
                                     <h2 className="text-[11px] font-normal tracking-[0.2em] uppercase text-white/30">Upcoming Dose</h2>
                                 </div>
                                 <div className="text-right flex flex-col">
-                                    <span className="text-[20px] font-bold leading-none tracking-tight text-white">42:25</span>
-                                    <span className="text-[8px] font-light text-white/20 uppercase tracking-[0.1em]">Min. left</span>
+                                    <span className="text-[20px] font-bold leading-none tracking-tight text-white">{timeLeft}</span>
+                                    <span className="text-[8px] font-light text-white/20 uppercase tracking-[0.1em]">{timeLeft === 'Now' ? 'Take Now' : 'Remaining'}</span>
                                 </div>
                             </div>
  
-                            <div className="bg-white/5 rounded-[16px] p-[12px] mb-[16px] border border-white/5 text-center">
-                                <p className="text-white/20 text-[9px] font-light uppercase tracking-widest mb-[2px]">Next medicine</p>
-                                <h3 className="text-[15px] font-normal">Lisinopril • 10mg</h3>
-                            </div>
- 
-                            <button className="w-full bg-[#1A7785] hover:bg-[#208a99] text-[#0B1423] py-[12px] rounded-[14px] font-medium text-[12px] uppercase tracking-widest transition-all shadow-lg active:scale-95">
-                                I'm taking it now
-                            </button>
+                            {nextDose ? (
+                                <>
+                                    <div className="bg-white/5 rounded-[16px] p-[12px] mb-[16px] border border-white/5 text-center">
+                                        <p className="text-white/20 text-[9px] font-light uppercase tracking-widest mb-[2px]">Next medicine</p>
+                                        <h3 className="text-[15px] font-normal">{nextDose.medicine_name} • {nextDose.dosage}</h3>
+                                    </div>
+        
+                                    <button 
+                                        onClick={(e) => handleDismiss(e, nextDose.id)}
+                                        className="w-full bg-[#1A7785] hover:bg-[#208a99] text-[#0B1423] py-[12px] rounded-[14px] font-medium text-[12px] uppercase tracking-widest transition-all shadow-lg active:scale-95"
+                                    >
+                                        I'm taking it now
+                                    </button>
+                                </>
+                            ) : (
+                                <div className="bg-white/5 rounded-[16px] p-6 text-center text-white/40 italic">
+                                    All doses completed
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -308,6 +392,17 @@ const Reminder1 = () => {
                 <div className="fixed inset-0 z-[200]">
                      <Metformin type={scheduleType} onClose={() => setIsMorningScheduleOpen(false)} />
                 </div>
+            )}
+            {editingReminder && (
+                <EditReminder 
+                    isOpen={!!editingReminder} 
+                    onClose={() => setEditingReminder(null)} 
+                    reminderData={editingReminder} 
+                    onSaveSuccess={() => {
+                        setEditingReminder(null);
+                        fetchReminders();
+                    }}
+                />
             )}
             {isRefillSuccessOpen && (
                 <Refill onClose={() => setIsRefillSuccessOpen(false)} onReturn={() => setIsRefillSuccessOpen(false)} />

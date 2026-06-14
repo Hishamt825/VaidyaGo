@@ -7,7 +7,6 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
 import { useRef } from 'react';
-import DoctorBot from "./doctor_bot";
 const Form3 = ({ onNext }) => {
   const navigate = useNavigate();
 
@@ -125,11 +124,13 @@ const [activeStep, setActiveStep] = useState(3);
     try {
       if (!token) {
         alert("Please login first.");
+        setLoading(false);
         return;
       }
 
       if (!doctorId) {
         alert("Complete Form1 first.");
+        setLoading(false);
         return;
       }
 
@@ -138,8 +139,7 @@ const [activeStep, setActiveStep] = useState(3);
       const id = localStorage.getItem("hospital_info_id");
       const isChanged = JSON.stringify(initialData) !== JSON.stringify(formData);
 
-      if (!id) {
-        // ✅ POST
+      const performPost = async () => {
         const payload = {
           ...formData,
           consultation_fees: parseFloat(formData.consultation_fees)
@@ -156,7 +156,19 @@ const [activeStep, setActiveStep] = useState(3);
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-          throw new Error(data?.detail || "Submission failed");
+          let errMsg = "Submission failed";
+          if (typeof data === 'object' && data !== null) {
+            if (data.detail) errMsg = data.detail;
+            else {
+               const firstKey = Object.keys(data)[0];
+               if (Array.isArray(data[firstKey])) {
+                   errMsg = `${firstKey.replace('_', ' ')}: ${data[firstKey][0]}`;
+               } else {
+                   errMsg = data[firstKey];
+               }
+            }
+          }
+          throw new Error(errMsg);
         }
 
         const newId = data.id || data.data?.id;
@@ -165,6 +177,34 @@ const [activeStep, setActiveStep] = useState(3);
           setHospitalInfoId(newId);
         }
         alert("Saved Successfully ✅");
+        proceedToNext();
+      };
+
+      const proceedToNext = async () => {
+        // Always GET latest data
+        const stored_hospital_info_id = localStorage.getItem("hospital_info_id");
+        if (stored_hospital_info_id) {
+          const getRes = await fetch(
+            `${BASE_URL}/api/doctor/${doctorId}/hospital-info/${stored_hospital_info_id}/`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (getRes.ok) {
+            const getData = await getRes.json();
+            setFormData(getData);
+            setInitialData(getData);
+          }
+        }
+        if (onNext) {
+          onNext(4);
+        } else {
+          setTimeout(() => navigate("/Form4"), 500);
+        }
+      };
+
+      if (!id) {
+        // ✅ POST
+        await performPost();
+        return;
       } else if (id && isChanged) {
         // ✅ PATCH
         const payload = getChangedFields();
@@ -183,46 +223,36 @@ const [activeStep, setActiveStep] = useState(3);
             localStorage.removeItem("hospital_info_id");
             setHospitalInfoId(null);
             setInitialData(null);
-            setLoading(false);
-            return handleSubmit(e);
+            await performPost();
+            return;
           }
 
           const data = await response.json().catch(() => ({}));
 
           if (!response.ok) {
-            throw new Error(data?.detail || "Submission failed");
+            let errMsg = "Submission failed";
+            if (typeof data === 'object' && data !== null) {
+              if (data.detail) errMsg = data.detail;
+              else {
+                 const firstKey = Object.keys(data)[0];
+                 if (Array.isArray(data[firstKey])) {
+                     errMsg = `${firstKey.replace('_', ' ')}: ${data[firstKey][0]}`;
+                 } else {
+                     errMsg = data[firstKey];
+                 }
+              }
+            }
+            throw new Error(errMsg);
           }
           alert("Updated Successfully ✏️");
+          proceedToNext();
+        } else {
+          proceedToNext();
         }
       } else {
         // ✅ NO CHANGES
-        if (onNext) {
-          onNext(4);
-        } else {
-          setTimeout(() => navigate("/Form4"), 500);
-        }
-        setLoading(false);
-        return;
+        proceedToNext();
       }
-
-      // Always GET latest data
-      const stored_hospital_info_id = localStorage.getItem("hospital_info_id");
-      const getRes = await fetch(
-        `${BASE_URL}/api/doctor/${doctorId}/hospital-info/${stored_hospital_info_id}/`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (getRes.ok) {
-        const getData = await getRes.json();
-        setFormData(getData);
-        setInitialData(getData);
-      }
-      
-      if (onNext) {
-        onNext(4);
-      } else {
-        setTimeout(() => navigate("/Form4"), 500);
-      }
-
     } catch (error) {
       console.error("Submit Error:", error);
       alert(error.message);
@@ -386,7 +416,6 @@ return (
                 </div>
 
       </div>
-      <DoctorBot />
     </div>
   </div>
 );

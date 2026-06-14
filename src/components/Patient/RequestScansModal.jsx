@@ -36,7 +36,7 @@ const RequestScansModal = ({ onClose }) => {
                                 </div>
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#94A3B8]">Archive Access</span>
                             </div>
-                            <h2 className="text-[26px] font-black text-[#0D1C2E] tracking-tight leading-none">Request Older Scans</h2>
+                            <h2 className="text-[26px] font-black text-[#0D1C2E] tracking-tight leading-none">Upload Section</h2>
                         </div>
                         <button 
                             onClick={onClose}

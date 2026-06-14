@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../Patient_sidebar';
 import phImg from '../../../assets/ph.png';
 import { ChevronRight, Download, Filter, Search, ChevronLeft, Activity, Heart, Wind, Thermometer } from 'lucide-react';
 import CSV from './CSV';
+import { useLanguage } from '../../../context/LanguageContext';
+import BASE_URL from '../../../baseUrl';
+import apiFetch from '../../../api';
 
 const MetricCard = ({ icon, label, value, unit, change, color }) => (
     <div className="bg-white/80 backdrop-blur-md rounded-[24px] p-5 flex flex-col shadow-sm border border-white/40 flex-1 hover:shadow-md transition-all">
@@ -32,17 +35,98 @@ const VitalsHistory = () => {
     const [filterType, setFilterType] = useState('Last 3 Months');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isCSVOpen, setIsCSVOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
+    
+    const [prescriptions, setPrescriptions] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const allVitalsData = [
+    useEffect(() => {
+        const fetchVitals = async () => {
+            setIsLoading(true);
+            try {
+                const res = await apiFetch(`${BASE_URL}/api/prescriptions/`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setPrescriptions(Array.isArray(data) ? data : []);
+                }
+            } catch (err) {
+                console.error("Failed to fetch vitals:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchVitals();
+    }, []);
+
+    // Extract vitals from prescriptions
+    const extractedVitals = prescriptions.flatMap(p => {
+        const results = [...(p.test_results || []), ...(p.findings || []), ...(p.summary ? [p.summary] : [])];
+        const date = p.prescription_date || p.created_at?.slice(0, 10);
+        
+        let hr = null;
+        let bp = null;
+        let spo2 = null;
+        let temp = null;
+
+        results.forEach(res => {
+            const str = String(res).toLowerCase();
+            if (str.includes('heart rate') || str.includes('hr:')) {
+                const match = str.match(/\d+/);
+                if (match) hr = match[0];
+            }
+            if (str.includes('blood pressure') || str.includes('bp:')) {
+                const match = str.match(/\d+\/\d+/);
+                if (match) bp = match[0];
+            }
+            if (str.includes('spo2') || str.includes('oxygen') || str.includes('saturation')) {
+                const match = str.match(/\d+/);
+                if (match) spo2 = match[0] + '%';
+            }
+            if (str.includes('temperature') || str.includes('temp:')) {
+                const match = str.match(/\d+\.?\d*/);
+                if (match) temp = match[0] + '°C';
+            }
+        });
+
+        if (hr || bp || spo2 || temp) {
+            return {
+                date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                time: p.created_at ? new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '09:00 AM',
+                hr: hr || '--',
+                bp: bp || '--/--',
+                spo2: spo2 || '--%',
+                temp: temp || '--°C',
+                status: (parseInt(hr) > 100 || (bp && parseInt(bp.split('/')[0]) > 140)) ? 'Caution' : 'Normal',
+                statusColor: (parseInt(hr) > 100 || (bp && parseInt(bp.split('/')[0]) > 140)) 
+                    ? 'bg-[#FFF5F5] text-[#E85B5A] border-[#FFE5E5]' 
+                    : 'bg-[#F4F8FA] text-[#627382] border-[#E9EFF2]',
+                page: 1 // Pagination handled separately
+            };
+        }
+        return [];
+    });
+
+    const allVitalsData = extractedVitals.length > 0 ? extractedVitals : [
         { date: 'Oct 24, 2023', time: '09:45 AM', hr: '78', bp: '120/80', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 1 },
         { date: 'Oct 23, 2023', time: '08:15 PM', hr: '82', bp: '124/82', spo2: '97%', temp: '36.8°C', status: 'Normal', statusColor: 'bg-[#F4F8FA] text-[#627382] border-[#E9EFF2]', page: 1 },
         { date: 'Oct 23, 2023', time: '10:30 AM', hr: '94', bp: '138/88', spo2: '96%', temp: '37.2°C', status: 'Caution', statusColor: 'bg-[#FFF5F5] text-[#E85B5A] border-[#FFE5E5]', page: 1 },
         { date: 'Oct 22, 2023', time: '09:00 AM', hr: '74', bp: '118/76', spo2: '99%', temp: '36.5°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 1 },
-        { date: 'Oct 21, 2023', time: '04:20 PM', hr: '80', bp: '122/81', spo2: '98%', temp: '36.7°C', status: 'Normal', statusColor: 'bg-[#F4F8FA] text-[#627382] border-[#E9EFF2]', page: 2 },
-        { date: 'Oct 20, 2023', time: '11:15 AM', hr: '76', bp: '119/79', spo2: '97%', temp: '36.9°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 2 },
-        { date: 'Oct 19, 2023', time: '08:45 PM', hr: '88', bp: '130/85', spo2: '96%', temp: '37.0°C', status: 'Normal', statusColor: 'bg-[#F4F8FA] text-[#627382] border-[#E9EFF2]', page: 2 },
-        { date: 'Oct 18, 2023', time: '10:00 AM', hr: '72', bp: '115/75', spo2: '98%', temp: '36.6°C', status: 'Optimal', statusColor: 'bg-[#E6F7F9] text-[#1A7785] border-[#D1EEF1]', page: 2 },
     ];
+
+    // Calculate averages for Metric Cards
+    const validHRs = extractedVitals.filter(v => v.hr !== '--').map(v => parseInt(v.hr));
+    const avgHR = validHRs.length > 0 ? Math.round(validHRs.reduce((a, b) => a + b, 0) / validHRs.length) : 72;
+    
+    const validBPs = extractedVitals.filter(v => v.bp !== '--/--');
+    const avgBP = validBPs.length > 0 
+        ? `${Math.round(validBPs.reduce((a, b) => a + parseInt(b.bp.split('/')[0]), 0) / validBPs.length)}/${Math.round(validBPs.reduce((a, b) => a + parseInt(b.bp.split('/')[1]), 0) / validBPs.length)}`
+        : '118/76';
+
+    const validSpO2s = extractedVitals.filter(v => v.spo2 !== '--%').map(v => parseFloat(v.spo2));
+    const avgSpO2 = validSpO2s.length > 0 ? (validSpO2s.reduce((a, b) => a + b, 0) / validSpO2s.length).toFixed(1) : 98.2;
+
+    const validTemps = extractedVitals.filter(v => v.temp !== '--°C').map(v => parseFloat(v.temp));
+    const avgTemp = validTemps.length > 0 ? (validTemps.reduce((a, b) => a + b, 0) / validTemps.length).toFixed(1) : 36.7;
 
     const vitalsData = allVitalsData.filter(item => item.page === currentPage);
 
@@ -88,7 +172,12 @@ const VitalsHistory = () => {
                     </div>
 
                     <div className="flex items-center gap-[32px] ml-auto">
-                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                        <div
+                            onClick={toggleLanguage}
+                            className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                        >
+                            {language === 'English' ? 'EN' : 'HI'}
+                        </div>
                         <div className="flex items-center gap-[20px]">
                             <button className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                 <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,7 +294,7 @@ const VitalsHistory = () => {
                         <MetricCard
                             icon={<Heart size={20} />}
                             label="Avg Heart Rate"
-                            value="72"
+                            value={avgHR}
                             unit="bpm"
                             change="↘ 4% vs last period"
                             color="text-red-500"
@@ -213,7 +302,7 @@ const VitalsHistory = () => {
                         <MetricCard
                             icon={<Activity size={20} />}
                             label="Avg BP"
-                            value="118/76"
+                            value={avgBP}
                             unit="mmHg"
                             change="Optimal Range"
                             color="text-blue-500"
@@ -221,7 +310,7 @@ const VitalsHistory = () => {
                         <MetricCard
                             icon={<Wind size={20} />}
                             label="Avg SpO2"
-                            value="98.2"
+                            value={avgSpO2}
                             unit="%"
                             change="Stable saturation"
                             color="text-cyan-600"
@@ -229,7 +318,7 @@ const VitalsHistory = () => {
                         <MetricCard
                             icon={<Thermometer size={20} />}
                             label="Avg Temp"
-                            value="36.7"
+                            value={avgTemp}
                             unit="°C"
                             change="Normal temperature"
                             color="text-amber-600"
@@ -282,38 +371,48 @@ const VitalsHistory = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
-                                    {vitalsData.map((row, idx) => (
-                                        <tr key={idx} className="hover:bg-[#F9FAFB] transition-colors cursor-pointer group">
-                                            <td className="px-8 py-6">
-                                                <div className="flex flex-col text-left">
-                                                    <span className="text-[#0D1C2E] text-[14px] font-bold mb-0.5 whitespace-nowrap">{row.date}</span>
-                                                    <span className="text-[#627382] text-[11px] font-medium opacity-60 whitespace-nowrap">{row.time}</span>
-                                                </div>
-                                            </td>
-                                            {(selectedTab === 'All Vitals' || selectedTab === 'Heart Rate') && (
+                                    {isLoading ? (
+                                        <tr>
+                                            <td colSpan="6" className="px-8 py-12 text-center text-gray-400 font-medium italic">Loading vitals from prescriptions...</td>
+                                        </tr>
+                                    ) : allVitalsData.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="px-8 py-12 text-center text-gray-400 font-medium italic">No vital records found in your prescriptions.</td>
+                                        </tr>
+                                    ) : (
+                                        vitalsData.map((row, idx) => (
+                                            <tr key={idx} className="hover:bg-[#F9FAFB] transition-colors cursor-pointer group">
                                                 <td className="px-8 py-6">
-                                                    <div className="flex items-baseline gap-1">
-                                                        <span className={`text-[16px] font-bold ${idx === 2 ? 'text-rose-500' : 'text-[#0D1C2E]'}`}>{row.hr}</span>
-                                                        <span className="text-[10px] font-bold text-[#627382] opacity-40">BPM</span>
+                                                    <div className="flex flex-col text-left">
+                                                        <span className="text-[#0D1C2E] text-[14px] font-bold mb-0.5 whitespace-nowrap">{row.date}</span>
+                                                        <span className="text-[#627382] text-[11px] font-medium opacity-60 whitespace-nowrap">{row.time}</span>
                                                     </div>
                                                 </td>
-                                            )}
-                                            {(selectedTab === 'All Vitals' || selectedTab === 'Blood Pressure') && (
-                                                <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold tracking-tight text-left">{row.bp}</td>
-                                            )}
-                                            {(selectedTab === 'All Vitals' || selectedTab === 'SpO2') && (
-                                                <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.spo2}</td>
-                                            )}
-                                            {(selectedTab === 'All Vitals' || selectedTab === 'Temperature') && (
-                                                <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.temp}</td>
-                                            )}
-                                            <td className="px-8 py-6">
-                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border whitespace-nowrap ${row.statusColor}`}>
-                                                    {row.status}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                {(selectedTab === 'All Vitals' || selectedTab === 'Heart Rate') && (
+                                                    <td className="px-8 py-6">
+                                                        <div className="flex items-baseline gap-1">
+                                                            <span className={`text-[16px] font-bold ${row.hr > 100 ? 'text-rose-500' : 'text-[#0D1C2E]'}`}>{row.hr}</span>
+                                                            <span className="text-[10px] font-bold text-[#627382] opacity-40">BPM</span>
+                                                        </div>
+                                                    </td>
+                                                )}
+                                                {(selectedTab === 'All Vitals' || selectedTab === 'Blood Pressure') && (
+                                                    <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold tracking-tight text-left">{row.bp}</td>
+                                                )}
+                                                {(selectedTab === 'All Vitals' || selectedTab === 'SpO2') && (
+                                                    <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.spo2}</td>
+                                                )}
+                                                {(selectedTab === 'All Vitals' || selectedTab === 'Temperature') && (
+                                                    <td className="px-8 py-6 text-[#0D1C2E] text-[14px] font-bold text-left">{row.temp}</td>
+                                                )}
+                                                <td className="px-8 py-6">
+                                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border whitespace-nowrap ${row.statusColor}`}>
+                                                        {row.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -321,7 +420,7 @@ const VitalsHistory = () => {
                         {/* Pagination */}
                         <div className="p-6 md:px-8 border-t border-gray-50 flex items-center justify-between">
                             <p className="text-[#627382] text-[12px] font-medium opacity-60 italic">
-                                Showing {(currentPage - 1) * 4 + 1} to {currentPage * 4} of 128 records
+                                Showing {(currentPage - 1) * 4 + 1} to {Math.min(currentPage * 4, allVitalsData.length)} of {allVitalsData.length} records
                             </p>
                             <div className="flex items-center gap-2">
                                 <button

@@ -8,6 +8,7 @@ import Forget from "../Login-hospital/Forget";
 import Otp from "../Login-hospital/Otp";
 import New_pass from "../Login-hospital/New_pass";
 import Logout from "../Login-hospital/Logout";
+import { useLanguage } from "../../context/LanguageContext";
 
 const HospitalNavbar = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const HospitalNavbar = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const { t, toggleLanguage, language } = useLanguage();
 
   // Trigger modals based on URL parameters (e.g. ?auth=login)
   useEffect(() => {
@@ -103,6 +105,15 @@ const HospitalNavbar = () => {
               >
                 <Bell size={20} strokeWidth={2.5} />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#19718A]"></span>
+              </button>
+
+              <div className="w-px h-6 bg-white/40"></div>
+
+              <button
+                onClick={toggleLanguage}
+                className="text-white hover:text-gray-200 text-sm font-bold uppercase tracking-wider px-2"
+              >
+                {language === 'English' ? 'EN' : 'HI'}
               </button>
 
               <button

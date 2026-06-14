@@ -7,7 +7,6 @@ import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
 import { useRef } from 'react';
-import DoctorBot from "./doctor_bot";
 
 const Form1 = ({ onNext }) => {
   const navigate = useNavigate();
@@ -151,10 +150,12 @@ const handleSubmit = async (e) => {
       return;
     }
 
+    const payload = { ...formData };
+    delete payload.profile_image; // Remove file object from JSON payload
+
     const isChanged = JSON.stringify(initialData) !== JSON.stringify(formData);
 
-    // ================== CREATE (POST) ==================
-    if (!doctorId) {
+    const performPost = async () => {
       const postResponse = await fetch(
         `${BASE_URL}/api/doctor-personal-info/`,
         {
@@ -163,7 +164,7 @@ const handleSubmit = async (e) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -193,16 +194,51 @@ const handleSubmit = async (e) => {
         }
 
         alert("Form Submitted Successfully!!");
+        proceedToNext();
       } else {
-        setErrorMsg(postData?.detail || "POST Failed");
+        // Parse Django DRF error dictionary
+        let errMsg = "POST Failed";
+        if (typeof postData === 'object' && postData !== null) {
+          if (postData.detail) errMsg = postData.detail;
+          else {
+             const firstKey = Object.keys(postData)[0];
+             if (Array.isArray(postData[firstKey])) {
+                 errMsg = `${firstKey.replace('_', ' ')}: ${postData[firstKey][0]}`;
+             } else {
+                 errMsg = postData[firstKey];
+             }
+          }
+        }
+        setErrorMsg(errMsg);
         setLoading(false);
-        return;
       }
+    };
+
+    const proceedToNext = () => {
+      if (onNext) {
+        onNext(2);
+      } else {
+        setActiveStep(2);
+        setTimeout(() => navigate("/Form2"), 500);
+      }
+    };
+
+    // ================== CREATE (POST) ==================
+    if (!doctorId) {
+      await performPost();
+      return;
     }
 
     // ================== UPDATE (PATCH) ==================
     else if (doctorId && isChanged) {
       const changedFields = getChangedFields();
+      delete changedFields.profile_image; // Ensure file is not sent in PATCH JSON
+
+      if (Object.keys(changedFields).length === 0) {
+        proceedToNext();
+        setLoading(false);
+        return;
+      }
 
       const patchResponse = await fetch(
         `${BASE_URL}/api/doctor-personal-info/${doctorId}/`,
@@ -221,15 +257,26 @@ const handleSubmit = async (e) => {
         localStorage.removeItem("doctor_id");
         setDoctorId(null);
         setInitialData(null);
-        setLoading(false);
-        // Call handleSubmit again to perform POST
-        return handleSubmit();
+        await performPost();
+        return;
       }
 
       const patchData = await patchResponse.json();
 
       if (!patchResponse.ok) {
-        setErrorMsg(patchData?.detail || "PATCH Failed");
+        let errMsg = "PATCH Failed";
+        if (typeof patchData === 'object' && patchData !== null) {
+          if (patchData.detail) errMsg = patchData.detail;
+          else {
+             const firstKey = Object.keys(patchData)[0];
+             if (Array.isArray(patchData[firstKey])) {
+                 errMsg = `${firstKey.replace('_', ' ')}: ${patchData[firstKey][0]}`;
+             } else {
+                 errMsg = patchData[firstKey];
+             }
+          }
+        }
+        setErrorMsg(errMsg);
         setLoading(false);
         return;
       }
@@ -252,19 +299,12 @@ const handleSubmit = async (e) => {
       }
 
       alert("Form Updated Successfully!!");
+      proceedToNext();
     }
 
     // ================== NO CHANGE (Proceed to next step) ==================
     else {
-      // Intentionally left blank. Form will automatically proceed to Form2.
-    }
-
-    // ✅ Common next step
-    if (onNext) {
-      onNext(2);
-    } else {
-      setActiveStep(2);
-      setTimeout(() => navigate("/Form2"), 500);
+      proceedToNext();
     }
 
   } catch (error) {
@@ -500,10 +540,9 @@ return (
 
       </div>
 
-      <DoctorBot />
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 const Input = ({ name, label, value, onChange, type = "text" }) => (

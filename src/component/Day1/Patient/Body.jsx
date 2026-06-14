@@ -1,13 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Body.css';
-import frontalBody from '../../../assets/human-body-frontal.png';
-import backBody from '../../../assets/human-body-back.png';
+import frontalBody from '../../../assets/human-body-frontal-Picsart-BackgroundRemover.png';
+import backBody from '../../../assets/Screenshot 2026-05-11 214118-Picsart-BackgroundRemover.png';
 import patientPhoto from '../../../assets/Patient Photo.svg';
 import Sidebar from '../../../components/Patient/Patient_sidebar';
 import Profile from '../../../components/Patient/Profile';
 import Account from '../../../components/Patient/Account';
 import Notification from '../../../components/Patient/notification';
+import apiFetch from '../../../api';
+import BASE_URL from '../../../baseUrl';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -84,12 +87,14 @@ const Body = () => {
   const [activeModal, setActiveModal] = React.useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
   const [isFront, setIsFront] = React.useState(true);
+  const { t, toggleLanguage, language } = useLanguage();
 
   const toggleView = () => setIsFront(!isFront);
 
   const regionData = {
     Forehead: {
       tags: ['Frontal', 'Stress'],
+      diseases: ['Tension Headache', 'Sinusitis'],
       symptoms: [
         { title: 'Frontal Headache', severity: 'MODERATE', desc: 'Dull ache across the forehead' },
         { title: 'Pressure Sensation', severity: 'MILD', desc: 'Reported during focused tasks' }
@@ -97,6 +102,7 @@ const Body = () => {
     },
     Head: {
       tags: ['Cranial', 'Sinus'],
+      diseases: ['Migraine', 'Cluster Headache'],
       symptoms: [
         { title: 'Sharp Headache', severity: 'SEVERE', desc: 'Persistent pressure for 4 hours' },
         { title: 'Dizziness', severity: 'MODERATE', desc: 'Reported during rapid movement' }
@@ -104,6 +110,7 @@ const Body = () => {
     },
     Eyes: {
       tags: ['Ocular', 'Visual'],
+      diseases: ['Conjunctivitis', 'Eye Strain'],
       symptoms: [
         { title: 'Eye Strain', severity: 'MODERATE', desc: 'Reported after prolonged screen use' },
         { title: 'Blurred Vision', severity: 'SEVERE', desc: 'Sudden onset in the left eye' }
@@ -111,6 +118,7 @@ const Body = () => {
     },
     Nose: {
       tags: ['Nasal', 'Sinus'],
+      diseases: ['Sinus Infection', 'Allergic Rhinitis'],
       symptoms: [
         { title: 'Congestion', severity: 'MODERATE', desc: 'Difficulty breathing through nose' },
         { title: 'Sinus Pain', severity: 'MILD', desc: 'Localized pressure in nasal bridge' }
@@ -118,6 +126,7 @@ const Body = () => {
     },
     Ears: {
       tags: ['Auditory', 'Aural'],
+      diseases: ['Otitis Media', 'Meniere’s Disease'],
       symptoms: [
         { title: 'Tinnitus', severity: 'MILD', desc: 'Constant ringing sound reported' },
         { title: 'Ear Ache', severity: 'MODERATE', desc: 'Pressure in the middle ear' }
@@ -125,6 +134,7 @@ const Body = () => {
     },
     Neck: {
       tags: ['Cervical', 'Spine'],
+      diseases: ['Cervical Spondylosis', 'Whiplash'],
       symptoms: [
         { title: 'Stiff Neck', severity: 'MODERATE', desc: 'Reduced range of motion' },
         { title: 'Cervical Pain', severity: 'SEVERE', desc: 'Shooting pain down to shoulders' }
@@ -132,6 +142,7 @@ const Body = () => {
     },
     Shoulders: {
       tags: ['Joint', 'Deltoid'],
+      diseases: ['Rotator Cuff Injury', 'Frozen Shoulder'],
       symptoms: [
         { title: 'Rotator Cuff Strain', severity: 'MODERATE', desc: 'Pain when lifting arm' },
         { title: 'Muscle Stiffness', severity: 'MILD', desc: 'Reported after sleep' }
@@ -139,6 +150,7 @@ const Body = () => {
     },
     Arms: {
       tags: ['Bicep', 'Elbow'],
+      diseases: ['Tennis Elbow', 'Brachial Neuritis'],
       symptoms: [
         { title: 'Tendonitis', severity: 'MODERATE', desc: 'Sharp pain at the elbow joint' },
         { title: 'Numbness', severity: 'MILD', desc: 'Occasional tingling in fingers' }
@@ -146,6 +158,7 @@ const Body = () => {
     },
     Hands: {
       tags: ['Manual', 'Carpal'],
+      diseases: ['Carpal Tunnel Syndrome', 'Arthritis'],
       symptoms: [
         { title: 'Joint Pain', severity: 'MODERATE', desc: 'Felt in the wrist and thumb' },
         { title: 'Weak Grip', severity: 'MILD', desc: 'Difficulty holding objects' }
@@ -153,6 +166,7 @@ const Body = () => {
     },
     Thoracic: {
       tags: ['Chest', 'Lower Back'],
+      diseases: ['Costochondritis', 'Pleurisy'],
       symptoms: [
         { title: 'Sharp Pain', severity: 'SEVERE', desc: 'Reported onset: 2 hours ago' },
         { title: 'Dyspnea', severity: 'MODERATE', desc: 'Difficulty breathing while supine' },
@@ -161,6 +175,7 @@ const Body = () => {
     },
     Abdomen: {
       tags: ['Stomach', 'Core'],
+      diseases: ['Gastritis', 'Appendicitis'],
       symptoms: [
         { title: 'Abdominal Cramps', severity: 'MODERATE', desc: 'Reported after meals' },
         { title: 'Muscle Fatigue', severity: 'MILD', desc: 'Localized in lower abdomen' }
@@ -168,6 +183,7 @@ const Body = () => {
     },
     Pelvis: {
       tags: ['Hip', 'Groin'],
+      diseases: ['Hip Bursitis', 'Pelvic Inflammatory Disease'],
       symptoms: [
         { title: 'Hip Discomfort', severity: 'MODERATE', desc: 'Felt during walking' },
         { title: 'Pelvic Pressure', severity: 'MILD', desc: 'Persistent mild sensation' }
@@ -175,6 +191,7 @@ const Body = () => {
     },
     Thighs: {
       tags: ['Quadricep', 'Hamstring'],
+      diseases: ['Hamstring Strain', 'Deep Vein Thrombosis'],
       symptoms: [
         { title: 'Muscle Strain', severity: 'SEVERE', desc: 'Sudden onset during activity' },
         { title: 'Soreness', severity: 'MILD', desc: 'General fatigue after exercise' }
@@ -182,6 +199,7 @@ const Body = () => {
     },
     Knee: {
       tags: ['Joint', 'Knee'],
+      diseases: ['Osteoarthritis', 'Ligament Sprain'],
       symptoms: [
         { title: 'Joint Stiffness', severity: 'MODERATE', desc: 'Worse in the morning' },
         { title: 'Sharp Pain', severity: 'MODERATE', desc: 'Felt during weight-bearing' }
@@ -189,6 +207,7 @@ const Body = () => {
     },
     Calves: {
       tags: ['Leg', 'Calf'],
+      diseases: ['Muscle Cramp', 'Deep Vein Thrombosis'],
       symptoms: [
         { title: 'Muscle Cramp', severity: 'MODERATE', desc: 'Reported during night sleep' },
         { title: 'Soreness', severity: 'MILD', desc: 'Localized in the gastrocnemius' }
@@ -196,6 +215,7 @@ const Body = () => {
     },
     Feet: {
       tags: ['Ankle', 'Foot'],
+      diseases: ['Plantar Fasciitis', 'Ankle Sprain'],
       symptoms: [
         { title: 'Swelling', severity: 'MODERATE', desc: 'Reported around the ankle' },
         { title: 'Sprain Suspected', severity: 'SEVERE', desc: 'Inversion injury 1 hour ago' }
@@ -224,6 +244,40 @@ const Body = () => {
 
     return () => observer.disconnect();
   }, [activeRegion]);
+
+  const handleStartDiagnostic = async () => {
+    if (!activeRegion) {
+      alert("Please select a body region first.");
+      return;
+    }
+
+    const data = regionData[activeRegion];
+    const payload = {
+      body_part: activeRegion,
+      sub_region: data.tags[0] || "General",
+      symptoms: data.symptoms.map(s => s.title),
+      duration: data.symptoms[0]?.desc.match(/\d+\s\w+/)?.[0] || "2 days", // Extracting duration if possible
+      severity: data.symptoms[0]?.severity.toLowerCase() || "moderate"
+    };
+
+    try {
+      const response = await apiFetch(`${BASE_URL}/api/diagnostic/analyze/`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        navigate('/Diagnostic', { state: { diagnosis: result.data } });
+      } else {
+        console.error("Diagnostic analysis failed");
+        navigate('/Diagnostic'); // Fallback to manual
+      }
+    } catch (error) {
+      console.error("Error calling diagnostic API:", error);
+      navigate('/Diagnostic');
+    }
+  };
 
   return (
     <div 
@@ -264,7 +318,12 @@ const Body = () => {
             </div>
 
             <div className="flex items-center gap-[32px] ml-auto">
-                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <span 
+                    onClick={toggleLanguage}
+                    className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                >
+                    {language === 'English' ? 'EN' : 'HI'}
+                </span>
                 <div className="flex items-center gap-[20px]">
                     <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                         <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,7 +347,7 @@ const Body = () => {
         <main className="flex-1 overflow-y-auto pb-[64px]">
 
         <div className="welcome-text-container">
-           <h1>Welcome to VaidyaGo</h1>
+           <h1>{t('welcome')}</h1>
         </div>
 
         <section className="welcome-banner">
@@ -296,7 +355,7 @@ const Body = () => {
              <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           </div>
           <div className="banner-text">
-            <p>Welcome back, Dr. Thorne. Please select the anatomical region where the patient reports discomfort to begin the diagnostic mapping.</p>
+            <p>{t('bodyBannerText')}</p>
           </div>
         </section>
 
@@ -404,23 +463,54 @@ const Body = () => {
       <div className="diagnostics-panel-wrapper">
         <aside className="diagnostics-panel">
           <div className="panel-header">
-            <h3>Diagnostics</h3>
+            <h3>{t('diagnosticsHeader')}</h3>
             <div className="upload-icon-btn">
               <Icon name="upload" />
             </div>
           </div>
 
           <div>
-            <div className="section-label">Selected Areas</div>
+            <div className="section-label">{t('selectedAreas')}</div>
             <div className="areas-row">
-              {activeRegion && regionData[activeRegion].tags.map(tag => (
-                <div key={tag} className="area-tag">{tag} <span className="close-tag">✕</span></div>
-              ))}
+              {activeRegion ? (
+                <>
+                  <div className="area-tag selected-area" onClick={() => setActiveRegion(activeRegion)}>{activeRegion}</div>
+                  {regionData[activeRegion].tags.map(tag => (
+                    <div 
+                      key={tag} 
+                      className="area-tag"
+                      onClick={() => {
+                        const targetRegion = Object.keys(regionData).find(key => key === tag || regionData[key].tags.includes(tag));
+                        if (targetRegion) setActiveRegion(targetRegion);
+                      }}
+                    >
+                      {tag}
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className="area-tag opacity-40">{t('noRegionSelected')}</div>
+              )}
+            </div>
+          </div>
+
+          <div className="diseases-section">
+            <div className="section-label">{t('relatedDiseases')}</div>
+            <div className="diseases-scroll-area">
+              {activeRegion ? regionData[activeRegion].diseases.map((disease, idx) => (
+                <div key={`${activeRegion}-disease-${idx}`} className="disease-card scroll-reveal">
+                  {disease}
+                </div>
+              )) : (
+                <p style={{ fontSize: '11px', opacity: 0.4, fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>
+                  {t('selectRegionDiseases')}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="symptoms-section">
-            <div className="section-label">Reported Symptoms</div>
+            <div className="section-label">{t('reportedSymptomsBody')}</div>
             <div className="symptoms-scroll-area">
               {activeRegion ? regionData[activeRegion].symptoms.map((symptom, idx) => (
                 <div key={`${activeRegion}-${idx}`} className="symptom-card scroll-reveal">
@@ -434,14 +524,14 @@ const Body = () => {
                 </div>
               )) : (
                 <p style={{ fontSize: '11px', opacity: 0.4, fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>
-                  Select a body region to view symptoms
+                  {t('selectRegionSymptoms')}
                 </p>
               )}
             </div>
           </div>
 
-          <button className="start-diagnostic-btn" onClick={() => navigate('/Diagnostic')}>
-            START DIAGNOSTIC <Icon name="chevronRight" />
+          <button className="start-diagnostic-btn" onClick={handleStartDiagnostic}>
+            {t('startDiagnostic')} <Icon name="chevronRight" />
           </button>
         </aside>
 

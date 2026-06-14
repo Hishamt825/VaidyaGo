@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../baseUrl';
+import apiFetch from '../../api';
 import logoUrl from '../../assets/vadyago_pat.png';
 import phImg from '../../assets/ph.png';
 import Sidebar from './Patient_sidebar';
 import Profile from './Profile';
 import Account from './Account';
 import Notification from './notification';
+import { useLanguage } from '../../context/LanguageContext';
 import AllLabReportsModal from './AllLabReportsModal';
 import Share from './Share';
 import VaccinationCertificateModal from './VaccinationCertificateModal';
 import Upload from './Upload';
-import RequestScansModal from './RequestScansModal';
 
 // Specific radiology images as requested
 import brustImg from '../../assets/brust.png';
@@ -22,7 +24,15 @@ import ctImg from '../../assets/ct.png';
 
 // Lab Report Item
 // Lab Report Item
-const LabReportItem = ({ name, lab, date, status, iconType }) => {
+const LabReportItem = ({ id, name, lab, date, status, iconType, onDelete, onUpdateName }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [newName, setNewName] = useState(name);
+
+    const handleSave = () => {
+        onUpdateName(id, newName);
+        setIsEditing(false);
+    };
+
     const renderIcon = () => {
         if (iconType === 'blood') return <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />;
         if (iconType === 'pill') return <path d="M19.2,2.8C18.1,1.7,16.5,1.7,15.4,2.8L2.8,15.4c-1.1,1.1-1.1,2.7,0,3.8l0,0l0,0c1.1,1.1,2.7,1.1,3.8,0L19.2,6.6C20.3,5.5,20.3,3.9,19.2,2.8z M9.1,11.9l-2.8,2.8l-1.9-1.9l2.8-2.8L9.1,11.9z" />;
@@ -35,9 +45,30 @@ const LabReportItem = ({ name, lab, date, status, iconType }) => {
                 <div className="w-[52px] h-[52px] rounded-[18px] bg-[#E9EDF0] flex items-center justify-center text-[#1A314D]">
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">{renderIcon()}</svg>
                 </div>
-                <div>
-                    <h4 className="text-[16px] font-bold text-[#0B2132] leading-tight mb-1">{name}</h4>
-                    <p className="text-[13px] text-[#627382] font-semibold">{lab} • {date}</p>
+                <div className="max-w-[200px] md:max-w-[300px]">
+                    {isEditing ? (
+                        <div className="flex items-center gap-2">
+                            <input 
+                                type="text"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-[14px] font-bold outline-none focus:ring-1 focus:ring-[#1A7785]"
+                                autoFocus
+                            />
+                            <button onClick={handleSave} className="text-[#1A7785] hover:opacity-80"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3"><path d="M5 13l4 4L19 7" /></svg></button>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2 group/title">
+                            <h4 className="text-[16px] font-bold text-[#0B2132] leading-tight truncate">{name}</h4>
+                            <button 
+                                onClick={() => setIsEditing(true)}
+                                className="opacity-0 group-hover/title:opacity-100 text-[#1A7785] transition-all"
+                            >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" strokeWidth="2.5" /></svg>
+                            </button>
+                        </div>
+                    )}
+                    <p className="text-[13px] text-[#627382] font-semibold truncate">{lab} • {date}</p>
                 </div>
             </div>
             <div className="flex items-center gap-10">
@@ -46,7 +77,15 @@ const LabReportItem = ({ name, lab, date, status, iconType }) => {
                 </span>
                 <div className="flex items-center gap-6 text-[#1A314D]/40">
                     <button className="hover:text-[#1A7785] transition-colors"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg></button>
-                    <button className="hover:text-[#1A7785] transition-colors"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></button>
+                    <button 
+                        onClick={() => onDelete(id)}
+                        className="hover:text-[#D84C4C] transition-colors"
+                        title="Delete Record"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -54,20 +93,64 @@ const LabReportItem = ({ name, lab, date, status, iconType }) => {
 };
 
 // Radiology Card
-const RadiologyCard = ({ img, title, date, location }) => (
-    <div className="min-w-[280px] bg-[#EEF5F8] p-3 rounded-[32px] shadow-sm group transition-all hover:shadow-xl hover:-translate-y-1">
-        <div className="h-[190px] rounded-[24px] overflow-hidden relative mb-4">
-            <img src={img} alt={title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+const RadiologyCard = ({ id, img, title, date, location, onDelete, onUpdateName }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [newName, setNewName] = useState(title);
+
+    const handleSave = () => {
+        onUpdateName(id, newName);
+        setIsEditing(false);
+    };
+
+    return (
+        <div className="min-w-[280px] bg-[#EEF5F8] p-3 rounded-[32px] shadow-sm group transition-all hover:shadow-xl hover:-translate-y-1 relative">
+            <div className="h-[190px] rounded-[24px] overflow-hidden relative mb-4">
+                <img src={img} alt={title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                
+                {/* Delete Overlay */}
+                <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(id);
+                    }}
+                    className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-[#D84C4C] opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white"
+                >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+            <div className="px-3 pb-3">
+                {isEditing ? (
+                    <div className="flex items-center gap-2 mb-1">
+                        <input 
+                            type="text"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            className="bg-white border border-gray-200 rounded-lg px-2 py-1 text-[13px] font-bold outline-none focus:ring-1 focus:ring-[#1A7785] w-full"
+                            autoFocus
+                        />
+                        <button onClick={handleSave} className="text-[#1A7785] hover:opacity-80"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3"><path d="M5 13l4 4L19 7" /></svg></button>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-between group/title mb-1">
+                        <h4 className="text-[15px] font-[700] text-[#0B2132] leading-tight truncate">{title}</h4>
+                        <button 
+                            onClick={() => setIsEditing(true)}
+                            className="opacity-0 group-hover/title:opacity-100 text-[#1A7785] transition-all"
+                        >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" strokeWidth="2.5" /></svg>
+                        </button>
+                    </div>
+                )}
+                <p className="text-[12px] text-[#627382] font-semibold">{date} • {location}</p>
+            </div>
         </div>
-        <div className="px-3 pb-3">
-            <h4 className="text-[15px] font-[700] text-[#0B2132] leading-tight mb-1">{title}</h4>
-            <p className="text-[12px] text-[#627382] font-semibold">{date} • {location}</p>
-        </div>
-    </div>
-);
+    );
+};
 
 // Timeline Event
-const TimelineEvent = ({ date, type, title, description, badge, badgeColor, showLine }) => (
+const TimelineEvent = ({ id, date, type, title, description, badge, badgeColor, showLine, onDelete }) => (
     <div className="relative pl-10 pb-6 last:pb-0">
         {/* Connection Line */}
         <div className="absolute left-[7px] top-[24px] bottom-0 w-[2px] bg-gray-200 last:hidden" />
@@ -77,7 +160,18 @@ const TimelineEvent = ({ date, type, title, description, badge, badgeColor, show
 
         <div className="flex flex-col md:flex-row gap-6 md:items-start justify-between">
             <div className="flex-1">
-                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#A9B1BB] mb-1">{date} - {type}</p>
+                <div className="flex items-center justify-between">
+                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#A9B1BB] mb-1">{date} - {type}</p>
+                    <button 
+                        onClick={() => onDelete(id)}
+                        className="text-[#627382]/40 hover:text-[#D84C4C] transition-colors"
+                        title="Delete Record"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
                 <h3 className="text-[18px] font-black text-[#0D1C2E] mb-2 tracking-tight">{title}</h3>
                 <p className="text-[14px] text-[#627382] leading-relaxed max-w-2xl">{description}</p>
             </div>
@@ -99,15 +193,83 @@ const TimelineEvent = ({ date, type, title, description, badge, badgeColor, show
 const Record = () => {
     const [activeMenu, setActiveMenu] = useState('My Record');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isAllReportsModalOpen, setIsAllReportsModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-    const [isRequestScansModalOpen, setIsRequestScansModalOpen] = useState(false);
+    const [uploadRestriction, setUploadRestriction] = useState(null);
+
+    // Data states
+    const [prescriptions, setPrescriptions] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
+
+    const fetchPrescriptions = async () => {
+        setIsLoading(true);
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/prescriptions/`);
+            if (response.ok) {
+                const data = await response.json();
+                setPrescriptions(Array.isArray(data) ? data : []);
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this record?")) return;
+        
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/prescriptions/${id}/`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setPrescriptions(prev => prev.filter(p => p.id !== id));
+            } else {
+                alert("Failed to delete record.");
+            }
+        } catch (error) {
+            console.error("Delete Error:", error);
+            alert("Error deleting record.");
+        }
+    };
+
+    const handleUpdateName = async (id, newName) => {
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/prescriptions/${id}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ document_name: newName }),
+            });
+            if (response.ok) {
+                setPrescriptions(prev => prev.map(p => p.id === id ? { ...p, document_name: newName } : p));
+            } else {
+                alert("Failed to update name.");
+            }
+        } catch (error) {
+            console.error("Update Error:", error);
+            alert("Error updating name.");
+        }
+    };
+
+    useEffect(() => {
+        fetchPrescriptions();
+    }, []);
+
+    const labReportPrescriptions = prescriptions.filter((p) => {
+        const type = (p.document_type || '').toLowerCase();
+        const hasAttachment = Boolean(p.image || p.file);
+        return type.includes('lab report') || (!type && hasAttachment);
+    });
 
     return (
         <div className="flex h-screen w-full font-sans antialiased text-[#0D1C2E] overflow-hidden"
@@ -151,7 +313,12 @@ const Record = () => {
                     </div>
 
                     <div className="flex items-center gap-[32px] ml-auto">
-                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                        <div
+                            onClick={toggleLanguage}
+                            className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                        >
+                            {language === 'English' ? 'EN' : 'HI'}
+                        </div>
                         <div className="flex items-center gap-[20px]">
                             <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                 <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,9 +395,30 @@ const Record = () => {
                                     </button>
                                 </div>
 
-                                <LabReportItem name="Comprehensive Metabolic Panel" lab="St. Luke's Diagnostic" date="Oct 24, 2023" status="Normal" iconType="blood" />
-                                <LabReportItem name="Lipid Profile & Glucose" lab="City Health Labs" date="Sep 12, 2023" status="Follow-up Required" iconType="lab" />
-                                <LabReportItem name="Urine Analysis (Routine)" lab="St. Luke's Diagnostic" date="Aug 05, 2023" status="Normal" iconType="pill" />
+                                <div className="space-y-1">
+                                    {isLoading ? (
+                                        <p className="text-gray-400 text-sm italic py-4">Loading reports...</p>
+                                    ) : labReportPrescriptions.length === 0 ? (
+                                        <>
+                                            <LabReportItem name="Comprehensive Metabolic Panel" lab="St. Luke's Diagnostic" date="Oct 24, 2023" status="Normal" iconType="blood" />
+                                            <LabReportItem name="Lipid Profile & Glucose" lab="City Health Labs" date="Sep 12, 2023" status="Follow-up Required" iconType="lab" />
+                                        </>
+                                    ) : (
+                                        labReportPrescriptions.map((report) => (
+                                            <LabReportItem 
+                                                key={report.id}
+                                                id={report.id}
+                                                name={report.document_name || report.findings?.[0] || report.extracted_patient_name || 'Medical Report'} 
+                                                lab={report.hospital_name || 'Clinic'} 
+                                                date={report.prescription_date || report.created_at?.slice(0, 10)} 
+                                                status="Processed" 
+                                                iconType="blood" 
+                                                onDelete={handleDelete}
+                                                onUpdateName={handleUpdateName}
+                                            />
+                                        ))
+                                    )}
+                                </div>
 
                                 <div className="mt-6 pt-4 border-t border-gray-50 flex justify-center">
                                     <button 
@@ -250,42 +438,31 @@ const Record = () => {
                                 <div className="absolute top-[-40px] right-[-40px] w-[140px] h-[140px] bg-[#1A7785]/20 rounded-full blur-[50px] pointer-events-none" />
                                 <div className="z-10">
                                     <div className="flex items-center gap-3 text-[#A9F1F1] mb-8">
-                                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-                                        <h2 className="text-[20px] font-bold tracking-tight text-white uppercase">Vaccinations</h2>
+                                        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v4m0 8v4m8-8h-4M8 12H4m16 0a8 8 0 11-16 0 8 8 0 0116 0z" /></svg>
+                                        <h2 className="text-[20px] font-bold tracking-tight text-white uppercase">Upload COVID-19 Image</h2>
                                     </div>
 
                                     <div className="space-y-6 mb-10">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Next Due</p>
-                                                <h4 className="text-[17px] font-semibold text-white leading-tight">Influenza (Annual)</h4>
-                                            </div>
-                                            <span className="text-[#A9F1F1] font-bold text-[14px]">Nov 2024</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Last Completed</p>
-                                                <h4 className="text-[17px] font-semibold text-white leading-tight">Tetanus Booster</h4>
-                                            </div>
-                                            <span className="text-white/60 font-bold text-[14px]">May 2023</span>
-                                        </div>
-                                        <div className="flex items-center justify-between border-t border-white/10 pt-6">
-                                            <div>
-                                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Historical</p>
-                                                <h4 className="text-[17px] font-semibold text-white leading-tight">COVID-19 (3 Doses)</h4>
-                                            </div>
-                                            <div className="w-5 h-5 bg-[#6ED4D4] rounded-full flex items-center justify-center text-[#0B1423]">
-                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                                            </div>
+                                        <p className="text-[#D4F8FF] text-[13px] leading-relaxed">Upload only COVID-19 vaccination certificates or test reports here. Other documents will not be accepted.</p>
+                                        <div className="bg-white/10 border border-white/10 rounded-[24px] p-5">
+                                            <p className="text-[#A9F1F1] text-[11px] font-bold uppercase tracking-[0.24em] mb-3">Accepted documents</p>
+                                            <ul className="space-y-2 text-[#E2F8FF] text-[13px]">
+                                                <li>• COVID-19 vaccination certificate</li>
+                                                <li>• COVID-19 test report image/PDF</li>
+                                                <li>• JPG, PNG, PDF only</li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
 
                                 <button 
-                                    onClick={() => setIsCertificateModalOpen(true)}
+                                    onClick={() => {
+                                        setUploadRestriction('covid');
+                                        setIsUploadModalOpen(true);
+                                    }}
                                     className="w-full bg-white text-[#0B1423] py-4 rounded-2xl font-bold text-[15px] shadow-lg hover:bg-gray-50 transition-all z-10"
                                 >
-                                    View Certificate
+                                    Upload COVID-19 Image
                                 </button>
                             </div>
                         </div>
@@ -299,41 +476,38 @@ const Record = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14h4m-2-2v4" />
                                     </svg>
                                 </div>
-                                <h2 className="text-[22px] font-bold tracking-tight text-white font-sans">Imaging & Radiology</h2>
+                                <h2 className="text-[22px] font-bold tracking-tight text-white font-sans">Uploaded Image</h2>
                             </div>
 
-                            <div className="flex justify-between w-full overflow-x-auto no-scrollbar pb-6 -mx-[4px] px-[4px]">
-                                <RadiologyCard img={brustImg} title="Chest X-Ray (PA View)" date="Nov 15, 2023" location="St. Mary's" />
-                                <RadiologyCard img={ctImg} title="Abdominal MRI" date="Oct 02, 2023" location="Radiance Center" />
-
-                                <div className="min-w-[280px] bg-[#EEF5F8] rounded-[32px] p-3 shadow-sm flex flex-col group transition-all hover:shadow-xl cursor-default">
-                                    <div className="h-[190px] bg-[#DAE7EB] rounded-[24px] flex flex-col items-center justify-center mb-4">
-                                        <div className="w-[36px] h-[36px] rounded-full border-[2.5px] border-[#A8BCC3] flex items-center justify-center text-[#A8BCC3]">
-                                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                <circle cx="12" cy="12" r="1.5"/>
-                                                <circle cx="8" cy="12" r="1.5"/>
-                                                <circle cx="16" cy="12" r="1.5"/>
-                                            </svg>
-                                        </div>
+                            <div className="flex items-center gap-4 w-full overflow-x-auto no-scrollbar pb-6 -mx-[4px] px-[4px]">
+                                {isLoading ? (
+                                    <div className="flex gap-4">
+                                        {[1, 2].map(i => (
+                                            <div key={i} className="min-w-[280px] h-[280px] bg-white/10 rounded-[32px] animate-pulse" />
+                                        ))}
                                     </div>
-                                    <div className="px-3 pb-3">
-                                        <h4 className="text-[15px] font-[700] text-[#0B2132]">Dental OPG Scan</h4>
-                                        <p className="text-[12px] text-[#1D7489] font-bold mt-1 italic">Processing Results...</p>
-                                    </div>
-                                </div>
-
-                                <div 
-                                    onClick={() => setIsRequestScansModalOpen(true)}
-                                    className="min-w-[280px] bg-[#89B6BB] rounded-[32px] p-8 border-[2.5px] border-dashed border-[#A8C7CD] flex flex-col items-center justify-center transition-all hover:bg-[#80B0B5] cursor-pointer"
-                                >                                    <div className="w-[48px] h-[48px] rounded-xl bg-transparent flex items-center justify-center text-[#0B2132]/80 mb-5 border border-[#0B2132]/20 shadow-sm">
-                                        <svg className="w-[28px] h-[28px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M12 4v16m8-8H4" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                        </svg>
-                                    </div>
-                                    <h4 className="text-[17px] font-[800] text-[#0B2132] text-center mb-1 leading-tight">Request Older Scans</h4>
-                                    <p className="text-[12px] text-[#0B2132]/60 text-center font-semibold leading-relaxed">Archives from 2020-2022 available</p>
-                                </div>
+                                ) : prescriptions.filter(p => p.image || p.file).length === 0 ? (
+                                    <>
+                                        <RadiologyCard img={brustImg} title="Chest X-Ray (PA View)" date="Nov 15, 2023" location="St. Mary's" onDelete={() => {}} />
+                                        <RadiologyCard img={ctImg} title="Abdominal MRI" date="Oct 02, 2023" location="Radiance Center" onDelete={() => {}} />
+                                    </>
+                                ) : (
+                                    prescriptions.filter(p => p.image || p.file).map((scan) => (
+                                        <RadiologyCard 
+                                            key={scan.id}
+                                            id={scan.id}
+                                            img={scan.image ?
+                                                (scan.image.startsWith('http') ? scan.image : `${BASE_URL}${scan.image.startsWith('/') ? '' : '/'}${scan.image}`) :
+                                                brustImg
+                                            } 
+                                            title={scan.document_name || scan.findings?.[0] || scan.document_type || 'Uploaded Scan'} 
+                                            date={scan.prescription_date || scan.created_at?.slice(0, 10)} 
+                                            location={scan.hospital_name || 'Medical Center'} 
+                                            onDelete={handleDelete}
+                                            onUpdateName={handleUpdateName}
+                                        />
+                                    ))
+                                )}
                             </div>
                         </div>
 
@@ -347,28 +521,48 @@ const Record = () => {
                             </div>
 
                             <div className="max-w-5xl mx-auto">
-                                <TimelineEvent
-                                    date="Nov 2023"
-                                    type="Diagnosis"
-                                    title="Seasonal Rhinitis"
-                                    description="Consultation with Dr. Sarah Jenkins regarding persistent sneezing and congestion. Prescribed antihistamine regimen for 14 days."
-                                    badge="Loratadine 10mg"
-                                    showLine={true}
-                                />
-                                <TimelineEvent
-                                    date="May 2023"
-                                    type="Procedure"
-                                    title="Minor Outpatient Surgery"
-                                    description="Endoscopic procedure at St. Mary's Surgical Center. Recovery monitored over 48 hours without complications."
-                                    badge="St. Mary's General"
-                                    showLine={true}
-                                />
-                                <TimelineEvent
-                                    date="Jan 2022"
-                                    type="Wellness Visit"
-                                    title="Annual Physical Examination"
-                                    description="Comprehensive health screening. All vitals within normal range. Recommended increased vitamin D intake."
-                                />
+                                {isLoading ? (
+                                    <p className="text-gray-400 text-sm italic py-4">Loading timeline...</p>
+                                ) : prescriptions.length === 0 ? (
+                                    <>
+                                        <TimelineEvent
+                                            date="Nov 2023"
+                                            type="Diagnosis"
+                                            title="Seasonal Rhinitis"
+                                            description="Consultation with Dr. Sarah Jenkins regarding persistent sneezing and congestion. Prescribed antihistamine regimen for 14 days."
+                                            badge="Loratadine 10mg"
+                                            showLine={true}
+                                        />
+                                        <TimelineEvent
+                                            date="May 2023"
+                                            type="Procedure"
+                                            title="Minor Outpatient Surgery"
+                                            description="Endoscopic procedure at St. Mary's Surgical Center. Recovery monitored over 48 hours without complications."
+                                            badge="St. Mary's General"
+                                            showLine={true}
+                                        />
+                                        <TimelineEvent
+                                            date="Jan 2022"
+                                            type="Wellness Visit"
+                                            title="Annual Physical Examination"
+                                            description="Comprehensive health screening. All vitals within normal range. Recommended increased vitamin D intake."
+                                        />
+                                    </>
+                                ) : (
+                                    prescriptions.map((p, index) => (
+                                        <TimelineEvent
+                                            key={p.id}
+                                            id={p.id}
+                                            date={p.prescription_date || p.created_at?.slice(0, 10)}
+                                            type={p.document_type || 'Prescription'}
+                                            title={p.doctor_name ? `Consultation with ${p.doctor_name}` : 'Medical Record'}
+                                            description={p.summary || (p.recommendations?.length > 0 ? p.recommendations.join(', ') : 'Medical history entry from uploaded document.')}
+                                            badge={p.medicines?.[0]?.name}
+                                            showLine={index !== prescriptions.length - 1}
+                                            onDelete={handleDelete}
+                                        />
+                                    ))
+                                )}
                             </div>
                         </div>
 
@@ -409,8 +603,20 @@ const Record = () => {
             )}
             {isShareModalOpen && <Share isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} />}
             {isCertificateModalOpen && <VaccinationCertificateModal onClose={() => setIsCertificateModalOpen(false)} />}
-            {isUploadModalOpen && <Upload onClose={() => setIsUploadModalOpen(false)} />}
-            {isRequestScansModalOpen && <RequestScansModal onClose={() => setIsRequestScansModalOpen(false)} />}
+            {isUploadModalOpen && (
+                <Upload 
+                    uploadRestriction={uploadRestriction}
+                    onClose={() => {
+                        setIsUploadModalOpen(false);
+                        setUploadRestriction(null);
+                    }} 
+                    onSuccess={() => {
+                        setIsUploadModalOpen(false);
+                        setUploadRestriction(null);
+                        fetchPrescriptions();
+                    }}
+                />
+            )}
         </div>
     );
 };

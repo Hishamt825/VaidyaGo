@@ -8,6 +8,14 @@ const DasyWilliam = ({ setOpenProfile, isDoctor = false }) => {
     const [activeTheme, setActiveTheme] = useState('default');
     const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
     const [helpView, setHelpView] = useState('menu'); // 'menu' or 'faq'
+    const userName = localStorage.getItem("user_full_name") || "Tuba Javed";
+    const userEmail = localStorage.getItem("user_email") || "javedtuba1@gmail.com";
+
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/Finallogin');
+    };
+
     return (
         <>
             <motion.div
@@ -36,10 +44,10 @@ shadow-[0_10px_40px_rgba(0,120,255,0.15)]"
 
                             <div className="leading-tight">
                                 <h2 className="font-bold text-[17px] text-gray-800 group-hover:text-[#1b738c] transition-colors">
-                                    Dasy William
+                                    {userName}
                                 </h2>
                                 <p className="text-gray-500 text-[13px]">
-                                    javedtuba@gmail.com
+                                    {userEmail}
                                 </p>
                             </div>
                         </div>
@@ -172,7 +180,10 @@ shadow-[0_10px_40px_rgba(0,120,255,0.15)]"
 
 
                 {/* Logout */}
-                <div className="p-3 hover:bg-red-50 cursor-pointer flex items-center justify-between transition group border-t border-gray-100">
+                <div 
+                    onClick={handleLogout}
+                    className="p-3 hover:bg-red-50 cursor-pointer flex items-center justify-between transition group border-t border-gray-100"
+                >
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center group-hover:bg-red-100">
                             <img src="/assets/log.png" className="w-4 h-4 object-contain opacity-70 group-hover:opacity-100" />

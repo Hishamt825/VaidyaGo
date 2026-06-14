@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import vadoImg from '../../assets/vado_duck.png';
+import vadoImg from '../../assets/869455f37775ce0db978b4ab2fcf8919-Picsart-BackgroundRemover.jpg';
 import { Mic, X, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const Patient_sym = ({ onClose }) => {

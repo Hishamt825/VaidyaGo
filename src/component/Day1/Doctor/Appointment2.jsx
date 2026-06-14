@@ -6,6 +6,8 @@ import AdminSidebar from '../../../components/Admin/AdminSidebar';
 import DasyWilliam from '../../../components/Admin/DasyWilliam';
 import { AnimatePresence } from 'framer-motion';
 import Notification from '../../../components/Patient/notification';
+import apiFetch from '../../../api';
+import BASE_URL from '../../../baseUrl';
 import DoctorBot from '../../../components/Doctor/doctor_bot';
 
 
@@ -61,6 +63,10 @@ const Appointment2 = () => {
   const [selectedRows, setSelectedRows] = useState([]);
 
   const [selectedPatientForDetails, setSelectedPatientForDetails] = useState(null);
+  const [appointmentsList, setAppointmentsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [patientHistory, setPatientHistory] = useState([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
   // Date Logic
   const [currentDate, setCurrentDate] = useState(new Date(2026, 1, 13)); // 13 Feb 2026
@@ -102,33 +108,82 @@ const Appointment2 = () => {
 
   // Mock data arrays matching the screenshot
   // Mock data arrays matching the screenshot
-  const appointments = [
-    { id: 0, name: 'Saumya tiwari', gender: 'Female', age: 21, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Hifza Javed' },
-    { id: 1, name: 'Anjali Sharma', gender: 'Female', age: 24, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Sumaiya' },
-    { id: 2, name: 'Vivek Kumar', gender: 'Male', age: 29, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1, doctor: 'Dr. Ahmad' },
-    { id: 3, name: 'Sneha Paul', gender: 'Female', age: 22, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Varun' },
-    { id: 4, name: 'Rahul Singh', gender: 'Male', age: 31, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Sidharth' },
-    { id: 5, name: 'Priya Mehra', gender: 'Female', age: 26, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Priya Mehra' },
-    { id: 6, name: 'Rajesh Khanna', gender: 'Male', age: 45, date: '14 feb 26', time: '2:00-3:30 am', status: 'Cancelled', img: img1, doctor: 'Dr. Aman Verma' },
-    { id: 7, name: 'Karan Johar', gender: 'Male', age: 38, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Sneha' },
-    { id: 8, name: 'Zoya Akhtar', gender: 'Female', age: 35, date: '14 feb 26', time: '2:00-3:30 am', status: 'Pending', img: img1, doctor: 'Dr. Rajesh' },
-    { id: 9, name: 'Amitabh B.', gender: 'Male', age: 70, date: '14 feb 26', time: '2:00-3:30 am', status: 'Confirmed', img: img1, doctor: 'Dr. Karan' },
-    { id: 10, name: 'Deepika P.', gender: 'Female', age: 32, date: '15 feb 26', time: '10:00-11:00 am', status: 'Confirmed', img: img1, doctor: 'Dr. Zoya' },
-    { id: 11, name: 'Ranveer S.', gender: 'Male', age: 34, date: '15 feb 26', time: '11:30-12:30 pm', status: 'Pending', img: img1, doctor: 'Dr. Farhan' },
-    { id: 12, name: 'Alia Bhatt', gender: 'Female', age: 28, date: '15 feb 26', time: '1:00-2:00 pm', status: 'Cancelled', img: img1, doctor: 'Dr. Rohit' },
-    { id: 13, name: 'Shah Rukh', gender: 'Male', age: 55, date: '16 feb 26', time: '9:00-10:00 am', status: 'Confirmed', img: img1, doctor: 'Dr. Sanjay' },
-    { id: 14, name: 'Salman Khan', gender: 'Male', age: 54, date: '16 feb 26', time: '4:00-5:00 pm', status: 'Pending', img: img1, doctor: 'Dr. Aditya' },
-  ];
+  const fetchAppointments = async () => {
+    setIsLoading(true);
+    try {
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
 
-  const filteredAppointments = appointments.filter(appt => {
-    if (activeTab === 'ALL') return true;
-    return appt.status.toUpperCase() === activeTab;
-  });
+      let url = `${BASE_URL}/api/appointments/list/?date=${dateStr}`;
+      if (activeTab !== 'ALL') {
+        url += `&status=${activeTab.toLowerCase()}`;
+      }
+
+      const response = await apiFetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        const mapped = data.map(appt => {
+          const startTime = new Date(appt.start_time);
+          const endTime = new Date(appt.end_time);
+          
+          const timeStr = `${startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+          const dateStr = startTime.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toLowerCase();
+
+          return {
+            id: appt.id,
+            name: appt.patient_name || 'Unknown',
+            doctor: appt.doctor_name || 'Unknown Doctor',
+            gender: appt.patient_gender || 'N/A',
+            age: appt.patient_age || 'N/A',
+            phone: appt.patient_phone || 'N/A',
+            email: appt.patient_email || 'N/A',
+            blood_type: appt.patient_blood_type || 'N/A',
+            weight: appt.patient_weight || 'N/A',
+            disease: appt.patient_disease || 'N/A',
+            date: dateStr,
+            time: timeStr,
+            status: appt.status.charAt(0).toUpperCase() + appt.status.slice(1),
+            img: img1,
+            original: appt
+          };
+        });
+        setAppointmentsList(mapped);
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleViewDetails = async (appt) => {
+    setSelectedPatientForDetails(appt);
+    setIsHistoryLoading(true);
+    try {
+      const response = await apiFetch(`${BASE_URL}/api/appointments/history/?email=${appt.email}`);
+      if (response.ok) {
+        const data = await response.json();
+        setPatientHistory(data);
+      }
+    } catch (error) {
+      console.error("Error fetching history:", error);
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [currentDate, activeTab]);
+
+  const filteredAppointments = appointmentsList;
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
-      setSelectedRows(appointments.map(a => a.id));
+      setSelectedRows(appointmentsList.map(a => a.id));
     } else {
       setSelectedRows([]);
     }
@@ -141,7 +196,7 @@ const Appointment2 = () => {
     } else {
       const newSelected = [...selectedRows, id];
       setSelectedRows(newSelected);
-      if (newSelected.length === appointments.length) setSelectAll(true);
+      if (newSelected.length === appointmentsList.length) setSelectAll(true);
     }
   };
 
@@ -355,7 +410,7 @@ const Appointment2 = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          setSelectedPatientForDetails(appt);
+                          handleViewDetails(appt);
                         }}
                         className="px-3 py-0.5 bg-white border border-gray-600 rounded text-[9px] text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none font-bold relative z-50 cursor-pointer"
                       >
@@ -400,8 +455,8 @@ const Appointment2 = () => {
                     <h3 className="text-[17.5px] font-[700] text-[#333] mb-[6px] tracking-wide text-center leading-tight">
                       {selectedPatientForDetails.name}
                     </h3>
-                    <div className="text-[12.5px] font-[600] text-[#2db3c6] mb-[2px]">Mob. +912133218765</div>
-                    <div className="text-[11px] text-[#666] font-[400]">Email-saumya21@gmail.com</div>
+                    <div className="text-[12.5px] font-[600] text-[#2db3c6] mb-[2px]">Mob. {selectedPatientForDetails.phone}</div>
+                    <div className="text-[11px] text-[#666] font-[400]">Email-{selectedPatientForDetails.email}</div>
                     
                     <div className="mt-auto pt-[40px]">
                        <img src={logoUrl} alt="VaDyaGo" className="h-[42px] opacity-90 mix-blend-multiply" />
@@ -415,16 +470,16 @@ const Appointment2 = () => {
                     </div>
                     <div className="px-[16px] pb-[16px] flex flex-col gap-[10px] flex-1 border-t-[1.5px] border-[#cce5ee] pt-[18px]">
                        {[
-                         { label: 'Date of birth:', value: '02-feb-2026' },
+                         { label: 'Date of birth:', value: 'N/A' },
                          { label: 'Gender:', value: selectedPatientForDetails.gender },
-                         { label: 'Blood Type:', value: 'A+' },
-                         { label: 'Height:', value: '1.78m' },
-                         { label: 'Weight:', value: '55kg' },
-                         { label: 'Patient:', value: '11A2026/033968' },
-                         { label: 'Diseases:', value: 'Diabetes,Asthma' },
-                         { label: 'Last visit:', value: '10-feb-2026' },
-                         { label: 'Register.Date:', value: '29-jan-2026' },
-                         { label: 'Address:', value: 'Gorakhpur,273015' }
+                         { label: 'Blood Type:', value: selectedPatientForDetails.blood_type },
+                         { label: 'Height:', value: 'N/A' },
+                         { label: 'Weight:', value: selectedPatientForDetails.weight },
+                         { label: 'Patient:', value: selectedPatientForDetails.original?.patient_mrn || 'N/A' },
+                         { label: 'Diseases:', value: selectedPatientForDetails.disease },
+                         { label: 'Last visit:', value: patientHistory.length > 1 ? new Date(patientHistory[1].start_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' },
+                         { label: 'Register.Date:', value: new Date(selectedPatientForDetails.original?.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) },
+                         { label: 'Address:', value: selectedPatientForDetails.original?.location || 'Gorakhpur,273015' }
                        ].map((info, idx) => (
                          <div key={idx} className="flex items-center text-[11.5px] justify-between border-b-[1.5px] border-gray-200/60 pb-[5px] last:border-0 last:pb-0">
                            <span className="font-bold text-[#333] w-[100px] shrink-0">{info.label}</span>
@@ -502,26 +557,22 @@ const Appointment2 = () => {
                     </div>
 
                     {/* Table Rows */}
-                    <div className="flex flex-col max-h-[240px] overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-                       {[
-                         { date: '13 feb,2026', type: 'Regular checkUp', time: '4:00 pm', status: 'Pending' },
-                         { date: '02 feb,2026', type: 'OPD', time: '10:00 am', status: 'Complete' },
-                         { date: '20 Jan,2026', type: 'Regular checkUp', time: '12:30 pm', status: 'Complete' },
-                         { date: '19 Dec,2025', type: 'OPD', time: '9:30 am', status: 'Complete' },
-                         { date: '10 Nov,2025', type: 'Regular checkUp', time: '11:15 am', status: 'Complete' },
-                         { date: '05 Oct,2025', type: 'OPD', time: '3:45 pm', status: 'Complete' },
-                         { date: '22 Aug,2025', type: 'Regular checkUp', time: '2:00 pm', status: 'Complete' },
-                         { date: '14 Jul,2025', type: 'Skin Check', time: '10:30 am', status: 'Complete' }
-                       ].map((app, idx) => (
+                     <div className="flex flex-col max-h-[240px] overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+                       {isHistoryLoading ? (
+                         <div className="py-10 text-center text-gray-400">Loading history...</div>
+                       ) : patientHistory.map((app, idx) => (
                          <div key={idx} className={`flex px-[30px] py-[20px] text-[13px] items-center border-b border-gray-200/50 last:border-0 shrink-0 ${idx % 2 === 0 ? 'bg-[#e4e5e7]/40' : 'bg-white'}`}>
-                            <div className="w-[25%] text-left font-[500] text-[#666]">{app.date}</div>
-                            <div className="w-[30%] text-center font-[500] text-[#666]">{app.type}</div>
-                            <div className="w-[25%] text-center font-[500] text-[#666]">{app.time}</div>
-                            <div className={`w-[20%] text-right font-[500] tracking-wide ${app.status === 'Pending' ? 'text-orange-500' : 'text-[#42e46d]'}`}>
-                              {app.status}
+                            <div className="w-[25%] text-left font-[500] text-[#666]">{new Date(app.start_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                            <div className="w-[30%] text-center font-[500] text-[#666]">{app.appointment_type || 'Regular Checkup'}</div>
+                            <div className="w-[25%] text-center font-[500] text-[#666]">{new Date(app.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            <div className={`w-[20%] text-right font-[500] tracking-wide ${app.status === 'pending' ? 'text-orange-500' : 'text-[#42e46d]'}`}>
+                              {app.status === 'outpatient' ? 'Complete' : app.status.charAt(0).toUpperCase() + app.status.slice(1)}
                             </div>
                          </div>
                        ))}
+                       {!isHistoryLoading && patientHistory.length === 0 && (
+                         <div className="py-10 text-center text-gray-400">No previous appointments found.</div>
+                       )}
                     </div>
                     
                     {/* Bottom Arrow Expander */}

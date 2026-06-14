@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
+import BASE_URL from '../../baseUrl';
+
 import logoUrl from '../../assets/vadyago_pat.png';
 import phImg from '../../assets/ph.png';
 import Sidebar from './Patient_sidebar';
@@ -18,6 +21,8 @@ const Patient_dashboard = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
+
 
     const navigate = useNavigate();
 
@@ -60,7 +65,7 @@ const Patient_dashboard = () => {
                         <div className="relative group">
                             <input
                                 type="text"
-                                placeholder="Search..."
+                                placeholder={t('search')}
                                 className="w-full bg-white/10 border border-white/10 rounded-full py-[10px] px-[20px] text-white placeholder-white/40 text-[12px] outline-none focus:ring-2 focus:ring-[#6ED4D4]/50 transition-all font-medium"
                             />
                             <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +75,13 @@ const Patient_dashboard = () => {
                     </div>
 
                     <div className="flex items-center gap-[32px] ml-auto">
-                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                        <div
+                            onClick={toggleLanguage}
+                            className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                        >
+                            {language === 'English' ? 'EN' : 'HI'}
+                        </div>
+
                         <div className="flex items-center gap-[20px]">
                             <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                 <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,12 +105,12 @@ const Patient_dashboard = () => {
                     {/* ── Welcome Title ── */}
                     <div className="px-[24px] md:px-[48px] pt-[12px] pb-[32px] shrink-0 w-full max-w-[1440px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <h1 className="text-[30px] font-semibold text-white tracking-tight leading-none">
-                            Welcome to VaidyaGo
+                            {t('welcome')}
                         </h1>
                         <div className="w-full md:w-[280px] relative">
                             <input
                                 type="text"
-                                placeholder="Search records..."
+                                placeholder={t('searchRecords')}
                                 className="w-full bg-white/10 border border-white/10 rounded-full py-[12px] px-[24px] text-white placeholder-white/40 text-[14px] outline-none transition-all focus:ring-2 focus:ring-[#6ED4D4]/50"
                             />
                             <svg className="absolute right-[20px] top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,14 +130,14 @@ const Patient_dashboard = () => {
                                     <div>
                                         <div className="inline-block bg-[#E8F8FA] px-[18px] py-[8px] rounded-full mt-4 mb-3">
                                             <span className="text-[13px] font-semibold text-[#16879B] tracking-[0.06em] uppercase">
-                                                GETTING STARTED
+                                                {t('gettingStarted')}
                                             </span>
                                         </div>
                                         <h2 className="text-[38px] font-bold text-[#0D1C2E] leading-[1.1] mb-[16px] tracking-tight">
-                                            Start Your Digital<br />Record
+                                            {t('startDigitalRecord')}
                                         </h2>
                                         <p className="text-[16px] font-normal text-[#5A6A7D] leading-[1.6] max-w-[380px]">
-                                            Upload your first prescription or medical report. Our AI will automatically organize your health data into your timeline.
+                                            {t('uploadDescription')}
                                         </p>
                                     </div>
                                 </div>
@@ -150,10 +161,41 @@ const Patient_dashboard = () => {
                                 {/* Upload Prescription Button - Positioned on the card's right below illustration */}
                                 <label className="absolute bottom-[8px] right-[80px] z-20 flex items-center gap-[10px] bg-gradient-to-r from-[#0B253D] to-[#175B61]
                     text-white text-[14px] font-semibold px-[24px] py-[12px] rounded-full shadow-[0_10px_25px_rgba(11,37,61,0.3)] hover:scale-[1.05] transition-all cursor-pointer">
-                                    <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={(e) => {
+                                    <input type="file" className="hidden" accept=".pdf, .jpg, .jpeg, .png" onChange={async (e) => {
                                         if (e.target.files && e.target.files.length > 0) {
-                                            localStorage.setItem('prescriptionUploaded', 'true');
-                                            navigate('/Patient_dashboard1');
+                                            const file = e.target.files[0];
+                                            const formData = new FormData();
+                                            if (file.type.startsWith('image/')) {
+                                                formData.append('image', file);
+                                            } else {
+                                                formData.append('file', file);
+                                            }
+
+                                            const token = localStorage.getItem('token') || localStorage.getItem('access');
+                                            try {
+                                                const response = await fetch(`${BASE_URL}/api/prescriptions/upload/`, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Authorization': `Bearer ${token}`,
+                                                    },
+                                                    body: formData,
+                                                });
+
+                                                if (response.ok) {
+                                                    localStorage.setItem('prescriptionUploaded', 'true');
+                                                    navigate('/Patient_dashboard1');
+                                                } else {
+                                                    console.error('Upload failed');
+                                                    // Fallback to navigate anyway if desired, or show error
+                                                    localStorage.setItem('prescriptionUploaded', 'true');
+                                                    navigate('/Patient_dashboard1');
+                                                }
+                                            } catch (error) {
+                                                console.error('Error:', error);
+                                                // Fallback
+                                                localStorage.setItem('prescriptionUploaded', 'true');
+                                                navigate('/Patient_dashboard1');
+                                            }
                                         }
                                     }} />
                                     <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +203,7 @@ const Patient_dashboard = () => {
                                         <circle cx="12" cy="13" r="3" strokeWidth="2.2" />
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19 8h-3m1.5-1.5v3" />
                                     </svg>
-                                    Upload Prescription
+                                    {t('uploadPrescription')}
                                 </label>
                             </div>
 
@@ -176,14 +218,14 @@ const Patient_dashboard = () => {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5M12 21a2 2 0 002-2h-4a2 2 0 002 2zM19 8v4m-2-2h4" />
                                             </svg>
                                         </div>
-                                        <h4 className="text-[16px] font-bold text-[#0D1C2E]">Medication Reminders</h4>
+                                        <h4 className="text-[16px] font-bold text-[#0D1C2E]">{t('medicationReminders')}</h4>
                                     </div>
                                     <p className="text-[13.5px] text-[#5A6A7D] mt-1 leading-[1.5]">
-                                        Never miss a dose. Set up your schedule and get notified on time.
+                                        {t('neverMissDose')}
                                     </p>
                                     <div className="mt-auto pt-3">
                                         <button className="text-[13px] font-bold text-[#16879B] self-start hover:text-[#0f5966] transition-colors flex items-center gap-1.5 group">
-                                            Set your first reminder
+                                            {t('setFirstReminder')}
                                             <svg className="w-[14px] h-[14px] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 12h14M12 5l7 7-7 7" />
                                             </svg>
@@ -200,14 +242,14 @@ const Patient_dashboard = () => {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 14h6M9 11h6" />
                                             </svg>
                                         </div>
-                                        <h4 className="text-[16px] font-bold text-[#0D1C2E]">Appointments</h4>
+                                        <h4 className="text-[16px] font-bold text-[#0D1C2E]">{t('appointments')}</h4>
                                     </div>
                                     <p className="text-[13.5px] text-[#5A6A7D] mt-1 leading-[1.5]">
-                                        Keep all your upcoming doctor visits in one organized view.
+                                        {t('keepVisitsOrganized')}
                                     </p>
                                     <div className="mt-auto pt-3">
                                         <button className="text-[13px] font-bold text-[#16879B] self-start hover:text-[#0f5966] transition-colors flex items-center gap-1.5 group">
-                                            Schedule an appointment
+                                            {t('scheduleAppointment')}
                                             <svg className="w-[14px] h-[14px] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 12h14M12 5l7 7-7 7" />
                                             </svg>
@@ -219,7 +261,7 @@ const Patient_dashboard = () => {
                             {/* ════ BOTTOM LEFT: Vitals ════ */}
                             <div className="bg-[#F2F7FA] rounded-[24px] p-5 shadow-sm flex flex-col min-h-[200px]">
                                 <div className="flex items-center justify-between mb-1">
-                                    <h3 className="text-[18px] font-bold text-[#0D1C2E]">Your Vitals</h3>
+                                    <h3 className="text-[18px] font-bold text-[#0D1C2E]">{t('yourVitals')}</h3>
                                     <button className="text-[#68C3CF] hover:text-[#16879B] transition-colors">
                                         <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -242,19 +284,19 @@ const Patient_dashboard = () => {
                                         </div>
                                     </div>
 
-                                    <p className="text-[17px] font-bold text-[#0D1C2E] mt-3">No data yet</p>
+                                    <p className="text-[17px] font-bold text-[#0D1C2E] mt-3">{t('noDataYet')}</p>
                                     <p className="text-[13.5px] text-[#5A6A7D] text-center mt-1.5 leading-[1.6] max-w-[280px]">
-                                        Your vital trends will appear here once you start tracking metrics like BP, HR, or Weight.
+                                        {t('vitalTrendsDescription')}
                                     </p>
                                     <button className="mt-6 border-[1.5px] border-[#16879B] text-[13px] font-bold text-[#16879B] px-[28px] py-[9px] rounded-full hover:bg-white transition-colors bg-transparent shadow-sm">
-                                        Log First Metric
+                                        {t('logFirstMetric')}
                                     </button>
                                 </div>
                             </div>
 
                             {/* ════ BOTTOM RIGHT: Recent Journey ════ */}
                             <div className="bg-[#F2F7FA] rounded-[24px] p-[32px] shadow-sm flex flex-col">
-                                <h3 className="text-[20px] font-bold text-[#0D1C2E] mb-[32px]">Recent Journey</h3>
+                                <h3 className="text-[20px] font-bold text-[#0D1C2E] mb-[32px]">{t('recentJourney')}</h3>
 
                                 <div className="flex flex-col relative h-full">
                                     {/* Vertical Connector Line */}
@@ -269,10 +311,10 @@ const Patient_dashboard = () => {
                                             </svg>
                                         </div>
                                         <div className="flex-1 min-w-0 pt-[2px]">
-                                            <p className="text-[14.5px] font-[800] text-[#0D1C2E] leading-tight mb-[2px]">Account Created</p>
+                                            <p className="text-[14.5px] font-[800] text-[#0D1C2E] leading-tight mb-[2px]">{t('accountCreated')}</p>
                                             <p className="text-[11px] text-[#869BA5] font-[500] mb-[8px]">Today, 10:24 AM</p>
                                             <p className="text-[13px] text-[#5A6A7D] leading-[1.5]">
-                                                Welcome to the family! You've taken the first step towards better health management.
+                                                {t('welcomeFamily')}
                                             </p>
                                         </div>
                                     </div>
@@ -285,9 +327,9 @@ const Patient_dashboard = () => {
                                             </svg>
                                         </div>
                                         <div className="flex-1 pt-[8px]">
-                                            <p className="text-[14.5px] font-[800] text-[#B0C4C9] leading-tight mb-[2px]">First Record</p>
-                                            <p className="text-[11px] text-[#B0C4C9] font-[500] mb-[6px]">Pending</p>
-                                            <p className="text-[13px] text-[#B0C4C9] italic">Waiting for your first upload...</p>
+                                            <p className="text-[14.5px] font-[800] text-[#B0C4C9] leading-tight mb-[2px]">{t('firstRecord')}</p>
+                                            <p className="text-[11px] text-[#B0C4C9] font-[500] mb-[6px]">{t('pending')}</p>
+                                            <p className="text-[13px] text-[#B0C4C9] italic">{t('waitingUpload')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -301,7 +343,7 @@ const Patient_dashboard = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S12 3 12 3s-4.5 4.03-4.5 9 2.015 9 4.5 9z" />
                             </svg>
                             <p className="text-[13.5px] text-[#175B61] italic font-medium">
-                                "The greatest wealth is health. We're here to help you protect it."
+                                "{t('wealthHealth')}"
                             </p>
                         </div>
                     </div>

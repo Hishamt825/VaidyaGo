@@ -36,23 +36,9 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
       password: password
     };
 
-    // 🚀 SPECIAL ADMIN BYPASS LOGIC
-    if (loginId === "khanadiba9746@gmail.com" && password === "admin_password123") {
-      console.log("LOGIN_DEBUG: Admin Bypass Triggered");
-      localStorage.setItem("user_type", "admin");
-      localStorage.setItem("token", "admin_bypass_token"); // Mock token for dashboard access
-      
-      if (isModal && onClose) {
-        onClose();
-      }
-      navigate("/Admin_dashboard1");
-      setIsLoading(false);
-      return;
-    }
-
     try {
       // 🌍 Using AWS Production URL for Login
-      const loginUrl = "http://13.60.96.212:8000/accounts/api/login/";
+      const loginUrl = `${BASE_URL}/accounts/api/login/`;
       console.log("Submitting Login to Production:", loginUrl);
 
       const response = await fetch(loginUrl, {
@@ -99,6 +85,11 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
           localStorage.setItem("refresh", refreshToken);
         }
 
+        // Save user info for display
+        localStorage.setItem("user_name", data.username || "");
+        localStorage.setItem("user_email", data.email || "");
+        localStorage.setItem("user_full_name", data.full_name || `${data.first_name || ""} ${data.last_name || ""}`.trim() || data.username || "User");
+
         // Save doctor_id and clear old session-specific IDs
         const doctorId = data.doctor_id || data.id || data.user?.id;
         if (doctorId) {
@@ -118,25 +109,43 @@ const Finallogin = ({ isModal, onClose, onSwitchToForget, onSwitchToSignup }) =>
           navigate("/Admin_dashboard1");
         } else if (userType === "doctor") {
           try {
-            const profileRes = await fetch(`${BASE_URL}/api/doctor-personal-info/${data.doctor_id || data.id || data.user?.id}/`, {
+            const doctorId = data.doctor_id || data.id || data.user?.id;
+            const profileRes = await fetch(`${BASE_URL}/api/doctor-personal-info/${doctorId}/`, {
               headers: { Authorization: `Bearer ${token}` }
             });
+
             if (profileRes.ok) {
               const profileData = await profileRes.json();
-              const approved = profileData.is_approved || profileData.status === 'approved' || profileData.status === 'active';
+              const status = profileData.status ? profileData.status.toLowerCase() : 'incomplete';
               
-              if (!approved) {
-                setShowPendingModal(true); // Open the beautiful popup
+              if (status === 'approved' || status === 'active') {
+                navigate("/Doctor_dashboard");
+              } else if (status === 'pending') {
+                setShowPendingModal(true); 
                 setIsLoading(false);
                 localStorage.clear();
                 return;
+              } else if (status === 'rejected') {
+                setError("You are rejected by admin. Please contact support for more information.");
+                setIsLoading(false);
+                localStorage.clear();
+                return;
+              } else {
+                // Status is incomplete
+                navigate("/Form1");
               }
+            } else if (profileRes.status === 404) {
+              // No profile created yet
+              navigate("/Form1");
+            } else {
+              // Other error, maybe stay on login or try dashboard
+              navigate("/Doctor_dashboard");
             }
           } catch (err) {
             console.error("Approval check failed:", err);
+            navigate("/Doctor_dashboard");
           }
-          
-          navigate("/Doctor_dashboard");
+
         } else if (userType === "patient") {
           navigate("/Patient_dashboard");
         } else {

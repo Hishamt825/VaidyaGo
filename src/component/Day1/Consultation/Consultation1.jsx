@@ -199,30 +199,30 @@ const Consultation1 = () => {
   }, []);
 
   const specialities = [
-    { id: 1, title: 'Cardic Care', subtitle: 'Heart Health care', iconColor: '#ffdede', type: 'cardiac', color: '#ff4d4d' },
-    { id: 2, title: 'Paediatric Care', subtitle: 'Child Health Services', iconColor: '#e0f2fe', type: 'paediatric', color: '#3b82f6' },
-    { id: 3, title: 'Gynaecology', subtitle: 'Gynaecological Care Solutions', iconColor: '#fce7f3', type: 'gynaecology', color: '#ec4899' },
-    { id: 4, title: 'Liver Care', subtitle: 'Liver transplant & Health Care', iconColor: '#fef3c7', type: 'liver', color: '#d97706' },
-    { id: 5, title: 'Orthopedics', subtitle: 'Bone & Joint Care', iconColor: '#f3f4f6', type: 'orthopedics', color: '#6b7280' },
-    { id: 6, title: 'Neurosaince', subtitle: 'Brain & Nerve Care', iconColor: '#dcfce7', type: 'neuroscience', color: '#10b981' },
-    { id: 7, title: 'Renal Care', subtitle: 'Kidney Health Treatment', iconColor: '#e0e7ff', type: 'renal', color: '#6366f1' },
-    { id: 8, title: 'Gastroscience', subtitle: 'Digestive Health Care', iconColor: '#ffedd5', type: 'gastro', color: '#f97316' },
-    { id: 9, title: 'General Physician', subtitle: 'General Practitioner', iconColor: '#f1f5f9', type: 'physician', color: '#334155' },
-    { id: 10, title: 'Otolaryngologist', subtitle: 'ENT', iconColor: '#fdf2f8', type: 'ent', color: '#db2777' },
-    { id: 11, title: 'Urologist', subtitle: 'urinary system', iconColor: '#fff7ed', type: 'urology', color: '#ea580c' },
-    { id: 12, title: 'Psychiatrist', subtitle: 'Mental issues', iconColor: '#f5f3ff', type: 'psychiatry', color: '#8b5cf6' },
-    { id: 13, title: 'Paediatrics', subtitle: 'Child Treatment', iconColor: '#ecfdf5', type: 'paediatric', color: '#059669' },
-    { id: 14, title: 'Pulmonologists', subtitle: 'Respiratory system', iconColor: '#eff6ff', type: 'pulmono', color: '#2563eb' },
-    { id: 15, title: 'Endocrinologists', subtitle: 'Hormones specialist', iconColor: '#fff1f2', type: 'endocrino', color: '#e11d48' },
-    { id: 16, title: 'Nephrologists', subtitle: 'Kidney specialist', iconColor: '#f8fafc', type: 'nephro', color: '#475569' },
-    { id: 17, title: 'Neurosurgeons', subtitle: 'brain & spine system', iconColor: '#e0f2fe', type: 'neurosurgeon', color: '#3b82f6' },
-    { id: 18, title: 'Rheumatologists', subtitle: 'joint & autoimmune disease', iconColor: '#f0f9ff', type: 'rheumato', color: '#0ea5e9' },
-    { id: 19, title: 'Ophthalmologists', subtitle: 'eye specialist', iconColor: '#fffbeb', type: 'ophthalmo', color: '#d97706' },
-    { id: 20, title: 'Surgical Gastroenterologists', subtitle: "Ped's Digestive system", iconColor: '#f9fafb', type: 'surgical', color: '#111827' },
-    { id: 21, title: 'Infectious Disease', subtitle: 'examine infection', iconColor: '#fef2f2', type: 'infectious', color: '#dc2626' },
-    { id: 22, title: 'Laparoscopic Surgeons', subtitle: 'Minimal invasive', iconColor: '#f5f5f4', type: 'laparo', color: '#44403c' },
-    { id: 23, title: 'Oncologists', subtitle: 'Cancer diagnose', iconColor: '#faf5ff', type: 'onco', color: '#9333ea' },
-    { id: 24, title: 'Dentist', subtitle: 'Treat Teeth', iconColor: '#ecfeff', type: 'dentist', color: '#0891b2' }
+    { id: 1, title: 'Cardic Care', subtitle: 'Heart Health care', iconColor: '#ffdede', type: 'cardiac', color: '#ff4d4d', department: 'cardiology' },
+    { id: 2, title: 'Paediatric Care', subtitle: 'Child Health Services', iconColor: '#e0f2fe', type: 'paediatric', color: '#3b82f6', department: 'paediatric care' },
+    { id: 3, title: 'Gynaecology', subtitle: 'Gynaecological Care Solutions', iconColor: '#fce7f3', type: 'gynaecology', color: '#ec4899', department: 'gynaecology' },
+    { id: 4, title: 'Liver Care', subtitle: 'Liver transplant & Health Care', iconColor: '#fef3c7', type: 'liver', color: '#d97706', department: 'liver' },
+    { id: 5, title: 'Orthopedics', subtitle: 'Bone & Joint Care', iconColor: '#f3f4f6', type: 'orthopedics', color: '#6b7280', department: 'orthopedics' },
+    { id: 6, title: 'Neuroscience', subtitle: 'Brain & Nerve Care', iconColor: '#dcfce7', type: 'neuroscience', color: '#10b981', department: 'neuroscience' },
+    { id: 7, title: 'Renal Care', subtitle: 'Kidney Health Treatment', iconColor: '#e0e7ff', type: 'renal', color: '#6366f1', department: 'renal' },
+    { id: 8, title: 'Gastroscience', subtitle: 'Digestive Health Care', iconColor: '#ffedd5', type: 'gastro', color: '#f97316', department: 'gastro' },
+    { id: 9, title: 'General Physician', subtitle: 'General Practitioner', iconColor: '#f1f5f9', type: 'physician', color: '#334155', department: 'physician' },
+    { id: 10, title: 'Otolaryngologist', subtitle: 'ENT', iconColor: '#fdf2f8', type: 'ent', color: '#db2777', department: 'ent' },
+    { id: 11, title: 'Urologist', subtitle: 'urinary system', iconColor: '#fff7ed', type: 'urology', color: '#ea580c', department: 'urology' },
+    { id: 12, title: 'Psychiatrist', subtitle: 'Mental issues', iconColor: '#f5f3ff', type: 'psychiatry', color: '#8b5cf6', department: 'psychiatry' },
+    { id: 13, title: 'Paediatrics', subtitle: 'Child Treatment', iconColor: '#ecfdf5', type: 'paediatric', color: '#059669', department: 'paediatrics' },
+    { id: 14, title: 'Pulmonologists', subtitle: 'Respiratory system', iconColor: '#eff6ff', type: 'pulmono', color: '#2563eb', department: 'pulmono' },
+    { id: 15, title: 'Endocrinologists', subtitle: 'Hormones specialist', iconColor: '#fff1f2', type: 'endocrino', color: '#e11d48', department: 'endocrino' },
+    { id: 16, title: 'Nephrologists', subtitle: 'Kidney specialist', iconColor: '#f8fafc', type: 'nephro', color: '#475569', department: 'nephro' },
+    { id: 17, title: 'Neurosurgeons', subtitle: 'brain & spine system', iconColor: '#e0f2fe', type: 'neurosurgeon', color: '#3b82f6', department: 'neurosurgeon' },
+    { id: 18, title: 'Rheumatologists', subtitle: 'joint & autoimmune disease', iconColor: '#f0f9ff', type: 'rheumato', color: '#0ea5e9', department: 'rheumato' },
+    { id: 19, title: 'Ophthalmologists', subtitle: 'eye specialist', iconColor: '#fffbeb', type: 'ophthalmo', color: '#d97706', department: 'ophthalmo' },
+    { id: 20, title: 'Surgical Gastroenterologists', subtitle: "Ped's Digestive system", iconColor: '#f9fafb', type: 'surgical', color: '#111827', department: 'surgical' },
+    { id: 21, title: 'Infectious Disease', subtitle: 'examine infection', iconColor: '#fef2f2', type: 'infectious', color: '#dc2626', department: 'infectious' },
+    { id: 22, title: 'Laparoscopic Surgeons', subtitle: 'Minimal invasive', iconColor: '#f5f5f4', type: 'laparo', color: '#44403c', department: 'laparo' },
+    { id: 23, title: 'Oncologists', subtitle: 'Cancer diagnose', iconColor: '#faf5ff', type: 'onco', color: '#9333ea', department: 'onco' },
+    { id: 24, title: 'Dentist', subtitle: 'Treat Teeth', iconColor: '#ecfeff', type: 'dentist', color: '#0891b2', department: 'dentist' }
   ];
 
     return (
@@ -325,7 +325,11 @@ const Consultation1 = () => {
                   onClick={() => {
                     setActiveCardId(speciality.id);
                     setSelectedSpeciality(speciality.title);
-                    navigate('/Consultation_info', { state: { specialityName: speciality.title, from: fromPath } });
+                    navigate('/Consultation_info', { state: { 
+                      specialityName: speciality.title, 
+                      department: speciality.department,
+                      from: fromPath 
+                    } });
                   }}
                 >
                   <div 

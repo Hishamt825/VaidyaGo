@@ -42,8 +42,7 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
 
     try {
       // 🌍 Using AWS IP for all roles to avoid local connection errors
-      const fullUrl = "http://13.60.96.212:8000/accounts/api/signup/";
-
+      const fullUrl = `${BASE_URL}/accounts/api/signup/`;
       console.log("Submitting Signup to Production:", fullUrl);
 
       const response = await fetch(fullUrl, {
@@ -74,6 +73,11 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
 
       // ✅ Handle success
       if (response.status === 201 || response.status === 200) {
+        // 🚀 Signup successful!
+        console.log("Signup Successful!");
+        
+        const userType = data.role?.toLowerCase() || role.toLowerCase();
+        
         // Clear any leftover data from previous sessions
         localStorage.removeItem("doctor_id");
         localStorage.removeItem("professional_info_id");
@@ -81,21 +85,31 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
         localStorage.removeItem("document_info_id");
         localStorage.removeItem("prescriptionUploaded");
 
-        if (data?.token) {
+        // Save tokens for auto-login
+        if (data.access) {
+          localStorage.setItem("token", data.access);
+          localStorage.setItem("access", data.access);
+          localStorage.setItem("user_type", userType);
+        } else if (data?.token) {
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user_type", userType);
+        }
+        
+        if (data.refresh) {
+          localStorage.setItem("refresh", data.refresh);
         }
 
         // Save new doctor_id if it's a doctor signup
-        const newDoctorId = data?.doctor_id || data?.id || data?.user?.id;
+        const newDoctorId = data?.doctor_id || data?.id || data?.user?.id || data?.user_id;
         if (newDoctorId) {
           localStorage.setItem("doctor_id", newDoctorId);
         }
 
         // 🚀 Role-based Redirection
         const targetDashboard =
-          role === "Patient" ? "/Patient_dashboard" :
-            role === "Doctor" ? "/Form1" :
-              "/Finallogin";
+          userType === "patient" ? "/Patient_dashboard" :
+          userType === "doctor" ? "/Form1" :
+          "/Finallogin";
 
         console.log("Signup Successful, navigating to:", targetDashboard);
 
@@ -107,9 +121,11 @@ export default function SignupForm({ isModal, onClose, onSwitchToLogin }) {
             navigate(targetDashboard);
           }, 10);
         } else {
-          navigate(targetDashboard);
+          alert("Signup successful! Please log in with your credentials.");
+          navigate("/Finallogin");
         }
       }
+
       // ✅ Handle validation errors
       else if (response.status === 400) {
         alert(data?.message || JSON.stringify(data));

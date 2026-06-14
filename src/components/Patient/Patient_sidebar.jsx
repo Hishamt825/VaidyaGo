@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
+
 import { AnimatePresence, motion } from 'framer-motion';
 import logoUrl from '../../assets/vadyago_pat.png';
 import visulImg from '../../assets/Visual.png';
 import Selectexercise from './Exercise/Selectexercise';
-import PatientBot from './patient_bot';
 import Chat from './Chat_bot/chat';
 
 /* ─────────────────────────────────────────────
@@ -13,6 +14,7 @@ import Chat from './Chat_bot/chat';
 const MENU = [
     {
         name: 'Dashboard',
+        key: 'dashboard',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="3" y="3" width="7" height="7" rx="1.5" strokeWidth="2" />
@@ -24,6 +26,7 @@ const MENU = [
     },
     {
         name: 'Symptom Checker',
+        key: 'symptomChecker',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -32,6 +35,7 @@ const MENU = [
     },
     {
         name: 'Vitals',
+        key: 'yourVitals',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -40,6 +44,7 @@ const MENU = [
     },
     {
         name: 'Medications',
+        key: 'medications',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="3" y="5" width="18" height="14" rx="2" strokeWidth="2" />
@@ -49,6 +54,7 @@ const MENU = [
     },
     {
         name: 'Appointments',
+        key: 'appointments',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2" />
@@ -58,6 +64,7 @@ const MENU = [
     },
     {
         name: 'Messages',
+        key: 'messages',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -66,6 +73,7 @@ const MENU = [
     },
     {
         name: 'Reminder',
+        key: 'reminder',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -74,6 +82,7 @@ const MENU = [
     },
     {
         name: 'My Record',
+        key: 'myRecord',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 19V5a2 2 0 012-2h4l2 2h4a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2z" />
@@ -82,6 +91,7 @@ const MENU = [
     },
     {
         name: 'Exercise',
+        key: 'exercise',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -96,7 +106,9 @@ const MENU = [
 const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { t, toggleLanguage, language } = useLanguage();
     const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [showSymptomPopup, setShowSymptomPopup] = useState(false);
     const [showMedicationPopup, setShowMedicationPopup] = useState(false);
@@ -136,7 +148,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
     return (
         <>
             {/* AI Chatbot Integration */}
-            <PatientBot onOpenChat={() => setIsChatOpen(true)} />
+
             <AnimatePresence>
                 {isChatOpen && (
                     <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
@@ -227,7 +239,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                     <span className={`shrink-0 ${isActive ? 'text-white' : 'text-white/40 group-hover:text-white'}`}>
                                         {item.icon}
                                     </span>
-                                    <span className="tracking-tight">{item.name}</span>
+                                    <span className="tracking-tight">{t(item.key)}</span>
 
                                     {item.name === 'Symptom Checker' && (
                                         <div 
@@ -285,7 +297,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="px-3 py-2 border-b border-white/5 shrink-0">
-                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Symptom Options</span>
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('symptomOptions')}</span>
                             </div>
                             
                             <div className="flex-1 overflow-y-auto no-scrollbar pr-1 mt-1">
@@ -302,7 +314,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
                                     </div>
-                                    Body Analyzer
+                                    {t('bodyAnalyzer')}
                                 </button>
 
                                 <button
@@ -318,7 +330,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8zm13 14v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
                                         </svg>
                                     </div>
-                                    Ask Specialist
+                                    {t('askSpecialist')}
                                 </button>
 
                                 <button
@@ -334,7 +346,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
                                     </div>
-                                    Care Plan
+                                    {t('carePlan')}
                                 </button>
 
                                 <button
@@ -350,7 +362,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                         </svg>
                                     </div>
-                                    Stabilization
+                                    {t('stabilization')}
                                 </button>
 
                                 <button
@@ -366,7 +378,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                         </svg>
                                     </div>
-                                    Progress Review
+                                    {t('progressReview')}
                                 </button>
 
                                 <button
@@ -383,7 +395,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                                         </svg>
                                     </div>
-                                    Phase 2D
+                                    {t('phase2D')}
                                 </button>
 
                                 <button
@@ -399,7 +411,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
                                     </div>
-                                    Monthly Review
+                                    {t('monthlyReview')}
                                 </button>
 
                                 <button
@@ -415,7 +427,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                         </svg>
                                     </div>
-                                    Phase 3D
+                                    {t('phase3D')}
                                 </button>
 
                                 <button
@@ -431,7 +443,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2zM9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
                                     </div>
-                                    Maintenance Log
+                                    {t('maintenanceLog')}
                                 </button>
 
                                 <button
@@ -447,7 +459,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                         </svg>
                                     </div>
-                                    Recovery Journey
+                                    {t('recoveryJourney')}
                                 </button>
 
                                 <button
@@ -463,7 +475,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                                         </svg>
                                     </div>
-                                    Neck Alignment
+                                    {t('neckAlignment')}
                                 </button>
 
                                 <button
@@ -479,7 +491,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
                                     </div>
-                                    Posture Analysis
+                                    {t('postureAnalysis')}
                                 </button>
 
                                 <button
@@ -495,7 +507,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    Analysis Complete
+                                    {t('analysisComplete')}
                                 </button>
 
                                 <button
@@ -511,7 +523,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-1.17-15.696A9 9 0 003 9h9l1.106-2.212a2 2 0 000-1.788L12 3m0 0a9 9 0 0110.457 12.043M12 3v10m6 7l-6-2-6 2" />
                                         </svg>
                                     </div>
-                                    Posture Analysis 2
+                                    {t('postureAnalysis2')}
                                 </button>
                             </div>
                         </motion.div>
@@ -529,7 +541,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="px-3 py-2 border-b border-white/5 shrink-0">
-                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Medication Options</span>
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('medicationOptions')}</span>
                             </div>
                             
                             <div className="flex-1 overflow-y-auto no-scrollbar pr-1 mt-1">
@@ -547,7 +559,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
                                     </div>
-                                    View_request
+                                    {t('viewRequest')}
                                 </button>
 
                                 <button
@@ -563,7 +575,7 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
                                     </div>
-                                    Order
+                                    {t('order')}
                                 </button>
                             </div>
                         </motion.div>
@@ -581,10 +593,24 @@ const Sidebar = ({ active, setActive, isMobileOpen, setIsMobileOpen }) => {
                         <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        New Consultation
+                        {t('newConsultation')}
                     </button>
                 </div>
 
+
+                {/* Language Switcher */}
+                <div className="px-5 py-2 border-t border-white/5 mt-auto mb-4">
+                    <button
+                        onClick={toggleLanguage}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl
+                                   text-white/60 hover:text-white hover:bg-white/5 transition-all duration-300"
+                    >
+                        <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 11.37 9.183 16.518 5 20" />
+                        </svg>
+                        <span className="text-[14px] font-medium">{language === 'English' ? 'English' : 'Hindi'}</span>
+                    </button>
+                </div>
 
             </aside>
             {isExerciseModalOpen && <Selectexercise onClose={() => setIsExerciseModalOpen(false)} />}

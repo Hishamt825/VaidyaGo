@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import apiFetch from '../../../api';
+import BASE_URL from '../../../baseUrl';
 import patientPhoto from '../../../assets/Patient Photo.svg';
 import './Diagnostic.css';
 import Sidebar from '../../../components/Patient/Patient_sidebar';
@@ -10,10 +12,12 @@ import Tthdiagnostic from './Tthdiagnostic';
 import Cervicogenic from './Cervicogenic';
 import Dseasonal from './Dseasonal';
 import ConnectPopup from './ConnectPopup';
-import PharmacyPopup from './PharmacyPopup';
 import HealthGuidePopup from './HealthGuidePopup';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import Diagnosticinput from './Diagnosticinput';
+import PharmacyPopup from './PharmacyPopup';
+
 
 const Icon = ({ name, className }) => {
   const icons = {
@@ -91,17 +95,58 @@ const Diagnostic = () => {
   const [showDiagnosticInput, setShowDiagnosticInput] = useState(false);
   const [active, setActive] = useState('Symptom Checker');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
 
-  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal || showDiagnosticInput || showSaveSuccess;
-
-  const conditions = [
+  const { t, toggleLanguage, language } = useLanguage();
+  const [conditions, setConditions] = useState([
     { title: 'Tension-Type Headache', match: 85, desc: 'Most common primary headache disorder, often characterized by a pressing or tightening sensation around the head of mild to moderate intensity.' },
     { title: 'Seasonal Allergies (Rhinitis)', match: 62, desc: 'Hypersensitivity reaction to environmental triggers such as pollen or mold, contributing to sinus pressure and subsequent cephalalgia.' },
     { title: 'Cervicogenic Headache', match: 48, desc: 'Pain referred from a source in the cervical spine and its component bony, disc and/or soft tissue elements, usually accompanied by neck pain.' }
-  ];
+  ]);
+  const [inputSummary, setInputSummary] = useState({
+    complaints: [
+      { symptom: 'Persistent Headache', duration: '48 hrs', severity: 'Severe' },
+      { symptom: 'Fatigue', duration: 'Moderate', severity: 'Moderate' },
+      { symptom: 'Eye Strain', duration: 'New', severity: 'Mild' }
+    ],
+    vitals: { temp: '98.6°', bpm: '72' }
+  });
+  const [aiSummary, setAiSummary] = useState("The clinical engine has synthesized patient data with 99.8% computational accuracy. Review the conditions below for immediate action.");
+  const [precautions, setPrecautions] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+
+  const isPopupOpen = showConnect || showPharmacy || showGuide || showTTH || showCervicogenic || showDseasonal || showDiagnosticInput || showSaveSuccess;
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.diagnosis) {
+      const diag = location.state.diagnosis;
+      
+      // Update conditions from AI results
+      const newConditions = diag.possible_diseases.map((disease, index) => ({
+        title: disease,
+        match: index === 0 ? diag.confidence_score : Math.max(diag.confidence_score - (index * 15), 10),
+        desc: diag.recommendations[index] || "Condition based on reported symptoms and AI analysis."
+      }));
+      setConditions(newConditions);
+
+      // Update input summary
+      const newComplaints = (diag.symptoms || []).map(s => ({
+        symptom: s,
+        duration: diag.duration || "2 days",
+        severity: (diag.severity || "moderate").charAt(0).toUpperCase() + (diag.severity || "moderate").slice(1)
+      }));
+      setInputSummary(prev => ({ ...prev, complaints: newComplaints }));
+
+      // Update AI metadata
+      setAiSummary(diag.summary || diag.consultation_advice || "Analysis complete based on reported symptoms.");
+      setPrecautions(diag.precautions || []);
+      setRecommendations(diag.recommendations || []);
+    }
+  }, [location.state]);
 
   return (
     <>
@@ -155,7 +200,12 @@ const Diagnostic = () => {
             </div>
 
             <div className="flex items-center gap-[32px] ml-auto">
-                <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                <span 
+                    onClick={toggleLanguage}
+                    className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                >
+                    {language === 'English' ? 'EN' : 'HI'}
+                </span>
                 <div className="flex items-center gap-[20px]">
                     <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                         <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,14 +231,11 @@ const Diagnostic = () => {
         <div className="diagnostic-content">
         {/* Diagnostic Hero Section */}
         <section className="results-header-card">
-          <span className="phase-badge">Phase : Complete</span>
-          <h1>Diagnostics Results</h1>
-          <p>
-            The clinical engine has synthesized patient data with 99.8% computational accuracy. 
-            Review the conditions below for immediate action.
-          </p>
+          <span className="phase-badge">{t('phaseComplete')}</span>
+          <h1>{t('diagnosticsResults')}</h1>
+          <p>{aiSummary}</p>
           <div className="analysis-ref">
-            <span>Analysis Reference</span>
+            <span>{t('analysisReference')}</span>
             <h3>#VG-7822-XP</h3>
           </div>
         </section>
@@ -200,60 +247,54 @@ const Diagnostic = () => {
             <div className="summary-card dark info-card">
               <div className="card-title">
                 <Icon name="clipboard" />
-                Input Summary
+                {t('inputSummary')}
               </div>
               
               <div className="info-section">
-                <label>PRIMARY COMPLAINTS</label>
+                <label>{t('primaryComplaints')}</label>
                 <div className="complaints-list">
-                  <div className="complaint-item">
-                    <span>Persistent Headache</span>
-                    <span className="value">48 hrs</span>
-                  </div>
-                  <div className="complaint-item">
-                    <span>Fatigue</span>
-                    <span className="value">Moderate</span>
-                  </div>
-                  <div className="complaint-item">
-                    <span>Eye Strain</span>
-                    <span className="value">New</span>
-                  </div>
+                  {inputSummary.complaints.map((item, idx) => (
+                    <div key={idx} className="complaint-item">
+                      <span>{item.symptom}</span>
+                      <span className="value">{item.duration}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               <div className="info-section">
-                <label>VITALS (REPORTED)</label>
+                <label>{t('vitalsReported')}</label>
                 <div className="vitals-grid">
                   <div className="vital-mini-box">
-                    <h4>98.6°</h4>
-                    <span>Temp</span>
+                    <h4>{inputSummary.vitals.temp}</h4>
+                    <span>{t('tempLabel')}</span>
                   </div>
                   <div className="vital-mini-box">
-                    <h4>72</h4>
-                    <span>BPM</span>
+                    <h4>{inputSummary.vitals.bpm}</h4>
+                    <span>{t('bpmLabel')}</span>
                   </div>
                 </div>
               </div>
 
               <div className="card-footer">
-                <span onClick={() => setShowDiagnosticInput(true)} className="edit-link" style={{ cursor: 'pointer' }}>Edit details ✎</span>
+                <span onClick={() => setShowDiagnosticInput(true)} className="edit-link" style={{ cursor: 'pointer' }}>{t('editDetails')}</span>
               </div>
             </div>
 
             <div className="summary-card patient-card">
               <div className="card-subtitle">
                 <Icon name="stethoscope" className="mini-card-icon" />
-                PATIENT SUMMARY
+                {t('patientSummary')}
               </div>
               <div className="patient-vitals-list">
                 <div className="patient-vital-row">
                   <div className="v-icon-wrap"><Icon name="pulse" /></div>
-                  <span className="v-label">Temperature</span>
+                  <span className="v-label">{t('temperatureLabel')}</span>
                   <span className="v-value">98.6°F</span>
                 </div>
                 <div className="patient-vital-row">
                   <div className="v-icon-wrap heart"><Icon name="pulse" /></div>
-                  <span className="v-label">Heart Rate</span>
+                  <span className="v-label">{t('heartRateLabel')}</span>
                   <span className="v-value">72 BPM</span>
                 </div>
                 <div className="patient-vital-row">
@@ -263,10 +304,10 @@ const Diagnostic = () => {
                 </div>
               </div>
               <div className="symptoms-section">
-                <label>PRIMARY SYMPTOMS</label>
+                <label>{t('primarySymptomsLabel')}</label>
                 <div className="symptom-tags">
-                  {['Persistent Headache', 'Photophobia', 'Fatigue'].map(tag => (
-                    <span key={tag} className="symptom-tag">{tag}</span>
+                  {inputSummary.complaints.map(item => (
+                    <span key={item.symptom} className="symptom-tag">{item.symptom}</span>
                   ))}
                 </div>
               </div>
@@ -274,10 +315,10 @@ const Diagnostic = () => {
 
             <div className="summary-card history-card">
               <div className="history-content">
-                <h4>Analysis History</h4>
-                <p>Compare current results with previous 6 months of diagnostic data.</p>
+                <h4>{t('analysisHistory')}</h4>
+                <p>{t('compareResultsText')}</p>
                 <a href="#trends" className="trends-link">
-                  View Trends 
+                  {t('viewTrends')} 
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 </a>
               </div>
@@ -287,8 +328,8 @@ const Diagnostic = () => {
           {/* Right Potential Conditions Column */}
           <div className="conditions-section">
             <h2 className="conditions-section-title">
-              POTENTIAL CONDITIONS
-              <span className="sort-label">Sort by Confidence ▾</span>
+              {t('potentialConditions')}
+              <span className="sort-label">{t('sortByConfidence')}</span>
             </h2>
             
             {conditions.map((c, i) => (
@@ -308,51 +349,77 @@ const Diagnostic = () => {
                   </div>
                   <div className="match-area">
                     <span className="match-num">{c.match}%</span>
-                    <span className="match-label">MATCH</span>
+                    <span className="match-label">{t('matchLabel')}</span>
                   </div>
                 </div>
                 <div className="condition-footer">
-                  <span className="clinical-data"><Icon name="info" className="mini-icon" /> Clinical Data</span>
+                  <span className="clinical-data"><Icon name="info" className="mini-icon" /> {t('clinicalData')}</span>
                   <span className="arrow">›</span>
                 </div>
               </div>
             ))}
 
+            {(precautions.length > 0 || recommendations.length > 0) && (
+              <div className="ai-advice-section">
+                <h2 className="conditions-section-title" style={{ marginTop: 32 }}>
+                  {t('aiPrecautionsAdvice')}
+                </h2>
+                <div className="advice-grid">
+                  {precautions.length > 0 && (
+                    <div className="advice-card precaution">
+                      <h4>{t('precautionsLabel')}</h4>
+                      <ul>
+                        {precautions.slice(0, 3).map((p, i) => <li key={i}>{p}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  {recommendations.length > 0 && (
+                    <div className="advice-card recommendation">
+                      <h4>{t('recommendationsLabel')}</h4>
+                      <ul>
+                        {recommendations.slice(0, 3).map((r, i) => <li key={i}>{r}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             <h2 className="conditions-section-title" style={{ marginTop: 32 }}>
-              ACTIONABLE NEXT STEPS
+              {t('actionableNextSteps')}
             </h2>
             <div className="actionable-row">
               <div className="action-card">
                 <div className="action-icon-wrap video"><Icon name="video" /></div>
-                <h4>Book a Consultation</h4>
-                <p>Speak with a General Practitioner via telehealth in &lt; 15 mins.</p>
+                <h4>{t('bookConsultation')}</h4>
+                <p>{t('telehealthDesc')}</p>
                 <span 
                   onClick={() => setShowConnect(true)} 
                   className="action-link"
                 >
-                  Connect Now →
+                  {t('connectNow')}
                 </span>
               </div>
               <div className="action-card">
                 <div className="action-icon-wrap pharmacy"><Icon name="pharmacy" /></div>
-                <h4>Find a Pharmacy</h4>
-                <p>Locate pharmacies nearby for immediate relief medications.</p>
+                <h4>{t('findPharmacy')}</h4>
+                <p>{t('locatePharmacies')}</p>
                 <span 
                   onClick={() => setShowPharmacy(true)} 
                   className="action-link"
                 >
-                  Open Map →
+                  {t('openMap')}
                 </span>
               </div>
               <div className="action-card">
                 <div className="action-icon-wrap book"><Icon name="book" /></div>
-                <h4>Health Guide</h4>
-                <p>Deep dive into managed care strategies for these conditions.</p>
+                <h4>{t('healthGuide')}</h4>
+                <p>{t('deepDive')}</p>
                 <span 
                   onClick={() => setShowGuide(true)} 
                   className="action-link"
                 >
-                  Read More →
+                  {t('readMore')}
                 </span>
               </div>
             </div>
@@ -365,7 +432,7 @@ const Diagnostic = () => {
               </div>
               <div className="map-badge">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" strokeWidth="1"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>
-                 <span>2 Clinics Nearby</span>
+                 <span>{t('clinicsNearby')}</span>
               </div>
             </div>
           </div>

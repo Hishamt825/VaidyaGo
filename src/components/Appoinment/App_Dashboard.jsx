@@ -9,6 +9,9 @@ import Profile from '../Admin/Profile';
 import DasyWilliam from '../Admin/DasyWilliam';
 import Notification from '../Patient/notification';
 import { AnimatePresence } from 'framer-motion';
+import apiFetch from '../../api';
+import BASE_URL from '../../baseUrl';
+import { useLanguage } from '../../context/LanguageContext';
 
 
 
@@ -24,6 +27,7 @@ const App_Dashboard = () => {
     const [open, setOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const menuRef = useRef(null);
 
     useEffect(() => {
@@ -90,16 +94,76 @@ const App_Dashboard = () => {
     }, [activeTab]);
 
     // Mock data arrays matching the screenshot
-    const appointments = Array.from({ length: 15 }).map((_, index) => ({
-        id: index,
-        name: 'Saumya tiwari',
-        gender: 'Female',
-        age: 21,
-        date: '14 feb 26',
-        time: '2:00-3:30 am',
-        status: index % 3 === 0 ? 'Pending' : index % 3 === 1 ? 'Confirmed' : 'Cancelled',
-        img: img1,
-    }));
+    const [appointments, setAppointments] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchAppointments = async () => {
+        setIsLoading(true);
+        try {
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+
+            const docId = localStorage.getItem("doctor_id");
+            let url = `${BASE_URL}/api/appointments/list/?date=${dateStr}&doctor_id=${docId}`;
+            if (activeTab !== 'ALL') {
+                url += `&status=${activeTab.toLowerCase()}`;
+            }
+
+            const response = await apiFetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                const appointmentsList = data.appointments || [];
+                const mapped = appointmentsList.map(appt => {
+                    const startTime = new Date(appt.start_time);
+                    const endTime = new Date(appt.end_time);
+
+                    const timeStr = `${startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+                    const dateStr = startTime.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toLowerCase();
+
+                    return {
+                        id: appt.id,
+                        name: appt.patient_name || 'Unknown',
+                        gender: appt.patient_gender || 'N/A',
+                        age: appt.patient_age || 'N/A',
+                        date: dateStr,
+                        time: timeStr,
+                        status: appt.status.charAt(0).toUpperCase() + appt.status.slice(1),
+                        img: img1,
+                        original: appt
+                    };
+                });
+                setAppointments(mapped);
+            }
+        } catch (error) {
+            console.error("Error fetching appointments:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleComplete = async (id) => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${BASE_URL}/api/appointments/${id}/complete/`, {
+                method: 'PATCH',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}` 
+                }
+            });
+            if (response.ok) {
+                fetchAppointments();
+            }
+        } catch (err) {
+            console.error("Complete failed:", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchAppointments();
+    }, [currentDate, activeTab]);
 
     const filteredAppointments = appointments.filter(appt => {
         if (activeTab === 'ALL') return true;
@@ -235,6 +299,14 @@ const App_Dashboard = () => {
                                 </svg>
                                 <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#9367D8] rounded-full flex items-center justify-center text-white text-[11px] font-bold border-2 border-white shadow-sm">1</div>
                             </div>
+
+                            {/* Language Switcher */}
+                            <div
+                                onClick={toggleLanguage}
+                                className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all text-[#1b738c] font-bold"
+                            >
+                                {language === 'English' ? 'EN' : 'HI'}
+                            </div>
                         </div>
 
                         <div className="relative" ref={menuRef}>
@@ -248,7 +320,9 @@ const App_Dashboard = () => {
                                     <span className="text-[11px] font-bold text-[#1b738c]">Doctor</span>
                                 </div>
                                 <div className="relative">
-                                    <img src="/assets/ph.png" className="w-10 h-10 rounded-full border-2 border-[#1b738c]/20 shadow-sm object-cover" />
+                                    <div className="w-10 h-10 rounded-full border-2 border-[#1b738c]/20 shadow-sm bg-[#1b738c] flex items-center justify-center text-white font-bold text-sm">
+                                        DW
+                                    </div>
                                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-white"></div>
                                 </div>
                                 <svg className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -371,7 +445,11 @@ const App_Dashboard = () => {
                                             <div className="text-center">{appt.date}</div>
                                             <div className="text-center">{appt.time}</div>
 
-                                            <div className={`text-center font-bold ${appt.status === 'Confirmed' ? 'text-[#16a34a]' : appt.status === 'Pending' ? 'text-[#339eb3]' : 'text-[#f87171]'}`}>
+                                            <div className={`text-center font-bold ${
+                                                appt.status === 'Confirmed' ? 'text-[#16a34a]' : 
+                                                appt.status === 'Pending' ? 'text-orange-500' : 
+                                                'text-red-500'
+                                            }`}>
                                                 {appt.status}
                                             </div>
 
@@ -387,6 +465,18 @@ const App_Dashboard = () => {
                                                 >
                                                     view
                                                 </button>
+                                                {appt.status === 'Confirmed' && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handleComplete(appt.id);
+                                                        }}
+                                                        className="px-3 py-0.5 bg-[#10b981] border border-[#10b981] rounded text-[14px] text-white shadow-sm hover:bg-[#059669] focus:outline-none font-bold relative z-10 cursor-pointer ml-2"
+                                                    >
+                                                        Complete
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     )
@@ -447,13 +537,13 @@ const App_Dashboard = () => {
                                 {/* Col 1: Profile */}
                                 <div className="w-full lg:w-[245px] border-[1.5px] border-[#cce5ee] rounded-[10px] p-6 md:p-[24px] flex flex-col items-center justify-start lg:py-[30px] shadow-sm shrink-0 bg-white">
                                     <div className="w-[80px] md:w-[105px] h-[80px] md:h-[105px] rounded-full bg-yellow-400 p-[3px] shadow-lg overflow-hidden mb-4 md:mb-[16px] border-[2px] border-white">
-                                        <img src={selectedPatientForDetails.img} className="w-full h-full object-cover rounded-full bg-white" alt="profile" />
+                                        <img src={selectedPatientForDetails.original.patient_photo || selectedPatientForDetails.img} className="w-full h-full object-cover rounded-full bg-white" alt="profile" />
                                     </div>
                                     <h3 className="text-[18px] font-[700] text-[#333] mb-[6px] tracking-wide text-center leading-tight">
                                         {selectedPatientForDetails.name}
                                     </h3>
-                                    <div className="text-[14px] md:text-[16px] font-[600] text-[#2db3c6] mb-[2px]">Mob. +912133218765</div>
-                                    <div className="text-[12px] md:text-[14px] text-[#666] font-[400]">Email-saumya21@gmail.com</div>
+                                    <div className="text-[14px] md:text-[16px] font-[600] text-[#2db3c6] mb-[2px]">Mob. {selectedPatientForDetails.original.patient_phone || 'N/A'}</div>
+                                    <div className="text-[12px] md:text-[14px] text-[#666] font-[400]">Email-{selectedPatientForDetails.original.patient_email || 'N/A'}</div>
 
                                     <div className="hidden lg:flex mt-auto pt-[40px]">
                                         <img src={logoUrl} alt="VaDyaGo" className="h-[42px] opacity-90 mix-blend-multiply" />
@@ -467,14 +557,14 @@ const App_Dashboard = () => {
                                     </div>
                                     <div className="px-[16px] pb-[16px] flex flex-col gap-[10px] flex-1 border-t-[1.5px] border-[#cce5ee] pt-[18px]">
                                         {[
-                                            { label: 'Date of birth:', value: '02-feb-2026' },
+                                            { label: 'Age:', value: selectedPatientForDetails.age },
                                             { label: 'Gender:', value: selectedPatientForDetails.gender },
-                                            { label: 'Blood Type:', value: 'A+' },
+                                            { label: 'Blood Type:', value: selectedPatientForDetails.original.patient_blood_type || 'A+' },
                                             { label: 'Height:', value: '1.78m' },
-                                            { label: 'Weight:', value: '55kg' },
-                                            { label: 'Patient:', value: '11A2026/033968' },
-                                            { label: 'Diseases:', value: 'Diabetes,Asthma' },
-                                            { label: 'Last visit:', value: '10-feb-2026' },
+                                            { label: 'Weight:', value: selectedPatientForDetails.original.patient_weight || '--' },
+                                            { label: 'Patient MRN:', value: selectedPatientForDetails.original.patient_mrn || '--' },
+                                            { label: 'Diseases:', value: selectedPatientForDetails.original.patient_disease || 'N/A' },
+                                            { label: 'Heart Rate:', value: selectedPatientForDetails.original.patient_heart_rate || '--' },
                                             { label: 'Register.Date:', value: '29-jan-2026' },
                                             { label: 'Address:', value: 'Gorakhpur,273015' }
                                         ].map((info, idx) => (

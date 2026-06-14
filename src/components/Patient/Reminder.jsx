@@ -4,8 +4,11 @@ import Sidebar from './Patient_sidebar';
 import Profile from './Profile';
 import Account from './Account';
 import Notification from './notification';
+import { useLanguage } from '../../context/LanguageContext';
 import phImg from '../../assets/ph.png';
 import tipImg from '../../assets/medication_tip.png';
+import BASE_URL from '../../baseUrl';
+import apiFetch from '../../api';
 
 /* ─────────────────────────────────────────────
    REUSABLE COMPONENTS
@@ -58,17 +61,86 @@ const Reminder = () => {
     const navigate = useNavigate();
     const [active, setActive] = useState('Reminder');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
     // Form states
     const [times, setTimes] = useState(['Morning']);
+    const [medicationName, setMedicationName] = useState('');
+    const [dosage, setDosage] = useState('');
+    const [instructions, setInstructions] = useState('');
+    const [frequency, setFrequency] = useState('Daily');
+    const [duration, setDuration] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+
+    const fetchActiveData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/prescriptions/`);
+            if (response.ok) {
+                const data = await response.json();
+                const activeP = data.find(p => p.status === 'active');
+                if (activeP && activeP.medicines && activeP.medicines.length > 0) {
+                    const firstMed = activeP.medicines[0];
+                    setMedicationName(firstMed.name || '');
+                    setDosage(firstMed.dosage || '');
+                    setInstructions(activeP.summary || '');
+                    setDuration(firstMed.duration_days?.toString() || '');
+                }
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchActiveData();
+    }, []);
 
     const toggleTime = (time) => {
         if (times.includes(time)) {
             setTimes(times.filter(t => t !== time));
         } else {
             setTimes([...times, time]);
+        }
+    };
+
+    const handleSaveReminder = async () => {
+        if (!medicationName || !dosage || !duration || times.length === 0) {
+            alert("Please fill in all required fields and select at least one time.");
+            return;
+        }
+
+        setIsSaving(true);
+        const payload = {
+            medicine_name: medicationName,
+            dosage: dosage,
+            frequency: frequency,
+            duration_days: parseInt(duration) || 0,
+            times: times.map(t => t.toLowerCase())
+        };
+
+        try {
+            const response = await apiFetch(`${BASE_URL}/reminder/create/`, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) {
+                alert("Reminder saved successfully!");
+                navigate('/Reminder1');
+            } else {
+                const err = await response.json();
+                alert(err.message || "Failed to save reminder");
+            }
+        } catch (error) {
+            console.error("Save Error:", error);
+            alert("An error occurred while saving the reminder.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -119,7 +191,12 @@ const Reminder = () => {
                     </div>
 
                     <div className="flex items-center gap-[32px] ml-auto">
-                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                        <div
+                            onClick={toggleLanguage}
+                            className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                        >
+                            {language === 'English' ? 'EN' : 'HI'}
+                        </div>
                         <div className="flex items-center gap-[20px]">
                             <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                 <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,25 +237,45 @@ const Reminder = () => {
                             
                             <FormSection title="Clinical Details" icon={<svg className="w-[20px] h-[20px]" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/></svg>}>
                                 <div className="flex flex-col md:flex-row gap-[24px]">
-                                    <InputField label="Medication Name" placeholder="e.g. Amoxicillin" />
-                                    <InputField label="Dosage" placeholder="e.g. 500mg" />
+                                    <InputField 
+                                        label="Medication Name" 
+                                        placeholder="e.g. Amoxicillin" 
+                                        value={medicationName}
+                                        onChange={(e) => setMedicationName(e.target.value)}
+                                    />
+                                    <InputField 
+                                        label="Dosage" 
+                                        placeholder="e.g. 500mg" 
+                                        value={dosage}
+                                        onChange={(e) => setDosage(e.target.value)}
+                                    />
                                 </div>
                             </FormSection>
 
                             <FormSection title="Schedule & Routine" icon={<svg className="w-[20px] h-[20px]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/></svg>}>
                                 <div className="flex flex-col md:flex-row gap-[24px] mb-[20px]">
-                                    <div className="flex-1">
-                                        <p className="text-[#627382] text-[11px] font-semibold uppercase tracking-[0.15em] mb-[6px] ml-[4px]">Frequency</p>
-                                        <div className="relative">
-                                            <select className="w-full appearance-none bg-[#EAEFF2] border-none rounded-[12px] px-[16px] py-[12px] text-[#0D1C2E] text-[15px] font-medium outline-none focus:ring-2 focus:ring-[#A9F1F1] transition-all">
-                                                <option>Daily</option>
-                                                <option>Twice Weekly</option>
-                                                <option>Weekly</option>
-                                            </select>
-                                            <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-[#627382] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"/></svg>
-                                        </div>
-                                    </div>
-                                    <InputField label="Duration" placeholder="e.g. 7 days" />
+                                     <div className="flex-1">
+                                         <p className="text-[#627382] text-[11px] font-semibold uppercase tracking-[0.15em] mb-[6px] ml-[4px]">Frequency</p>
+                                         <div className="relative">
+                                             <select 
+                                                 value={frequency}
+                                                 onChange={(e) => setFrequency(e.target.value)}
+                                                 className="w-full appearance-none bg-[#EAEFF2] border-none rounded-[12px] px-[16px] py-[12px] text-[#0D1C2E] text-[15px] font-medium outline-none focus:ring-2 focus:ring-[#A9F1F1] transition-all"
+                                             >
+                                                 <option>Daily</option>
+                                                 <option>Twice Weekly</option>
+                                                 <option>Weekly</option>
+                                             </select>
+                                             <svg className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-[#627382] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"/></svg>
+                                         </div>
+                                     </div>
+                                     <InputField 
+                                         label="Duration (Days)" 
+                                         placeholder="e.g. 7" 
+                                         type="number"
+                                         value={duration}
+                                         onChange={(e) => setDuration(e.target.value)}
+                                     />
                                 </div>
 
                                 <p className="text-[#627382] text-[11px] font-semibold uppercase tracking-[0.15em] mb-[12px] ml-[4px]">Set Times</p>
@@ -216,14 +313,23 @@ const Reminder = () => {
                                     placeholder="Take after food. Do not drink alcohol while taking this medication."
                                     rows="4"
                                     className="w-full bg-[#EAEFF2] border-none rounded-[16px] px-[24px] py-[20px] text-[#0D1C2E] placeholder-[#94A3B8] text-[16px] font-medium outline-none focus:ring-2 focus:ring-[#A9F1F1] transition-all"
+                                    value={instructions}
+                                    onChange={(e) => setInstructions(e.target.value)}
                                 />
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-[16px]">
-                                <button className="flex-1 bg-[#1A7785] hover:bg-[#125863] text-white py-[18px] rounded-[20px] font-medium text-[16px] shadow-lg shadow-[#1A7785]/20 transition-all hover:-translate-y-1">
-                                    Save Reminder
+                                <button 
+                                    onClick={handleSaveReminder}
+                                    disabled={isSaving}
+                                    className="flex-1 bg-[#1A7785] hover:bg-[#125863] text-white py-[18px] rounded-[20px] font-medium text-[16px] shadow-lg shadow-[#1A7785]/20 transition-all hover:-translate-y-1 disabled:opacity-50 disabled:translate-y-0"
+                                >
+                                    {isSaving ? 'Saving...' : 'Save Reminder'}
                                 </button>
-                                <button className="flex-1 bg-[#EAEFF2] hover:bg-[#dfe4e7] text-[#627382] py-[18px] rounded-[20px] font-medium text-[16px] transition-all">
+                                <button 
+                                    onClick={() => navigate(-1)}
+                                    className="flex-1 bg-[#EAEFF2] hover:bg-[#dfe4e7] text-[#627382] py-[18px] rounded-[20px] font-medium text-[16px] transition-all"
+                                >
                                     Cancel
                                 </button>
                             </div>

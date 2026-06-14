@@ -21,6 +21,7 @@ import Account from '../Account';
 import Notification from '../notification';
 import Genrate from '../Vitals/Genrate';
 import Health_report from '../Vitals/Health_report';
+import { useLanguage } from '../../../context/LanguageContext';
 import phImg from '../../../assets/ph.png';
 
 /* ─────────────────────────────────────────────
@@ -60,6 +61,7 @@ const Detail = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
 
@@ -102,7 +104,12 @@ const Detail = () => {
                     </div>
 
                     <div className="flex items-center gap-[32px] ml-auto">
-                        <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                        <div
+                            onClick={toggleLanguage}
+                            className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                        >
+                            {language === 'English' ? 'EN' : 'HI'}
+                        </div>
                         <div className="flex items-center gap-[20px]">
                             <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                 <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

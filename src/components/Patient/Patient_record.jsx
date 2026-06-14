@@ -1,27 +1,67 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ShieldCheck, Clock, FlaskConical, Box, Syringe, ChevronRight, Download, RefreshCw } from 'lucide-react';
+import BASE_URL from '../../baseUrl';
+import apiFetch from '../../api';
 
 const Patient_record = ({ onClose }) => {
+    const [prescriptions, setPrescriptions] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchRecords = async () => {
+        setIsLoading(true);
+        try {
+            const response = await apiFetch(`${BASE_URL}/api/prescriptions/`);
+            if (response.ok) {
+                const data = await response.json();
+                setPrescriptions(Array.isArray(data) ? data : []);
+            }
+        } catch (error) {
+            console.error("Error fetching records:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchRecords();
+    }, []);
+
+    const lastEntryDate = prescriptions.length > 0 
+        ? new Date(Math.max(...prescriptions.map(p => new Date(p.created_at)))) 
+        : null;
+
+    const formattedLastEntry = lastEntryDate 
+        ? lastEntryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : 'No entries';
+
+    const labReports = prescriptions.filter(p => {
+        const type = (p.document_type || '').toLowerCase();
+        const hasAttachment = Boolean(p.image || p.file);
+        return type.includes('lab report') || (!type && hasAttachment);
+    });
+    const imagingReports = prescriptions.filter(p => p.document_type === 'Imaging & Radiology');
+    const vaccinationReports = prescriptions.filter(p => p.document_type === 'Vaccination');
+
     const records = [
         { 
             title: 'Lab Reports', 
             desc: 'Blood work, Metabolic panel, Lipid profile', 
             icon: <FlaskConical size={20} />, 
-            badge: '3 New', 
-            badgeColor: 'bg-[#C6F0F2] text-[#1A7785]' 
+            badge: labReports.length > 0 ? `${labReports.length} Total` : 'None', 
+            badgeColor: labReports.length > 0 ? 'bg-[#C6F0F2] text-[#1A7785]' : 'bg-gray-100 text-gray-400'
         },
         { 
             title: 'Imaging', 
             desc: 'MRI Results, X-Ray Scans, Ultrasound', 
             icon: <Box size={20} />, 
-            status: 'Last updated 12 days ago' 
+            status: imagingReports.length > 0 ? `Updated ${Math.floor((new Date() - new Date(Math.max(...imagingReports.map(r => new Date(r.created_at))))) / (1000 * 60 * 60 * 24))} days ago` : 'No records'
         },
         { 
             title: 'Vaccinations', 
             desc: 'Immunization history and booster schedules', 
             icon: <Syringe size={20} />, 
-            status: 'Up to Date', 
-            statusColor: 'text-[#1A7785]' 
+            status: vaccinationReports.length > 0 ? 'Up to Date' : 'No records', 
+            statusColor: vaccinationReports.length > 0 ? 'text-[#1A7785]' : 'text-gray-400' 
         },
     ];
 
@@ -68,14 +108,16 @@ const Patient_record = ({ onClose }) => {
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Last Entry</p>
-                                <p className="text-[14px] font-bold text-[#0D1C2E]">Oct 24, 2023</p>
+                                <p className="text-[14px] font-bold text-[#0D1C2E]">{formattedLastEntry}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Record Categories */}
                     <div className="space-y-4 mb-8">
-                        {records.map((record, i) => (
+                        {isLoading ? (
+                            <div className="text-center py-12 text-gray-400 font-medium">Loading health records...</div>
+                        ) : records.map((record, i) => (
                             <div key={i} className="flex items-center justify-between p-2 rounded-[24px] hover:bg-gray-50 transition-colors cursor-pointer group">
                                 <div className="flex items-center gap-5">
                                     <div className="w-14 h-14 rounded-full bg-[#F1F7F9] flex items-center justify-center text-[#0D1C2E] group-hover:bg-[#0D1C2E] group-hover:text-white transition-all">
@@ -116,8 +158,11 @@ const Patient_record = ({ onClose }) => {
                             >
                                 Close
                             </button>
-                            <button className="bg-gradient-to-r from-[#1A4568] to-[#1A7785] text-white px-8 py-3 rounded-full font-bold text-[14px] shadow-xl shadow-[#1A7785]/20 hover:opacity-90 transition-all flex items-center gap-2 active:scale-95">
-                                <RefreshCw size={16} />
+                            <button 
+                                onClick={fetchRecords}
+                                className="bg-gradient-to-r from-[#1A4568] to-[#1A7785] text-white px-8 py-3 rounded-full font-bold text-[14px] shadow-xl shadow-[#1A7785]/20 hover:opacity-90 transition-all flex items-center gap-2 active:scale-95"
+                            >
+                                <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
                                 Sync Records
                             </button>
                         </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../Patient_sidebar';
 import BASE_URL from '../../../baseUrl';
 import apiFetch from '../../../api';
+import { useLanguage } from '../../../context/LanguageContext';
 import Profile from '../Profile';
 import Account from '../Account';
 import Notification from '../notification';
@@ -11,7 +12,7 @@ import regimenBg from '../../../assets/regimen_abstract_bg.png';
 import Daily_report from './Daily_report';
 import Update_logs from './Update_logs';
 import Schedule from './Schedule';
-import New_request from './New_request';
+import NewRequest_ActivePrescription_Medication from './NewRequest_ActivePrescription_Medication';
 import Past_medication from './Past_medication';
 import Request_refill from './Request_refill';
 import Refill_request from './Refill_request';
@@ -21,6 +22,7 @@ const Medication1 = () => {
     const navigate = useNavigate();
     const [active, setActive] = useState('Medications');
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const { t, toggleLanguage, language } = useLanguage();
     const [activeModal, setActiveModal] = useState(null); // 'profile' | 'account' | null
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isDailyReportOpen, setIsDailyReportOpen] = useState(false);
@@ -91,6 +93,8 @@ const Medication1 = () => {
 
     const [activePrescriptions, setActivePrescriptions] = useState([]);
     const [isPrescriptionsLoading, setIsPrescriptionsLoading] = useState(true);
+    const [assistantResponse, setAssistantResponse] = useState('');
+    const [assistantQuery, setAssistantQuery] = useState('');
 
     const fetchActivePrescriptions = async () => {
         setIsPrescriptionsLoading(true);
@@ -119,6 +123,38 @@ const Medication1 = () => {
         if (hour < 12) return 'Morning';
         if (hour < 17) return 'Afternoon';
         return 'Evening';
+    };
+
+    const upcomingMedicines = todaySchedule.filter(item => !item.is_taken).slice(0, 3);
+    const upcomingMedicineNames = upcomingMedicines.map((item) => item.medication_name).filter(Boolean);
+    const upcomingMedicinePhrase = upcomingMedicineNames.length > 0
+        ? upcomingMedicineNames.length === 1
+            ? upcomingMedicineNames[0]
+            : `${upcomingMedicineNames.slice(0, -1).join(', ')} and ${upcomingMedicineNames.slice(-1)}`
+        : 'your upcoming medicine';
+
+    const generateAssistantResponse = (query) => {
+        const normalized = query.toLowerCase();
+        if (normalized.includes('curd') || normalized.includes('dairy')) {
+            return `For ${upcomingMedicinePhrase}, it is best to avoid dairy products like curd, milk, and yogurt close to the dose unless your doctor specifically says otherwise. Take the medicine with plain water and wait at least 30 minutes before eating rich dairy foods.`;
+        }
+        if (normalized.includes('milk') && normalized.includes('water')) {
+            return `Most medicines work best with plain water, not milk. For ${upcomingMedicinePhrase}, take it with water unless the prescription explicitly instructs you to take it with milk.`;
+        }
+        if (normalized.includes('eat') || normalized.includes('food') || normalized.includes('take')) {
+            return `For ${upcomingMedicinePhrase}, stick to light, easy-to-digest food around the dose and avoid very spicy, greasy, or heavy meals. Plain water is usually the safest option unless your doctor advises otherwise.`;
+        }
+        return `I can guide you on food choices for ${upcomingMedicinePhrase}. Ask about specific foods or whether to take the medicine with water, milk, or with/after meals.`;
+    };
+
+    const handleAssistantQuery = (query) => {
+        setAssistantQuery(query);
+        setAssistantResponse(generateAssistantResponse(query));
+    };
+
+    const handleAssistantSubmit = () => {
+        if (!assistantQuery.trim()) return;
+        setAssistantResponse(generateAssistantResponse(assistantQuery));
     };
 
     return (
@@ -154,7 +190,12 @@ const Medication1 = () => {
                         </div>
 
                         <div className="flex items-center gap-[32px] ml-auto">
-                            <span className="text-white/80 hover:text-white text-[13px] font-medium hidden md:block select-none cursor-pointer transition-colors">Language</span>
+                            <div
+                                onClick={toggleLanguage}
+                                className="text-white/80 hover:text-white text-[13px] font-bold hidden md:block select-none cursor-pointer transition-colors bg-white/10 px-3 py-1 rounded-full border border-white/10 hover:bg-white/20"
+                            >
+                                {language === 'English' ? 'EN' : 'HI'}
+                            </div>
                             <div className="flex items-center gap-[20px]">
                                 <button onClick={() => setIsNotificationOpen(true)} className="text-white hover:text-[#6ED4D4] transition-colors relative">
                                     <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,7 +242,7 @@ const Medication1 = () => {
                                     <div className="flex-1 z-10 relative">
                                         <h2 className="text-[28px] font-[900] text-[#0D1C2E] mb-2">Active Regimen Overview</h2>
                                         <p className="text-[#627382] text-[15px] leading-relaxed mb-6 max-w-[400px]">
-                                            You have {todaySchedule.length} medications scheduled for today. Keep track of your health journey.
+                                            You have {todaySchedule.length} medications scheduled for today, and {activePrescriptions.length} prescriptions are about to end soon.
                                         </p>
                                         <div className="flex flex-wrap gap-2.5">
                                             <button 
@@ -302,7 +343,7 @@ const Medication1 = () => {
                                             className="flex items-center gap-1.5 bg-[#1A7785] hover:bg-[#125863] text-white px-3.5 py-2 rounded-full text-[14px] font-bold transition-all shadow-lg shadow-[#1A7785]/20"
                                         >
                                             <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
-                                            New Request
+                                            + New Request
                                         </button>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -342,8 +383,8 @@ const Medication1 = () => {
                                                     <p className="text-[14px] text-[#627382] font-medium mb-6">{med.dosage || 'Dosage not set'}</p>
                                                     <div className="flex items-end justify-between">
                                                         <div>
-                                                            <p className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Dosage Status</p>
-                                                            <p className="text-[14px] font-[900] text-[#0D1C2E]">{med.dosage}</p>
+                                                            <p className="text-[9px] font-medium text-[#627382] uppercase tracking-[0.2em] mb-0.5 opacity-70">Days Left</p>
+                                                            <p className="text-[14px] font-[900] text-[#E85B5A]">{med.days_left} Days</p>
                                                         </div>
                                                         <button 
                                                             onClick={(e) => {
@@ -374,24 +415,55 @@ const Medication1 = () => {
                                         </div>
                                         <h2 className="text-[20px] font-medium tracking-tight">Assistant AI</h2>
                                     </div>
-                                    <p className="text-white/50 text-[16px] leading-relaxed mb-[32px]">
-                                        Ask me about side effects, interactions, or dosage timings.
+                                    <p className="text-white/50 text-[16px] leading-relaxed mb-[24px]">
+                                        I only help with food guidance around your upcoming medicines. For example, I can tell you which foods to avoid or take with a tablet, such as “do not eat curd after this tablet” or “take this tablet with milk, not water.”
                                     </p>
+                                    {upcomingMedicines.length > 0 ? (
+                                        <div className="mb-[24px] rounded-[24px] border border-white/10 bg-white/5 p-4">
+                                            <p className="text-[12px] uppercase tracking-[0.2em] text-white/60 mb-3">Upcoming medicines</p>
+                                            <ul className="space-y-2 text-[15px] text-white/90">
+                                                {upcomingMedicines.map((item) => (
+                                                    <li key={item.id} className="flex items-center justify-between gap-3">
+                                                        <span>{item.medication_name}</span>
+                                                        <span className="text-[11px] uppercase tracking-[0.2em] text-white/50">{item.time.slice(0, 5)}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ) : (
+                                        <div className="mb-[24px] rounded-[24px] border border-white/10 bg-white/5 p-4 text-[14px] text-white/70">
+                                            No upcoming scheduled medicines found in reminders.
+                                        </div>
+                                    )}
+                                    {assistantResponse && (
+                                        <div className="mb-[24px] rounded-[24px] border border-white/10 bg-white/10 p-4 text-[15px] text-white/90">
+                                            <p className="text-[12px] uppercase tracking-[0.2em] text-white/60 mb-3">Response</p>
+                                            <p>{assistantResponse}</p>
+                                        </div>
+                                    )}
                                     <div className="flex flex-col gap-[12px] mb-[32px]">
-                                        <button className="w-full text-left bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl px-[20px] py-[12px] text-[16px] font-medium text-white/80 transition-all uppercase tracking-wider">
-                                            "METFORMIN + COFFEE?"
+                                        <button
+                                            onClick={() => handleAssistantQuery('After this tablet, can I eat curd?')}
+                                            className="w-full text-left bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl px-[20px] py-[12px] text-[16px] font-medium text-white/80 transition-all uppercase tracking-wider"
+                                        >
+                                            "After this tablet, can I eat curd?"
                                         </button>
-                                        <button className="w-full text-left bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl px-[20px] py-[12px] text-[16px] font-medium text-white/80 transition-all uppercase tracking-wider">
-                                            "LISINOPRIL SIDE EFFECTS?"
+                                        <button
+                                            onClick={() => handleAssistantQuery('Take this medicine with milk or water?')}
+                                            className="w-full text-left bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl px-[20px] py-[12px] text-[16px] font-medium text-white/80 transition-all uppercase tracking-wider"
+                                        >
+                                            "Take this medicine with milk or water?"
                                         </button>
                                     </div>
                                     <div className="mt-auto relative">
                                         <input 
                                             type="text" 
-                                            placeholder="Type your question..."
+                                            value={assistantQuery}
+                                            onChange={(e) => setAssistantQuery(e.target.value)}
+                                            placeholder="Type your food-related question..."
                                             className="w-full bg-white border-none rounded-2xl py-[14px] pl-[20px] pr-[52px] text-[16px] text-[#0B1423] placeholder-[#627382]/50 outline-none shadow-sm"
                                         />
-                                        <button className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#1A7785] hover:text-[#49AAB3]">
+                                        <button onClick={handleAssistantSubmit} className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#1A7785] hover:text-[#49AAB3]">
                                             <svg className="w-[24px] h-[24px]" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                                             </svg>
@@ -410,26 +482,24 @@ const Medication1 = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2.5">
-                                        <div className="bg-[#EAEFF2] bg-opacity-70 rounded-[20px] p-4 flex items-center justify-between border border-white shadow-sm">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-2 h-2 rounded-full bg-[#1A7785] shadow-[0_0_8px_rgba(26,119,133,0.4)]" />
-                                                <div>
-                                                    <p className="text-[15px] font-medium text-[#0D1C2E]">Metformin</p>
-                                                    <p className="text-[10px] text-[#627382] font-medium tracking-wide opacity-60">#REF-6291</p>
+                                        {activePrescriptions.length === 0 ? (
+                                            <p className="text-[12px] text-[#627382] text-center py-4">No refills pending soon.</p>
+                                        ) : (
+                                            activePrescriptions.map((med, idx) => (
+                                                <div key={med.id} className={`bg-[#EAEFF2] bg-opacity-70 rounded-[20px] p-4 flex items-center justify-between border border-white shadow-sm ${idx > 1 ? 'hidden' : ''}`}>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-2 h-2 rounded-full ${med.days_left <= 2 ? 'bg-[#E85B5A]' : 'bg-[#1A7785]'} shadow-[0_0_8px_rgba(26,119,133,0.4)]`} />
+                                                        <div>
+                                                            <p className="text-[15px] font-medium text-[#0D1C2E]">{med.name}</p>
+                                                            <p className="text-[10px] text-[#627382] font-medium tracking-wide opacity-60">{med.days_left} days left</p>
+                                                        </div>
+                                                    </div>
+                                                    <span className={`text-[9px] font-medium px-3 py-1 rounded-full uppercase tracking-widest ${med.days_left <= 2 ? 'bg-[#E85B5A] text-white' : 'bg-[#006A70] text-white'}`}>
+                                                        {med.days_left <= 2 ? 'CRITICAL' : 'READY'}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                            <span className="text-[9px] font-medium text-white bg-[#006A70] px-3 py-1 rounded-full uppercase tracking-widest">Ready</span>
-                                        </div>
-                                        <div className="bg-[#F8FAFB] rounded-[20px] p-4 flex items-center justify-between border border-gray-100">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-2 h-2 rounded-full bg-amber-500" />
-                                                <div>
-                                                    <p className="text-[15px] font-medium text-[#0D1C2E]">Atorvastatin</p>
-                                                    <p className="text-[10px] text-[#627382] font-medium tracking-wide opacity-60">#REF-4420</p>
-                                                </div>
-                                            </div>
-                                            <span className="text-[9px] font-medium text-amber-600 bg-amber-50 px-3 py-1 rounded-full uppercase tracking-widest opacity-70">Pending</span>
-                                        </div>
+                                            ))
+                                        )}
                                     </div>
                                     <button 
                                         onClick={() => setIsRefillRequestOpen(true)}
@@ -529,7 +599,10 @@ const Medication1 = () => {
              {/* Modals - Outside the blurred container */}
             {isDailyReportOpen && (
                 <div className="fixed inset-0 z-[200]">
-                     <Daily_report onClose={() => setIsDailyReportOpen(false)} />
+                     <Daily_report 
+                        onClose={() => setIsDailyReportOpen(false)} 
+                        schedule={todaySchedule}
+                    />
                 </div>
             )}
             {isUpdateLogsOpen && (
@@ -546,7 +619,7 @@ const Medication1 = () => {
             )}
             {isNewRequestOpen && (
                 <div className="fixed inset-0 z-[200]">
-                     <New_request onClose={() => setIsNewRequestOpen(false)} onRequestAdded={fetchActivePrescriptions} />
+                     <NewRequest_ActivePrescription_Medication onClose={() => setIsNewRequestOpen(false)} onRequestAdded={fetchActivePrescriptions} />
                 </div>
             )}
             {isPastMedicationOpen && (
