@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/lo.svg';
 import Side_app from './Side_app';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, RefreshCw } from 'lucide-react';
 import './Dsetting.css';
 import apiFetch from '../../api';
 import BASE_URL from '../../baseUrl';
@@ -49,18 +48,18 @@ const calendarDays = ['27', '28', '29', '30', '31', '1', '2',
    '24', '25', '26', '27', '28', '29', '30'];
 
 const parseDateToPicker = (dateStr) => {
-   if (!dateStr) return { index: 17, month: 'February', year: 2026 };
+   if (!dateStr) return { initialActiveIndex: 17, initialMonth: 'February', initialYear: 2026 };
    const [y, m, d] = dateStr.split('-').map(Number);
    const monthName = monthsList[m - 1];
    const dayStr = d.toString();
-   
-   // Find the first index that matches the day. 
+
+   // Find the first index that matches the day.
    // Note: This is a simplified approach matching the hardcoded calendarDays.
    let index = calendarDays.indexOf(dayStr);
    // If it's the 27th-31st and we are in early Feb, it might be the prev month days
    if (d > 20 && index < 5) index = calendarDays.lastIndexOf(dayStr);
    if (d < 10 && index > 30) index = calendarDays.indexOf(dayStr);
-   
+
    return { initialActiveIndex: index === -1 ? 17 : index, initialMonth: monthName, initialYear: y };
 };
 
@@ -380,14 +379,6 @@ const Addslot = () => {
    const navigate = useNavigate();
    const [activeNav, setActiveNav] = useState('Add Slots');
    const [isMobileOpen, setIsMobileOpen] = useState(false);
-   const [slotItems, setSlotItems] = useState([]); // This will be set from slots after fetch
-
-   const toggleBlock = (id) => {
-      setSlots(prev => prev.map(item => 
-         String(item.id) === String(id) ? { ...item, type: item.type === 'available' ? 'break' : 'available' } : item
-      ));
-   };
-
    const [open, setOpen] = useState(false);
    const [openProfile, setOpenProfile] = useState(false);
    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -529,7 +520,7 @@ const Addslot = () => {
    const [popupSelectedMonth, setPopupSelectedMonth] = useState(defaultPopupMonth);
 
    const [isPopupYearOpen, setIsPopupYearOpen] = useState(false);
-   const [popupSelectedYear, setPopupSelectedYear] = useState(defaultPopupYear); 
+   const [popupSelectedYear, setPopupSelectedYear] = useState(todayYear);
    const popupYearScrollRef = useRef(null);
 
    const getValidDateIndexForMonth = (dateIndex, monthName, year) => {
@@ -595,176 +586,175 @@ const Addslot = () => {
    const formattedApiDate = `${popupSelectedYear}-${month}-${day}`;
 
    const isBookedValue = (value) => {
-       return value === true || value === 'true' || value === 1 || value === '1';
+      return value === true || value === 'true' || value === 1 || value === '1';
    };
 
-    const applyPendingAppointmentsToSlots = (mappedSlots, appointments) => {
-        if (!appointments || !Array.isArray(appointments)) return mappedSlots;
+   const applyPendingAppointmentsToSlots = (mappedSlots, appointments) => {
+      if (!appointments || !Array.isArray(appointments)) return mappedSlots;
 
-        return mappedSlots.map(slot => {
-            if (slot.type === 'booked') return slot;
+      return mappedSlots.map(slot => {
+         if (slot.type === 'booked') return slot;
 
-            const matchingAppointment = appointments.find(appt => {
-                if (!appt.start_time || !appt.end_time) return false;
-                const apptDate = appt.start_time.slice(0, 10);
-                const apptFrom = appt.start_time.slice(11, 16);
-                const apptTo = appt.end_time.slice(11, 16);
-                return apptDate === slot.date && apptFrom === slot.from_time && apptTo === slot.to_time;
+         const matchingAppointment = appointments.find(appt => {
+            if (!appt.start_time || !appt.end_time) return false;
+            const apptDate = appt.start_time.slice(0, 10);
+            const apptFrom = appt.start_time.slice(11, 16);
+            const apptTo = appt.end_time.slice(11, 16);
+            return apptDate === slot.date && apptFrom === slot.from_time && apptTo === slot.to_time;
+         });
+
+         if (!matchingAppointment) return slot;
+
+         return {
+            ...slot,
+            type: 'booked',
+            title: matchingAppointment.patient_name || 'Booked',
+            subtitle: `Booking ID : #${matchingAppointment.id}`
+         };
+      });
+   };
+
+   const fetchPendingAppointments = async () => {
+      try {
+         const response = await apiFetch(`${BASE_URL}/api/appointments/list/?doctor_id=${doctorId}&status=pending&date=${formattedApiDate}`);
+         if (response.ok) {
+            const data = await response.json();
+            const appointmentsData = Array.isArray(data) ? data : data.results || [];
+            setPendingAppointments(appointmentsData);
+            return appointmentsData;
+         }
+      } catch (error) {
+         console.error('Error fetching pending appointments:', error);
+      }
+      setPendingAppointments([]);
+      return [];
+   };
+
+   const fetchSlots = async () => {
+      setIsLoadingSlots(true);
+      const endpoint = `${BASE_URL}/api/doctor/${doctorId}/slots/?${isBookedView ? 'booked=true&' : ''}date=${formattedApiDate}`;
+
+      try {
+         const [slotsResponse, appointmentsForDate] = await Promise.all([
+            apiFetch(endpoint),
+            fetchPendingAppointments()
+         ]);
+
+         if (slotsResponse.ok) {
+            const result = await slotsResponse.json();
+            let data = result.slots || result.booked_slots || (Array.isArray(result) ? result : []);
+
+            if (!Array.isArray(data) && data.results) data = data.results;
+
+            const mappedSlots = data.map(item => {
+               const startTimeStr = item.start_time || "";
+               const endTimeStr = item.end_time || "";
+               let date = "";
+               let fromTime = "";
+               let toTime = "";
+
+               if (startTimeStr.includes('T')) {
+                  [date, fromTime] = startTimeStr.split('T');
+                  fromTime = fromTime.slice(0, 5);
+               } else {
+                  date = startTimeStr.split(' ')[0] || formattedApiDate;
+                  fromTime = startTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
+               }
+
+               if (endTimeStr.includes('T')) {
+                  toTime = endTimeStr.split('T')[1].slice(0, 5);
+               } else {
+                  toTime = endTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
+               }
+
+               const booked = isBookedValue(item.is_booked);
+               let status = booked ? 'booked' : 'available';
+
+               // Check if the slot time has passed for available slots only
+               const slotDateTime = new Date(`${date}T${fromTime}:00`);
+               const isPassed = !booked && slotDateTime < new Date();
+
+               return {
+                  id: item.id || Math.random(),
+                  type: isPassed ? 'passed' : status,
+                  originalType: status, // Keep track of whether it was booked or available
+                  date: date,
+                  from_time: fromTime,
+                  to_time: toTime,
+                  time: `${fromTime} - ${toTime}`,
+                  title: item.appointment_details?.patient_name || (status === 'booked' ? 'Booked' : 'Available'),
+                  subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : '',
+                  appointment_details: item.appointment_details || null
+               };
             });
 
-            if (!matchingAppointment) return slot;
+            const finalSlots = applyPendingAppointmentsToSlots(mappedSlots, appointmentsForDate);
 
-            return {
-                ...slot,
-                type: 'booked',
-                title: matchingAppointment.patient_name || 'Booked',
-                subtitle: `Booking ID : #${matchingAppointment.id}`
-            };
-        });
-    };
+            setSlots(finalSlots.sort((a, b) => {
+               if (a.date !== b.date) return a.date.localeCompare(b.date);
+               return a.from_time.localeCompare(b.from_time);
+            }));
+         }
+      } catch (error) {
+         console.error('Error fetching slots:', error);
+      } finally {
+         setIsLoadingSlots(false);
+      }
+   };
 
-    const fetchPendingAppointments = async () => {
-        try {
-            const response = await apiFetch(`${BASE_URL}/api/appointments/list/?doctor_id=${doctorId}&status=pending&date=${formattedApiDate}`);
-            if (response.ok) {
-                const data = await response.json();
-                const appointmentsData = Array.isArray(data) ? data : data.results || [];
-                setPendingAppointments(appointmentsData);
-                return appointmentsData;
+   useEffect(() => {
+      fetchSlots();
+   }, [popupActiveDateIndex, popupSelectedMonth, popupSelectedYear, isBookedView]);
+
+   useEffect(() => {
+      const handleChatbotAction = (e) => {
+         const { action, data } = e.detail;
+         // List of actions that modify slots or appointments on this page
+         const relevantActions = [
+            'generate_slots',
+            'create_appointment',
+            'cancel_appointment',
+            'reschedule_appointment',
+            'accept_appointment',
+            'reject_appointment'
+         ];
+
+         if (relevantActions.includes(action)) {
+            console.log(`Chatbot action ${action} detected, refreshing slots...`);
+
+            // If slots were generated for a specific date, switch view to that date
+            if (action === 'generate_slots' && data.start_date) {
+               try {
+                  const [y, m, d] = data.start_date.split('-');
+                  const mIdx = parseInt(m, 10) - 1;
+                  if (monthsList[mIdx]) {
+                     setPopupSelectedMonth(monthsList[mIdx]);
+                     setPopupSelectedYear(parseInt(y, 10));
+                     const dayStr = parseInt(d, 10).toString();
+                     const dayIndex = calendarDays.findIndex((val, idx) => val === dayStr && idx >= 5);
+                     if (dayIndex !== -1) setPopupActiveDateIndex(dayIndex);
+                  }
+               } catch (err) {
+                  console.error('Error parsing chatbot date:', err);
+               }
             }
-        } catch (error) {
-            console.error('Error fetching pending appointments:', error);
-        }
-        setPendingAppointments([]);
-        return [];
-    };
 
-    const fetchSlots = async () => {
-        setIsLoadingSlots(true);
-        
-        const endpoint = `${BASE_URL}/api/doctor/${doctorId}/slots/?${isBookedView ? 'booked=true&' : ''}date=${formattedApiDate}`;
-        
-        try {
-            const [slotsResponse, appointmentsForDate] = await Promise.all([
-                apiFetch(endpoint),
-                fetchPendingAppointments()
-            ]);
-
-            if (slotsResponse.ok) {
-                const result = await slotsResponse.json();
-                let data = result.slots || result.booked_slots || (Array.isArray(result) ? result : []);
-                
-                if (!Array.isArray(data) && data.results) data = data.results;
-
-                const mappedSlots = data.map(item => {
-                    const startTimeStr = item.start_time || "";
-                    const endTimeStr = item.end_time || "";
-                    let date = "";
-                    let fromTime = "";
-                    let toTime = "";
-                    
-                    if (startTimeStr.includes('T')) {
-                        [date, fromTime] = startTimeStr.split('T');
-                        fromTime = fromTime.slice(0, 5);
-                    } else {
-                        date = startTimeStr.split(' ')[0] || formattedApiDate;
-                        fromTime = startTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
-                    }
-
-                    if (endTimeStr.includes('T')) {
-                        toTime = endTimeStr.split('T')[1].slice(0, 5);
-                    } else {
-                        toTime = endTimeStr.split(' ')[1]?.slice(0, 5) || "00:00";
-                    }
-
-                    const booked = isBookedValue(item.is_booked);
-                    let status = booked ? 'booked' : 'available';
-
-                    // Check if the slot time has passed for available slots only
-                    const slotDateTime = new Date(`${date}T${fromTime}:00`);
-                    const isPassed = !booked && slotDateTime < new Date();
-
-                    return {
-                        id: item.id || Math.random(),
-                        type: isPassed ? 'passed' : status,
-                        originalType: status, // Keep track of whether it was booked or available
-                        date: date,
-                        from_time: fromTime,
-                        to_time: toTime,
-                        time: `${fromTime} - ${toTime}`,
-                        title: item.appointment_details?.patient_name || (status === 'booked' ? 'Booked' : 'Available'),
-                        subtitle: item.appointment_details ? `Booking ID : #${item.appointment_details.id}` : '',
-                        appointment_details: item.appointment_details || null
-                    };
-                });
-
-                const finalSlots = applyPendingAppointmentsToSlots(mappedSlots, appointmentsForDate);
-
-                setSlots(finalSlots.sort((a, b) => {
-                    if (a.date !== b.date) return a.date.localeCompare(b.date);
-                    return a.from_time.localeCompare(b.from_time);
-                }));
-            }
-        } catch (error) {
-            console.error('Error fetching slots:', error);
-        } finally {
-            setIsLoadingSlots(false);
-        }
-    };
-
-    useEffect(() => {
-       fetchSlots();
-    }, [popupActiveDateIndex, popupSelectedMonth, popupSelectedYear, isBookedView]);
-
-    useEffect(() => {
-        const handleChatbotAction = (e) => {
-            const { action, data } = e.detail;
-            // List of actions that modify slots or appointments on this page
-            const relevantActions = [
-                'generate_slots', 
-                'create_appointment', 
-                'cancel_appointment', 
-                'reschedule_appointment', 
-                'accept_appointment', 
-                'reject_appointment'
-            ];
-
-            if (relevantActions.includes(action)) {
-                console.log(`Chatbot action ${action} detected, refreshing slots...`);
-                
-                // If slots were generated for a specific date, switch view to that date
-                if (action === 'generate_slots' && data.start_date) {
-                    try {
-                        const [y, m, d] = data.start_date.split('-');
-                        const mIdx = parseInt(m, 10) - 1;
-                        if (monthsList[mIdx]) {
-                            setPopupSelectedMonth(monthsList[mIdx]);
-                            setPopupSelectedYear(parseInt(y, 10));
-                            const dayStr = parseInt(d, 10).toString();
-                            const dayIndex = calendarDays.findIndex((val, idx) => val === dayStr && idx >= 5);
-                            if (dayIndex !== -1) setPopupActiveDateIndex(dayIndex);
-                        }
-                    } catch (err) {
-                        console.error('Error parsing chatbot date:', err);
-                    }
-                }
-                
-                fetchSlots();
-            }
-        };
-
-        window.addEventListener('chatbot-action-executed', handleChatbotAction);
-        return () => window.removeEventListener('chatbot-action-executed', handleChatbotAction);
-    }, [doctorId, formattedApiDate]); // Dependency on doctorId to ensure fetchSlots has correct context
-
-    useEffect(() => {
-        const handleWindowFocus = () => {
             fetchSlots();
-        };
+         }
+      };
 
-        window.addEventListener('focus', handleWindowFocus);
-        return () => window.removeEventListener('focus', handleWindowFocus);
-    }, [doctorId, formattedApiDate]);
+      window.addEventListener('chatbot-action-executed', handleChatbotAction);
+      return () => window.removeEventListener('chatbot-action-executed', handleChatbotAction);
+   }, [doctorId, formattedApiDate]); // Dependency on doctorId to ensure fetchSlots has correct context
+
+   useEffect(() => {
+      const handleWindowFocus = () => {
+         fetchSlots();
+      };
+
+      window.addEventListener('focus', handleWindowFocus);
+      return () => window.removeEventListener('focus', handleWindowFocus);
+   }, [doctorId, formattedApiDate]);
 
    useEffect(() => {
       // Auto-scroll to selected date in slots list
@@ -772,7 +762,7 @@ const Addslot = () => {
       const monthIdx = monthsList.indexOf(popupSelectedMonth) + 1;
       const month = monthIdx < 10 ? `0${monthIdx}` : monthIdx;
       const targetDate = `${popupSelectedYear}-${month}-${day}`;
-      
+
       if (dateGroupRefs.current[targetDate]) {
          // Add a small delay to ensure loading state is cleared if data was just fetched
          setTimeout(() => {
@@ -781,35 +771,35 @@ const Addslot = () => {
       }
    }, [popupActiveDateIndex, popupSelectedMonth, popupSelectedYear]);
 
-    const handleSave = async () => {
-       setIsLoading(true);
-       setMessage({ text: '', type: '' });
+   const handleSave = async () => {
+      setIsLoading(true);
+      setMessage({ text: '', type: '' });
 
-        const formatTimeForAPI = (timeStr) => {
-           if (!timeStr) return '';
-           const parts = timeStr.trim().split(' ');
-           if (parts.length < 2) return timeStr; // Already 24h or invalid
-           
-           const [time, modifier] = parts;
-           let [hours, minutes] = time.split(':');
-           if (hours === '12') hours = '00';
-           if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
-           return `${hours.toString().padStart(2, '0')}:${minutes}:00`;
-        };
+      const formatTimeForAPI = (timeStr) => {
+         if (!timeStr) return '';
+         const parts = timeStr.trim().split(' ');
+         if (parts.length < 2) return timeStr; // Already 24h or invalid
 
-        const payload = {
-           doctor: parseInt(doctorId), 
-           from_date: fromDate,
-           to_date: toDate,
-           from_time: formatTimeForAPI(fromTime),
-           to_time: formatTimeForAPI(toTime),
-           slot_duration: parseInt(slotDuration) || 20
-        };
+         const [time, modifier] = parts;
+         let [hours, minutes] = time.split(':');
+         if (hours === '12') hours = '00';
+         if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
+         return `${hours.toString().padStart(2, '0')}:${minutes}:00`;
+      };
 
-       const method = existingSlotId ? 'PATCH' : 'POST';
-       const url = existingSlotId 
-          ? `${BASE_URL}/api/doctor-slots/${existingSlotId}/`
-          : `${BASE_URL}/api/doctor-slots/`;
+      const payload = {
+         doctor: parseInt(doctorId),
+         from_date: fromDate,
+         to_date: toDate,
+         from_time: formatTimeForAPI(fromTime),
+         to_time: formatTimeForAPI(toTime),
+         slot_duration: parseInt(slotDuration) || 20
+      };
+
+      const method = existingSlotId ? 'PATCH' : 'POST';
+      const url = existingSlotId
+         ? `${BASE_URL}/api/doctor-slots/${existingSlotId}/`
+         : `${BASE_URL}/api/doctor-slots/`;
 
       try {
          const response = await apiFetch(url, {
@@ -819,22 +809,22 @@ const Addslot = () => {
 
          if (response.ok) {
             setMessage({ text: 'Slot schedule saved successfully!', type: 'success' });
-            
+
             // Sync calendar view if date changed
             if (fromDate) {
-                try {
-                   const [y, m, d] = fromDate.split('-');
-                   const monthName = monthsList[parseInt(m, 10) - 1];
-                   if (monthName) setPopupSelectedMonth(monthName);
-                   setPopupSelectedYear(parseInt(y, 10));
-                   const dayStr = parseInt(d, 10).toString();
-                   const dayIndex = calendarDays.findIndex((val, idx) => val === dayStr && idx >= 5);
-                   if (dayIndex !== -1) setPopupActiveDateIndex(dayIndex);
-                } catch (e) { console.error('Error syncing calendar:', e); }
+               try {
+                  const [y, m, d] = fromDate.split('-');
+                  const monthName = monthsList[parseInt(m, 10) - 1];
+                  if (monthName) setPopupSelectedMonth(monthName);
+                  setPopupSelectedYear(parseInt(y, 10));
+                  const dayStr = parseInt(d, 10).toString();
+                  const dayIndex = calendarDays.findIndex((val, idx) => val === dayStr && idx >= 5);
+                  if (dayIndex !== -1) setPopupActiveDateIndex(dayIndex);
+               } catch (e) { console.error('Error syncing calendar:', e); }
             }
 
             setHasJustSaved(true);
-            fetchSlots(); 
+            fetchSlots();
             setTimeout(() => {
                setIsAddSlotModalOpen(false);
                setMessage({ text: '', type: '' });
@@ -850,36 +840,36 @@ const Addslot = () => {
       } finally {
          setIsLoading(false);
       }
-    };
+   };
 
-    const formatModalTime = (t) => {
-       if (!t) return '';
-       // If already formatted with AM/PM, return as is
-       if (t.toUpperCase().includes('AM') || t.toUpperCase().includes('PM')) {
-          // Remove redundant AM/PM if they are doubled
-          return t.replace(/(AM|PM)(AM|PM)/gi, '$1');
-       }
-       
-       const parts = t.split(':');
-       if (parts.length < 2) return t;
-       
-       let h = parseInt(parts[0], 10);
-       const m = parts[1];
-       const ampm = h >= 12 ? 'PM' : 'AM';
-       h = h % 12 || 12;
-       const hourStr = h < 10 ? `0${h}` : h;
-       return `${hourStr}:${m}${ampm}`;
-    };
+   const formatModalTime = (t) => {
+      if (!t) return '';
+      // If already formatted with AM/PM, return as is
+      if (t.toUpperCase().includes('AM') || t.toUpperCase().includes('PM')) {
+         // Remove redundant AM/PM if they are doubled
+         return t.replace(/(AM|PM)(AM|PM)/gi, '$1');
+      }
 
-    const formatSlotTimeRange = (from, to) => {
-       if (!from) return '';
-       if (!to && from.includes(' - ')) {
-          const [start, end] = from.split(' - ');
-          return `${formatModalTime(start)} - ${formatModalTime(end)}`;
-       }
-       if (!to) return formatModalTime(from);
-       return `${formatModalTime(from)} - ${formatModalTime(to)}`;
-    };
+      const parts = t.split(':');
+      if (parts.length < 2) return t;
+
+      let h = parseInt(parts[0], 10);
+      const m = parts[1];
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      const hourStr = h < 10 ? `0${h}` : h;
+      return `${hourStr}:${m}${ampm}`;
+   };
+
+   const formatSlotTimeRange = (from, to) => {
+      if (!from) return '';
+      if (!to && from.includes(' - ')) {
+         const [start, end] = from.split(' - ');
+         return `${formatModalTime(start)} - ${formatModalTime(end)}`;
+      }
+      if (!to) return formatModalTime(from);
+      return `${formatModalTime(from)} - ${formatModalTime(to)}`;
+   };
 
 
    useEffect(() => {
@@ -935,148 +925,150 @@ const Addslot = () => {
       return () => clearTimeout(timeoutId);
    }, [activeDateIndex]);
 
-    const handleToggleSlotStatus = async (slotId, currentType) => {
-        const newStatus = currentType === 'available' ? 'break' : 'available';
-        
-         // Optimistically update UI
-         setSlots(prev => prev.map(s => String(s.id) === String(slotId) ? { 
-             ...s, 
-             type: newStatus,
-             title: newStatus === 'break' ? 'Doctor Break' : 'Available',
-             subtitle: newStatus === 'break' ? "Reason: Doctor's Break Time" : ''
-         } : s));
+   const handleToggleSlotStatus = async (slotId, currentType) => {
+      const newStatus = currentType === 'available' ? 'break' : 'available';
 
-        try {
-            // Only call API if it's a real database ID (IDs < 500 are considered real in this dev phase)
-            if (slotId < 500) {
-                const response = await apiFetch(`${BASE_URL}/api/doctor-slots/${slotId}/`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ status: newStatus })
-                });
-                if (!response.ok) {
-                    console.warn(`Note: Backend update failed (${response.status}). This is expected until AWS deployment is finalized.`);
-                }
-            } else {
-                console.log("Mock slot toggled locally. No API call needed for IDs >= 500.");
+      // Optimistically update UI
+      setSlots(prev => prev.map(s => String(s.id) === String(slotId) ? {
+         ...s,
+         type: newStatus,
+         title: newStatus === 'break' ? 'Doctor Break' : 'Available',
+         subtitle: newStatus === 'break' ? "Reason: Doctor's Break Time" : ''
+      } : s));
+
+      try {
+         // Only call API if it's a real database ID (IDs < 500 are considered real in this dev phase)
+         if (slotId < 500) {
+            const response = await apiFetch(`${BASE_URL}/api/doctor-slots/${slotId}/`, {
+               method: 'PATCH',
+               body: JSON.stringify({ status: newStatus })
+            });
+            if (!response.ok) {
+               console.warn(`Note: Backend update failed (${response.status}). This is expected until AWS deployment is finalized.`);
             }
-        } catch (error) {
-            console.warn("Network error during toggle. UI updated locally.");
-        }
-    };
+         } else {
+            console.log("Mock slot toggled locally. No API call needed for IDs >= 500.");
+         }
+      } catch (error) {
+         console.warn("Network error during toggle. UI updated locally.");
+      }
+   };
 
-    const renderSlot = (slot) => {
-        const displayTime = formatSlotTimeRange(slot.time);
+   const renderSlot = (slot) => {
+      const toggleCircleColor = slot.type === 'available' ? 'bg-[#1a5b6e]' : 'bg-[#4b4b4b]';
 
-        const handleToggle = (e) => {
-            e.stopPropagation();
-            handleToggleSlotStatus(slot.id, slot.type);
-        };
+      const displayTime = formatSlotTimeRange(slot.time);
 
-        const ToggleSwitch = ({ active }) => (
-            <div className="flex items-center gap-2 cursor-pointer group" onClick={handleToggle}>
-                <div className="w-[74px] h-[24px] bg-[#E2E4E6] rounded-full relative flex items-center px-1 border border-gray-300 shadow-inner">
-                    <div className={`w-[18px] h-[18px] rounded-full absolute transition-all duration-300 ${active ? 'bg-[#0A1D31] right-1' : 'bg-[#444] left-1'}`}></div>
-                    <span className={`text-[9px] font-extrabold uppercase tracking-tighter absolute transition-all ${active ? 'left-2.5 text-[#0A1D31]' : 'right-2.5 text-gray-500'}`}>
-                        {active ? 'Unblock' : 'Block'}
-                    </span>
-                </div>
+      const handleToggle = (e) => {
+         e.stopPropagation();
+         handleToggleSlotStatus(slot.id, slot.type);
+      };
+
+      const ToggleSwitch = ({ active }) => (
+         <div className="flex items-center gap-2 cursor-pointer group" onClick={handleToggle}>
+            <div className="w-[74px] h-[24px] bg-[#E2E4E6] rounded-full relative flex items-center px-1 border border-gray-300 shadow-inner">
+               <div className={`w-[18px] h-[18px] rounded-full absolute transition-all duration-300 ${active ? 'bg-[#0A1D31] right-1' : 'bg-[#444] left-1'}`}></div>
+               <span className={`text-[9px] font-extrabold uppercase tracking-tighter absolute transition-all ${active ? 'left-2.5 text-[#0A1D31]' : 'right-2.5 text-gray-500'}`}>
+                  {active ? 'Unblock' : 'Block'}
+               </span>
             </div>
-        );
+         </div>
+      );
 
-        if (slot.type === 'passed') {
-            const wasBooked = slot.originalType === 'booked';
-            return (
-                <div key={slot.id} className="rounded-2xl border-[1.5px] border-gray-200 bg-gray-50/50 shadow-none flex flex-col overflow-hidden h-[155px] opacity-70 grayscale-[0.3]">
-                    <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-gray-100">
-                        <span className="font-bold text-gray-500 text-[17px]">{displayTime}</span>
-                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Passed</div>
-                    </div>
-                    <div className={`${wasBooked ? 'bg-green-50' : 'bg-gray-100'} w-full px-5 py-2.5 flex items-center gap-3`}>
-                        <div className={`w-4 h-4 ${wasBooked ? 'bg-green-200' : 'bg-gray-300'} rounded-sm`}></div>
-                        <span className={`font-bold ${wasBooked ? 'text-green-700' : 'text-gray-500'} text-[18px]`}>
-                            {wasBooked ? 'Completed' : 'Expired'}
-                        </span>
-                    </div>
-                    <div className="flex-1 px-5 py-2 flex flex-col justify-center">
-                        <span className="text-[14px] font-bold text-gray-400">{wasBooked ? (slot.title || 'Patient Consulted') : 'Time window closed'}</span>
-                        {wasBooked && <span className="text-[11px] text-gray-400">ID: {slot.subtitle || '#N/A'}</span>}
-                    </div>
-                </div>
-            );
-        }
+      if (slot.type === 'passed') {
+         const wasBooked = slot.originalType === 'booked';
+         return (
+            <div key={slot.id} className="rounded-2xl border-[1.5px] border-gray-200 bg-gray-50/50 shadow-none flex flex-col overflow-hidden h-[155px] opacity-70 grayscale-[0.3]">
+               <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-gray-100">
+                  <span className="font-bold text-gray-500 text-[17px]">{displayTime}</span>
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Passed</div>
+               </div>
+               <div className={`${wasBooked ? 'bg-green-50' : 'bg-gray-100'} w-full px-5 py-2.5 flex items-center gap-3`}>
+                  <div className={`w-4 h-4 ${wasBooked ? 'bg-green-200' : 'bg-gray-300'} rounded-sm`}></div>
+                  <span className={`font-bold ${wasBooked ? 'text-green-700' : 'text-gray-500'} text-[18px]`}>
+                     {wasBooked ? 'Completed' : 'Expired'}
+                  </span>
+               </div>
+               <div className="flex-1 px-5 py-2 flex flex-col justify-center">
+                  <span className="text-[14px] font-bold text-gray-400">{wasBooked ? (slot.title || 'Patient Consulted') : 'Time window closed'}</span>
+                  {wasBooked && <span className="text-[11px] text-gray-400">ID: {slot.subtitle || '#N/A'}</span>}
+               </div>
+            </div>
+         );
+      }
 
-        if (slot.type === 'available') {
-            return (
-                <div key={slot.id} className="rounded-2xl border-[1.5px] border-gray-200 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
-                    <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-white">
-                        <span className="font-bold text-[#444] text-[17px]">{displayTime}</span>
-                        <ToggleSwitch active={true} />
-                    </div>
-                    <div className="bg-[#D0E7ED] w-full px-5 py-2.5 flex items-center gap-3">
-                        <div className="w-4 h-4 bg-[#A2D2E1] rounded-sm"></div>
-                        <span className="font-bold text-[#1A7785] text-[18px]">Available</span>
-                    </div>
-                    <div className="flex-1 bg-white px-4 py-2 flex justify-end items-center">
-                        <button 
-                            onClick={() => setIsAddSlotModalOpen(true)}
-                            className="bg-[#BDD9E0] hover:bg-[#A9CED8] transition-colors text-[#1A7785] font-extrabold text-[15px] px-8 py-2 rounded-xl"
-                        >
-                            Schedule
-                        </button>
-                    </div>
-                </div>
-            );
-        } else if (slot.type === 'break') {
-            return (
-                <div key={slot.id} className="rounded-2xl border-[1.5px] border-[#E8E1C4] bg-[#FBF7E4] shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
-                    <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-[#BBB599]">
-                        <span className="font-bold text-white text-[17px]">{displayTime}</span>
-                        <ToggleSwitch active={false} />
-                    </div>
-                    <div className="flex-1 px-5 py-2.5 flex flex-col">
-                        <div className="flex items-center gap-2.5">
-                             <div className="w-4 h-4 bg-[#C9C4AB] rounded-full"></div>
-                             <span className="font-bold text-[#444] text-[19px]">Doctor Break</span>
-                        </div>
-                        <div className="text-[12px] font-bold text-gray-400 mt-0.5">Reason: Doctor's Break Time</div>
-                        <div className="flex justify-end mt-auto pb-1">
-                            <button className="bg-white hover:bg-gray-50 transition-all text-[#444] font-extrabold text-[15px] px-7 py-2 rounded-xl border border-[#E8E1C4] shadow-sm">
-                                ReSchedule
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        } else if (slot.type === 'booked') {
-            return (
-                <div key={slot.id} className="rounded-2xl border-[1.5px] border-[#B8DABF] bg-[#E8F4E9] shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
-                    <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-[#599363]">
-                        <span className="font-bold text-white text-[17px]">{displayTime}</span>
-                        <ToggleSwitch active={false} />
-                    </div>
-                    <div className="flex-1 px-5 py-2.5 flex flex-col">
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-4 h-4 bg-[#7CB785] rounded-full"></div>
-                            <span className="font-bold text-[#333] text-[19px]">{slot.title || 'Rahul Verma'}</span>
-                        </div>
-                        <div className="text-[12px] font-bold text-gray-400 mt-0.5">Booking ID : {slot.subtitle || '#A234B6'}</div>
-                        <div className="flex justify-between gap-3 mt-auto pb-1">
-                            <button className="flex-1 bg-white hover:bg-gray-50 transition-all text-[#7CB785] font-extrabold text-[14px] py-2 rounded-xl border border-[#B8DABF] shadow-sm">
-                                View
-                            </button>
-                            <button className="flex-1 bg-white hover:bg-gray-50 transition-all text-gray-500 font-extrabold text-[14px] py-2 rounded-xl border border-gray-200 shadow-sm">
-                                ReSchedule
-                            </button>
-                            <button className="flex-1 bg-white hover:bg-red-50 transition-all text-[#F47C7C] font-extrabold text-[14px] py-2 rounded-xl border border-[#F4B8B8] shadow-sm">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        return null;
-    };
+      if (slot.type === 'available') {
+         return (
+            <div key={slot.id} className="rounded-2xl border-[1.5px] border-gray-200 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
+               <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-white">
+                  <span className="font-bold text-[#444] text-[17px]">{displayTime}</span>
+                  <ToggleSwitch active={true} />
+               </div>
+               <div className="bg-[#D0E7ED] w-full px-5 py-2.5 flex items-center gap-3">
+                  <div className="w-4 h-4 bg-[#A2D2E1] rounded-sm"></div>
+                  <span className="font-bold text-[#1A7785] text-[18px]">Available</span>
+               </div>
+               <div className="flex-1 bg-white px-4 py-2 flex justify-end items-center">
+                  <button 
+                     onClick={() => setIsAddSlotModalOpen(true)}
+                     className="bg-[#BDD9E0] hover:bg-[#A9CED8] transition-colors text-[#1A7785] font-extrabold text-[15px] px-8 py-2 rounded-xl"
+                  >
+                     Schedule
+                  </button>
+               </div>
+            </div>
+         );
+      } else if (slot.type === 'break') {
+         return (
+            <div key={slot.id} className="rounded-2xl border-[1.5px] border-[#E8E1C4] bg-[#FBF7E4] shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
+               <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-[#BBB599]">
+                  <span className="font-bold text-white text-[17px]">{displayTime}</span>
+                  <ToggleSwitch active={false} />
+               </div>
+               <div className="flex-1 px-5 py-2.5 flex flex-col">
+                  <div className="flex items-center gap-2.5">
+                     <div className="w-4 h-4 bg-[#C9C4AB] rounded-full"></div>
+                     <span className="font-bold text-[#444] text-[19px]">Doctor Break</span>
+                  </div>
+                  <div className="text-[12px] font-bold text-gray-400 mt-0.5">Reason: Doctor's Break Time</div>
+                  <div className="flex justify-end mt-auto pb-1">
+                     <button className="bg-white hover:bg-gray-50 transition-all text-[#444] font-extrabold text-[15px] px-7 py-2 rounded-xl border border-[#E8E1C4] shadow-sm">
+                        ReSchedule
+                     </button>
+                  </div>
+               </div>
+            </div>
+         );
+      } else if (slot.type === 'booked') {
+         return (
+            <div key={slot.id} className="rounded-2xl border-[1.5px] border-[#B8DABF] bg-[#E8F4E9] shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex flex-col overflow-hidden h-[155px] group hover:shadow-md transition-all">
+               <div className="px-5 pt-3.5 pb-2.5 flex justify-between items-center bg-[#599363]">
+                  <span className="font-bold text-white text-[17px]">{displayTime}</span>
+                  <ToggleSwitch active={false} />
+               </div>
+               <div className="flex-1 px-5 py-2.5 flex flex-col">
+                  <div className="flex items-center gap-2.5">
+                     <div className="w-4 h-4 bg-[#7CB785] rounded-full"></div>
+                     <span className="font-bold text-[#333] text-[19px]">{slot.title || 'Rahul Verma'}</span>
+                  </div>
+                  <div className="text-[12px] font-bold text-gray-400 mt-0.5">Booking ID : {slot.subtitle || '#A234B6'}</div>
+                  <div className="flex justify-between gap-3 mt-auto pb-1">
+                     <button className="flex-1 bg-white hover:bg-gray-50 transition-all text-[#7CB785] font-extrabold text-[14px] py-2 rounded-xl border border-[#B8DABF] shadow-sm">
+                        View
+                     </button>
+                     <button className="flex-1 bg-white hover:bg-gray-50 transition-all text-gray-500 font-extrabold text-[14px] py-2 rounded-xl border border-gray-200 shadow-sm">
+                        ReSchedule
+                     </button>
+                     <button className="flex-1 bg-white hover:bg-red-50 transition-all text-[#F47C7C] font-extrabold text-[14px] py-2 rounded-xl border border-[#F4B8B8] shadow-sm">
+                        Cancel
+                     </button>
+                  </div>
+               </div>
+            </div>
+         );
+      }
+      return null;
+   };
 
    const formattedPopupDate = `${calendarDays[popupActiveDateIndex]}/${popupSelectedMonth.slice(0, 3).toLowerCase()}/${popupSelectedYear}`;
 
@@ -1093,75 +1085,75 @@ const Addslot = () => {
 
             {/* Top Header */}
             <header className="h-[74px] flex flex-row items-center justify-between px-4 md:px-8 shrink-0 bg-white border-b border-gray-100">
-                <div className="flex items-center flex-1 max-w-[700px] gap-[10px] md:gap-[15px]">
-                    <button 
-                        onClick={() => setIsMobileOpen(true)}
-                        className="w-[40px] h-[40px] border border-gray-200 rounded-[8px] flex flex-col items-center justify-center gap-[4px] bg-white hover:bg-gray-50 transition-colors shrink-0 shadow-sm lg:hidden"
-                    >
-                        <span className="w-[18px] h-[2px] bg-[#1b738c] rounded-full"></span>
-                        <span className="w-[18px] h-[2px] bg-[#1b738c] rounded-full opacity-60"></span>
-                        <span className="w-[18px] h-[2px] bg-[#1b738c] rounded-full"></span>
-                    </button>
-                    <div className="relative flex-1">
-                        <div className="absolute inset-y-0 left-0 pl-[16px] flex items-center pointer-events-none">
-                            <svg className="w-[18px] h-[18px] text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                            </svg>
-                        </div>
-                        <input type="text" placeholder="Search" className="w-full pl-[40px] pr-4 py-[9px] bg-white border border-gray-200 rounded-full text-[13.5px] text-gray-700 outline-none focus:border-[#1b738c] transition-all" />
-                    </div>
-                </div>
-                <div className="flex items-center justify-between w-full md:w-auto gap-4">
-                    <div className="flex items-center gap-3">
-                        {/* Settings */}
-                        <div 
-                            onClick={() => navigate('/Settingpage')}
-                            className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all hover:scale-105 active:scale-95 group">
-                            <svg className="w-7 h-7 text-gray-700 group-hover:text-[#1b738c] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
+               <div className="flex items-center flex-1 max-w-[700px] gap-[10px] md:gap-[15px]">
+                  <button
+                     onClick={() => setIsMobileOpen(true)}
+                     className="w-[40px] h-[40px] border border-gray-200 rounded-[8px] flex flex-col items-center justify-center gap-[4px] bg-white hover:bg-gray-50 transition-colors shrink-0 shadow-sm lg:hidden"
+                  >
+                     <span className="w-[18px] h-[2px] bg-[#1b738c] rounded-full"></span>
+                     <span className="w-[18px] h-[2px] bg-[#1b738c] rounded-full opacity-60"></span>
+                     <span className="w-[18px] h-[2px] bg-[#1b738c] rounded-full"></span>
+                  </button>
+                  <div className="relative flex-1">
+                     <div className="absolute inset-y-0 left-0 pl-[16px] flex items-center pointer-events-none">
+                        <svg className="w-[18px] h-[18px] text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                     </div>
+                     <input type="text" placeholder="Search" className="w-full pl-[40px] pr-4 py-[9px] bg-white border border-gray-200 rounded-full text-[13.5px] text-gray-700 outline-none focus:border-[#1b738c] transition-all" />
+                  </div>
+               </div>
+               <div className="flex items-center justify-between w-full md:w-auto gap-4">
+                  <div className="flex items-center gap-3">
+                     {/* Settings */}
+                     <div
+                        onClick={() => navigate('/Settingpage')}
+                        className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all hover:scale-105 active:scale-95 group">
+                        <svg className="w-7 h-7 text-gray-700 group-hover:text-[#1b738c] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                     </div>
 
-                        {/* Notification */}
-                        <div 
-                            onClick={() => setIsNotificationOpen(true)}
-                            className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all relative">
-                            <svg className="w-7 h-7 text-gray-700 hover:text-[#1b738c] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#9367D8] rounded-full flex items-center justify-center text-white text-[11px] font-bold border-2 border-white shadow-sm">1</div>
-                        </div>
-                    </div>
+                     {/* Notification */}
+                     <div
+                        onClick={() => setIsNotificationOpen(true)}
+                        className="w-14 h-12 bg-white border border-gray-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all relative">
+                        <svg className="w-7 h-7 text-gray-700 hover:text-[#1b738c] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#9367D8] rounded-full flex items-center justify-center text-white text-[11px] font-bold border-2 border-white shadow-sm">1</div>
+                     </div>
+                  </div>
 
-                    <div className="relative" ref={menuRef}>
-                        {/* Profile Button */}
-                        <div
-                            onClick={() => setOpen(!open)}
-                            className="flex items-center gap-3 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-all group"
-                        >
-                            <div className="flex flex-col items-end">
-                                <span className="text-[17px] font-bold text-gray-800 leading-tight">
-                                    {localStorage.getItem("user_full_name") || "Doctor"}
-                                </span>
-                                <span className="text-[11px] font-bold text-[#1b738c]">Doctor</span>
-                            </div>
-                            <div className="relative">
-                                <img src="/assets/ph.png" className="w-10 h-10 rounded-full border-2 border-[#1b738c]/20 shadow-sm object-cover" />
-                                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-white"></div>
-                            </div>
-                            <svg className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                            </svg>
+                  <div className="relative" ref={menuRef}>
+                     {/* Profile Button */}
+                     <div
+                        onClick={() => setOpen(!open)}
+                        className="flex items-center gap-3 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-xl px-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-all group"
+                     >
+                        <div className="flex flex-col items-end">
+                           <span className="text-[17px] font-bold text-gray-800 leading-tight">
+                              {localStorage.getItem("user_full_name") || "Doctor"}
+                           </span>
+                           <span className="text-[11px] font-bold text-[#1b738c]">Doctor</span>
                         </div>
+                        <div className="relative">
+                           <img src="/assets/ph.png" className="w-10 h-10 rounded-full border-2 border-[#1b738c]/20 shadow-sm object-cover" />
+                           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-white"></div>
+                        </div>
+                        <svg className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                     </div>
 
-                        <AnimatePresence>
-                            {open && !openProfile && (
-                                <DasyWilliam setOpenProfile={setOpenProfile} isDoctor={true} />
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
+                     <AnimatePresence>
+                        {open && !openProfile && (
+                           <DasyWilliam setOpenProfile={setOpenProfile} isDoctor={true} />
+                        )}
+                     </AnimatePresence>
+                  </div>
+               </div>
             </header>
 
             {/* Scrollable Content Area */}
@@ -1192,8 +1184,8 @@ const Addslot = () => {
                            { name: 'Income', imgUrl: incomeIcon },
                            { name: 'Emergency', imgUrl: emergencyIcon }
                         ].map((t, i) => (
-                           <div 
-                              key={i} 
+                           <div
+                              key={i}
                               onClick={() => {
                                  if (t.name === 'Appointment') setIsAppointmentModalOpen(true);
                                  if (t.name === 'Total Patients') setIsPatientsModalOpen(true);
@@ -1230,14 +1222,7 @@ const Addslot = () => {
                            onClick={() => {
                               const currentIndex = monthsList.indexOf(selectedMonth);
                               const prevIndex = currentIndex === 0 ? 11 : currentIndex - 1;
-                              const nextYear = currentIndex === 0 ? selectedYear - 1 : selectedYear;
-                              const alignedIndex = getValidDateIndexForMonth(activeDateIndex, monthsList[prevIndex], nextYear);
                               setSelectedMonth(monthsList[prevIndex]);
-                              setSelectedYear(nextYear);
-                              setPopupSelectedMonth(monthsList[prevIndex]);
-                              setPopupSelectedYear(nextYear);
-                              setActiveDateIndex(alignedIndex);
-                              setPopupActiveDateIndex(alignedIndex);
                            }}
                            className="text-[#32869e] hover:text-[#166378] transition-colors"
                         >
@@ -1276,14 +1261,7 @@ const Addslot = () => {
                                     {monthsList.filter(m => m !== selectedMonth).map(m => (
                                        <div
                                           key={m}
-                                          onClick={() => {
-                                             const alignedIndex = getValidDateIndexForMonth(activeDateIndex, m, selectedYear);
-                                             setSelectedMonth(m);
-                                             setPopupSelectedMonth(m);
-                                             setActiveDateIndex(alignedIndex);
-                                             setPopupActiveDateIndex(alignedIndex);
-                                             setIsMonthOpen(false);
-                                          }}
+                                          onClick={() => { setSelectedMonth(m); setIsMonthOpen(false); }}
                                           className="px-4 py-[4px] text-[14px] cursor-pointer hover:bg-gray-50 text-gray-600 font-[400]"
                                        >
                                           {m}
@@ -1321,14 +1299,7 @@ const Addslot = () => {
                                                 key={y}
                                                 data-selected="true"
                                                 className="px-[12px] w-full my-[1px]"
-                                                onClick={() => {
-                                                   const alignedIndex = getValidDateIndexForMonth(activeDateIndex, selectedMonth, y);
-                                                   setSelectedYear(y);
-                                                   setPopupSelectedYear(y);
-                                                   setActiveDateIndex(alignedIndex);
-                                                   setPopupActiveDateIndex(alignedIndex);
-                                                   setIsYearOpen(false);
-                                                }}
+                                                onClick={() => { setSelectedYear(y); setIsYearOpen(false); }}
                                              >
                                                 <div className="border-[1px] border-[#555] rounded-full flex items-center justify-between pl-[14px] pr-[10px] py-[3px] shadow-sm bg-white cursor-pointer relative">
                                                    <span className="text-[#444] font-[500] text-[15px] tracking-wide">{y}</span>
@@ -1342,14 +1313,7 @@ const Addslot = () => {
                                        return (
                                           <div
                                              key={y}
-                                             onClick={() => {
-                                                const alignedIndex = getValidDateIndexForMonth(activeDateIndex, selectedMonth, y);
-                                                setSelectedYear(y);
-                                                setPopupSelectedYear(y);
-                                                setActiveDateIndex(alignedIndex);
-                                                setPopupActiveDateIndex(alignedIndex);
-                                                setIsYearOpen(false);
-                                             }}
+                                             onClick={() => { setSelectedYear(y); setIsYearOpen(false); }}
                                              className="w-full pl-[28px] py-[3px] cursor-pointer hover:bg-gray-50 transition-colors"
                                           >
                                              <span className="text-[#666] font-[400] text-[15px] tracking-wide">{y}</span>
@@ -1364,14 +1328,7 @@ const Addslot = () => {
                            onClick={() => {
                               const currentIndex = monthsList.indexOf(selectedMonth);
                               const nextIndex = currentIndex === 11 ? 0 : currentIndex + 1;
-                              const nextYear = currentIndex === 11 ? selectedYear + 1 : selectedYear;
-                              const alignedIndex = getValidDateIndexForMonth(activeDateIndex, monthsList[nextIndex], nextYear);
                               setSelectedMonth(monthsList[nextIndex]);
-                              setSelectedYear(nextYear);
-                              setPopupSelectedMonth(monthsList[nextIndex]);
-                              setPopupSelectedYear(nextYear);
-                              setActiveDateIndex(alignedIndex);
-                              setPopupActiveDateIndex(alignedIndex);
                            }}
                            className="text-[#32869e] hover:text-[#166378] transition-colors"
                         >
@@ -1410,10 +1367,7 @@ const Addslot = () => {
                                     <div key={i} className="flex justify-center items-center">
                                        <span
                                           ref={el => dateRefs.current[i] = el}
-                                          onClick={() => {
-                                             setActiveDateIndex(i);
-                                             setPopupActiveDateIndex(i);
-                                          }}
+                                          onClick={() => setActiveDateIndex(i)}
                                           className={`w-[29px] h-[29px] flex items-center justify-center rounded-full transition-colors cursor-pointer
                                   ${isPrevMonth && !isSelected ? 'text-gray-300 font-medium' : ''}
                                   ${isSelected ? 'text-[#09151c]' : 'hover:bg-gray-100'}
@@ -1433,693 +1387,697 @@ const Addslot = () => {
 
                {/* View Slot Main Container */}
                <div className="bg-white rounded-[24px] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] p-6">
-                   {/* View Slot Header Row */}
-                   <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-[18px] font-bold text-gray-800">View Slot</h2>
-                      <div className="flex items-center gap-3">
-                         <span className="text-gray-600 font-medium text-[15px]">Date</span>
-                         <div className="relative">
-                            <select
-                               className="appearance-none bg-[#D1D5DB] px-5 py-2 pr-10 rounded-[8px] font-bold text-[15px] text-gray-800 outline-none cursor-pointer border-none transition-all shadow-sm"
-                               value={formattedPopupDate}
-                               onChange={(e) => {
-                                   const selectedStr = e.target.value;
-                                   const [dStr, mon, yStr] = selectedStr.split('/');
-                                   const dayVal = parseInt(dStr, 10).toString();
-                                   const monthLong = monthsList.find(m => m.toLowerCase().startsWith(mon.toLowerCase()));
-                                   const year = parseInt(yStr, 10);
-                                   if (monthLong) {
-                                      setPopupSelectedMonth(monthLong);
-                                      setPopupSelectedYear(year);
-                                      setSelectedMonth(monthLong);
-                                      setSelectedYear(year);
-                                      const idx = calendarDays.indexOf(dayVal);
-                                      if (idx !== -1) {
-                                         setPopupActiveDateIndex(idx);
-                                         setActiveDateIndex(idx);
-                                      }
-                                   }
-                               }}
-                            >
-                               {(() => {
-                                   const dates = new Set();
-                                   dates.add(formattedPopupDate);
-                                   slots.forEach(s => {
-                                      if (s.date) {
-                                         const [y, m, d] = s.date.split('-');
-                                         const mon = monthsList[parseInt(m)-1].slice(0,3).toLowerCase();
-                                         dates.add(`${parseInt(d)}/${mon}/${y}`);
-                                      }
-                                   });
-                                   return [...dates].sort((a, b) => {
-                                      const parse = (s) => {
-                                         const [d, m, y] = s.split('/');
-                                         const mIdx = monthsList.findIndex(ml => ml.toLowerCase().startsWith(m));
-                                         return new Date(y, mIdx, d).getTime();
-                                      };
-                                      return parse(a) - parse(b);
-                                   });
-                               })().map(dateStr => (
-                                  <option key={dateStr} value={dateStr}>{dateStr}</option>
-                               ))}
-                            </select>
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-800">
-                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
-                            </div>
-                         </div>
-                         <button
-                            onClick={fetchSlots}
-                            className="p-2 bg-[#D1D5DB] rounded-[6px] hover:bg-gray-400 transition-all shadow-sm"
-                         >
-                            <RefreshCw size={20} className="text-gray-700" />
-                         </button>
-                      </div>
-                   </div>
+                  {/* View Slot Header Row */}
+                  <div className="flex items-center justify-between mb-4">
+                     <h2 className="text-[18px] font-bold text-gray-800">View Slot</h2>
+                     <div className="flex items-center gap-3">
+                        <span className="text-gray-600 font-medium text-[15px]">Date</span>
+                        <div className="relative">
+                           <select
+                              className="appearance-none bg-[#D1D5DB] px-5 py-2 pr-10 rounded-[8px] font-bold text-[15px] text-gray-800 outline-none cursor-pointer border-none transition-all shadow-sm"
+                              value={formattedPopupDate}
+                              onChange={(e) => {
+                                 const selectedStr = e.target.value;
+                                 const [dStr, mon, yStr] = selectedStr.split('/');
+                                 const dayVal = parseInt(dStr, 10).toString();
+                                 const monthLong = monthsList.find(m => m.toLowerCase().startsWith(mon.toLowerCase()));
+                                 const year = parseInt(yStr, 10);
+                                 if (monthLong) {
+                                    setPopupSelectedMonth(monthLong);
+                                    setPopupSelectedYear(year);
+                                    const idx = calendarDays.indexOf(dayVal);
+                                    if (idx !== -1) setPopupActiveDateIndex(idx);
+                                 }
+                              }}
+                           >
+                              {(() => {
+                                 const dates = new Set();
+                                 dates.add(formattedPopupDate);
+                                 slots.forEach(s => {
+                                    if (s.date) {
+                                       const [y, m, d] = s.date.split('-');
+                                       const mon = monthsList[parseInt(m) - 1].slice(0, 3).toLowerCase();
+                                       dates.add(`${parseInt(d)}/${mon}/${y}`);
+                                    }
+                                 });
+                                 return [...dates].sort((a, b) => {
+                                    const parse = (s) => {
+                                       const [d, m, y] = s.split('/');
+                                       const mIdx = monthsList.findIndex(ml => ml.toLowerCase().startsWith(m));
+                                       return new Date(y, mIdx, d).getTime();
+                                    };
+                                    return parse(a) - parse(b);
+                                 });
+                              })().map(dateStr => (
+                                 <option key={dateStr} value={dateStr}>{dateStr}</option>
+                              ))}
+                           </select>
+                           <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-800">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+                           </div>
+                        </div>
+                        <button
+                           onClick={fetchSlots}
+                           className="p-2 bg-[#D1D5DB] rounded-[6px] hover:bg-gray-400 transition-all shadow-sm"
+                        >
+                           <RefreshCw size={20} className="text-gray-700" />
+                        </button>
+                     </div>
+                  </div>
 
-                   {/* Date Info and Legend Row */}
-                   <div className="flex flex-row items-center gap-10 mb-8 overflow-x-auto pb-2">
-                      <div className="font-bold text-[#555] text-[16px] whitespace-nowrap">
-                         Date : &nbsp; {formattedPopupDate}
-                      </div>
-                      <div className="flex items-center gap-6">
-                         <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
-                            <div className="w-[30px] h-[20px] bg-[#B2D7DD] rounded-[4px]"></div> Available
-                         </div>
-                         <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
-                            <div className="w-[30px] h-[20px] bg-[#7CB785] rounded-[4px]"></div> Booked
-                         </div>
-                         <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
-                            <div className="w-[30px] h-[20px] bg-[#FBF7E4] rounded-[4px]"></div> Blocked/Break
-                         </div>
-                      </div>
-                   </div>
-
-                   {/* Booked Patients Summary */}
-                   <div className="grid gap-4 lg:grid-cols-[1.2fr_1.8fr] mb-8">
-                      <div className="rounded-[24px] border border-[#cfe6ec] bg-[#f4fbfd] p-5">
-                         <div className="text-[13px] font-bold text-[#1b738b] uppercase tracking-[0.18em] mb-3">Booked Patients</div>
-                         <div className="text-[34px] font-black text-[#0f3c4c]">{bookedSlots.length}</div>
-                         <p className="mt-2 text-[13px] text-gray-600">Total booked patients for {formattedPopupDate}.</p>
-                      </div>
-                      <div className="rounded-[24px] border border-[#e2edf0] bg-white p-5">
-                         <div className="flex items-center justify-between mb-4">
-                            <div className="text-[15px] font-bold text-[#21313d]">Booked patient list</div>
-                            <span className="text-[12px] font-semibold text-[#4a6f7f]">{bookedSlots.length} booked</span>
-                         </div>
-                         {bookedSlots.length > 0 ? (
-                            <div className="space-y-3">
-                               {bookedSlots.map((slot) => (
-                                  <div key={slot.id} className="rounded-[18px] border border-[#d8e7ea] bg-[#f8fcfd] p-4">
-                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                        <div>
-                                           <p className="text-[15px] font-bold text-[#15343f]">{slot.title}</p>
-                                           <p className="text-[12px] text-[#586d75] mt-1">{slot.subtitle || 'Booking ID unavailable'}</p>
-                                        </div>
-                                        <div className="text-[12px] font-semibold text-[#1b738b]">{slot.time}</div>
-                                     </div>
-                                     {slot.appointment_details?.patient_phone && (
-                                        <p className="text-[12px] text-[#556b72] mt-3">Phone: {slot.appointment_details.patient_phone}</p>
-                                     )}
-                                     {slot.appointment_details?.status && (
-                                        <div className="mt-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#225e71] bg-[#d8f2f8] px-3 py-1 rounded-full">
-                                           <span>Status</span>
-                                           <span>{slot.appointment_details.status}</span>
-                                        </div>
-                                     )}
-                                  </div>
-                               ))}
-                            </div>
-                         ) : (
-                            <div className="rounded-[18px] border border-dashed border-[#cfd8dd] bg-[#f9fcfd] p-5 text-[#60727a] text-sm">
-                               No booked patients found for this date. Please add slots or wait for patient bookings.
-                            </div>
-                         )}
-                      </div>
-                   </div>
-
-                   {/* Grid of Slots Container */}
-                   <div ref={slotContainerRef} className="flex flex-col gap-8 pb-2 overflow-y-auto max-h-[500px] scroll-smooth px-1 pt-1 relative" style={{ scrollbarWidth: 'thin' }}>
-                  {isLoadingSlots && (
-                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-                        <div className="flex flex-col items-center gap-2">
-                           <div className="w-8 h-8 border-4 border-[#1b738b] border-t-transparent rounded-full animate-spin"></div>
-                           <span className="text-[#1b738b] font-bold text-sm">Loading slots...</span>
+                  {/* Date Info and Legend Row */}
+                  <div className="flex flex-row items-center gap-10 mb-8 overflow-x-auto pb-2">
+                     <div className="font-bold text-[#555] text-[16px] whitespace-nowrap">
+                        Date : &nbsp; {formattedPopupDate}
+                     </div>
+                     <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
+                           <div className="w-[30px] h-[20px] bg-[#B2D7DD] rounded-[4px]"></div> Available
+                        </div>
+                        <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
+                           <div className="w-[30px] h-[20px] bg-[#7CB785] rounded-[4px]"></div> Booked
+                        </div>
+                        <div className="flex items-center gap-2 font-bold text-[#555] text-[15px] whitespace-nowrap">
+                           <div className="w-[30px] h-[20px] bg-[#FBF7E4] rounded-[4px]"></div> Blocked/Break
                         </div>
                      </div>
-                  )}
-                  {slots.length > 0 ? (
-                     (() => {
-                        const grouped = slots.reduce((acc, slot) => {
-                           const d = slot.date || 'No Date';
-                           if (!acc[d]) acc[d] = [];
-                           acc[d].push(slot);
-                           return acc;
-                        }, {});
+                  </div>
 
-                        const sortedDates = Object.keys(grouped).sort();
-                        const todayStr = todayFormattedDate;
-                        
-                        const todayDates = sortedDates.filter(d => d === todayStr);
-                        const futureDates = sortedDates.filter(d => d > todayStr);
-                        const pastDates = sortedDates.filter(d => d < todayStr && d !== 'No Date');
-
-                        const renderGroup = (dateList, sectionTitle) => {
-                           if (dateList.length === 0) return null;
-                           return (
-                              <div className="flex flex-col gap-6">
-                                 {dateList.map(date => (
-                                    <div key={date} ref={el => dateGroupRefs.current[date] = el} className="flex flex-col gap-4 mb-4">
-                                       <div className="flex items-center gap-4 py-1">
-                                          <div className="h-[2px] flex-1 bg-gray-200"></div>
-                                          <div className="relative">
-                                             <span className="text-[13px] font-extrabold text-[#1b738b] bg-[#e2f2f7] px-6 py-[6px] rounded-full border border-[#c0dfec] shadow-sm tracking-wide">
-                                                {(() => {
-                                                   if (date === 'No Date') return 'Schedule';
-                                                   if (date === todayStr) return 'Today';
-                                                   const [y, m, d] = date.split('-');
-                                                   const mon = monthsList[parseInt(m)-1]?.slice(0,3).toLowerCase();
-                                                   return `${parseInt(d)}/${mon}/${y}`;
-                                                })()}
-                                             </span>
-                                          </div>
-                                          <div className="h-[2px] flex-1 bg-gray-200"></div>
+                  {/* Booked Patients Summary */}
+                  <div className="grid gap-4 lg:grid-cols-[1.2fr_1.8fr] mb-8">
+                     <div className="rounded-[24px] border border-[#cfe6ec] bg-[#f4fbfd] p-5">
+                        <div className="text-[13px] font-bold text-[#1b738b] uppercase tracking-[0.18em] mb-3">Booked Patients</div>
+                        <div className="text-[34px] font-black text-[#0f3c4c]">{bookedSlots.length}</div>
+                        <p className="mt-2 text-[13px] text-gray-600">Total booked patients for {formattedPopupDate}.</p>
+                     </div>
+                     <div className="rounded-[24px] border border-[#e2edf0] bg-white p-5">
+                        <div className="flex items-center justify-between mb-4">
+                           <div className="text-[15px] font-bold text-[#21313d]">Booked patient list</div>
+                           <span className="text-[12px] font-semibold text-[#4a6f7f]">{bookedSlots.length} booked</span>
+                        </div>
+                        {bookedSlots.length > 0 ? (
+                           <div className="space-y-3">
+                              {bookedSlots.map((slot) => (
+                                 <div key={slot.id} className="rounded-[18px] border border-[#d8e7ea] bg-[#f8fcfd] p-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                       <div>
+                                          <p className="text-[15px] font-bold text-[#15343f]">{slot.title}</p>
+                                          <p className="text-[12px] text-[#586d75] mt-1">{slot.subtitle || 'Booking ID unavailable'}</p>
                                        </div>
-                                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-[20px] gap-y-[20px]">
-                                          {grouped[date].sort((a,b) => a.from_time.localeCompare(b.from_time)).map(renderSlot)}
-                                       </div>
+                                       <div className="text-[12px] font-semibold text-[#1b738b]">{slot.time}</div>
                                     </div>
-                                 ))}
+                                    {slot.appointment_details?.patient_phone && (
+                                       <p className="text-[12px] text-[#556b72] mt-3">Phone: {slot.appointment_details.patient_phone}</p>
+                                    )}
+                                    {slot.appointment_details?.status && (
+                                       <div className="mt-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#225e71] bg-[#d8f2f8] px-3 py-1 rounded-full">
+                                          <span>Status</span>
+                                          <span>{slot.appointment_details.status}</span>
+                                       </div>
+                                    )}
+                                 </div>
+                              ))}
+                           </div>
+                        ) : (
+                           <div className="rounded-[18px] border border-dashed border-[#cfd8dd] bg-[#f9fcfd] p-5 text-[#60727a] text-sm">
+                              No booked patients found for this date. Please add slots or wait for patient bookings.
+                           </div>
+                        )}
+                     </div>
+                  </div>
+
+                  {/* Grid of Slots Container */}
+                  <div ref={slotContainerRef} className="flex flex-col gap-8 pb-2 overflow-y-auto max-h-[500px] scroll-smooth px-1 pt-1 relative" style={{ scrollbarWidth: 'thin' }}>
+                     {isLoadingSlots && (
+                        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+                           <div className="flex flex-col items-center gap-2">
+                              <div className="w-8 h-8 border-4 border-[#1b738b] border-t-transparent rounded-full animate-spin"></div>
+                              <span className="text-[#1b738b] font-bold text-sm">Loading slots...</span>
+                           </div>
+                        </div>
+                     )}
+                     {slots.length > 0 ? (
+                        (() => {
+                           const grouped = slots.reduce((acc, slot) => {
+                              const d = slot.date || 'No Date';
+                              if (!acc[d]) acc[d] = [];
+                              acc[d].push(slot);
+                              return acc;
+                           }, {});
+
+                           const sortedDates = Object.keys(grouped).sort();
+                           const todayStr = todayFormattedDate;
+
+                           const todayDates = sortedDates.filter(d => d === todayStr);
+                           const futureDates = sortedDates.filter(d => d > todayStr);
+                           const pastDates = sortedDates.filter(d => d < todayStr && d !== 'No Date');
+
+                           const renderGroup = (dateList, sectionTitle) => {
+                              if (dateList.length === 0) return null;
+                              return (
+                                 <div className="flex flex-col gap-6">
+                                    {dateList.map(date => (
+                                       <div key={date} ref={el => dateGroupRefs.current[date] = el} className="flex flex-col gap-4 mb-4">
+                                          <div className="flex items-center gap-4 py-1">
+                                             <div className="h-[2px] flex-1 bg-gray-200"></div>
+                                             <div className="relative">
+                                                <span className="text-[13px] font-extrabold text-[#1b738b] bg-[#e2f2f7] px-6 py-[6px] rounded-full border border-[#c0dfec] shadow-sm tracking-wide">
+                                                   {(() => {
+                                                      if (date === 'No Date') return 'Schedule';
+                                                      if (date === todayStr) return 'Today';
+                                                      const [y, m, d] = date.split('-');
+                                                      const mon = monthsList[parseInt(m) - 1]?.slice(0, 3).toLowerCase();
+                                                      return `${parseInt(d)}/${mon}/${y}`;
+                                                   })()}
+                                                </span>
+                                             </div>
+                                             <div className="h-[2px] flex-1 bg-gray-200"></div>
+                                          </div>
+                                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-[20px] gap-y-[20px]">
+                                             {grouped[date].sort((a, b) => a.from_time.localeCompare(b.from_time)).map(renderSlot)}
+                                          </div>
+                                       </div>
+                                    ))}
+                                 </div>
+                              );
+                           };
+
+                           return (
+                              <div className="flex flex-col gap-10">
+                                 {renderGroup(todayDates, "Today's Slots")}
+                                 {renderGroup(futureDates, "Future Slots")}
+                                 {renderGroup(pastDates, "Past Slots")}
+                                 {grouped['No Date'] && renderGroup(['No Date'], "General Schedule")}
                               </div>
                            );
-                        };
-
-                        return (
-                           <div className="flex flex-col gap-10">
-                              {renderGroup(todayDates, "Today's Slots")}
-                              {renderGroup(futureDates, "Future Slots")}
-                              {renderGroup(pastDates, "Past Slots")}
-                              {grouped['No Date'] && renderGroup(['No Date'], "General Schedule")}
-                           </div>
-                        );
-                     })()
-                  ) : (
-                     <div className="col-span-3 flex flex-col items-center justify-center py-[80px] text-gray-400 bg-white rounded-xl border-2 border-dashed border-gray-200">
-                        <svg className="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="text-[16px] font-bold">No slots added yet.</p>
-                        <p className="text-[12px] mt-1">Click "Add Slots" to create your schedule.</p>
-                     </div>
-                  )}
-               </div>
-            </div>
-         </div>
-
-            {/* Floating Bot Icon */}
-            <div
-               className="fixed bottom-10 right-10 z-50 touch-none select-none group"
-               style={{ transform: `translate(${dragPos.x}px, ${dragPos.y}px)`, cursor: isDragging ? 'grabbing' : 'grab' }}
-               onMouseDown={handlePointerDown}
-               onTouchStart={handlePointerDown}
-               onClick={(e) => {
-                  if (dragRef.current.hasMoved) {
-                     e.preventDefault();
-                     return;
-                  }
-                  navigate('/Bot');
-               }}
-            >
-               <div className="w-[54px] h-[54px] bg-[#1a738c] rounded-[24px] flex justify-center items-center shadow-lg border-[2px] border-[#a0cddb] hover:bg-[#155b70] transition-colors relative" style={{ borderRadius: '50% 50% 50% 12px' }}>
-                  <svg className="w-[28px] h-[28px] text-white pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
-                     <path d="M12 2a2 2 0 012 2v2h2a4 4 0 014 4v7a4 4 0 01-4 4H8a4 4 0 01-4-4v-7a4 4 0 014-4h2V4a2 2 0 012-2zm0 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-3.5-5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
-                  </svg>
-                  <div className="absolute top-[0px] right-[-6px] bg-[#65d065] text-white text-[10px] font-extrabold px-[6px] py-[3px] rounded-[6px] rounded-bl-sm tracking-widest shadow-sm border border-[#52af52] leading-none pointer-events-none">
-                     ...
+                        })()
+                     ) : (
+                        <div className="col-span-3 flex flex-col items-center justify-center py-[80px] text-gray-400 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                           <svg className="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                           </svg>
+                           <p className="text-[16px] font-bold">No slots added yet.</p>
+                           <p className="text-[12px] mt-1">Click "Add Slots" to create your schedule.</p>
+                        </div>
+                     )}
                   </div>
                </div>
             </div>
 
-
-
-            {/* Add Slots Modal */}
-            {isAddSlotModalOpen && (
-               <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                  <div className="bg-white rounded-[16px] shadow-2xl w-[680px] h-[480px] max-h-[95vh] flex flex-col relative">
-
-                     {/* Header */}
-                     <div className="bg-white px-[26px] py-[10px] border-b border-gray-200 shrink-0 rounded-t-[16px]">
-                        <h2 className="text-[#111] font-[800] text-[18px]">Doctor Slot</h2>
-                        <button
-                           onClick={() => setIsAddSlotModalOpen(false)}
-                           className="absolute top-[14px] right-[20px] text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                           <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
+               {/* Floating Bot Icon */}
+               <div
+                  className="fixed bottom-10 right-10 z-50 touch-none select-none group"
+                  style={{ transform: `translate(${dragPos.x}px, ${dragPos.y}px)`, cursor: isDragging ? 'grabbing' : 'grab' }}
+                  onMouseDown={handlePointerDown}
+                  onTouchStart={handlePointerDown}
+                  onClick={(e) => {
+                     if (dragRef.current.hasMoved) {
+                        e.preventDefault();
+                        return;
+                     }
+                     navigate('/Bot');
+                  }}
+               >
+                  <div className="w-[54px] h-[54px] bg-[#1a738c] rounded-[24px] flex justify-center items-center shadow-lg border-[2px] border-[#a0cddb] hover:bg-[#155b70] transition-colors relative" style={{ borderRadius: '50% 50% 50% 12px' }}>
+                     <svg className="w-[28px] h-[28px] text-white pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2a2 2 0 012 2v2h2a4 4 0 014 4v7a4 4 0 01-4 4H8a4 4 0 01-4-4v-7a4 4 0 014-4h2V4a2 2 0 012-2zm0 14a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-3.5-5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
+                     </svg>
+                     <div className="absolute top-[0px] right-[-6px] bg-[#65d065] text-white text-[10px] font-extrabold px-[6px] py-[3px] rounded-[6px] rounded-bl-sm tracking-widest shadow-sm border border-[#52af52] leading-none pointer-events-none">
+                        ...
                      </div>
+                  </div>
+               </div>
 
-                     {/* Body */}
-                     <div className="px-[32px] pt-[10px] pb-0 flex flex-col gap-[14px] flex-1">
 
-                        {/* Date Range */}
-                        <div className="flex flex-col gap-[10px]">
-                           <h3 className="text-[#207a95] font-[800] text-[16px]">Date Range :</h3>
-                           <div className="flex items-center gap-[34px] ml-[0px]">
-                              <div className="flex items-center gap-[12px]">
-                                 <span className="text-[#444] font-[600] text-[12.5px]">From Date :</span>
-                                 <CustomModalDatePicker {...parseDateToPicker(fromDate)} onDateChange={setFromDate} />
-                              </div>
-                              <div className="flex items-center gap-[12px]">
-                                 <span className="text-[#444] font-[600] text-[12.5px]">To Date :</span>
-                                 <CustomModalDatePicker {...parseDateToPicker(toDate)} onDateChange={setToDate} />
-                              </div>
-                           </div>
-                        </div>
 
-                        <div className="h-[1px] bg-gray-300/80 w-full"></div>
+               {/* Add Slots Modal */}
+               {
+                  isAddSlotModalOpen && (
+                     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                        <div className="bg-white rounded-[16px] shadow-2xl w-[680px] h-[480px] max-h-[95vh] flex flex-col relative">
 
-                        {/* Time Range */}
-                        <div className="flex flex-col gap-[10px]">
-                           <h3 className="text-[#207a95] font-[800] text-[16px]">Time Range :</h3>
-                           <div className="flex items-center gap-[34px] ml-[0px]">
-                              <div className="flex items-center gap-[12px]">
-                                 <span className="text-[#444] font-[600] text-[12.5px]">From Time :</span>
-                                 <CustomTimePicker value={fromTime} onChange={setFromTime} />
-                              </div>
-                              <div className="flex items-center gap-[12px]">
-                                 <span className="text-[#444] font-[600] text-[12.5px]">To Time :</span>
-                                 <CustomTimePicker value={toTime} onChange={setToTime} />
-                              </div>
-                           </div>
-                        </div>
-
-                        <div className="h-[1px] bg-gray-300/80 w-full"></div>
-
-                        {/* Slot Duration */}
-                        <div className="flex flex-col gap-[10px]">
-                           <h3 className="text-[#207a95] font-[800] text-[16px]">Slot Duration :</h3>
-                           <div className="flex items-center gap-[12px] relative z-10">
-                              <span className="text-[#444] font-[600] text-[12.5px]">Slot Time :</span>
-
-                              <div
-                                 className="relative outline-none ml-[2px]"
-                                 tabIndex={0}
-                                 onBlur={(e) => {
-                                    if (!e.currentTarget.contains(e.relatedTarget)) setSlotDurationOpen(false);
-                                 }}
+                           {/* Header */}
+                           <div className="bg-white px-[26px] py-[10px] border-b border-gray-200 shrink-0 rounded-t-[16px]">
+                              <h2 className="text-[#111] font-[800] text-[18px]">Doctor Slot</h2>
+                              <button
+                                 onClick={() => setIsAddSlotModalOpen(false)}
+                                 className="absolute top-[14px] right-[20px] text-gray-400 hover:text-gray-600 transition-colors"
                               >
-                                 <div
-                                    onClick={() => setSlotDurationOpen(!slotDurationOpen)}
-                                    className="flex items-center justify-between border-[1.5px] border-gray-400 rounded-[4px] px-[12px] py-[6px] w-[145px] bg-white cursor-pointer hover:bg-gray-50 transition-colors"
-                                 >
-                                    <span className="text-[#333] font-[600] text-[13px]">{slotDuration}</span>
-                                    <svg className="w-[18px] h-[18px] text-black" fill="black" viewBox="0 0 24 24"><polygon points="7,10 17,10 12,15" /></svg>
-                                 </div>
+                                 <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                              </button>
+                           </div>
 
-                                 {/* Dropdown Options (Animated & Scrollable) */}
-                                 <div
-                                    className={`absolute top-full left-0 mt-[1px] w-full bg-white border-[1px] border-gray-400 z-20 transition-all duration-200 origin-top overflow-y-auto max-h-[115px]
-                            ${slotDurationOpen ? 'opacity-100 scale-100 pointer-events-auto shadow-md' : 'opacity-0 scale-95 pointer-events-none shadow-none'}`}
-                                    style={{ scrollbarWidth: 'thin' }}
-                                 >
-                                    {durationOptions.map(opt => (
-                                       <div
-                                          key={opt}
-                                          onClick={() => { setSlotDuration(opt); setSlotDurationOpen(false); }}
-                                          className={`px-[12px] py-[6px] text-[13px] cursor-pointer font-[500] transition-colors ${slotDuration === opt ? 'bg-[#3ca4bf] text-white hover:bg-[#3492ab] font-[600]' : 'text-gray-600 hover:bg-gray-100'}`}
-                                       >
-                                          {opt}
-                                       </div>
-                                    ))}
+                           {/* Body */}
+                           <div className="px-[32px] pt-[10px] pb-0 flex flex-col gap-[14px] flex-1">
+
+                              {/* Date Range */}
+                              <div className="flex flex-col gap-[10px]">
+                                 <h3 className="text-[#207a95] font-[800] text-[16px]">Date Range :</h3>
+                                 <div className="flex items-center gap-[34px] ml-[0px]">
+                                    <div className="flex items-center gap-[12px]">
+                                       <span className="text-[#444] font-[600] text-[12.5px]">From Date :</span>
+                                       <CustomModalDatePicker {...parseDateToPicker(fromDate)} onDateChange={setFromDate} />
+                                    </div>
+                                    <div className="flex items-center gap-[12px]">
+                                       <span className="text-[#444] font-[600] text-[12.5px]">To Date :</span>
+                                       <CustomModalDatePicker {...parseDateToPicker(toDate)} onDateChange={setToDate} />
+                                    </div>
                                  </div>
                               </div>
 
+                              <div className="h-[1px] bg-gray-300/80 w-full"></div>
+
+                              {/* Time Range */}
+                              <div className="flex flex-col gap-[10px]">
+                                 <h3 className="text-[#207a95] font-[800] text-[16px]">Time Range :</h3>
+                                 <div className="flex items-center gap-[34px] ml-[0px]">
+                                    <div className="flex items-center gap-[12px]">
+                                       <span className="text-[#444] font-[600] text-[12.5px]">From Time :</span>
+                                       <CustomTimePicker value={fromTime} onChange={setFromTime} />
+                                    </div>
+                                    <div className="flex items-center gap-[12px]">
+                                       <span className="text-[#444] font-[600] text-[12.5px]">To Time :</span>
+                                       <CustomTimePicker value={toTime} onChange={setToTime} />
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div className="h-[1px] bg-gray-300/80 w-full"></div>
+
+                              {/* Slot Duration */}
+                              <div className="flex flex-col gap-[10px]">
+                                 <h3 className="text-[#207a95] font-[800] text-[16px]">Slot Duration :</h3>
+                                 <div className="flex items-center gap-[12px] relative z-10">
+                                    <span className="text-[#444] font-[600] text-[12.5px]">Slot Time :</span>
+
+                                    <div
+                                       className="relative outline-none ml-[2px]"
+                                       tabIndex={0}
+                                       onBlur={(e) => {
+                                          if (!e.currentTarget.contains(e.relatedTarget)) setSlotDurationOpen(false);
+                                       }}
+                                    >
+                                       <div
+                                          onClick={() => setSlotDurationOpen(!slotDurationOpen)}
+                                          className="flex items-center justify-between border-[1.5px] border-gray-400 rounded-[4px] px-[12px] py-[6px] w-[145px] bg-white cursor-pointer hover:bg-gray-50 transition-colors"
+                                       >
+                                          <span className="text-[#333] font-[600] text-[13px]">{slotDuration}</span>
+                                          <svg className="w-[18px] h-[18px] text-black" fill="black" viewBox="0 0 24 24"><polygon points="7,10 17,10 12,15" /></svg>
+                                       </div>
+
+                                       {/* Dropdown Options (Animated & Scrollable) */}
+                                       <div
+                                          className={`absolute top-full left-0 mt-[1px] w-full bg-white border-[1px] border-gray-400 z-20 transition-all duration-200 origin-top overflow-y-auto max-h-[115px]
+                            ${slotDurationOpen ? 'opacity-100 scale-100 pointer-events-auto shadow-md' : 'opacity-0 scale-95 pointer-events-none shadow-none'}`}
+                                          style={{ scrollbarWidth: 'thin' }}
+                                       >
+                                          {durationOptions.map(opt => (
+                                             <div
+                                                key={opt}
+                                                onClick={() => { setSlotDuration(opt); setSlotDurationOpen(false); }}
+                                                className={`px-[12px] py-[6px] text-[13px] cursor-pointer font-[500] transition-colors ${slotDuration === opt ? 'bg-[#3ca4bf] text-white hover:bg-[#3492ab] font-[600]' : 'text-gray-600 hover:bg-gray-100'}`}
+                                             >
+                                                {opt}
+                                             </div>
+                                          ))}
+                                       </div>
+                                    </div>
+
+                                 </div>
+                              </div>
+
+                              {/* Save Button and Message integrated into body */}
+                              {/* Unified Image & Button Container for Perfect Centering */}
+                              <div className="absolute right-[20px] bottom-[20px] w-[175px] flex flex-col items-center gap-[5px] pointer-events-none z-10">
+                                 {/* Message shown above image/button if exists */}
+                                 {message.text && (
+                                    <div className="mb-2 w-full text-[11px] font-bold text-center p-2 rounded bg-white/90 shadow-sm border border-gray-100 pointer-events-auto">
+                                       <span className={message.type === 'success' ? 'text-green-700' : 'text-red-700'}>{message.text}</span>
+                                    </div>
+                                 )}
+
+                                 <img src={doctorImg} alt="Doctor Illustration" className="w-full h-auto object-contain opacity-100" />
+
+                                 <button
+                                    onClick={handleSave}
+                                    disabled={isLoading}
+                                    className={`bg-[#1b738b] hover:bg-[#166378] transition-colors text-white font-[700] text-[14px] px-[36px] py-[8px] rounded-[6px] shadow-sm tracking-wide pointer-events-auto ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                 >
+                                    {isLoading ? 'Saving...' : 'Save'}
+                                 </button>
+                              </div>
                            </div>
+
                         </div>
-
-                        {/* Save Button and Message integrated into body */}
-                         {/* Unified Image & Button Container for Perfect Centering */}
-                         <div className="absolute right-[20px] bottom-[20px] w-[175px] flex flex-col items-center gap-[5px] pointer-events-none z-10">
-                            {/* Message shown above image/button if exists */}
-                            {message.text && (
-                               <div className="mb-2 w-full text-[11px] font-bold text-center p-2 rounded bg-white/90 shadow-sm border border-gray-100 pointer-events-auto">
-                                  <span className={message.type === 'success' ? 'text-green-700' : 'text-red-700'}>{message.text}</span>
-                               </div>
-                            )}
-                            
-                            <img src={doctorImg} alt="Doctor Illustration" className="w-full h-auto object-contain opacity-100" />
-                            
-                            <button
-                               onClick={handleSave}
-                               disabled={isLoading}
-                               className={`bg-[#1b738b] hover:bg-[#166378] transition-colors text-white font-[700] text-[14px] px-[36px] py-[8px] rounded-[6px] shadow-sm tracking-wide pointer-events-auto ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                               {isLoading ? 'Saving...' : 'Save'}
-                            </button>
-                         </div>
-                      </div>
-
-                   </div>
-                </div>
-            )}
-            </main>
+                     </div>
+                  )
+               }
+         </main>
 
          {/* Tiles Modals from Doctor Dashboard */}
-            
+
          {/* Appointment Modal */}
          <AnimatePresence>
-             {isAppointmentModalOpen && (
-                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
-                     <motion.div 
-                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
-                     >
-                         <div className="p-7">
-                             <div className="flex justify-between items-center mb-6">
-                                 <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Recent Appointment Requests</h3>
-                                 <button 
-                                     onClick={() => setIsAppointmentModalOpen(false)}
-                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                                 >
-                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                                     </svg>
-                                 </button>
-                             </div>
-                             
-                             <div className="space-y-4">
-                                 {appRequestsData.map((req, idx) => (
-                                     <div key={idx} className="border border-gray-300 rounded-2xl p-4 bg-white hover:border-gray-400 transition-colors">
-                                         <div className="flex justify-between items-start mb-4">
-                                             <div className="flex gap-4 items-center">
-                                                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm">
-                                                     <img src={phImg} alt="" className="w-full h-full object-cover" />
-                                                 </div>
-                                                 <div>
-                                                     <p className="text-[16px] font-bold text-gray-800 leading-tight">{req.name}</p>
-                                                     <p className="text-[13px] text-gray-400 font-bold mt-1">{req.gender} , {req.age}</p>
-                                                 </div>
-                                             </div>
-                                             <div className="text-[11px] font-bold text-gray-400">{req.date}</div>
-                                         </div>
+            {isAppointmentModalOpen && (
+               <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                  <motion.div
+                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                     animate={{ opacity: 1, scale: 1, y: 0 }}
+                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                     className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                  >
+                     <div className="p-7">
+                        <div className="flex justify-between items-center mb-6">
+                           <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Recent Appointment Requests</h3>
+                           <button
+                              onClick={() => setIsAppointmentModalOpen(false)}
+                              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                           >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                           </button>
+                        </div>
 
-                                         <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                                             <div className="flex items-center gap-3">
-                                                 <p className="text-[14px] font-bold text-[#32869e]">{req.treatment}</p>
-                                                 <span className="bg-gray-100 border border-gray-200 text-[10px] font-bold px-2.5 py-1 rounded-full text-gray-500 uppercase">{req.time}</span>
-                                             </div>
-                                             <div className="flex gap-2">
-                                                 <button className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-lg text-[12px] font-bold shadow-sm transition-all">Accept</button>
-                                                 <button className="bg-[#f87171] hover:bg-[#ef4444] text-white px-4 py-2 rounded-lg text-[12px] font-bold shadow-sm transition-all">Decline</button>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 ))}
-                             </div>
-                             
-                             <button 
-                                 onClick={() => setIsAppointmentModalOpen(false)}
-                                 className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
-                             >
-                                 Close
-                             </button>
-                         </div>
-                     </motion.div>
-                 </div>
-             )}
+                        <div className="space-y-4">
+                           {appRequestsData.map((req, idx) => (
+                              <div key={idx} className="border border-gray-300 rounded-2xl p-4 bg-white hover:border-gray-400 transition-colors">
+                                 <div className="flex justify-between items-start mb-4">
+                                    <div className="flex gap-4 items-center">
+                                       <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm">
+                                          <img src={phImg} alt="" className="w-full h-full object-cover" />
+                                       </div>
+                                       <div>
+                                          <p className="text-[16px] font-bold text-gray-800 leading-tight">{req.name}</p>
+                                          <p className="text-[13px] text-gray-400 font-bold mt-1">{req.gender} , {req.age}</p>
+                                       </div>
+                                    </div>
+                                    <div className="text-[11px] font-bold text-gray-400">{req.date}</div>
+                                 </div>
+
+                                 <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                                    <div className="flex items-center gap-3">
+                                       <p className="text-[14px] font-bold text-[#32869e]">{req.treatment}</p>
+                                       <span className="bg-gray-100 border border-gray-200 text-[10px] font-bold px-2.5 py-1 rounded-full text-gray-500 uppercase">{req.time}</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                       <button className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-lg text-[12px] font-bold shadow-sm transition-all">Accept</button>
+                                       <button className="bg-[#f87171] hover:bg-[#ef4444] text-white px-4 py-2 rounded-lg text-[12px] font-bold shadow-sm transition-all">Decline</button>
+                                    </div>
+                                 </div>
+                              </div>
+                           ))}
+                        </div>
+
+                        <button
+                           onClick={() => setIsAppointmentModalOpen(false)}
+                           className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                        >
+                           Close
+                        </button>
+                     </div>
+                  </motion.div>
+               </div>
+            )}
          </AnimatePresence>
 
          {/* Total Patients Modal */}
          <AnimatePresence>
-             {isPatientsModalOpen && (
-                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
-                     <motion.div 
-                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
-                     >
-                         <div className="p-7">
-                             <div className="flex justify-between items-center mb-6">
-                                 <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Total Patients</h3>
-                                 <button 
-                                     onClick={() => setIsPatientsModalOpen(false)}
-                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                                 >
-                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                                     </svg>
-                                 </button>
-                             </div>
-                             
-                             <div className="space-y-4">
-                                 {recentPatientsData.map((patient, idx) => (
-                                     <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                                         <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0">
-                                             <img src={phImg} alt="" className="w-full h-full object-cover" />
-                                         </div>
-                                         <div className="flex-1">
-                                             <div className="flex justify-between items-start">
-                                                 <p className="text-[16px] font-bold text-gray-800 leading-tight">{patient.name}</p>
-                                                 <span className="text-[11px] font-bold text-[#1b738c] bg-[#1b738c]/10 px-2 py-0.5 rounded-full uppercase tracking-wider">{patient.status}</span>
-                                             </div>
-                                             <p className="text-[14px] text-gray-500 font-medium mt-0.5">{patient.disease} • {patient.gender}</p>
-                                             <div className="flex gap-3 mt-1">
-                                                 <span className="text-[12px] text-gray-400 font-bold">Weight: {patient.weight}</span>
-                                                 <span className="text-[12px] text-gray-400 font-bold">Heart: {patient.heartRate}</span>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 ))}
-                             </div>
-                             
-                             <button 
-                                 onClick={() => setIsPatientsModalOpen(false)}
-                                 className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
-                             >
-                                 Close
-                             </button>
-                         </div>
-                     </motion.div>
-                 </div>
-             )}
+            {isPatientsModalOpen && (
+               <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                  <motion.div
+                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                     animate={{ opacity: 1, scale: 1, y: 0 }}
+                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                     className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                  >
+                     <div className="p-7">
+                        <div className="flex justify-between items-center mb-6">
+                           <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Total Patients</h3>
+                           <button
+                              onClick={() => setIsPatientsModalOpen(false)}
+                              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                           >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                           </button>
+                        </div>
+
+                        <div className="space-y-4">
+                           {recentPatientsData.map((patient, idx) => (
+                              <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0">
+                                    <img src={phImg} alt="" className="w-full h-full object-cover" />
+                                 </div>
+                                 <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                       <p className="text-[16px] font-bold text-gray-800 leading-tight">{patient.name}</p>
+                                       <span className="text-[11px] font-bold text-[#1b738c] bg-[#1b738c]/10 px-2 py-0.5 rounded-full uppercase tracking-wider">{patient.status}</span>
+                                    </div>
+                                    <p className="text-[14px] text-gray-500 font-medium mt-0.5">{patient.disease} • {patient.gender}</p>
+                                    <div className="flex gap-3 mt-1">
+                                       <span className="text-[12px] text-gray-400 font-bold">Weight: {patient.weight}</span>
+                                       <span className="text-[12px] text-gray-400 font-bold">Heart: {patient.heartRate}</span>
+                                    </div>
+                                 </div>
+                              </div>
+                           ))}
+                        </div>
+
+                        <button
+                           onClick={() => setIsPatientsModalOpen(false)}
+                           className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                        >
+                           Close
+                        </button>
+                     </div>
+                  </motion.div>
+               </div>
+            )}
          </AnimatePresence>
 
          {/* Consultations Modal */}
          <AnimatePresence>
-             {isConsultationsModalOpen && (
-                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
-                     <motion.div 
-                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
-                     >
-                         <div className="p-7">
-                             <div className="flex justify-between items-center mb-6">
-                                 <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Consultations</h3>
-                                 <button 
-                                     onClick={() => setIsConsultationsModalOpen(false)}
-                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                                 >
-                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                                     </svg>
-                                 </button>
-                             </div>
-                             
-                             <div className="space-y-4">
-                                 {timelineData.slice(0, 4).map((item, idx) => (
-                                     <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                                         <div className="w-3 h-12 rounded-full shrink-0" style={{ backgroundColor: item.color }}></div>
-                                         <div className="flex-1">
-                                             <div className="flex justify-between items-start">
-                                                 <p className="text-[16px] font-bold text-gray-800 leading-tight">{item.label}</p>
-                                                 <span className="text-[11px] font-bold text-gray-400">{item.time}</span>
-                                             </div>
-                                             <p className="text-[14px] text-gray-500 font-medium mt-0.5">{item.patient}</p>
-                                             <p className="text-[12px] text-[#32869e] font-bold mt-1">{item.duration}</p>
-                                         </div>
-                                     </div>
-                                 ))}
-                             </div>
-                             
-                             <button 
-                                 onClick={() => setIsConsultationsModalOpen(false)}
-                                 className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
-                             >
-                                 Close
-                             </button>
-                         </div>
-                     </motion.div>
-                 </div>
-             )}
+            {isConsultationsModalOpen && (
+               <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                  <motion.div
+                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                     animate={{ opacity: 1, scale: 1, y: 0 }}
+                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                     className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                  >
+                     <div className="p-7">
+                        <div className="flex justify-between items-center mb-6">
+                           <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Consultations</h3>
+                           <button
+                              onClick={() => setIsConsultationsModalOpen(false)}
+                              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                           >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                           </button>
+                        </div>
+
+                        <div className="space-y-4">
+                           {timelineData.slice(0, 4).map((item, idx) => (
+                              <div key={idx} className="flex items-center gap-4 p-4 border border-gray-300 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                 <div className="w-3 h-12 rounded-full shrink-0" style={{ backgroundColor: item.color }}></div>
+                                 <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                       <p className="text-[16px] font-bold text-gray-800 leading-tight">{item.label}</p>
+                                       <span className="text-[11px] font-bold text-gray-400">{item.time}</span>
+                                    </div>
+                                    <p className="text-[14px] text-gray-500 font-medium mt-0.5">{item.patient}</p>
+                                    <p className="text-[12px] text-[#32869e] font-bold mt-1">{item.duration}</p>
+                                 </div>
+                              </div>
+                           ))}
+                        </div>
+
+                        <button
+                           onClick={() => setIsConsultationsModalOpen(false)}
+                           className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                        >
+                           Close
+                        </button>
+                     </div>
+                  </motion.div>
+               </div>
+            )}
          </AnimatePresence>
 
          {/* Income Modal */}
          <AnimatePresence>
-             {isIncomeModalOpen && (
-                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
-                     <motion.div 
-                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
-                     >
-                         <div className="p-7">
-                             <div className="flex justify-between items-center mb-6">
-                                 <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Income Summary</h3>
-                                 <button 
-                                     onClick={() => setIsIncomeModalOpen(false)}
-                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                                 >
-                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                                     </svg>
-                                 </button>
-                             </div>
-                             
-                             <div className="space-y-6">
-                                 <div className="bg-gray-50 p-5 rounded-2xl border border-gray-300">
-                                     <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider">Total Revenue</p>
-                                     <h2 className="text-[48px] font-normal text-black leading-none mt-2">$142,000</h2>
-                                     <div className="flex items-center gap-2 mt-4 text-green-600">
-                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                                         </svg>
-                                         <span className="text-[14px] font-bold">+12.5% from last month</span>
-                                     </div>
-                                 </div>
+            {isIncomeModalOpen && (
+               <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                  <motion.div
+                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                     animate={{ opacity: 1, scale: 1, y: 0 }}
+                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                     className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+                  >
+                     <div className="p-7">
+                        <div className="flex justify-between items-center mb-6">
+                           <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Income Summary</h3>
+                           <button
+                              onClick={() => setIsIncomeModalOpen(false)}
+                              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                           >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                           </button>
+                        </div>
 
-                                 <div className="grid grid-cols-2 gap-4">
-                                     <div className="p-4 border border-gray-300 rounded-2xl bg-white">
-                                         <p className="text-[12px] text-gray-400 font-bold uppercase">Consultations</p>
-                                         <p className="text-[20px] font-bold text-gray-800 mt-1">$98,400</p>
-                                     </div>
-                                     <div className="p-4 border border-gray-300 rounded-2xl bg-white">
-                                         <p className="text-[12px] text-gray-400 font-bold uppercase">Treatments</p>
-                                         <p className="text-[20px] font-bold text-gray-800 mt-1">$43,600</p>
-                                     </div>
-                                 </div>
+                        <div className="space-y-6">
+                           <div className="bg-gray-50 p-5 rounded-2xl border border-gray-300">
+                              <p className="text-[14px] text-gray-500 font-bold uppercase tracking-wider">Total Revenue</p>
+                              <h2 className="text-[48px] font-normal text-black leading-none mt-2">$142,000</h2>
+                              <div className="flex items-center gap-2 mt-4 text-green-600">
+                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                 </svg>
+                                 <span className="text-[14px] font-bold">+12.5% from last month</span>
+                              </div>
+                           </div>
 
-                                 <div className="p-4 border border-gray-300 rounded-2xl bg-gray-50/50">
-                                     <div className="flex justify-between items-center mb-3">
-                                         <p className="text-[14px] font-bold text-gray-700">Recent Transactions</p>
-                                         <button className="text-[12px] text-[#32869e] font-bold">View All</button>
-                                     </div>
-                                     <div className="space-y-3">
-                                         {[1, 2].map(i => (
-                                             <div key={i} className="flex justify-between items-center">
-                                                 <div className="flex items-center gap-3">
-                                                     <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                                         <span className="text-[12px] font-bold">$</span>
-                                                     </div>
-                                                     <div>
-                                                         <p className="text-[14px] font-bold text-gray-800">Patient Payment</p>
-                                                         <p className="text-[11px] text-gray-400">May 12, 2025</p>
-                                                     </div>
-                                                 </div>
-                                                 <p className="text-[14px] font-bold text-gray-800">+$250.00</p>
-                                             </div>
-                                         ))}
-                                     </div>
-                                 </div>
-                             </div>
-                             
-                             <button 
-                                 onClick={() => setIsIncomeModalOpen(false)}
-                                 className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
-                             >
-                                 Close
-                             </button>
-                         </div>
-                     </motion.div>
-                 </div>
-             )}
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="p-4 border border-gray-300 rounded-2xl bg-white">
+                                 <p className="text-[12px] text-gray-400 font-bold uppercase">Consultations</p>
+                                 <p className="text-[20px] font-bold text-gray-800 mt-1">$98,400</p>
+                              </div>
+                              <div className="p-4 border border-gray-300 rounded-2xl bg-white">
+                                 <p className="text-[12px] text-gray-400 font-bold uppercase">Treatments</p>
+                                 <p className="text-[20px] font-bold text-gray-800 mt-1">$43,600</p>
+                              </div>
+                           </div>
+
+                           <div className="p-4 border border-gray-300 rounded-2xl bg-gray-50/50">
+                              <div className="flex justify-between items-center mb-3">
+                                 <p className="text-[14px] font-bold text-gray-700">Recent Transactions</p>
+                                 <button className="text-[12px] text-[#32869e] font-bold">View All</button>
+                              </div>
+                              <div className="space-y-3">
+                                 {[1, 2].map(i => (
+                                    <div key={i} className="flex justify-between items-center">
+                                       <div className="flex items-center gap-3">
+                                          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                             <span className="text-[12px] font-bold">$</span>
+                                          </div>
+                                          <div>
+                                             <p className="text-[14px] font-bold text-gray-800">Patient Payment</p>
+                                             <p className="text-[11px] text-gray-400">May 12, 2025</p>
+                                          </div>
+                                       </div>
+                                       <p className="text-[14px] font-bold text-gray-800">+$250.00</p>
+                                    </div>
+                                 ))}
+                              </div>
+                           </div>
+                        </div>
+
+                        <button
+                           onClick={() => setIsIncomeModalOpen(false)}
+                           className="w-full mt-8 bg-[#1b738c] text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-[#1b738c]/20 hover:bg-[#155b70] transition-all active:scale-[0.98]"
+                        >
+                           Close
+                        </button>
+                     </div>
+                  </motion.div>
+               </div>
+            )}
          </AnimatePresence>
 
          {/* Emergency Modal */}
          <AnimatePresence>
-             {isEmergencyModalOpen && (
-                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
-                     <motion.div 
-                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                         className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-red-100"
-                     >
-                         <div className="p-7">
-                             <div className="flex justify-between items-center mb-6">
-                                 <div className="flex items-center gap-3">
-                                     <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 shadow-sm">
-                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                         </svg>
-                                     </div>
-                                     <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Emergency Alerts</h3>
-                                 </div>
-                                 <button 
-                                     onClick={() => setIsEmergencyModalOpen(false)}
-                                     className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                                 >
-                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                                     </svg>
+            {isEmergencyModalOpen && (
+               <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
+                  <motion.div
+                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                     animate={{ opacity: 1, scale: 1, y: 0 }}
+                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                     className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-red-100"
+                  >
+                     <div className="p-7">
+                        <div className="flex justify-between items-center mb-6">
+                           <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 shadow-sm">
+                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                 </svg>
+                              </div>
+                              <h3 className="text-[18px] font-bold text-gray-800 tracking-tight">Emergency Alerts</h3>
+                           </div>
+                           <button
+                              onClick={() => setIsEmergencyModalOpen(false)}
+                              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                           >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                           </button>
+                        </div>
+
+                        <div className="space-y-4">
+                           <div className="p-4 border border-red-200 rounded-2xl bg-red-50/50">
+                              <div className="flex justify-between items-start mb-2">
+                                 <p className="text-[16px] font-bold text-red-700">Active Emergency</p>
+                                 <span className="text-[11px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-full animate-pulse">URGENT</span>
+                              </div>
+                              <p className="text-[14px] text-red-600 font-medium">Patient: Rajesh Kumar • Room 302</p>
+                              <p className="text-[12px] text-red-500 font-bold mt-1">Status: Cardiac Distress • 2 mins ago</p>
+                           </div>
+
+                           <div className="space-y-3">
+                              <p className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Quick Actions</p>
+                              <div className="grid grid-cols-2 gap-3">
+                                 <button className="flex items-center justify-center gap-2 p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                                    <span className="text-[14px] font-bold text-gray-700">Call ER</span>
                                  </button>
-                             </div>
-                             
-                             <div className="space-y-4">
-                                 <div className="p-4 border border-red-200 rounded-2xl bg-red-50/50">
-                                     <div className="flex justify-between items-start mb-2">
-                                         <p className="text-[16px] font-bold text-red-700">Active Emergency</p>
-                                         <span className="text-[11px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-full animate-pulse">URGENT</span>
-                                     </div>
-                                     <p className="text-[14px] text-red-600 font-medium">Patient: Rajesh Kumar • Room 302</p>
-                                     <p className="text-[12px] text-red-500 font-bold mt-1">Status: Cardiac Distress • 2 mins ago</p>
-                                 </div>
+                                 <button className="flex items-center justify-center gap-2 p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                                    <span className="text-[14px] font-bold text-gray-700">Dispatch Team</span>
+                                 </button>
+                              </div>
+                           </div>
 
-                                 <div className="space-y-3">
-                                     <p className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Quick Actions</p>
-                                     <div className="grid grid-cols-2 gap-3">
-                                         <button className="flex items-center justify-center gap-2 p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
-                                             <span className="text-[14px] font-bold text-gray-700">Call ER</span>
-                                         </button>
-                                         <button className="flex items-center justify-center gap-2 p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
-                                             <span className="text-[14px] font-bold text-gray-700">Dispatch Team</span>
-                                         </button>
-                                     </div>
+                           <div className="p-4 border border-gray-300 rounded-2xl bg-gray-50/50">
+                              <p className="text-[14px] font-bold text-gray-700 mb-3">Emergency Contact List</p>
+                              <div className="space-y-3">
+                                 <div className="flex justify-between items-center">
+                                    <p className="text-[14px] font-bold text-gray-800">ICU Desk</p>
+                                    <p className="text-[14px] font-bold text-[#1b738c]">Ext: 405</p>
                                  </div>
+                                 <div className="flex justify-between items-center">
+                                    <p className="text-[14px] font-bold text-gray-800">Ambulance Services</p>
+                                    <p className="text-[14px] font-bold text-[#1b738c]">102</p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
 
-                                 <div className="p-4 border border-gray-300 rounded-2xl bg-gray-50/50">
-                                     <p className="text-[14px] font-bold text-gray-700 mb-3">Emergency Contact List</p>
-                                     <div className="space-y-3">
-                                         <div className="flex justify-between items-center">
-                                             <p className="text-[14px] font-bold text-gray-800">ICU Desk</p>
-                                             <p className="text-[14px] font-bold text-[#1b738c]">Ext: 405</p>
-                                         </div>
-                                         <div className="flex justify-between items-center">
-                                             <p className="text-[14px] font-bold text-gray-800">Ambulance Services</p>
-                                             <p className="text-[14px] font-bold text-[#1b738c]">102</p>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                             
-                             <button 
-                                 onClick={() => setIsEmergencyModalOpen(false)}
-                                 className="w-full mt-8 bg-red-600 text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all active:scale-[0.98]"
-                             >
-                                 Close
-                             </button>
-                         </div>
-                     </motion.div>
-                 </div>
-             )}
+                        <button
+                           onClick={() => setIsEmergencyModalOpen(false)}
+                           className="w-full mt-8 bg-red-600 text-white py-3.5 rounded-xl text-[15px] font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all active:scale-[0.98]"
+                        >
+                           Close
+                        </button>
+                     </div>
+                  </motion.div>
+               </div>
+            )}
          </AnimatePresence>
-      </div>
+
+         {/* Notification Modal */}
+         <AnimatePresence>
+            {isNotificationOpen && (
+               <Notification setIsNotificationOpen={setIsNotificationOpen} />
+            )}
+         </AnimatePresence>
+
+      </div >
    );
 };
 
 export default Addslot;
-
